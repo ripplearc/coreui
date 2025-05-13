@@ -1,6 +1,7 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:example/screens/color_showcase_screen.dart';
 import 'package:example/screens/shadow_showcase_screen.dart';
+import 'package:example/screens/spacing_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -56,6 +57,18 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: const Text('Shadow Showcase'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SpacingShowcaseScreen(),
+                  ),
+                );
+              },
+              child: const Text('Spacing Showcase'),
             ),
           ],
         ),
