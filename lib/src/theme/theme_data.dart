@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'color_tokens.dart';
 import 'typography.dart';
+import 'shadows.dart';
 
 class CoreTheme {
   // Create a single ThemeData instance to be used for both light and dark themes
   static ThemeData _createThemeData() {
     return ThemeData(
+      // Shadows
+      shadowColor: CoreColorTokens.gray900,
+
+      // Material theme with shadows
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+
       // Typography
       textTheme: TextTheme(
         // Headline styles
