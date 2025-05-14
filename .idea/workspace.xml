@@ -5,9 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3494a3bd-4b0b-4659-ac1c-c8b18866cf8a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/theme/color_tokens.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/theme/color_tokens.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/theme/theme_data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/theme/theme_data.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Calcualtor.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Calculate.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Cost.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Delete.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Google.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Members.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Phone.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Placeholder.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Pluse_Minus.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Rename.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_Slash.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_divide.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_drive.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_dropbox.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_microsoft.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Ic_onedrive.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/components/core_icon.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/theme/icons/core_icons.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/theme/icons/icon_data.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/theme/icons/material_icons.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/src/theme/icons/svg_icons.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/extension_discovery/vs_code.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/screens/icon_showcase_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/screens/icon_showcase_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core_ui.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core_ui.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/theme/icons.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,10 +45,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2x2OrXNXEgUfyls1iGOYbMhhnRU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -39,7 +64,7 @@
     "cidr.known.project.marker": "true",
     "com.codeium.enabled": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "library-structure",
+    "git-widget-placeholder": "spacing-icons",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/zad_work",
     "settings.editor.selected.configurable": "AndroidSdkUpdater",
