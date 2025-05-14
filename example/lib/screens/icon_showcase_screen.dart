@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:core_ui/core_ui.dart';
+import 'package:flutter/material.dart';
 
 class IconShowcaseScreen extends StatelessWidget {
   const IconShowcaseScreen({super.key});
@@ -21,178 +21,184 @@ class IconShowcaseScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Our icon system provides standardized icons in different sizes.',
+              'Our icon system combines Material Design icons with custom SVG icons, organized by category for easy access.',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 24),
-
-            // Small icons (16x16)
-            _buildIconSizeSection(context, 'Small Icons (16x16)', [
-              _buildIconItem(
-                  'infoSmall', CoreIcons.getSmallIcon(CoreIcons.infoSmall)),
-              _buildIconItem('warningSmall',
-                  CoreIcons.getSmallIcon(CoreIcons.warningSmall)),
-              _buildIconItem(
-                  'errorSmall', CoreIcons.getSmallIcon(CoreIcons.errorSmall)),
-              _buildIconItem('calendarSmall',
-                  CoreIcons.getSmallIcon(CoreIcons.calendarSmall)),
-              _buildIconItem(
-                  'gridSmall', CoreIcons.getSmallIcon(CoreIcons.gridSmall)),
-              _buildIconItem(
-                  'closeSmall', CoreIcons.getSmallIcon(CoreIcons.closeSmall)),
-              _buildIconItem('arrowRightSmall',
-                  CoreIcons.getSmallIcon(CoreIcons.arrowRightSmall)),
-            ]),
-
             const SizedBox(height: 32),
 
-            // Medium icons (20x20)
-            _buildIconSizeSection(context, 'Medium Icons (20x20)', [
-              _buildIconItem('closeMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.closeMedium)),
-              _buildIconItem(
-                  'gridMedium', CoreIcons.getMediumIcon(CoreIcons.gridMedium)),
-              _buildIconItem('expandMoreMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.expandMoreMedium)),
-              _buildIconItem(
-                  'editMedium', CoreIcons.getMediumIcon(CoreIcons.editMedium)),
-              _buildIconItem(
-                  'infoMedium', CoreIcons.getMediumIcon(CoreIcons.infoMedium)),
-              _buildIconItem(
-                  'helpMedium', CoreIcons.getMediumIcon(CoreIcons.helpMedium)),
-              _buildIconItem('expandLessMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.expandLessMedium)),
-              _buildIconItem('collapseMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.collapseMedium)),
-              _buildIconItem('personMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.personMedium)),
-              _buildIconItem('emailMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.emailMedium)),
-              _buildIconItem('percentMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.percentMedium)),
-              _buildIconItem('minusMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.minusMedium)),
-              _buildIconItem('slashMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.slashMedium)),
-              // _buildIconItem('divideMedium', CoreIcons.getMediumIcon(CoreIcons.divideMedium)),
-              _buildIconItem('cancelMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.cancelMedium)),
-              _buildIconItem(
-                  'addMedium', CoreIcons.getMediumIcon(CoreIcons.addMedium)),
-              _buildIconItem('plusMinusMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.plusMinusMedium)),
-              _buildIconItem('arrowRightMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.arrowRightMedium)),
-              _buildIconItem(
-                  'linkMedium', CoreIcons.getMediumIcon(CoreIcons.linkMedium)),
-              _buildIconItem('deleteMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.deleteMedium)),
-              _buildIconItem('checkboxMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.checkboxMedium)),
-              _buildIconItem('calendarMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.calendarMedium)),
-              _buildIconItem(
-                  'moreMedium', CoreIcons.getMediumIcon(CoreIcons.moreMedium)),
-              _buildIconItem('clockMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.clockMedium)),
-              _buildIconItem(
-                  'backMedium', CoreIcons.getMediumIcon(CoreIcons.backMedium)),
-              _buildIconItem('searchMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.searchMedium)),
-              _buildIconItem('settingsMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.settingsMedium)),
-              _buildIconItem(
-                  'codeMedium', CoreIcons.getMediumIcon(CoreIcons.codeMedium)),
-              _buildIconItem('imageMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.imageMedium)),
-              _buildIconItem('favoriteMedium',
-                  CoreIcons.getMediumIcon(CoreIcons.favoriteMedium)),
-            ]),
+            // Brand & Services
+            _buildCategorySection(
+              context,
+              'Brand & Services',
+              [
+                _buildIconSet('Microsoft', CoreIcons.microsoft),
+                _buildIconSet('OneDrive', CoreIcons.onedrive),
+                _buildIconSet('Dropbox', CoreIcons.dropbox),
+                _buildIconSet('Google Drive', CoreIcons.googleDrive),
+                _buildIconSet('Google', CoreIcons.google),
+                _buildIconSet('facebook', CoreIcons.facebook,
+                    color: Colors.blue, size: 34),
+              ],
+            ),
 
-            const SizedBox(height: 32),
+            // Navigation
+            _buildCategorySection(
+              context,
+              'Navigation',
+              [
+                _buildIconSet('Arrow Left', CoreIcons.arrowLeft),
+                _buildIconSet('Arrow Right', CoreIcons.arrowRight),
+                _buildIconSet('Arrow Up', CoreIcons.arrowUp),
+                _buildIconSet('Arrow Down', CoreIcons.arrowDown),
+                _buildIconSet('Drop Down', CoreIcons.arrowDropDown),
+                _buildIconSet('Drop Up', CoreIcons.arrowDropUp),
+                _buildIconSet('More Vert', CoreIcons.moreVert),
+                _buildIconSet('More Horiz', CoreIcons.moreHoriz),
+                _buildIconSet('Backspace Left', CoreIcons.backspaceLeft),
+              ],
+            ),
 
-            // Large icons (24x24)
-            _buildIconSizeSection(context, 'Large Icons (24x24)', [
-              _buildIconItem(
-                  'visibility', CoreIcons.getLargeIcon(CoreIcons.visibility)),
-              _buildIconItem('visibilityOff',
-                  CoreIcons.getLargeIcon(CoreIcons.visibilityOff)),
-              _buildIconItem('info', CoreIcons.getLargeIcon(CoreIcons.info)),
-              _buildIconItem(
-                  'warning', CoreIcons.getLargeIcon(CoreIcons.warning)),
-              _buildIconItem('error', CoreIcons.getLargeIcon(CoreIcons.error)),
-              _buildIconItem('help', CoreIcons.getLargeIcon(CoreIcons.help)),
-              _buildIconItem(
-                  'expandMore', CoreIcons.getLargeIcon(CoreIcons.expandMore)),
-              _buildIconItem('check', CoreIcons.getLargeIcon(CoreIcons.check)),
-              _buildIconItem('email', CoreIcons.getLargeIcon(CoreIcons.email)),
-              _buildIconItem(
-                  'google', CoreIcons.getLargeIcon(CoreIcons.google)),
-              _buildIconItem(
-                  'facebook', CoreIcons.getLargeIcon(CoreIcons.facebook)),
-              _buildIconItem(
-                  'arrowBack', CoreIcons.getLargeIcon(CoreIcons.arrowBack)),
-              _buildIconItem('apple', CoreIcons.getLargeIcon(CoreIcons.apple)),
-              _buildIconItem(
-                  'microsoft', CoreIcons.getLargeIcon(CoreIcons.microsoft)),
-              _buildIconItem(
-                  'mobile', CoreIcons.getLargeIcon(CoreIcons.mobile)),
-              _buildIconItem(
-                  'person', CoreIcons.getLargeIcon(CoreIcons.person)),
-              _buildIconItem('add', CoreIcons.getLargeIcon(CoreIcons.add)),
-              _buildIconItem(
-                  'square', CoreIcons.getLargeIcon(CoreIcons.square)),
-              _buildIconItem(
-                  'checkSquare', CoreIcons.getLargeIcon(CoreIcons.checkSquare)),
-              _buildIconItem('bell', CoreIcons.getLargeIcon(CoreIcons.bell)),
-              _buildIconItem(
-                  'search', CoreIcons.getLargeIcon(CoreIcons.search)),
-              _buildIconItem('list', CoreIcons.getLargeIcon(CoreIcons.list)),
-              _buildIconItem('grid', CoreIcons.getLargeIcon(CoreIcons.grid)),
-              _buildIconItem('user', CoreIcons.getLargeIcon(CoreIcons.user)),
-              _buildIconItem('home', CoreIcons.getLargeIcon(CoreIcons.home)),
-              _buildIconItem('image', CoreIcons.getLargeIcon(CoreIcons.image)),
-              _buildIconItem('more', CoreIcons.getLargeIcon(CoreIcons.more)),
-              _buildIconItem('edit', CoreIcons.getLargeIcon(CoreIcons.edit)),
-              _buildIconItem(
-                  'delete', CoreIcons.getLargeIcon(CoreIcons.delete)),
-              _buildIconItem(
-                  'favorite', CoreIcons.getLargeIcon(CoreIcons.favorite)),
-              _buildIconItem('file', CoreIcons.getLargeIcon(CoreIcons.file)),
-              _buildIconItem('copy', CoreIcons.getLargeIcon(CoreIcons.copy)),
-              _buildIconItem(
-                  'calendar', CoreIcons.getLargeIcon(CoreIcons.calendar)),
-              _buildIconItem('clock', CoreIcons.getLargeIcon(CoreIcons.clock)),
-              _buildIconItem(
-                  'download', CoreIcons.getLargeIcon(CoreIcons.download)),
-              _buildIconItem(
-                  'calculator', CoreIcons.getLargeIcon(CoreIcons.calculator)),
-              _buildIconItem(
-                  'dollar', CoreIcons.getLargeIcon(CoreIcons.dollar)),
-              _buildIconItem(
-                  'camera', CoreIcons.getLargeIcon(CoreIcons.camera)),
-              _buildIconItem('chart', CoreIcons.getLargeIcon(CoreIcons.chart)),
-              _buildIconItem(
-                  'arrowUp', CoreIcons.getLargeIcon(CoreIcons.arrowUp)),
-              _buildIconItem(
-                  'percent', CoreIcons.getLargeIcon(CoreIcons.percent)),
-            ]),
+            // Actions
+            _buildCategorySection(
+              context,
+              'Actions',
+              [
+                _buildIconSet('Add', CoreIcons.add),
+                _buildIconSet('Remove', CoreIcons.remove),
+                _buildIconSet('Edit', CoreIcons.edit),
+                _buildIconSet('Delete', CoreIcons.delete),
+                _buildIconSet('Rename', CoreIcons.rename),
+                _buildIconSet('Close', CoreIcons.close),
+                _buildIconSet('Search', CoreIcons.search),
+                _buildIconSet('Refresh', CoreIcons.refresh),
+                _buildIconSet('Settings', CoreIcons.settings),
+                _buildIconSet('Download', CoreIcons.download),
+                _buildIconSet('Share', CoreIcons.share),
+                _buildIconSet('Copy', CoreIcons.copy),
+                _buildIconSet('Launch', CoreIcons.launch),
+                _buildIconSet('Plagiarism', CoreIcons.plagiarism),
+              ],
+            ),
 
-            const SizedBox(height: 32),
+            // Math & Calculation
+            _buildCategorySection(
+              context,
+              'Math & Calculation',
+              [
+                _buildIconSet('Calculate', CoreIcons.calculate),
+                _buildIconSet('Calculator', CoreIcons.calculator),
+                _buildIconSet('Divide', CoreIcons.divide),
+                _buildIconSet('Plus/Minus', CoreIcons.plusMinus),
+                _buildIconSet('Slash', CoreIcons.slash),
+              ],
+            ),
 
-            // Extra Large icons (32x32)
-            _buildIconSizeSection(context, 'Extra Large Icons (32x32)', [
-              _buildIconItem('documentLarge',
-                  CoreIcons.getExtraLargeIcon(CoreIcons.documentLarge)),
-            ]),
+            // Status
+            _buildCategorySection(
+              context,
+              'Status',
+              [
+                _buildIconSet('Info', CoreIcons.info),
+                _buildIconSet('Warning', CoreIcons.warning),
+                _buildIconSet('Error', CoreIcons.error),
+                _buildIconSet('Success', CoreIcons.success),
+                _buildIconSet('Help', CoreIcons.help),
+              ],
+            ),
+
+            // Communication
+            _buildCategorySection(
+              context,
+              'Communication',
+              [
+                _buildIconSet('Email', CoreIcons.email),
+                _buildIconSet('Message', CoreIcons.message),
+                _buildIconSet('Chat', CoreIcons.chat),
+                _buildIconSet('Notification', CoreIcons.notification),
+                _buildIconSet('Phone', CoreIcons.phone),
+              ],
+            ),
+
+            // Files & Media
+            _buildCategorySection(
+              context,
+              'Files & Media',
+              [
+                _buildIconSet('File', CoreIcons.file),
+                _buildIconSet('Image', CoreIcons.image),
+                _buildIconSet('Camera', CoreIcons.camera),
+              ],
+            ),
+
+            // Interface
+            _buildCategorySection(
+              context,
+              'Interface',
+              [
+                _buildIconSet('Home', CoreIcons.home),
+                _buildIconSet('List', CoreIcons.list),
+                _buildIconSet('Placeholder', CoreIcons.placeholder),
+              ],
+            ),
+
+            // User Management
+            _buildCategorySection(
+              context,
+              'User Management',
+              [
+                _buildIconSet('Person', CoreIcons.person),
+                _buildIconSet('People', CoreIcons.people),
+                _buildIconSet('Add Person', CoreIcons.personAdd),
+                _buildIconSet('Members', CoreIcons.members),
+              ],
+            ),
+
+            // Security
+            _buildCategorySection(
+              context,
+              'Security',
+              [
+                _buildIconSet('Lock', CoreIcons.lock),
+                _buildIconSet('Unlock', CoreIcons.unlock),
+              ],
+            ),
+
+            // Date & Time
+            _buildCategorySection(
+              context,
+              'Date & Time',
+              [
+                _buildIconSet('Calendar', CoreIcons.calendar),
+                _buildIconSet('History', CoreIcons.history),
+              ],
+            ),
+
+            // Device
+            _buildCategorySection(
+              context,
+              'Device',
+              [],
+            ),
+
+            // Business
+            _buildCategorySection(
+              context,
+              'Business',
+              [
+                _buildIconSet('Cost', CoreIcons.cost),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildIconSizeSection(
-      BuildContext context, String title, List<Widget> icons) {
+  Widget _buildCategorySection(
+    BuildContext context,
+    String title,
+    List<Widget> icons,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,32 +212,33 @@ class IconShowcaseScreen extends StatelessWidget {
           runSpacing: 16,
           children: icons,
         ),
+        const SizedBox(height: 32),
       ],
     );
   }
 
-  Widget _buildIconItem(String name, Widget icon) {
-    return SizedBox(
-      width: 100,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(4),
+  Widget _buildIconSet(String name, CoreIconData icon,
+      {double? size, Color? color}) {
+    {
+      return SizedBox(
+        width: 100,
+        child: Column(
+          children: [
+            CoreIconWidget(
+              icon: icon,
+              size: size ?? 34,
+              color: color,
             ),
-            child: icon,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 12),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 4),
+            Text(
+              name,
+              style: const TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
