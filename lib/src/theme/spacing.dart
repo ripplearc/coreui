@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// Core Spacing class that defines spacing values for the application
 ///
 /// The spacing system is based on a 4px grid (0.25rem with 16px base)
