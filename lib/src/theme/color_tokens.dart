@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CoreColorTokens {
+// Base color palette
+abstract class _CoreColorPalette {
   // Brand Colour
   static const Color brandOrient = Color(0xFF015B7C);
 
@@ -81,123 +82,106 @@ class CoreColorTokens {
   static const Color green700 = Color(0xFF106446);
   static const Color green800 = Color(0xFF02523B);
   static const Color green900 = Color(0xFF002E22);
+}
 
-  // Token Colors
+// Text-related color tokens
+// https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=1-601&t=TW26RstPBOLMrBqw-4
 
-  // Text Colors
-  static const Color textHeadline = gray900;
-  static const Color textDark = gray800;
-  static const Color textBody = gray700;
-  static const Color textDisable = gray400;
-  static const Color textInverse = gray25;
-  static const Color textLink = orient500;
-  static const Color textInfo = blue500;
-  static const Color textWarning = orange500;
-  static const Color textError = red500;
-  static const Color textSuccess = green500;
+class CoreTextColors {
+  static const Color headline = _CoreColorPalette.gray900;
+  static const Color dark = _CoreColorPalette.gray800;
+  static const Color body = _CoreColorPalette.gray600;
+  static const Color disable = _CoreColorPalette.gray400;
+  static const Color inverse = _CoreColorPalette.gray25;
+  static const Color link = _CoreColorPalette.orient600;
+  static const Color info = _CoreColorPalette.blue600;
+  static const Color warning = _CoreColorPalette.orange600;
+  static const Color error = _CoreColorPalette.red600;
+  static const Color success = _CoreColorPalette.green600;
+}
 
-  // Background Colors
-  static const Color pageBg = gray50;
-  static const Color bgPage = gray50;
-  static const Color bgGrayLight = gray100;
-  static const Color greyLight = gray100;
-  static const Color greyMid = gray300;
-  static const Color bgGrayMid = gray300;
-  static const Color bgBlueLight = blue50;
-  static const Color blueLight = blue50;
-  static const Color bgBlueMid = blue100;
-  static const Color blueMid = blue100;
-  static const Color bgGreenLight = green50;
-  static const Color greenLight = green50;
-  static const Color bgGreenMid = green100;
-  static const Color greenMid = green100;
-  static const Color bgRedLight = red50;
-  static const Color redLight = red50;
-  static const Color bgRedMid = red100;
-  static const Color redMid = red100;
-  static const Color bgOrangeLight = orange50;
-  static const Color orangeLight = orange50;
-  static const Color bgOrangeMid = orange100;
-  static const Color orangeMid = orange100;
-  static const Color bgDarkGray = gray800;
-  static const Color darkGrey = gray800;
-  static const Color bgDarkOrient = orient800;
-  static const Color darkOrient = orient800;
-  static const Color orientLight = orient50;
-  static const Color orientMid = orient100;
+// Background-related color tokens
+class CoreBackgroundColors {
+  static const Color pageBackground = _CoreColorPalette.gray50;
+  static const Color backgroundGrayLight = _CoreColorPalette.gray50;
+  static const Color backgroundGrayMid = _CoreColorPalette.gray100;
+  static const Color backgroundBlueLight = _CoreColorPalette.blue25;
+  static const Color backgroundBlueMid = _CoreColorPalette.blue50;
+  static const Color backgroundGreenLight = _CoreColorPalette.green25;
+  static const Color backgroundGreenMid = _CoreColorPalette.green50;
+  static const Color backgroundRedLight = _CoreColorPalette.red25;
+  static const Color backgroundRedMid = _CoreColorPalette.red50;
+  static const Color backgroundOrangeLight = _CoreColorPalette.orange25;
+  static const Color backgroundOrangeMid = _CoreColorPalette.orange50;
+  static const Color backgroundDarkGray = _CoreColorPalette.gray800;
+  static const Color backgroundDarkOrient = _CoreColorPalette.orient900;
+  static const Color backgroundOrientLight = _CoreColorPalette.orient25;
+  static const Color backgroundOrientMid = _CoreColorPalette.orient50;
+}
 
-  // Border Colors
-  static const Color lineLight = gray200;
-  static const Color lineMid = gray300;
-  static const Color lineDark = gray600;
-  static const Color lineDarkOutline = gray400;
-  static const Color lineHighlight = blue200;
-  static const Color highlight = blue200;
-  static const Color outlineHover = orient600;
-  static const Color outlineFocus = orient800;
-  static const Color tabsHighlight = orient500;
+// Border-related color tokens
+class CoreBorderColors {
+  static const Color lineLight = _CoreColorPalette.gray200;
+  static const Color lineMid = _CoreColorPalette.gray300;
+  static const Color lineDarkOutline = _CoreColorPalette.gray400;
+  static const Color lineHighlight = _CoreColorPalette.blue200;
+  static const Color outlineHover = _CoreColorPalette.orient900;
+  static const Color outlineFocus = _CoreColorPalette.orient800;
+  static const Color tabsHighlight = _CoreColorPalette.orient500;
+}
 
-  // Tags Color
-  static const Color tagsLightMid = blue50;
+// Status-related color tokens
+class CoreStatusColors {
+  static const Color error = _CoreColorPalette.red500;
+  static const Color success = _CoreColorPalette.green600;
+}
 
-  // Status Colors
-  static const Color statusError = red500;
-  static const Color stateError = red500;
-  static const Color statusSuccess = green500;
-  static const Color stateSuccess = green500;
+// Keyboard-related color tokens
+class CoreKeyboardColors {
+  static const Color numbers = _CoreColorPalette.gray200;
+  static const Color calculate = _CoreColorPalette.blue50;
+  static const Color units = _CoreColorPalette.blue500;
+  static const Color functions = _CoreColorPalette.blue600;
+  static const Color actions = _CoreColorPalette.blue700;
+  static const Color main = _CoreColorPalette.blue800;
+}
 
-  // Keyboard Buttons
-  static const Color keyboardNeutral = gray200;
-  static const Color keyboardDefault = blue50;
-  static const Color keyboardLight = blue100;
-  static const Color keyboardElectrical = blue400;
-  static const Color keyboardActive = blue700;
-  static const Color keyboardMain = blue800;
+// Icon-related color tokens
+class CoreIconColors {
+  static const Color dark = _CoreColorPalette.orient800;
+  static const Color grayDark = _CoreColorPalette.gray900;
+  static const Color grayMid = _CoreColorPalette.gray500;
+  static const Color grayLight = _CoreColorPalette.gray300;
+  static const Color white = _CoreColorPalette.gray25;
+  static const Color red = _CoreColorPalette.red600;
+  static const Color green = _CoreColorPalette.green600;
+  static const Color orange = _CoreColorPalette.orange500;
+  static const Color blue = _CoreColorPalette.blue600;
+  static const Color orient = _CoreColorPalette.orient600;
+}
 
-  // Icon Colors
-  static const Color iconDark = gray900;
-  static const Color iconGrayDark = gray700;
-  static const Color iconGreyDark = gray700;
-  static const Color iconGrayMid = gray500;
-  static const Color iconGreyMid = gray500;
-  static const Color iconGrayLight = gray300;
-  static const Color iconGreyLight = gray300;
-  static const Color iconWhite = gray25;
-  static const Color iconRed = red500;
-  static const Color iconGreen = green500;
-  static const Color iconOrange = orange500;
-  static const Color iconBlue = blue500;
-  static const Color iconOrient = orient500;
+// Chip-related color tokens
+class CoreChipColors {
+  static const Color grey = _CoreColorPalette.gray100;
+  static const Color primary = _CoreColorPalette.orient50;
+  static const Color red = _CoreColorPalette.red50;
+  static const Color orange = _CoreColorPalette.orange50;
+  static const Color blue = _CoreColorPalette.blue50;
+  static const Color green = _CoreColorPalette.green50;
+}
 
-  // Chart Surface
-  static const Color chartGray = gray300;
-  static const Color chartPrimary = orient300;
-  static const Color chartRed = red300;
-  static const Color chartOrange = orange300;
-  static const Color chartBlue = blue300;
-  static const Color chartGreen = green300;
+// Button-related color tokens
+class CoreButtonColors {
+  static const Color surface = _CoreColorPalette.orient800;
+  static const Color hover = _CoreColorPalette.orient700;
+  static const Color disable = _CoreColorPalette.gray300;
+  static const Color press = _CoreColorPalette.orient600;
+}
 
-  // Alerts and Toast
-  static const Color alertRed = red100;
-  static const Color alertOrange = orange100;
-  static const Color alertBlue = blue100;
-  static const Color alertGreen = green100;
-
-  // Button
-  static const Color buttonSurface = orient800;
-  static const Color buttonHover = orient600;
-  static const Color buttonFocus = orient500;
-  static const Color buttonDisable = gray300;
-  static const Color btnSurface = orient800;
-  static const Color btnHover = orient600;
-  static const Color btnPress = orient500;
-  static const Color btnDisable = gray300;
-
-  // Chip
-  static const Color chipGrey = gray100;
-  static const Color chipPrimary = orient100;
-  static const Color chipRed = red100;
-  static const Color chipOrange = orange100;
-  static const Color chipBlue = blue100;
-  static const Color chipGreen = green100;
+// Alert-related color tokens
+class CoreAlertColors {
+  static const Color red = _CoreColorPalette.red100;
+  static const Color orange = _CoreColorPalette.orange100;
+  static const Color blue = _CoreColorPalette.blue100;
+  static const Color green = _CoreColorPalette.green100;
 }
