@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.1.0  # For SVG support
 
 dev_dependencies:
   flutter_test:
@@ -19,4 +20,6 @@ dev_dependencies:
   alchemist: ^0.7.0
 
 flutter:
-  uses-material-design: true 
+  uses-material-design: true
+  assets:
+    - assets/icons/
