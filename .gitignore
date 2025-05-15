@@ -41,6 +41,7 @@ __tests__/__snapshots__
 Thumbs.db
 *.sublime-workspace
 *.sublime-project
+.dart_tool/
 
 # Logs
 *.log

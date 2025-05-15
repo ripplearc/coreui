@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:core_ui/core_ui.dart';
+import 'package:flutter/material.dart';
 
 class ShadowShowcaseScreen extends StatelessWidget {
   const ShadowShowcaseScreen({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Extra Small (xs)',
               description: 'Blur: 2px, Y-offset: 1px',
-              shadowType: CoreShadows.xs,
+              shadowType: CoreShadows.extraSmall,
             ),
             const SizedBox(height: 32),
 
@@ -36,7 +36,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Small (sm)',
               description: 'Blur: 4px, Y-offset: 2px',
-              shadowType: CoreShadows.sm,
+              shadowType: CoreShadows.small,
             ),
             const SizedBox(height: 32),
 
@@ -45,7 +45,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Medium (md)',
               description: 'Blur: 8px, Y-offset: 4px',
-              shadowType: CoreShadows.md,
+              shadowType: CoreShadows.medium,
             ),
             const SizedBox(height: 32),
 
@@ -54,7 +54,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Large (lg)',
               description: 'Blur: 12px, Y-offset: 6px',
-              shadowType: CoreShadows.lg,
+              shadowType: CoreShadows.large,
             ),
             const SizedBox(height: 32),
 
@@ -63,7 +63,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Extra Large (xl)',
               description: 'Blur: 16px, Y-offset: 8px',
-              shadowType: CoreShadows.xl,
+              shadowType: CoreShadows.extraLarge,
             ),
             const SizedBox(height: 32),
 
@@ -72,7 +72,7 @@ class ShadowShowcaseScreen extends StatelessWidget {
               context,
               title: 'Double Extra Large (2xl)',
               description: 'Blur: 24px, Y-offset: 12px',
-              shadowType: CoreShadows.xxl,
+              shadowType: CoreShadows.doubleExtraLarge,
             ),
             const SizedBox(height: 32),
 

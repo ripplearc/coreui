@@ -1,89 +1,109 @@
+import 'package:core_ui/src/theme/typography_extension.dart';
 import 'package:flutter/material.dart';
+
 import 'color_tokens.dart';
-import 'typography.dart';
+import 'theme_extensions.dart';
 
 class CoreTheme {
-  // Create a single ThemeData instance to be used for both light and dark themes
-  static ThemeData _createThemeData() {
-    return ThemeData(
-      // Shadows
-      shadowColor: CoreColorTokens.gray900,
+  static AppColorsExtension _getAppColors() {
+    return const AppColorsExtension(
+      // Text Colors
+      textHeadline: CoreTextColors.headline,
+      textDark: CoreTextColors.dark,
+      textBody: CoreTextColors.body,
+      textDisable: CoreTextColors.disable,
+      textInverse: CoreTextColors.inverse,
+      textLink: CoreTextColors.link,
+      textInfo: CoreTextColors.info,
+      textWarning: CoreTextColors.warning,
+      textError: CoreTextColors.error,
+      textSuccess: CoreTextColors.success,
 
-      // Material theme with shadows
-      materialTapTargetSize: MaterialTapTargetSize.padded,
+      // Background Colors
+      pageBackground: CoreBackgroundColors.pageBackground,
+      backgroundGrayLight: CoreBackgroundColors.backgroundGrayLight,
+      backgroundGrayMid: CoreBackgroundColors.backgroundGrayMid,
+      backgroundBlueLight: CoreBackgroundColors.backgroundBlueLight,
+      backgroundBlueMid: CoreBackgroundColors.backgroundBlueMid,
+      backgroundGreenLight: CoreBackgroundColors.backgroundGreenLight,
+      backgroundGreenMid: CoreBackgroundColors.backgroundGreenMid,
+      backgroundRedLight: CoreBackgroundColors.backgroundRedLight,
+      backgroundRedMid: CoreBackgroundColors.backgroundRedMid,
+      backgroundOrangeLight: CoreBackgroundColors.backgroundOrangeLight,
+      backgroundOrangeMid: CoreBackgroundColors.backgroundOrangeMid,
+      backgroundDarkGray: CoreBackgroundColors.backgroundDarkGray,
+      backgroundDarkOrient: CoreBackgroundColors.backgroundDarkOrient,
+      orientLight: CoreBackgroundColors.backgroundOrientLight,
+      orientMid: CoreBackgroundColors.backgroundOrientMid,
 
-      // Typography
-      textTheme: TextTheme(
-        // Headline styles
-        headlineLarge: CoreTypography.headlineLargeRegular(),
-        headlineMedium: CoreTypography.headlineMediumRegular(),
-        headlineSmall: CoreTypography.titleLargeRegular(),
+      // Border Colors
+      lineLight: CoreBorderColors.lineLight,
+      lineMid: CoreBorderColors.lineMid,
+      lineDarkOutline: CoreBorderColors.lineDarkOutline,
+      lineHighlight: CoreBorderColors.lineHighlight,
+      outlineHover: CoreBorderColors.outlineHover,
+      outlineFocus: CoreBorderColors.outlineFocus,
 
-        // Title styles
-        titleLarge: CoreTypography.titleLargeRegular(),
-        titleMedium: CoreTypography.titleMediumRegular(),
-        titleSmall: CoreTypography.bodyLargeRegular(),
+      // Status Colors
+      statusError: CoreStatusColors.error,
+      statusSuccess: CoreStatusColors.success,
 
-        // Body styles
-        bodyLarge: CoreTypography.bodyLargeRegular(),
-        bodyMedium: CoreTypography.bodyMediumRegular(),
-        bodySmall: CoreTypography.bodySmallRegular(),
+      // Button Colors
+      buttonSurface: CoreButtonColors.surface,
+      buttonHover: CoreButtonColors.hover,
+      buttonDisable: CoreButtonColors.disable,
+      buttonPress: CoreButtonColors.press,
 
-        // Label styles
-        labelLarge: CoreTypography.bodyLargeRegular(),
-        labelMedium: CoreTypography.bodyMediumRegular(),
-        labelSmall: CoreTypography.bodySmallRegular(),
+      // Icon Colors
+      iconDark: CoreIconColors.dark,
+      iconGrayDark: CoreIconColors.grayDark,
+      iconGrayMid: CoreIconColors.grayMid,
+      iconGrayLight: CoreIconColors.grayLight,
+      iconWhite: CoreIconColors.white,
+      iconRed: CoreIconColors.red,
+      iconGreen: CoreIconColors.green,
+      iconOrange: CoreIconColors.orange,
+      iconBlue: CoreIconColors.blue,
+      iconOrient: CoreIconColors.orient,
 
-        // Display styles
-        displayLarge: CoreTypography.headlineLargeSemiBold(),
-        displayMedium: CoreTypography.headlineMediumSemiBold(),
-        displaySmall: CoreTypography.titleLargeSemiBold(),
-      ),
+      // Chip Colors
+      chipGrey: CoreChipColors.grey,
+      chipPrimary: CoreChipColors.primary,
+      chipRed: CoreChipColors.red,
+      chipOrange: CoreChipColors.orange,
+      chipBlue: CoreChipColors.blue,
+      chipGreen: CoreChipColors.green,
 
-      colorScheme: const ColorScheme.light(
-        // Primary
-        primary: CoreColorTokens.orient600,
-        onPrimary: CoreColorTokens.gray25,
-        primaryContainer: CoreColorTokens.orient100,
-        onPrimaryContainer: CoreColorTokens.orient900,
+      // Alert Colors
+      alertRed: CoreAlertColors.red,
+      alertOrange: CoreAlertColors.orange,
+      alertBlue: CoreAlertColors.blue,
+      alertGreen: CoreAlertColors.green,
 
-        // Secondary
-        secondary: CoreColorTokens.blue600,
-        onSecondary: CoreColorTokens.gray25,
-        secondaryContainer: CoreColorTokens.blue100,
-        onSecondaryContainer: CoreColorTokens.blue900,
-
-        // Error
-        error: CoreColorTokens.red600,
-        onError: CoreColorTokens.gray25,
-        errorContainer: CoreColorTokens.red100,
-        onErrorContainer: CoreColorTokens.red900,
-
-        // Background
-        surface: CoreColorTokens.pageBg,
-        onSurface: CoreColorTokens.textBody,
-
-        // Surface Variant
-        onSurfaceVariant: CoreColorTokens.textBody,
-        outline: CoreColorTokens.lineMid,
-        outlineVariant: CoreColorTokens.lineLight,
-
-        // Other
-        inverseSurface: CoreColorTokens.darkGrey,
-        onInverseSurface: CoreColorTokens.textInverse,
-        inversePrimary: CoreColorTokens.orient200,
-      ),
+      // Keyboard Colors
+      keyboardNumbers: CoreKeyboardColors.numbers,
+      keyboardCalculate: CoreKeyboardColors.calculate,
+      keyboardUnits: CoreKeyboardColors.units,
+      keyboardFunctions: CoreKeyboardColors.functions,
+      keyboardActions: CoreKeyboardColors.actions,
+      keyboardMain: CoreKeyboardColors.main,
+      tabsHighlight: CoreBorderColors.tabsHighlight,
     );
   }
 
-  // Light theme
-  static ThemeData light() {
-    return _createThemeData();
-  }
+  static ThemeData light() => _buildTheme(isDark: false);
 
-  // Dark theme (currently same as light theme)
-  // Update when dark mode will be implemented
-  static ThemeData dark() {
-    return _createThemeData(); // Using same theme as light for now
+  static ThemeData dark() => _buildTheme(isDark: true); // Future implementation
+
+  static ThemeData _buildTheme({required bool isDark}) {
+    return ThemeData(
+      fontFamily: 'IBMPlexSansHebrew',
+      package: 'core_ui', //It's necessary for the assets.
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      extensions: [
+        _getAppColors(),
+        TypographyExtension.create(),
+      ],
+    );
   }
 }
