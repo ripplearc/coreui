@@ -34,6 +34,7 @@ __tests__/__snapshots__
 
 # IDE & Editors
 .idea/
+.dart_tool/
 .vscode/
 *.swp
 *.swo
@@ -60,7 +61,6 @@ tsconfig.tsbuildinfo
 .stylelintcache
 
 # Misc
-.DS_Store
 *.pem
 .env.local
 .env.development.local
