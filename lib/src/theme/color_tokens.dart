@@ -162,7 +162,7 @@ class CoreIconColors {
 
 // Chip-related color tokens
 class CoreChipColors {
-  static const Color grey = _CoreColorPalette.gray100;
+  static const Color gray = _CoreColorPalette.gray100;
   static const Color primary = _CoreColorPalette.orient50;
   static const Color red = _CoreColorPalette.red50;
   static const Color orange = _CoreColorPalette.orange50;

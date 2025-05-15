@@ -66,7 +66,7 @@ class CoreTheme {
       iconOrient: CoreIconColors.orient,
 
       // Chip Colors
-      chipGrey: CoreChipColors.grey,
+      chipGrey: CoreChipColors.gray,
       chipPrimary: CoreChipColors.primary,
       chipRed: CoreChipColors.red,
       chipOrange: CoreChipColors.orange,
