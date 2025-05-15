@@ -1,3 +1,4 @@
+import 'package:core_ui/src/theme/typography_extension.dart';
 import 'package:flutter/material.dart';
 
 import 'color_tokens.dart';
@@ -90,16 +91,19 @@ class CoreTheme {
     );
   }
 
-  static ThemeData light() {
-    return ThemeData(
-      extensions: [_getAppColors()],
-    );
-  }
+  static ThemeData light() => _buildTheme(isDark: false);
 
-  //Update when dark mode will be implemented.
-  static ThemeData dark() {
+  static ThemeData dark() => _buildTheme(isDark: true); // Future implementation
+
+  static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
-      extensions: [_getAppColors()],
+      fontFamily: 'IBMPlexSansHebrew',
+      package: 'core_ui', //It's necessary for the assets.
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      extensions: [
+        _getAppColors(),
+        TypographyExtension.create(),
+      ],
     );
   }
 }

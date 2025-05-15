@@ -185,3 +185,21 @@ class CoreAlertColors {
   static const Color blue = _CoreColorPalette.blue100;
   static const Color green = _CoreColorPalette.green100;
 }
+
+class CoreShadowColors {
+  static final Color shadowGrey3 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.03);
+  static final Color shadowGrey5 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.05);
+  static final Color shadowGrey6 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.06);
+  static final Color shadowGrey7 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.07);
+  static final Color shadowGrey8 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.08);
+  static final Color shadowGrey10 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.1);
+  static final Color shadowGrey18 =
+      _CoreColorPalette.gray900.withValues(alpha: 0.18);
+  static const Color shadowGrey = _CoreColorPalette.gray900;
+}
