@@ -79,3 +79,10 @@ tsconfig.tsbuildinfo
 
 # Debug
 debug.log 
+.dart_tool/package_config.json
+.dart_tool/extension_discovery/vs_code.json
+.idea/workspace.xml
+.idea/libraries/Dart_Packages.xml
+example/pubspec.lock
+
+pubspec.lock

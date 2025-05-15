@@ -1,6 +1,8 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:example/screens/color_showcase_screen.dart';
+import 'package:example/screens/icon_showcase_screen.dart';
 import 'package:example/screens/shadow_showcase_screen.dart';
+import 'package:example/screens/spacing_showcase_screen.dart';
 import 'package:example/screens/typography_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +30,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    print('Font family from context: ${textTheme.bodyLarge?.fontFamily}');
-    // print('Font family from context (theme): ${Theme.of(context).fontFamily}');
 
     return Scaffold(
       appBar: AppBar(
@@ -61,6 +61,18 @@ class HomeScreen extends StatelessWidget {
               context,
               'Typography Showcase',
               const TypographyShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Spacing Showcase',
+              const SpacingShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Icons Showcase',
+              const IconShowcaseScreen(),
             ),
           ],
         ),
