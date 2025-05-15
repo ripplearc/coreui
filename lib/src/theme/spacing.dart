@@ -2,8 +2,10 @@
 ///
 /// The spacing system is based on a 4px grid (0.25rem with 16px base)
 /// Each value is named by its multiplier of the base unit
-/// https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=7-2716&t=zZdz9haSNp4XklEm-4
+/// @see https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=7-2716&t=zZdz9haSNp4XklEm-4
 class CoreSpacing {
+  CoreSpacing._();
+
   // Base unit (0.25rem = 4px with 16px base)
   static const double space1 = 4.0; // 0.25rem = 4px
   static const double space2 = 8.0; // 0.5rem = 8px
