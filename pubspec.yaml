@@ -1,0 +1,22 @@
+name: core_ui
+description: A Flutter design system package with design tokens and basic components.
+version: 0.0.1
+homepage: https://github.com/yourusername/core_ui
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  golden_toolkit: ^0.15.0
+  alchemist: ^0.7.0
+
+flutter:
+  uses-material-design: true 
