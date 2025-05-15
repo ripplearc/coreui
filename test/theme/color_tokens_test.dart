@@ -183,7 +183,7 @@ void main() {
         _buildColorGrid(
           'Chip Colors',
           [
-            MapEntry('grey', CoreChipColors.grey),
+            MapEntry('grey', CoreChipColors.gray),
             MapEntry('primary', CoreChipColors.primary),
             MapEntry('red', CoreChipColors.red),
             MapEntry('orange', CoreChipColors.orange),
