@@ -3,28 +3,28 @@ class CoreSvgIcons {
   static const String _basePath = 'packages/core_ui/assets/icons';
 
   /// Brand Icons
-  static const String microsoft = '$_basePath/Ic_microsoft.svg';
-  static const String dropbox = '$_basePath/Ic_dropbox.svg';
-  static const String googleDrive = '$_basePath/Ic_drive.svg';
-  static const String google = '$_basePath/Ic_Google.svg';
-  static const String onedrive = '$_basePath/Ic_onedrive.svg';
+  static const String microsoft = '$_basePath/microsoft.svg';
+  static const String dropbox = '$_basePath/dropbox.svg';
+  static const String googleDrive = '$_basePath/drive.svg';
+  static const String google = '$_basePath/google.svg';
+  static const String onedrive = '$_basePath/onedrive.svg';
 
   /// Math Icons
-  static const String divide = '$_basePath/Ic_divide.svg';
-  static const String plusMinus = '$_basePath/Ic_Pluse_Minus.svg';
-  static const String slash = '$_basePath/Ic_Slash.svg';
+  static const String divide = '$_basePath/divide.svg';
+  static const String plusMinus = '$_basePath/plus_minus.svg';
+  static const String slash = '$_basePath/slash.svg';
 
   /// User Interface Icons
-  static const String placeholder = '$_basePath/Ic_Placeholder.svg';
-  static const String members = '$_basePath/Ic_Members.svg';
-  static const String phone = '$_basePath/Ic_Phone.svg';
-  static const String rename = '$_basePath/Ic_Rename.svg';
-  static const String delete = '$_basePath/Ic_Delete.svg';
+  static const String placeholder = '$_basePath/placeholder.svg';
+  static const String members = '$_basePath/members.svg';
+  static const String phone = '$_basePath/phone.svg';
+  static const String rename = '$_basePath/rename.svg';
+  static const String delete = '$_basePath/delete.svg';
 
   /// Calculation Icons
-  static const String calculator = '$_basePath/Ic_Calcualtor.svg';
-  static const String calculate = '$_basePath/Ic_Calculate.svg';
-  static const String cost = '$_basePath/Ic_Cost.svg';
+  static const String calculator = '$_basePath/calculator.svg';
+  static const String calculate = '$_basePath/calculate.svg';
+  static const String cost = '$_basePath/cost.svg';
 
   /// Layout Icons
   static const String grid = '$_basePath/grid.svg';
