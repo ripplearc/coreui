@@ -30,8 +30,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    print('Font family from context: ${textTheme.bodyLarge?.fontFamily}');
-    // print('Font family from context (theme): ${Theme.of(context).fontFamily}');
 
     return Scaffold(
       appBar: AppBar(
@@ -65,28 +63,16 @@ class HomeScreen extends StatelessWidget {
               const TypographyShowcaseScreen(),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SpacingShowcaseScreen(),
-                  ),
-                );
-              },
-              child: const Text('Spacing Showcase'),
+            _buildShowcaseButton(
+              context,
+              'Spacing Showcase',
+              const SpacingShowcaseScreen(),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const IconShowcaseScreen(),
-                  ),
-                );
-              },
-              child: const Text('Icon Showcase'),
+            _buildShowcaseButton(
+              context,
+              'Icons Showcase',
+              const IconShowcaseScreen(),
             ),
           ],
         ),

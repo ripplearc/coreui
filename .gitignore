@@ -60,7 +60,6 @@ tsconfig.tsbuildinfo
 .stylelintcache
 
 # Misc
-.DS_Store
 *.pem
 .env.local
 .env.development.local
@@ -84,3 +83,5 @@ debug.log
 .idea/workspace.xml
 .idea/libraries/Dart_Packages.xml
 example/pubspec.lock
+
+pubspec.lock
