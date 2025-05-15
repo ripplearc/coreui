@@ -26,6 +26,7 @@ yarn.lock
 .nyc_output
 *.lcov
 __tests__/__snapshots__
+/test/**/goldens/
 
 # Development
 .env

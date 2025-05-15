@@ -1,0 +1,34 @@
+name: Golden Tests
+
+on: [push]
+
+jobs:
+  golden_test:
+    name: Run Golden Tests
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: 'stable'
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Run Golden Tests with Update
+        run: flutter test --update-goldens test/theme/color_tokens_test.dart
+      
+      - name: Upload Golden Images
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: golden-images
+          path: test/**/goldens/*.png
+          
+      - name: Run Golden Tests without Update (Verification)
+        if: success()
+        run: flutter test test/theme/color_tokens_test.dart 
