@@ -3,6 +3,7 @@ import 'material_icons.dart';
 import 'svg_icons.dart';
 
 /// Main icon class that combines both Material and SVG icons
+/// https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=4-173&t=zZdz9haSNp4XklEm-4
 class CoreIcons {
   // Brand & Services (SVG)
   static const microsoft = CoreIconData.svg(CoreSvgIcons.microsoft);
