@@ -9,3 +9,4 @@ export 'src/theme/spacing.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_extensions.dart';
 export 'src/theme/typography.dart';
+export 'src/theme/typography_extension.dart';

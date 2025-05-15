@@ -1,57 +1,43 @@
 import 'package:flutter/material.dart';
+
 import 'color_tokens.dart';
 
 /// Core Shadows class that defines shadow styles for the application
+/// https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=4-84&t=zZdz9haSNp4XklEm-4
 class CoreShadows {
-  // Shadow colors
-  static final Color _shadowColor10 =
-      CoreColorTokens.gray900.withValues(alpha: 0.1);
-  static final Color _shadowColor8 =
-      CoreColorTokens.gray900.withValues(alpha: 0.08);
-  static final Color _shadowColor5 =
-      CoreColorTokens.gray900.withValues(alpha: 0.05);
-  static final Color _shadowColor6 =
-      CoreColorTokens.gray900.withValues(alpha: 0.06);
-  static final Color _shadowColor3 =
-      CoreColorTokens.gray900.withValues(alpha: 0.03);
-  static final Color _shadowColor18 =
-      CoreColorTokens.gray900.withValues(alpha: 0.18);
-  static final Color _shadowColor7 =
-      CoreColorTokens.gray900.withValues(alpha: 0.07);
-
   // Extra Small Shadow (xs)
-  static List<BoxShadow> xs = [
+  static List<BoxShadow> extraSmall = [
     BoxShadow(
-      color: _shadowColor5,
+      color: CoreShadowColors.shadowGrey5,
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
   ];
 
   // Small Shadow (sm)
-  static List<BoxShadow> sm = [
+  static List<BoxShadow> small = [
     BoxShadow(
-      color: _shadowColor5,
+      color: CoreShadowColors.shadowGrey5,
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
     BoxShadow(
-      color: _shadowColor6,
+      color: CoreShadowColors.shadowGrey6,
       blurRadius: 3,
       offset: const Offset(0, 1),
     ),
   ];
 
   // Medium Shadow (md)
-  static List<BoxShadow> md = [
+  static List<BoxShadow> medium = [
     BoxShadow(
-      color: _shadowColor6,
+      color: CoreShadowColors.shadowGrey6,
       blurRadius: 4,
       spreadRadius: -2,
       offset: const Offset(0, 2),
     ),
     BoxShadow(
-      color: _shadowColor10,
+      color: CoreShadowColors.shadowGrey10,
       blurRadius: 8,
       spreadRadius: -2,
       offset: const Offset(0, 4),
@@ -59,15 +45,15 @@ class CoreShadows {
   ];
 
   // Large Shadow (lg)
-  static List<BoxShadow> lg = [
+  static List<BoxShadow> large = [
     BoxShadow(
-      color: _shadowColor3,
+      color: CoreShadowColors.shadowGrey3,
       blurRadius: 6,
       spreadRadius: -2,
       offset: const Offset(0, 4),
     ),
     BoxShadow(
-      color: _shadowColor8,
+      color: CoreShadowColors.shadowGrey8,
       blurRadius: 16,
       spreadRadius: -4,
       offset: const Offset(0, 12),
@@ -75,15 +61,15 @@ class CoreShadows {
   ];
 
   // Extra Large Shadow (xl)
-  static List<BoxShadow> xl = [
+  static List<BoxShadow> extraLarge = [
     BoxShadow(
-      color: _shadowColor3,
+      color: CoreShadowColors.shadowGrey3,
       blurRadius: 8,
       spreadRadius: -4,
       offset: const Offset(0, 8),
     ),
     BoxShadow(
-      color: _shadowColor8,
+      color: CoreShadowColors.shadowGrey8,
       blurRadius: 24,
       spreadRadius: -4,
       offset: const Offset(0, 20),
@@ -91,9 +77,9 @@ class CoreShadows {
   ];
 
   // Double Extra Large Shadow (2xl)
-  static List<BoxShadow> xxl = [
+  static List<BoxShadow> doubleExtraLarge = [
     BoxShadow(
-      color: _shadowColor18,
+      color: CoreShadowColors.shadowGrey18,
       blurRadius: 48,
       spreadRadius: -12,
       offset: const Offset(0, 24),
@@ -102,12 +88,12 @@ class CoreShadows {
 
   static List<BoxShadow> sticky = [
     BoxShadow(
-      color: _shadowColor6,
+      color: CoreShadowColors.shadowGrey6,
       blurRadius: 4,
       offset: const Offset(0, -2),
     ),
     BoxShadow(
-      color: _shadowColor7,
+      color: CoreShadowColors.shadowGrey7,
       blurRadius: 8,
       offset: const Offset(0, -4),
     ),

@@ -1,9 +1,8 @@
+import 'package:core_ui/src/theme/typography_extension.dart';
 import 'package:flutter/material.dart';
 
 import 'color_tokens.dart';
-import 'shadows.dart';
 import 'theme_extensions.dart';
-import 'typography.dart';
 
 class CoreTheme {
   static AppColorsExtension _getAppColors() {
@@ -92,82 +91,19 @@ class CoreTheme {
     );
   }
 
-  static ThemeData light() {
+  static ThemeData light() => _buildTheme(isDark: false);
+
+  static ThemeData dark() => _buildTheme(isDark: true); // Future implementation
+
+  static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
-      // Shadows
-      shadowColor: CoreColorTokens.gray900,
-
-      // Material theme with shadows
+      fontFamily: 'IBMPlexSansHebrew',
+      package: 'core_ui', //It's necessary for the assets.
       materialTapTargetSize: MaterialTapTargetSize.padded,
-
-      // Typography
-      textTheme: TextTheme(
-        // Headline styles
-        headlineLarge: CoreTypography.headlineLargeRegular(),
-        headlineMedium: CoreTypography.headlineMediumRegular(),
-        headlineSmall: CoreTypography.titleLargeRegular(),
-
-        // Title styles
-        titleLarge: CoreTypography.titleLargeRegular(),
-        titleMedium: CoreTypography.titleMediumRegular(),
-        titleSmall: CoreTypography.bodyLargeRegular(),
-
-        // Body styles
-        bodyLarge: CoreTypography.bodyLargeRegular(),
-        bodyMedium: CoreTypography.bodyMediumRegular(),
-        bodySmall: CoreTypography.bodySmallRegular(),
-
-        // Label styles
-        labelLarge: CoreTypography.bodyLargeRegular(),
-        labelMedium: CoreTypography.bodyMediumRegular(),
-        labelSmall: CoreTypography.bodySmallRegular(),
-
-        // Display styles
-        displayLarge: CoreTypography.headlineLargeSemiBold(),
-        displayMedium: CoreTypography.headlineMediumSemiBold(),
-        displaySmall: CoreTypography.titleLargeSemiBold(),
-      ),
-      extensions: [_getAppColors()],
-    );
-  }
-
-  //Update when dark mode will be implemented.
-  static ThemeData dark() {
-    return ThemeData(
-      // Shadows
-      shadowColor: CoreColorTokens.gray900,
-
-      // Material theme with shadows
-      materialTapTargetSize: MaterialTapTargetSize.padded,
-
-      // Typography
-      textTheme: TextTheme(
-        // Headline styles
-        headlineLarge: CoreTypography.headlineLargeRegular(),
-        headlineMedium: CoreTypography.headlineMediumRegular(),
-        headlineSmall: CoreTypography.titleLargeRegular(),
-
-        // Title styles
-        titleLarge: CoreTypography.titleLargeRegular(),
-        titleMedium: CoreTypography.titleMediumRegular(),
-        titleSmall: CoreTypography.bodyLargeRegular(),
-
-        // Body styles
-        bodyLarge: CoreTypography.bodyLargeRegular(),
-        bodyMedium: CoreTypography.bodyMediumRegular(),
-        bodySmall: CoreTypography.bodySmallRegular(),
-
-        // Label styles
-        labelLarge: CoreTypography.bodyLargeRegular(),
-        labelMedium: CoreTypography.bodyMediumRegular(),
-        labelSmall: CoreTypography.bodySmallRegular(),
-
-        // Display styles
-        displayLarge: CoreTypography.headlineLargeSemiBold(),
-        displayMedium: CoreTypography.headlineMediumSemiBold(),
-        displaySmall: CoreTypography.titleLargeSemiBold(),
-      ),
-      extensions: [_getAppColors()],
+      extensions: [
+        _getAppColors(),
+        TypographyExtension.create(),
+      ],
     );
   }
 }
