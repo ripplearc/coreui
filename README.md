@@ -56,7 +56,7 @@ Add this package to your pubspec.yaml:
 dependencies:
   core_ui:
     git:
-      url: https://github.com/yourusername/core_ui.git
+      url: https://github.com/ripplearc/coreui.git
       ref: main
 ```
 
