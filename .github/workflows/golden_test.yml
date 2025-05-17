@@ -20,7 +20,9 @@ jobs:
         run: flutter pub get
 
       - name: Generate Golden Images
-        run: flutter test --update-goldens test/theme/color_tokens_test.dart
+        run: |
+          # flutter test --update-goldens test/theme/color_tokens_test.dart
+          flutter test --update-goldens test/theme/shadows_test.dart
 
       - name: Upload Golden Images
         if: success()
