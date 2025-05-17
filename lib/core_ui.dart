@@ -1,5 +1,6 @@
 library core_ui;
 
+export 'src/components/alerts/toast.dart';
 // Component exports
 export 'src/components/buttons/primary_button.dart';
 export 'src/components/core_icon.dart';
