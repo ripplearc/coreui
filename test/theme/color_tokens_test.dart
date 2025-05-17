@@ -7,6 +7,22 @@ void main() {
   setUpAll(() async {
     await loadAppFonts();
   });
+  String _separateName(String name) {
+    // Insert a space before each uppercase letter
+    String separatedName = name.replaceAllMapped(
+      RegExp(r'([A-Z])'),
+      (Match match) => ' ${match.group(1)}',
+    );
+
+    // Capitalize the first letter of the result
+    separatedName = separatedName.trim();
+    if (separatedName.isNotEmpty) {
+      separatedName =
+          separatedName[0].toUpperCase() + separatedName.substring(1);
+    }
+
+    return separatedName;
+  }
 
   Widget _buildColorSwatch(String name, Color color) {
     return SizedBox(
@@ -25,7 +41,7 @@ void main() {
           ),
           const SizedBox(height: 8),
           Text(
-            name,
+            _separateName(name),
             style: const TextStyle(fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 2,
