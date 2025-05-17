@@ -28,4 +28,7 @@ class CoreSvgIcons {
   static const String cost = '$_basePath/cost.svg';
   static const String tabDuplicate = '$_basePath/tab_duplicate.svg';
   static const String editDocument = '$_basePath/edit_document.svg';
+  static const String calendar = '$_basePath/calendar.svg';
+  static const String tag = '$_basePath/tag.svg';
+  static const String docs = '$_basePath/docs.svg';
 }

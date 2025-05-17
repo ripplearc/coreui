@@ -62,58 +62,44 @@ class CoreMaterialIcons {
   // User Icons
   static const person = CoreIconData.material(Icons.person_outlined);
   static const people = CoreIconData.material(Icons.people_outlined);
-  static const personAdd = CoreIconData.material(Icons.person_add_outlined);
+  static const personAdd = CoreIconData.material(Icons.person_add_alt);
 
   // Security Icons
   static const lock = CoreIconData.material(Icons.lock_outlined);
   static const unlock = CoreIconData.material(Icons.lock_open_outlined);
 
   // Date & Time Icons
-  static const calendar = CoreIconData.material(Icons.date_range);
   static const history = CoreIconData.material(Icons.history);
 
   // Missed Icons
-  static const percent = CoreIconData.material(Icons.percent_outlined); //New
-  static const cross = CoreIconData.material(Icons.close); //New
-  static const link = CoreIconData.material(Icons.link); //New
+  static const percent = CoreIconData.material(Icons.percent_outlined);
+  static const cross = CoreIconData.material(Icons.close);
+  static const link = CoreIconData.material(Icons.link);
   static const checkBlank =
-      CoreIconData.material(Icons.check_box_outline_blank_outlined); //New
-  static const check = CoreIconData.material(Icons.check_box_outlined); //New
-  static const favorite =
-      CoreIconData.material(Icons.favorite_border_outlined); //New
-  static const eye = CoreIconData.material(Icons.visibility_outlined); //New
-  static const eyeOff =
-      CoreIconData.material(Icons.visibility_off_outlined); //New
-  static const apple = CoreIconData.material(Icons.apple); //New
-  static const mathOperations =
-      CoreIconData.material(Icons.calculate_outlined); //New
-  static const fileSearch =
-      CoreIconData.material(Icons.find_in_page_outlined); //New
-  static const filledFile =
-      CoreIconData.material(Icons.description_outlined); //New
+      CoreIconData.material(Icons.check_box_outline_blank_outlined);
+  static const check = CoreIconData.material(Icons.check_box_outlined);
+  static const favorite = CoreIconData.material(Icons.favorite_border_outlined);
+  static const eye = CoreIconData.material(Icons.visibility_outlined);
+  static const eyeOff = CoreIconData.material(Icons.visibility_off_outlined);
+  static const apple = CoreIconData.material(Icons.apple);
+  static const mathOperations = CoreIconData.material(Icons.calculate_outlined);
+  static const fileSearch = CoreIconData.material(Icons.find_in_page_outlined);
   static const emptyFile =
-      CoreIconData.material(Icons.insert_drive_file_outlined); //New
-  static const addComment =
-      CoreIconData.material(Icons.add_comment_outlined); //New
+      CoreIconData.material(Icons.insert_drive_file_outlined);
+  static const addComment = CoreIconData.material(Icons.add_comment_outlined);
   static const radioChecked =
-      CoreIconData.material(Icons.radio_button_checked_rounded); //New
-  static const radio =
-      CoreIconData.material(Icons.radio_button_off_rounded); //New
-  static const dollar =
-      CoreIconData.material(Icons.attach_money_outlined); //New
+      CoreIconData.material(Icons.radio_button_checked_rounded);
+  static const radio = CoreIconData.material(Icons.radio_button_off_rounded);
+  static const dollar = CoreIconData.material(Icons.attach_money_outlined);
   static const indeterminateCheckBox =
-      CoreIconData.material(Icons.indeterminate_check_box_outlined); //New
-  static const cloudOff = CoreIconData.material(Icons.cloud_off_outlined); //New
-  static const play =
-      CoreIconData.material(Icons.play_circle_outline_rounded); //New
+      CoreIconData.material(Icons.indeterminate_check_box_outlined);
+  static const cloudOff = CoreIconData.material(Icons.cloud_off_outlined);
+  static const play = CoreIconData.material(Icons.play_circle_outline_rounded);
   static const cameraSwitch =
-      CoreIconData.material(Icons.cameraswitch_outlined); //New
-  static const block = CoreIconData.material(Icons.block_flipped); //New
-  static const checkMark = CoreIconData.material(Icons.check); //New
-  static const tag = CoreIconData.material(Icons.tag); //New
-  static const verified =
-      CoreIconData.material(Icons.verified_user_outlined); //New
-  static const download =
-      CoreIconData.material(Icons.file_download_outlined); //New
-  static const addFile = CoreIconData.material(Icons.note_add_outlined); //New
+      CoreIconData.material(Icons.cameraswitch_outlined);
+  static const block = CoreIconData.material(Icons.block_flipped);
+  static const checkMark = CoreIconData.material(Icons.check);
+  static const verified = CoreIconData.material(Icons.verified_user_outlined);
+  static const download = CoreIconData.material(Icons.file_download_outlined);
+  static const addFile = CoreIconData.material(Icons.note_add_outlined);
 }
