@@ -44,16 +44,6 @@ void main() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
         Wrap(
           spacing: 16,
           runSpacing: 16,
@@ -171,10 +161,10 @@ void main() {
             MapEntry('grayLight', CoreIconColors.grayLight),
             MapEntry('white', CoreIconColors.white),
             MapEntry('red', CoreIconColors.red),
-            MapEntry('green', CoreIconColors.green),
+            MapEntry('orient', CoreIconColors.orient),
             MapEntry('orange', CoreIconColors.orange),
             MapEntry('blue', CoreIconColors.blue),
-            MapEntry('orient', CoreIconColors.orient),
+            MapEntry('green', CoreIconColors.green),
           ],
         ),
       )
@@ -199,8 +189,8 @@ void main() {
           [
             MapEntry('surface', CoreButtonColors.surface),
             MapEntry('hover', CoreButtonColors.hover),
-            MapEntry('disable', CoreButtonColors.disable),
             MapEntry('press', CoreButtonColors.press),
+            MapEntry('disable', CoreButtonColors.disable),
           ],
         ),
       )
@@ -228,7 +218,6 @@ void main() {
             MapEntry('shadowGrey8', CoreShadowColors.shadowGrey8),
             MapEntry('shadowGrey10', CoreShadowColors.shadowGrey10),
             MapEntry('shadowGrey18', CoreShadowColors.shadowGrey18),
-            MapEntry('shadowGrey', CoreShadowColors.shadowGrey),
           ],
         ),
       );

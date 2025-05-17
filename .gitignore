@@ -26,7 +26,7 @@ yarn.lock
 .nyc_output
 *.lcov
 __tests__/__snapshots__
-/test/**/goldens/
+#/test/**/goldens/ # Don't ignore golden images till now
 
 # Development
 .env
