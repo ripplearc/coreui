@@ -98,8 +98,10 @@ class CoreTheme {
   static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
       fontFamily: 'IBMPlexSansHebrew',
-      package: 'core_ui', //It's necessary for the assets.
+      package: 'core_ui',
+      //It's necessary for the assets.
       materialTapTargetSize: MaterialTapTargetSize.padded,
+      primaryColor: CorePrimaryColors.primary,
       extensions: [
         _getAppColors(),
         TypographyExtension.create(),

@@ -3,6 +3,7 @@ import 'package:example/screens/color_showcase_screen.dart';
 import 'package:example/screens/icon_showcase_screen.dart';
 import 'package:example/screens/shadow_showcase_screen.dart';
 import 'package:example/screens/spacing_showcase_screen.dart';
+import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/typography_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -73,6 +74,12 @@ class HomeScreen extends StatelessWidget {
               context,
               'Icons Showcase',
               const IconShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Switches Showcase',
+              const SwitchShowcaseScreen(),
             ),
           ],
         ),

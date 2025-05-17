@@ -3,6 +3,8 @@ library core_ui;
 // Component exports
 export 'src/components/buttons/primary_button.dart';
 export 'src/components/core_icon.dart';
+export 'src/components/switches/switch.dart';
+
 // Theme exports
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';

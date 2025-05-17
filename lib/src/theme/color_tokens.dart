@@ -202,3 +202,7 @@ class CoreShadowColors {
   static final Color shadowGrey18 =
       _CoreColorPalette.gray900.withValues(alpha: 0.18);
 }
+
+class CorePrimaryColors {
+  static const Color primary = _CoreColorPalette.orient900;
+}
