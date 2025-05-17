@@ -6,6 +6,8 @@ import 'package:example/screens/spacing_showcase_screen.dart';
 import 'package:example/screens/typography_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'screens/button_showcase_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -73,6 +75,12 @@ class HomeScreen extends StatelessWidget {
               context,
               'Icons Showcase',
               const IconShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Button Showcase',
+              const ButtonShowcaseScreen(),
             ),
           ],
         ),

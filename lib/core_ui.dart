@@ -1,7 +1,7 @@
 library core_ui;
 
 // Component exports
-export 'src/components/buttons/primary_button.dart';
+export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
 // Theme exports
 export 'src/theme/color_tokens.dart';
