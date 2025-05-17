@@ -23,6 +23,7 @@ jobs:
         run: |
           # flutter test --update-goldens test/theme/color_tokens_test.dart
           flutter test --update-goldens test/theme/spacing_test.dart
+          flutter test --update-goldens test/theme/icons_test.dart
 
       - name: Upload Golden Images
         if: success()
