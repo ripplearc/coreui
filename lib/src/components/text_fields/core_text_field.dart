@@ -64,8 +64,9 @@ class CoreTextField extends StatelessWidget {
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
       style: CoreTypography.bodyLargeRegular(color: CoreTextColors.dark),
       decoration: InputDecoration(
-        filled: !enabled,
-        fillColor: CoreBackgroundColors.backgroundGrayMid,
+        filled: true,
+        fillColor:
+            !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
         labelText: label,
         prefixIcon: prefixWidget,
         suffixIcon:
@@ -130,44 +131,47 @@ class CoreTextField extends StatelessWidget {
   }
 
   Widget? _buildPhonePrefixDropdown(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      width: 100,
-      child: Row(
-        children: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: phonePrefix,
-              isDense: true,
-              icon: Padding(
-                padding: const EdgeInsetsDirectional.only(start: 4),
-                child: CoreIconWidget(
-                  icon: CoreIcons.arrowDropDown,
-                  color: CoreTextColors.headline,
-                  size: 18,
-                ),
-              ),
-              onChanged: enabled && !readOnly ? onPhonePrefixChanged : null,
-              items: phonePrefixes?.map((String prefix) {
-                return DropdownMenuItem<String>(
-                  value: prefix,
-                  child: Text(
-                    prefix,
-                    style: CoreTypography.bodyLargeRegular(
+    return IntrinsicWidth(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: phonePrefix,
+                  isDense: true,
+                  icon: Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 4),
+                    child: CoreIconWidget(
+                      icon: CoreIcons.arrowDropDown,
                       color: CoreTextColors.headline,
+                      size: 18,
                     ),
                   ),
-                );
-              }).toList(),
+                  onChanged: enabled && !readOnly ? onPhonePrefixChanged : null,
+                  items: phonePrefixes?.map((String prefix) {
+                    return DropdownMenuItem<String>(
+                      value: prefix,
+                      child: Text(
+                        prefix,
+                        style: CoreTypography.bodyLargeRegular(
+                          color: CoreTextColors.headline,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
-          ),
-          SizedBox(width: CoreSpacing.space3),
-          Container(
-            height: 20,
-            width: 1,
-            color: CoreBorderColors.lineMid,
-          ),
-        ],
+            const SizedBox(width: CoreSpacing.space3),
+            Container(
+              height: 20,
+              width: 1,
+              color: CoreBorderColors.lineMid,
+            ),
+          ],
+        ),
       ),
     );
   }
