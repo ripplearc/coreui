@@ -87,3 +87,5 @@ debug.log
 example/pubspec.lock
 
 pubspec.lock
+/review_pr.sh
+/review_result.txt
