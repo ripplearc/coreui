@@ -64,7 +64,7 @@ class IconShowcaseScreen extends StatelessWidget {
               'Actions',
               [
                 _buildIconSet('Add', CoreIcons.add),
-                _buildIconSet('Remove', CoreIcons.remove),
+                _buildIconSet('Remove', CoreIcons.minus),
                 _buildIconSet('Edit', CoreIcons.edit),
                 _buildIconSet('Delete', CoreIcons.delete),
                 _buildIconSet('Rename', CoreIcons.rename),
@@ -113,7 +113,6 @@ class IconShowcaseScreen extends StatelessWidget {
               [
                 _buildIconSet('Email', CoreIcons.email),
                 _buildIconSet('Message', CoreIcons.message),
-                _buildIconSet('Chat', CoreIcons.chat),
                 _buildIconSet('Notification', CoreIcons.notification),
                 _buildIconSet('Phone', CoreIcons.phone),
               ],

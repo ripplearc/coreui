@@ -13,6 +13,7 @@ class CoreSvgIcons {
   static const String divide = '$_basePath/divide.svg';
   static const String plusMinus = '$_basePath/plus_minus.svg';
   static const String slash = '$_basePath/slash.svg';
+  static const String cChar = '$_basePath/c.svg';
 
   /// User Interface Icons
   static const String placeholder = '$_basePath/placeholder.svg';
@@ -25,7 +26,9 @@ class CoreSvgIcons {
   static const String calculator = '$_basePath/calculator.svg';
   static const String calculate = '$_basePath/calculate.svg';
   static const String cost = '$_basePath/cost.svg';
-
-  /// Layout Icons
-  static const String grid = '$_basePath/grid.svg';
+  static const String tabDuplicate = '$_basePath/tab_duplicate.svg';
+  static const String editDocument = '$_basePath/edit_document.svg';
+  static const String calendar = '$_basePath/calendar.svg';
+  static const String tag = '$_basePath/tag.svg';
+  static const String docs = '$_basePath/docs.svg';
 }
