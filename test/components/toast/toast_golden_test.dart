@@ -15,101 +15,83 @@ void main() {
         // Toasts with title and description
         ..addScenario(
           'Error Toast with Title',
-          Container(
-            child: Toast.error(
-              title: 'Error Title',
-              description: 'This is an error message that needs attention',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.error(
+            title: 'Error Title',
+            description: 'This is an error message that needs attention',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Warning Toast with Title',
-          Container(
-            child: Toast.warning(
-              title: 'Warning Title',
-              description: 'This is a warning message to be careful about',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.warning(
+            title: 'Warning Title',
+            description: 'This is a warning message to be careful about',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Info Toast with Title',
-          Container(
-            child: Toast.info(
-              title: 'Info Title',
-              description: 'This is an informational message for you',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.info(
+            title: 'Info Title',
+            description: 'This is an informational message for you',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Success Toast with Title',
-          Container(
-            child: Toast.success(
-              title: 'Success Title',
-              description: 'This is a success message, well done!',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.success(
+            title: 'Success Title',
+            description: 'This is a success message, well done!',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         // Toasts without title (description only)
         ..addScenario(
           'Error Toast without Title',
-          Container(
-            child: Toast.error(
-              description: 'This is an error message without a title',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.error(
+            description: 'This is an error message without a title',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Warning Toast without Title',
-          Container(
-            child: Toast.warning(
-              description: 'This is a warning message without a title',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.warning(
+            description: 'This is a warning message without a title',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Info Toast without Title',
-          Container(
-            child: Toast.info(
-              description: 'This is an info message without a title',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.info(
+            description: 'This is an info message without a title',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         ..addScenario(
           'Success Toast without Title',
-          Container(
-            child: Toast.success(
-              description: 'This is a success message without a title',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.success(
+            description: 'This is a success message without a title',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         )
         // Long content handling
         ..addScenario(
           'Long Content',
-          Container(
-            child: Toast.error(
-              title:
-                  'This is a very long title that should wrap to multiple lines gracefully',
-              description:
-                  'This is an equally long description that demonstrates how the toast handles extended content without breaking the layout',
-              closeLabel: 'Close',
-              onClose: () {},
-            ),
+          Toast.error(
+            title:
+                'This is a very long title that should wrap to multiple lines gracefully',
+            description:
+                'This is an equally long description that demonstrates how the toast handles extended content without breaking the layout',
+            closeLabel: 'Close',
+            onClose: () {},
           ),
         );
 
