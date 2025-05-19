@@ -3,7 +3,7 @@ library core_ui;
 // Component exports
 export 'src/components/buttons/primary_button.dart';
 export 'src/components/core_icon.dart';
-export 'src/components/text_fields/core_text_field.dart';
+export 'src/components/text_fields/text_field.dart';
 // Theme exports
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';

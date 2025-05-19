@@ -16,7 +16,7 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
   String? _validationError;
   String _phonePrefix = '+1';
 
-  // List of phone prefixes to show in the dropdown
+  // List of phone prefixes to show in the bottom sheet
   final List<String> _phonePrefixes = [
     '+1', // USA/Canada
     '+44', // UK
@@ -103,8 +103,6 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
             const SizedBox(height: 8),
             const CoreTextField(
               label: 'Label',
-              // prefix: Icon(Icons.search),
-              // suffix: Icon(Icons.visibility),
               helperText: 'Helper text',
             ),
             const SizedBox(height: 24),

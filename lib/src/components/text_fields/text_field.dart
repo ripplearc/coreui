@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../core_ui.dart';
+import '../../theme/color_tokens.dart';
+import '../../theme/icons/core_icons.dart';
+import '../../theme/spacing.dart';
+import '../../theme/typography.dart';
+import '../core_icon.dart';
 
 class CoreTextField extends StatelessWidget {
   final String? label;
@@ -22,34 +26,35 @@ class CoreTextField extends StatelessWidget {
   final void Function(String?)? onPhonePrefixChanged;
   final List<String>? phonePrefixes;
 
-  const CoreTextField(
-      {super.key,
-      this.label,
-      this.helperText,
-      this.errorText,
-      this.obscureText = false,
-      this.controller,
-      this.onChanged,
-      this.keyboardType,
-      this.enabled = true,
-      this.validator,
-      this.focusNode,
-      this.initialValue,
-      this.readOnly = false,
-      this.prefix,
-      this.suffix,
-      this.isPhoneNumber = false,
-      this.phonePrefix = '+1',
-      this.onPhonePrefixChanged,
-      this.phonePrefixes});
+  const CoreTextField({
+    super.key,
+    this.label,
+    this.helperText,
+    this.errorText,
+    this.obscureText = false,
+    this.controller,
+    this.onChanged,
+    this.keyboardType,
+    this.enabled = true,
+    this.validator,
+    this.focusNode,
+    this.initialValue,
+    this.readOnly = false,
+    this.prefix,
+    this.suffix,
+    this.isPhoneNumber = false,
+    this.phonePrefix = '+1',
+    this.onPhonePrefixChanged,
+    this.phonePrefixes,
+  });
 
   @override
   Widget build(BuildContext context) {
     Widget? prefixWidget = prefix;
 
-    // Create phone number prefix dropdown if isPhoneNumber is true
+    // Create phone number prefix button if isPhoneNumber is true
     if (isPhoneNumber) {
-      prefixWidget = _buildPhonePrefixDropdown(context);
+      prefixWidget = _buildPhonePrefixButton(context);
     }
 
     return TextFormField(
@@ -65,6 +70,8 @@ class CoreTextField extends StatelessWidget {
       style: CoreTypography.bodyLargeRegular(color: CoreTextColors.dark),
       decoration: InputDecoration(
         filled: true,
+        hoverColor:
+            !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
         fillColor:
             !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
         labelText: label,
@@ -130,38 +137,31 @@ class CoreTextField extends StatelessWidget {
     );
   }
 
-  Widget? _buildPhonePrefixDropdown(BuildContext context) {
+  Widget? _buildPhonePrefixButton(BuildContext context) {
     return IntrinsicWidth(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
         child: Row(
           children: [
-            Expanded(
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: phonePrefix,
-                  isDense: true,
-                  icon: Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 4),
-                    child: CoreIconWidget(
-                      icon: CoreIcons.arrowDropDown,
+            TextButton(
+              onPressed: enabled && !readOnly && isPhoneNumber
+                  ? () => _showPhonePrefixBottomSheet(context)
+                  : null,
+              child: Row(
+                children: [
+                  Text(
+                    phonePrefix ?? '+1',
+                    style: CoreTypography.bodyLargeRegular(
                       color: CoreTextColors.headline,
-                      size: 18,
                     ),
                   ),
-                  onChanged: enabled && !readOnly ? onPhonePrefixChanged : null,
-                  items: phonePrefixes?.map((String prefix) {
-                    return DropdownMenuItem<String>(
-                      value: prefix,
-                      child: Text(
-                        prefix,
-                        style: CoreTypography.bodyLargeRegular(
-                          color: CoreTextColors.headline,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                  const SizedBox(width: CoreSpacing.space1),
+                  CoreIconWidget(
+                    icon: CoreIcons.arrowDropDown,
+                    color: CoreTextColors.headline,
+                    size: 18,
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: CoreSpacing.space3),
@@ -173,6 +173,47 @@ class CoreTextField extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  //todo need to be updated
+  void _showPhonePrefixBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(CoreSpacing.space4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Select Country Code',
+                style: CoreTypography.bodyLargeSemiBold(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: phonePrefixes?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final prefix = phonePrefixes![index];
+                    return ListTile(
+                      title: Text(
+                        prefix,
+                        style: CoreTypography.bodyLargeRegular(),
+                      ),
+                      onTap: () {
+                        onPhonePrefixChanged?.call(prefix);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -1,10 +1,6 @@
 import 'package:core_ui/core_ui.dart';
-import 'package:example/screens/color_showcase_screen.dart';
-import 'package:example/screens/icon_showcase_screen.dart';
-import 'package:example/screens/shadow_showcase_screen.dart';
-import 'package:example/screens/spacing_showcase_screen.dart';
-import 'package:example/screens/text_field_showcase_screen.dart';
-import 'package:example/screens/typography_showcase_screen.dart';
+import 'package:example/screens/components_screen.dart';
+import 'package:example/screens/tokens_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,52 +30,28 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Core UI Components', style: textTheme.titleLarge),
+        title: Text('Core UI Library', style: textTheme.titleLarge),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Component Showcases',
+              'Core UI Library',
               style: textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            _buildShowcaseButton(
+            _buildCategoryButton(
               context,
-              'Color Showcase',
-              const ColorShowcaseScreen(),
+              'Design Tokens',
+              const TokensScreen(),
             ),
             const SizedBox(height: 16),
-            _buildShowcaseButton(
+            _buildCategoryButton(
               context,
-              'Shadow Showcase',
-              const ShadowShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Typography Showcase',
-              const TypographyShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Spacing Showcase',
-              const SpacingShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Icons Showcase',
-              const IconShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Text Field Showcase',
-              const TextFieldScreen(),
+              'Components',
+              const ComponentsScreen(),
             ),
           ],
         ),
@@ -87,16 +59,19 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildShowcaseButton(
+  Widget _buildCategoryButton(
       BuildContext context, String label, Widget screen) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(200, 50),
+      ),
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => screen),
         );
       },
-      child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+      child: Text(label, style: Theme.of(context).textTheme.titleMedium),
     );
   }
 }

@@ -57,7 +57,7 @@ void main() {
       expect(changedValue, 'mark');
     });
 
-    testWidgets('shows phone prefix dropdown if isPhoneNumber is true',
+    testWidgets('shows phone prefix button if isPhoneNumber is true',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -73,7 +73,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(DropdownButton<String>), findsOneWidget);
+      expect(find.byType(TextButton), findsOneWidget);
       expect(find.text('+1'), findsOneWidget);
     });
 

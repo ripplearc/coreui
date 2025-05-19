@@ -84,15 +84,11 @@ void main() {
             helperText: 'Helper Text',
           ))
       ..addScenario(
-          'Mobile Number Error',
+          'Password',
           CoreTextField(
             obscureText: true,
-            // phonePrefixes: const ['+1'],
-            // phonePrefix: '+1',
-            // onPhonePrefixChanged: (_) {},
             controller: TextEditingController(text: '1234567890'),
             label: 'Password',
-            // errorText: 'Error Message',
           ))
       ..addScenario(
           'Mobile Number Error',
