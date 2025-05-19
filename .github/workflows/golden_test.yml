@@ -26,6 +26,7 @@ jobs:
           flutter test --update-goldens test/theme/icons_test.dart
           flutter test --update-goldens test/theme/shadows_test.dart
           flutter test --update-goldens test/theme/typography_test.dart
+          flutter test --update-goldens test/components/toast/toast_golden_test.dart
 
       - name: Upload Golden Images
         if: success()
