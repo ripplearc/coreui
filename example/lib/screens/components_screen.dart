@@ -1,3 +1,4 @@
+import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,13 @@ class ComponentsScreen extends StatelessWidget {
             const SizedBox(height: 32),
             _buildShowcaseButton(
               context,
-              'Toast Components',
+              'Text Field Components',
+              const TextFieldScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+             'Toast Components',
               const ToastShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
