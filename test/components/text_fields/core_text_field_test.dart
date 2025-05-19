@@ -37,6 +37,10 @@ void main() {
 
       expect(find.text('Invalid password'), findsOneWidget);
       expect(find.byIcon(Icons.visibility), findsOneWidget);
+      expect(
+          find.byWidgetPredicate((widget) =>
+              widget is CoreIconWidget && widget.icon == CoreIcons.error),
+          findsOneWidget);
     });
 
     testWidgets('calls onChanged when typing', (WidgetTester tester) async {

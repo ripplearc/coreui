@@ -66,14 +66,20 @@ class CoreTextField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       validator: validator,
+      cursorErrorColor: Colors.white,
+      cursorColor: Colors.white,
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
       style: CoreTypography.bodyLargeRegular(color: CoreTextColors.dark),
       decoration: InputDecoration(
         filled: true,
         hoverColor:
             !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
-        fillColor:
-            !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
+        fillColor: MaterialStateColor.resolveWith((states) {
+          if (states.contains(MaterialState.disabled)) {
+            return CoreBackgroundColors.backgroundGrayMid;
+          }
+          return Colors.white;
+        }),
         labelText: label,
         prefixIcon: prefixWidget,
         suffixIcon:
@@ -123,7 +129,7 @@ class CoreTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.outlineHover),
+          borderSide: const BorderSide(color: CoreTextColors.dark),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
@@ -132,6 +138,10 @@ class CoreTextField extends StatelessWidget {
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: const BorderSide(color: CoreStatusColors.error),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: const BorderSide(color: CoreBorderColors.lineDarkOutline),
         ),
       ),
     );
