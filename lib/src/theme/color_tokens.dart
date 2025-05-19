@@ -201,5 +201,4 @@ class CoreShadowColors {
       _CoreColorPalette.gray900.withValues(alpha: 0.1);
   static final Color shadowGrey18 =
       _CoreColorPalette.gray900.withValues(alpha: 0.18);
-  static const Color shadowGrey = _CoreColorPalette.gray900;
 }

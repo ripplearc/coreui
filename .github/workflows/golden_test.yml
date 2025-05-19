@@ -1,0 +1,32 @@
+name: Golden Tests
+
+on: [ push ]
+
+jobs:
+  golden_test:
+    name: Run Golden Tests
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate Golden Images
+        run: flutter test --update-goldens test/theme/color_tokens_test.dart
+
+      - name: Upload Golden Images
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-images
+          path: test/**/goldens/*.png
+          retention-days: 5
+          if-no-files-found: error 

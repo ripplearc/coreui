@@ -1,1 +1,0 @@
-// Primary button test placeholder
