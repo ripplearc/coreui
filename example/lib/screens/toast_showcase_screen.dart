@@ -31,9 +31,10 @@ class ToastShowcaseScreen extends StatelessWidget {
               context,
               title: 'Error Toast',
               toast: Toast.error(
+                  description: "This is an error description",
                   title: 'This is an error title',
-                  onClose: () {},
-                  description: "This is an error description"),
+                  closeLabel: 'Close',
+                  onClose: () {}),
             ),
 
             // Warning Toast
@@ -41,7 +42,9 @@ class ToastShowcaseScreen extends StatelessWidget {
               context,
               title: 'Warning Toast',
               toast: Toast.warning(
+                description: 'This is a warning description',
                 title: 'This is a warning title',
+                closeLabel: 'Close',
                 onClose: () {},
               ),
             ),
@@ -51,7 +54,9 @@ class ToastShowcaseScreen extends StatelessWidget {
               context,
               title: 'Info Toast',
               toast: Toast.info(
+                description: 'This is an info description',
                 title: 'This is an info title',
+                closeLabel: 'Close',
                 onClose: () {},
               ),
             ),
@@ -61,7 +66,20 @@ class ToastShowcaseScreen extends StatelessWidget {
               context,
               title: 'Success Toast',
               toast: Toast.success(
+                description: 'This is a success description',
                 title: 'This is a success title',
+                closeLabel: 'Close',
+                onClose: () {},
+              ),
+            ),
+
+            // Toast without title
+            _buildToastSection(
+              context,
+              title: 'Toast Without Title',
+              toast: Toast.info(
+                description: 'This description appears with title styling',
+                closeLabel: 'Close',
                 onClose: () {},
               ),
             ),
@@ -100,70 +118,82 @@ class ToastShowcaseScreen extends StatelessWidget {
   }
 
   void _showAllToasts(BuildContext context) {
-    // Show error toast
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Toast.error(
-          title: 'This is an error title',
-          onClose: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    // Toast types and their messages
+    final toastData = [
+      {
+        'type': 'error',
+        'title': 'This is an error title',
+        'description': 'This is an error description',
+        'delay': 0
+      },
+      {
+        'type': 'warning',
+        'title': 'This is a warning title',
+        'description': 'This is a warning description',
+        'delay': 1
+      },
+      {
+        'type': 'info',
+        'title': 'This is an info title',
+        'description': 'This is an info description',
+        'delay': 2
+      },
+      {
+        'type': 'success',
+        'title': 'This is a success title',
+        'description': 'This is a success description',
+        'delay': 3
+      },
+    ];
 
-    // Show warning toast after 1 second
-    Future.delayed(const Duration(seconds: 1), () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Toast.warning(
-            title: 'This is a warning title',
-            onClose: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    });
+    // Show each toast with appropriate delay
+    for (final data in toastData) {
+      Future.delayed(Duration(seconds: data['delay'] as int), () {
+        Widget toast;
+        switch (data['type']) {
+          case 'error':
+            toast = Toast.error(
+              description: data['description'] as String,
+              closeLabel: 'Close',
+              onClose: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            );
+            break;
+          case 'warning':
+            toast = Toast.warning(
+              description: data['description'] as String,
+              closeLabel: 'Close',
+              onClose: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            );
+            break;
+          case 'info':
+            toast = Toast.info(
+              description: data['description'] as String,
+              closeLabel: 'Close',
+              onClose: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            );
+            break;
+          case 'success':
+          default:
+            toast = Toast.success(
+              description: data['description'] as String,
+              closeLabel: 'Close',
+              onClose: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            );
+        }
 
-    // Show info toast after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Toast.info(
-            title: 'This is an info title',
-            onClose: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: toast,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            duration: const Duration(seconds: 4),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    });
-
-    // Show success toast after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Toast.success(
-            title: 'This is a success title',
-            onClose: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    });
+        );
+      });
+    }
   }
 }

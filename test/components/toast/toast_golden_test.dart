@@ -1,7 +1,7 @@
+import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
-import 'package:core_ui/core_ui.dart';
 
 void main() {
   setUpAll(() async {
@@ -11,73 +11,90 @@ void main() {
   group('Toast Golden Tests', () {
     testGoldens('Toast Component Visual Regression Test', (tester) async {
       final builder = GoldenBuilder.grid(
-        columns: 2,
-        widthToHeightRatio: 1,
-      )
-        // Basic variants with title and description
+          columns: 2, widthToHeightRatio: 2.5, bgColor: Colors.white)
+        // Toasts with title and description
         ..addScenario(
-          'Error Toast',
+          'Error Toast with Title',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.error(
               title: 'Error Title',
               description: 'This is an error message that needs attention',
+              closeLabel: 'Close',
               onClose: () {},
             ),
           ),
         )
         ..addScenario(
-          'Warning Toast',
+          'Warning Toast with Title',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.warning(
               title: 'Warning Title',
               description: 'This is a warning message to be careful about',
+              closeLabel: 'Close',
               onClose: () {},
             ),
           ),
         )
         ..addScenario(
-          'Info Toast',
+          'Info Toast with Title',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.info(
               title: 'Info Title',
               description: 'This is an informational message for you',
+              closeLabel: 'Close',
               onClose: () {},
             ),
           ),
         )
         ..addScenario(
-          'Success Toast',
+          'Success Toast with Title',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.success(
               title: 'Success Title',
               description: 'This is a success message, well done!',
+              closeLabel: 'Close',
               onClose: () {},
             ),
           ),
         )
-        // Variants without description
+        // Toasts without title (description only)
         ..addScenario(
-          'Title Only',
+          'Error Toast without Title',
           Container(
-            padding: const EdgeInsets.all(8),
-            child: Toast.info(
-              title: 'Toast with Title Only',
+            child: Toast.error(
+              description: 'This is an error message without a title',
+              closeLabel: 'Close',
               onClose: () {},
             ),
           ),
         )
-        // Variant without close button
         ..addScenario(
-          'No Close Button',
+          'Warning Toast without Title',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.warning(
-              title: 'No Close Button',
-              description: 'This toast cannot be dismissed manually',
+              description: 'This is a warning message without a title',
+              closeLabel: 'Close',
+              onClose: () {},
+            ),
+          ),
+        )
+        ..addScenario(
+          'Info Toast without Title',
+          Container(
+            child: Toast.info(
+              description: 'This is an info message without a title',
+              closeLabel: 'Close',
+              onClose: () {},
+            ),
+          ),
+        )
+        ..addScenario(
+          'Success Toast without Title',
+          Container(
+            child: Toast.success(
+              description: 'This is a success message without a title',
+              closeLabel: 'Close',
+              onClose: () {},
             ),
           ),
         )
@@ -85,21 +102,13 @@ void main() {
         ..addScenario(
           'Long Content',
           Container(
-            padding: const EdgeInsets.all(8),
             child: Toast.error(
-              title: 'This is a very long title that should wrap to multiple lines gracefully',
-              description: 'This is an equally long description that demonstrates how the toast handles extended content without breaking the layout',
+              title:
+                  'This is a very long title that should wrap to multiple lines gracefully',
+              description:
+                  'This is an equally long description that demonstrates how the toast handles extended content without breaking the layout',
+              closeLabel: 'Close',
               onClose: () {},
-            ),
-          ),
-        )
-        // Minimal variant
-        ..addScenario(
-          'Minimal',
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Toast.success(
-              title: 'Simple Success',
             ),
           ),
         );
@@ -109,10 +118,10 @@ void main() {
           color: Colors.white,
           child: builder.build(),
         ),
-        surfaceSize: const Size(800, 800),
+        surfaceSize: const Size(1050, 1050),
       );
 
       await screenMatchesGolden(tester, 'toast_component');
     });
   });
-} 
+}
