@@ -67,8 +67,8 @@ import 'package:core_ui/core_ui.dart';
 
 // Use theme
 MaterialApp(
-  theme: CoreUIThemeData.lightTheme(),
-  darkTheme: CoreUIThemeData.darkTheme(),
+  theme: CoreTheme.light(),
+  darkTheme: CoreTheme.dark(),
   // ...
 );
 
