@@ -4,7 +4,6 @@ import 'color_tokens.dart';
 
 /// Core Typography class that defines text styles for the application
 class CoreTypography {
-  static const String _fontFamily = 'IBMPlexSansHebrew';
 
   // Font Weights
   static const FontWeight regular = FontWeight.w400;
@@ -19,7 +18,6 @@ class CoreTypography {
     Color? color,
   }) {
     return TextStyle(
-      fontFamily: _fontFamily,
       fontSize: fontSize,
       height: height / fontSize,
       fontWeight: weight,

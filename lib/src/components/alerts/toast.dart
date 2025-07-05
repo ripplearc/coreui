@@ -112,7 +112,7 @@ class Toast extends StatelessWidget {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CoreIconWidget(
               icon: icon,
@@ -123,6 +123,7 @@ class Toast extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     title ?? description,
@@ -144,7 +145,7 @@ class Toast extends StatelessWidget {
             const SizedBox(width: CoreSpacing.space3),
             GestureDetector(
               key: const Key('toast_close_button'),
-              onTap: onClose ?? () => Navigator.of(context),
+              onTap: onClose ?? () => Navigator.of(context).pop(),
               child: Semantics(
                 button: true,
                 label: closeLabel,
@@ -157,7 +158,7 @@ class Toast extends StatelessWidget {
                           color: CoreTextColors.link),
                     ),
                     const SizedBox(width: CoreSpacing.space2),
-                    CoreIconWidget(
+                    const CoreIconWidget(
                       icon: CoreIcons.close,
                       size: 24,
                       color: CoreIconColors.dark,

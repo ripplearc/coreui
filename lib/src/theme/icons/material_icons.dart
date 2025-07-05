@@ -99,6 +99,7 @@ class CoreMaterialIcons {
       CoreIconData.material(Icons.cameraswitch_outlined);
   static const block = CoreIconData.material(Icons.block_flipped);
   static const checkMark = CoreIconData.material(Icons.check);
+    static const checkCircle = CoreIconData.material(Icons.check_circle_outline);
   static const verified = CoreIconData.material(Icons.verified_user_outlined);
   static const download = CoreIconData.material(Icons.file_download_outlined);
   static const addFile = CoreIconData.material(Icons.note_add_outlined);
