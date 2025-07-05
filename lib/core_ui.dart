@@ -1,9 +1,8 @@
-library core_ui;
-
 export 'src/components/alerts/toast.dart';
 // Component exports
 export 'src/components/buttons/primary_button.dart';
 export 'src/components/core_icon.dart';
+export 'src/components/selects/single_item_selector.dart';
 export 'src/components/text_fields/text_field.dart';
 // Theme exports
 export 'src/theme/color_tokens.dart';
