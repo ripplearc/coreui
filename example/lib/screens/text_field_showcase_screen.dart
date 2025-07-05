@@ -75,7 +75,7 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
               label: 'Label',
               helperText: 'Helper text',
               controller: _controller,
-              errorText: _validationError,
+              errorTextList: _validationError != null ? [_validationError!] : null,
             ),
             const SizedBox(height: 8),
             ElevatedButton(
@@ -87,7 +87,7 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
             const SizedBox(height: 8),
             const CoreTextField(
               label: 'Label',
-              errorText: 'Error message',
+              errorTextList: ['Error message'],
             ),
             const SizedBox(height: 24),
             Text('Disabled', style: CoreTypography.bodyLargeSemiBold()),
@@ -136,7 +136,7 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
               label: 'Phone Number',
               helperText: 'Enter your phone number',
               isPhoneNumber: true,
-              errorText: 'Invalid phone number',
+              errorTextList: ['Invalid phone number'],
               phonePrefix: '+44',
               phonePrefixes: _phonePrefixes,
               keyboardType: TextInputType.phone,

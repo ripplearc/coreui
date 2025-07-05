@@ -133,3 +133,4 @@ Thumbs.db
 
 # Optional stylelint cache
 .stylelintcache
+android/app/.cxx
