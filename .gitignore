@@ -15,7 +15,6 @@ yarn.lock
 # Build outputs
 /dist
 /build
-/lib
 /es
 /umd
 *.tgz
@@ -86,6 +85,5 @@ debug.log
 .idea/libraries/Dart_Packages.xml
 example/pubspec.lock
 
-pubspec.lock
 /review_pr.sh
 /review_result.txt
