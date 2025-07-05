@@ -9,7 +9,9 @@ import '../core_icon.dart';
 class CoreTextField extends StatelessWidget {
   final String? label;
   final String? helperText;
-  final String? errorText;
+  final String? hintText;
+  final List<String>? errorTextList;
+  final List<Widget>? errorWidgetList;
   final bool obscureText;
   final bool isPhoneNumber;
   final TextEditingController? controller;
@@ -25,12 +27,15 @@ class CoreTextField extends StatelessWidget {
   final String? phonePrefix;
   final void Function(String?)? onPhonePrefixChanged;
   final List<String>? phonePrefixes;
+  final String? countryCodePickerTitle;
 
   const CoreTextField({
     super.key,
     this.label,
     this.helperText,
-    this.errorText,
+    this.hintText,
+    this.errorTextList,
+    this.errorWidgetList,
     this.obscureText = false,
     this.controller,
     this.onChanged,
@@ -46,16 +51,18 @@ class CoreTextField extends StatelessWidget {
     this.phonePrefix = '+1',
     this.onPhonePrefixChanged,
     this.phonePrefixes,
+    this.countryCodePickerTitle,
   });
 
   @override
   Widget build(BuildContext context) {
     Widget? prefixWidget = prefix;
 
-    // Create phone number prefix button if isPhoneNumber is true
     if (isPhoneNumber) {
       prefixWidget = _buildPhonePrefixButton(context);
     }
+
+    final bool isDisabled = !enabled || readOnly;
 
     return TextFormField(
       controller: controller,
@@ -66,66 +73,78 @@ class CoreTextField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       validator: validator,
-      cursorErrorColor: Colors.white,
-      cursorColor: Colors.white,
+      cursorColor:
+          isDisabled ? Colors.transparent : CoreBorderColors.outlineFocus,
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
-      style: CoreTypography.bodyLargeRegular(color: CoreTextColors.dark),
+      style: CoreTypography.bodyLargeRegular(
+        color: isDisabled ? CoreTextColors.disable : CoreTextColors.dark,
+      ),
       decoration: InputDecoration(
-        filled: true,
+        floatingLabelStyle: CoreTypography.bodyLargeSemiBold(
+          color: isDisabled
+              ? CoreTextColors.disable
+              : CoreBorderColors.outlineFocus,
+        ),
         hoverColor:
-            !enabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
-        fillColor: MaterialStateColor.resolveWith((states) {
-          if (states.contains(MaterialState.disabled)) {
-            return CoreBackgroundColors.backgroundGrayMid;
-          }
-          return Colors.white;
-        }),
+            isDisabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
+        fillColor:
+            isDisabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
+        filled: true,
         labelText: label,
+        labelStyle: CoreTypography.bodyLargeRegular(
+          color: isDisabled ? CoreTextColors.disable : CoreTextColors.headline,
+        ),
         prefixIcon: prefixWidget,
+        hintText: hintText,
+        hintStyle: CoreTypography.bodyLargeRegular(
+          color: isDisabled ? CoreTextColors.disable : CoreTextColors.disable,
+        ),
         suffixIcon:
-            obscureText ? suffix ?? const Icon(Icons.visibility) : suffix,
-        //todo icon need to be updated after merging new icons to the token colors
-        error: errorText == null
+            (obscureText ? suffix ?? const Icon(Icons.visibility) : suffix),
+        error: (errorTextList == null && errorWidgetList == null)
             ? null
-            : Row(
-                children: [
-                  const CoreIconWidget(
-                    icon: CoreIcons.error,
-                    size: 16,
-                    color: CoreIconColors.red,
-                  ),
-                  const SizedBox(width: CoreSpacing.space1),
-                  Text(
-                    errorText!,
-                    style: CoreTypography.bodySmallRegular(
-                        color: CoreTextColors.error),
-                  ),
-                ],
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:
+                    _buildErrorWidgetList(errorTextList, errorWidgetList) ?? [],
               ),
         helper: helperText == null
             ? null
-            : Row(
+            : Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CoreIconWidget(
+                  CoreIconWidget(
                     icon: CoreIcons.info,
                     size: 16,
-                    color: CoreIconColors.grayMid,
+                    color: isDisabled
+                        ? CoreIconColors.grayMid
+                        : CoreIconColors.grayMid,
                   ),
                   const SizedBox(width: CoreSpacing.space1),
                   Text(
                     helperText!,
                     style: CoreTypography.bodySmallRegular(
-                        color: CoreTextColors.headline),
+                        color: isDisabled
+                            ? CoreTextColors.disable
+                            : CoreTextColors.headline),
                   ),
                 ],
               ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.lineDarkOutline),
+          borderSide: BorderSide(
+            color: isDisabled
+                ? CoreBorderColors.lineMid
+                : CoreBorderColors.lineDarkOutline,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.lineDarkOutline),
+          borderSide: BorderSide(
+            color: isDisabled
+                ? CoreBorderColors.lineMid
+                : CoreBorderColors.lineDarkOutline,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
@@ -141,9 +160,54 @@ class CoreTextField extends StatelessWidget {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.lineDarkOutline),
+          borderSide: const BorderSide(color: CoreBorderColors.lineMid),
         ),
       ),
+    );
+  }
+
+  List<Widget>? _buildErrorWidgetList(
+      List<String>? errorTextList, List<Widget>? errorWidgetList) {
+    if (errorTextList == null && errorWidgetList == null) return null;
+    if (errorTextList != null && errorWidgetList != null) {
+      throw Exception(
+          'errorTextList and errorWidgetList cannot be provided together');
+    }
+    if (errorTextList != null) {
+      return errorTextList
+          .map((errorText) => _buildErrorWidget(errorText: errorText))
+          .toList();
+    }
+    if (errorWidgetList != null) {
+      return errorWidgetList
+          .map((errorWidget) => _buildErrorWidget(errorWidget: errorWidget))
+          .toList();
+    }
+    return null;
+  }
+
+  Widget _buildErrorWidget({String? errorText, Widget? errorWidget}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        const CoreIconWidget(
+          icon: CoreIcons.error,
+          size: 16,
+          color: CoreIconColors.red,
+        ),
+        const SizedBox(width: CoreSpacing.space1),
+        if (errorWidget != null)
+          Expanded(child: errorWidget)
+        else if (errorText != null)
+          Expanded(
+            child: Text(
+              errorText,
+              style:
+                  CoreTypography.bodySmallRegular(color: CoreTextColors.error),
+            ),
+          ),
+      ],
     );
   }
 
@@ -166,7 +230,7 @@ class CoreTextField extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: CoreSpacing.space1),
-                  CoreIconWidget(
+                  const CoreIconWidget(
                     icon: CoreIcons.arrowDropDown,
                     color: CoreTextColors.headline,
                     size: 18,
@@ -197,7 +261,7 @@ class CoreTextField extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Select Country Code',
+                countryCodePickerTitle ?? 'Select Country Code',
                 style: CoreTypography.bodyLargeSemiBold(),
               ),
               const SizedBox(height: CoreSpacing.space4),
