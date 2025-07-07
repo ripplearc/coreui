@@ -29,11 +29,9 @@ class ButtonShowcaseScreen extends StatelessWidget {
             CoreButton(
               label: 'Social Button',
               onPressed: () {},
-              icon: const CoreIconWidget(
-                icon: CoreIcons.facebook,
-                color: CoreTextColors.headline, 
-              ),
+              icon: const CoreIconWidget(icon: CoreIcons.facebook),
               variant: CoreButtonVariant.social,
+              spaceOut: true,
             ),
           ],
         ),
