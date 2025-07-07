@@ -3,7 +3,7 @@ import 'package:core_ui/core_ui.dart';
 
 /// A widget that allows the user to select a single item from a list of items
 /// This widget uses a bottom sheet to display the list of items for selection.
-/// 
+///
 /// [labelText] is the label for the selector
 /// [hintText] is the hint text displayed when no item is selected
 /// [modalTitle] is the title of the modal that appears when the selector is tapped
@@ -40,8 +40,8 @@ class SingleItemSelector<T> extends StatelessWidget {
     required this.onItemSelected,
     this.itemToString,
     this.suffixIcon,
-    this.selectedColor = Colors.green,
-    this.selectedBackgroundColor = const Color(0xFFEEFAFF),
+    this.selectedColor = CoreTextColors.success,
+    this.selectedBackgroundColor = CoreBackgroundColors.backgroundBlueLight,
     this.isDisabled = false,
     this.onOpen,
   });
@@ -54,6 +54,17 @@ class SingleItemSelector<T> extends StatelessWidget {
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
+          enabled: !isDisabled,
+          labelStyle: CoreTypography.bodyLargeSemiBold(
+            color: isDisabled
+                ? CoreTextColors.disable
+                : CoreBorderColors.outlineFocus,
+          ),
+          hintStyle: CoreTypography.bodyLargeSemiBold(
+            color: isDisabled
+                ? CoreTextColors.disable
+                : CoreBorderColors.outlineFocus,
+          ),
           floatingLabelStyle: CoreTypography.bodyLargeSemiBold(
             color: isDisabled
                 ? CoreTextColors.disable
@@ -72,7 +83,7 @@ class SingleItemSelector<T> extends StatelessWidget {
               child: Text(
                 _getDisplayText(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: selectedItem == null
+                      color: (selectedItem == null || isDisabled)
                           ? Theme.of(context).hintColor
                           : null,
                     ),
@@ -97,7 +108,7 @@ class SingleItemSelector<T> extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true, // <- This enables the modern drag handle
+      showDragHandle: true,
       backgroundColor: CoreBackgroundColors.pageBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),

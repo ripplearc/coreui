@@ -172,6 +172,7 @@ class CoreChipColors {
 
 // Button-related color tokens
 class CoreButtonColors {
+  static const Color inverse = _CoreColorPalette.gray25;
   static const Color surface = _CoreColorPalette.orient800;
   static const Color hover = _CoreColorPalette.orient700;
   static const Color disable = _CoreColorPalette.gray300;

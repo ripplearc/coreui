@@ -6,6 +6,28 @@ import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../core_icon.dart';
 
+/// A custom text field widget with optional label, helper text, and error text
+/// [label] The label text displayed above the text field
+/// [helperText] The helper text displayed below the text field
+/// [hintText] The hint text displayed inside the text field
+/// [errorTextList] The list of error messages displayed below the text field
+/// [errorWidgetList] The list of error widgets displayed below the text field
+/// [obscureText] Whether or not the text should be obscured
+/// [controller] The controller for the text field
+/// [onChanged] The callback function called when the text field value changes
+/// [keyboardType] The keyboard type for the text field
+/// [enabled] Whether or not the text field is enabled
+/// [validator] The validator function for the text field
+/// [focusNode] The focus node for the text field
+/// [initialValue] The initial value for the text field
+/// [readOnly] Whether or not the text field is read-only
+/// [prefix] The widget displayed before the text field
+/// [suffix] The widget displayed after the text field
+/// [isPhoneNumber] Whether or not the text field is used for phone number input
+/// [phonePrefix] The phone number prefix to display
+/// [onPhonePrefixChanged] The callback function called when the phone prefix changes
+/// [phonePrefixes] The list of available phone number prefixes
+/// [countryCodePickerTitle] The title for the country code picker dialog
 class CoreTextField extends StatelessWidget {
   final String? label;
   final String? helperText;
@@ -86,9 +108,9 @@ class CoreTextField extends StatelessWidget {
               : CoreBorderColors.outlineFocus,
         ),
         hoverColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
+            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
         fillColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : Colors.white,
+            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
         filled: true,
         labelText: label,
         labelStyle: CoreTypography.bodyLargeRegular(

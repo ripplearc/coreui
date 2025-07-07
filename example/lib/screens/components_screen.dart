@@ -1,3 +1,4 @@
+import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
@@ -33,6 +34,11 @@ class ComponentsScreen extends StatelessWidget {
               context,
               'Single Select Field Components',
               const SingleItemSelectorShowcaseScreen(),
+            ),
+                      _buildShowcaseButton(
+              context,
+              'Button Components',
+              const ButtonShowcaseScreen(),
             ),
             const SizedBox(height: 16),
             _buildShowcaseButton(

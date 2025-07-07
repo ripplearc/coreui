@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
-import 'package:core_ui/core_ui.dart'; // update this import
+import 'package:core_ui/core_ui.dart';
 
 void main() {
   testGoldens('SingleItemSelector Golden Test', (WidgetTester tester) async {
@@ -17,6 +17,7 @@ void main() {
           items: ['Engineer', 'Designer'],
           selectedItem: null,
           onItemSelected: (_) {},
+          isDisabled: false,
         ),
       )
       ..addScenario(
@@ -28,6 +29,7 @@ void main() {
           items: ['Engineer', 'Designer'],
           selectedItem: 'Designer',
           onItemSelected: (_) {},
+          isDisabled: false,
         ),
       )
       ..addScenario(
@@ -37,7 +39,7 @@ void main() {
           hintText: 'Select a role',
           modalTitle: 'Select Role',
           items: ['Engineer', 'Designer'],
-          selectedItem: null,
+          selectedItem: 'Designer',
           onItemSelected: (_) {},
           isDisabled: true,
         ),
@@ -45,7 +47,7 @@ void main() {
 
     await tester.pumpWidgetBuilder(
       Container(
-        color: Colors.white,
+        color: CoreBackgroundColors.pageBackground,
         padding: const EdgeInsets.all(16),
         child: builder.build(),
       ),
@@ -55,7 +57,7 @@ void main() {
     await screenMatchesGolden(tester, 'single_item_selector');
   });
 
-   testGoldens('SingleItemSelector with bottom sheet', (tester) async {
+  testGoldens('SingleItemSelector with bottom sheet', (tester) async {
     await loadAppFonts();
 
     final items = ['Engineer', 'Designer', 'Manager'];
@@ -86,7 +88,8 @@ void main() {
     await screenMatchesGolden(tester, 'single_item_selector_with_bottom_sheet');
   });
 
-  testGoldens('SingleItemSelector with bottom sheet and selected item', (tester) async {
+  testGoldens('SingleItemSelector with bottom sheet and selected item',
+      (tester) async {
     await loadAppFonts();
 
     final items = ['Engineer', 'Designer', 'Manager'];
@@ -114,6 +117,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Take screenshot
-    await screenMatchesGolden(tester, 'single_item_selector_with_bottom_sheet_selected');
+    await screenMatchesGolden(
+        tester, 'single_item_selector_with_bottom_sheet_selected');
   });
 }
