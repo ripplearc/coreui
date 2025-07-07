@@ -83,7 +83,7 @@ class CoreButton extends StatelessWidget {
     required bool isEnabled,
     required CoreButtonVariant variant,
   }) {
-    if (!isEnabled) return CoreButtonColors.disable;
+    if (!isEnabled) return variant==CoreButtonVariant.secondary? Colors.transparent: CoreButtonColors.disable;
     switch (variant) {
       case CoreButtonVariant.primary:
         return CoreButtonColors.surface;
@@ -95,7 +95,7 @@ class CoreButton extends StatelessWidget {
   }
 
   Color _getBorderColor(bool isEnabled, CoreButtonVariant variant) {
-    if (!isEnabled) return CoreButtonColors.disable;
+    if (!isEnabled) return variant == CoreButtonVariant.secondary? CoreTextColors.disable: CoreButtonColors.disable;
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
@@ -124,13 +124,9 @@ class CoreButton extends StatelessWidget {
     final isEnabled = !isDisabled && onPressed != null;
     final textWidget = Text(
       label,
-      style: variant == CoreButtonVariant.social
-          ? CoreTypography.bodyLargeSemiBold(
+      style: CoreTypography.bodyLargeSemiBold(
               color: _getContentColor(isEnabled: isEnabled, variant: variant),
             )
-          : CoreTypography.bodyLargeSemiBold(
-              color: _getContentColor(isEnabled: isEnabled, variant: variant),
-            ),
     );
 
     return Row(
