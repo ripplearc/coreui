@@ -88,7 +88,4 @@ example/pubspec.lock
 /review_pr.sh
 /review_result.txt
 
-test/components/selects/failures
-test/components/text_fields/failures
-test/components/toast/failures
-test/components/buttons/failures
+test/**/failures/
