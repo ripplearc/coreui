@@ -165,8 +165,8 @@ void main() {
                 icon: CoreIcons.arrowRight, color: CoreButtonColors.surface),
             trailing: true,
           ));
-      
-      await tester.pumpWidgetBuilder(
+
+    await tester.pumpWidgetBuilder(
       Container(
         color: CoreBackgroundColors.pageBackground,
         child: builder.build(),
@@ -234,15 +234,15 @@ void main() {
             trailing: true,
           ));
 
-      await tester.pumpWidgetBuilder(
-        Container(
-          color: CoreBackgroundColors.pageBackground,
-          child: builder.build(),
-        ),
-        surfaceSize: const Size(900, 400),
-      );
+    await tester.pumpWidgetBuilder(
+      Container(
+        color: CoreBackgroundColors.pageBackground,
+        child: builder.build(),
+      ),
+      surfaceSize: const Size(900, 400),
+    );
 
-      await screenMatchesGolden(tester, 'core_button_small');
+    await screenMatchesGolden(tester, 'core_button_small');
   });
 
   testGoldens('CoreButton Large Narrow Space', (WidgetTester tester) async {
@@ -293,7 +293,7 @@ void main() {
             icon: const CoreIconWidget(
                 icon: CoreIcons.arrowLeft, color: CoreButtonColors.surface),
           ))
-           ..addScenario(
+      ..addScenario(
           'Secondary',
           CoreButton(
             label: 'Secondary',
@@ -317,8 +317,7 @@ void main() {
             label: 'Social',
             onPressed: () {},
             variant: CoreButtonVariant.social,
-            icon: const CoreIconWidget(
-                icon: CoreIcons.google),
+            icon: const CoreIconWidget(icon: CoreIcons.google),
           ))
       ..addScenario(
           'Social + Icon',
@@ -327,22 +326,21 @@ void main() {
             onPressed: () {},
             isDisabled: true,
             variant: CoreButtonVariant.social,
-            icon: const CoreIconWidget(
-                icon: CoreIcons.google),
+            icon: const CoreIconWidget(icon: CoreIcons.google),
           ));
 
-      await tester.pumpWidgetBuilder(
-        Container(
-          color: CoreBackgroundColors.pageBackground,
-          child: builder.build(),
-        ),
-        surfaceSize: const Size(450, 800),
-      );
+    await tester.pumpWidgetBuilder(
+      Container(
+        color: const Color.fromARGB(255, 17, 31, 45),
+        child: builder.build(),
+      ),
+      surfaceSize: const Size(450, 800),
+    );
 
-      await screenMatchesGolden(tester, 'core_button_large_narrow_space');
+    await screenMatchesGolden(tester, 'core_button_large_narrow_space');
   });
 
-   testGoldens('CoreButton Medium Narrow Space', (WidgetTester tester) async {
+  testGoldens('CoreButton Medium Narrow Space', (WidgetTester tester) async {
     final builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 2)
       ..addScenario(
           'Primary',
@@ -396,7 +394,7 @@ void main() {
             icon: const CoreIconWidget(
                 icon: CoreIcons.arrowLeft, color: CoreButtonColors.surface),
           ))
-           ..addScenario(
+      ..addScenario(
           'Secondary',
           CoreButton(
             size: CoreButtonSize.medium,
@@ -428,7 +426,7 @@ void main() {
     await screenMatchesGolden(tester, 'core_button_medium_narrow_space');
   });
 
-   testGoldens('CoreButton Small Narrow Space', (WidgetTester tester) async {
+  testGoldens('CoreButton Small Narrow Space', (WidgetTester tester) async {
     final builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 2)
       ..addScenario(
           'Primary',
@@ -482,7 +480,7 @@ void main() {
             icon: const CoreIconWidget(
                 icon: CoreIcons.arrowLeft, color: CoreButtonColors.surface),
           ))
-           ..addScenario(
+      ..addScenario(
           'Secondary',
           CoreButton(
             size: CoreButtonSize.small,
@@ -503,14 +501,14 @@ void main() {
                 icon: CoreIcons.arrowLeft, color: CoreTextColors.body),
           ));
 
-      await tester.pumpWidgetBuilder(
-        Container(
-          color: CoreBackgroundColors.pageBackground,
-          child: builder.build(),
-        ),
-        surfaceSize: const Size(400, 800),
-      );
+    await tester.pumpWidgetBuilder(
+      Container(
+        color: CoreBackgroundColors.pageBackground,
+        child: builder.build(),
+      ),
+      surfaceSize: const Size(400, 800),
+    );
 
-      await screenMatchesGolden(tester, 'core_button_small_narrow_space');
+    await screenMatchesGolden(tester, 'core_button_small_narrow_space');
   });
 }

@@ -83,7 +83,11 @@ class CoreButton extends StatelessWidget {
     required bool isEnabled,
     required CoreButtonVariant variant,
   }) {
-    if (!isEnabled) return variant==CoreButtonVariant.secondary? Colors.transparent: CoreButtonColors.disable;
+    if (!isEnabled) {
+      return variant == CoreButtonVariant.secondary
+          ? Colors.transparent
+          : CoreButtonColors.disable;
+    }
     switch (variant) {
       case CoreButtonVariant.primary:
         return CoreButtonColors.surface;
@@ -95,7 +99,11 @@ class CoreButton extends StatelessWidget {
   }
 
   Color _getBorderColor(bool isEnabled, CoreButtonVariant variant) {
-    if (!isEnabled) return variant == CoreButtonVariant.secondary? CoreTextColors.disable: CoreButtonColors.disable;
+    if (!isEnabled) {
+      return variant == CoreButtonVariant.secondary
+          ? CoreTextColors.disable
+          : CoreButtonColors.disable;
+    }
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
@@ -122,12 +130,10 @@ class CoreButton extends StatelessWidget {
 
   Widget _buildContentRow() {
     final isEnabled = !isDisabled && onPressed != null;
-    final textWidget = Text(
-      label,
-      style: CoreTypography.bodyLargeSemiBold(
-              color: _getContentColor(isEnabled: isEnabled, variant: variant),
-            )
-    );
+    final textWidget = Text(label,
+        style: CoreTypography.bodyLargeSemiBold(
+          color: _getContentColor(isEnabled: isEnabled, variant: variant),
+        ));
 
     return Row(
       mainAxisAlignment:
@@ -167,6 +173,12 @@ class CoreButton extends StatelessWidget {
         type: MaterialType.transparency,
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
+          splashColor: variant == CoreButtonVariant.primary
+              ? CoreButtonColors.press
+              : _getBackgroundColor(isEnabled: isEnabled, variant: variant),
+          highlightColor: variant == CoreButtonVariant.primary
+              ? CoreButtonColors.surface
+              : _getBackgroundColor(isEnabled: isEnabled, variant: variant),
           onTap: isEnabled ? onPressed : null,
           borderRadius: BorderRadius.circular(borderRadius),
           child: Padding(
