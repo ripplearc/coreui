@@ -85,14 +85,14 @@ class CoreButton extends StatelessWidget {
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? Colors.transparent
+          ? Colors.white.withOpacity(0.5)
           : CoreButtonColors.disable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
         return CoreButtonColors.surface;
       case CoreButtonVariant.secondary:
-        return Colors.transparent;
+        return CoreTextColors.inverse;
       case CoreButtonVariant.social:
         return CoreTextColors.inverse;
     }
@@ -117,7 +117,11 @@ class CoreButton extends StatelessWidget {
     required bool isEnabled,
     required CoreButtonVariant variant,
   }) {
-    if (!isEnabled) return CoreTextColors.body;
+    if (!isEnabled) {
+      return variant == CoreButtonVariant.secondary
+          ? CoreTextColors.disable
+          : CoreTextColors.body;
+    }
     switch (variant) {
       case CoreButtonVariant.primary:
         return CoreTextColors.inverse;

@@ -309,7 +309,7 @@ void main() {
             isDisabled: true,
             variant: CoreButtonVariant.secondary,
             icon: const CoreIconWidget(
-                icon: CoreIcons.arrowLeft, color: CoreTextColors.body),
+                icon: CoreIcons.arrowLeft, color: CoreTextColors.disable),
           ))
       ..addScenario(
           'Social',
@@ -412,7 +412,7 @@ void main() {
             isDisabled: true,
             variant: CoreButtonVariant.secondary,
             icon: const CoreIconWidget(
-                icon: CoreIcons.arrowLeft, color: CoreTextColors.body),
+                icon: CoreIcons.arrowLeft, color: CoreTextColors.disable),
           ));
 
     await tester.pumpWidgetBuilder(
@@ -498,7 +498,7 @@ void main() {
             isDisabled: true,
             variant: CoreButtonVariant.secondary,
             icon: const CoreIconWidget(
-                icon: CoreIcons.arrowLeft, color: CoreTextColors.body),
+                icon: CoreIcons.arrowLeft, color: CoreTextColors.disable),
           ));
 
     await tester.pumpWidgetBuilder(
