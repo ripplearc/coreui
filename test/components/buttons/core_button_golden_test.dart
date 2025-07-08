@@ -331,7 +331,7 @@ void main() {
 
     await tester.pumpWidgetBuilder(
       Container(
-        color: const Color.fromARGB(255, 17, 31, 45),
+        color:CoreBackgroundColors.pageBackground,
         child: builder.build(),
       ),
       surfaceSize: const Size(450, 800),

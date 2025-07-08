@@ -85,7 +85,7 @@ class CoreButton extends StatelessWidget {
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? Colors.white.withOpacity(0.5)
+          ? CoreButtonColors.inverse
           : CoreButtonColors.disable;
     }
     switch (variant) {
@@ -140,23 +140,28 @@ class CoreButton extends StatelessWidget {
         ));
 
     return Row(
-      mainAxisAlignment:
-          centerAlign ? MainAxisAlignment.center : MainAxisAlignment.start,
+      mainAxisAlignment: (centerAlign && !spaceOut)
+          ? MainAxisAlignment.center
+          : (centerAlign && spaceOut)
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
       children: [
         if (!trailing && icon != null) icon!,
         if (!trailing && icon != null && !spaceOut) const SizedBox(width: 8),
-        if (spaceOut)
-          Expanded(child: Center(child: textWidget))
-        else
-          textWidget,
+        if (trailing && spaceOut) const SizedBox(width: 24, height: 24),
+        textWidget,
         if (trailing && icon != null && !spaceOut) const SizedBox(width: 8),
         if (trailing && icon != null) icon!,
+        if (!trailing && spaceOut) const SizedBox(width: 24, height: 24),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (variant == CoreButtonVariant.social && size != CoreButtonSize.large) {
+      throw ArgumentError('Social button variant must be large size');
+    }
     final isEnabled = !isDisabled && onPressed != null;
 
     return Container(
@@ -170,7 +175,8 @@ class CoreButton extends StatelessWidget {
         ),
         border: Border.all(
           color: _getBorderColor(isEnabled, variant),
-          width: variant == CoreButtonVariant.social ? 1 : 0,
+          width:
+              variant == CoreButtonVariant.social ? CoreSpacing.space1 / 2 : 0,
         ),
       ),
       child: Material(
