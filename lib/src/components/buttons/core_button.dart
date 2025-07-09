@@ -63,6 +63,9 @@ class CoreButton extends StatefulWidget {
 
 class _CoreButtonState extends State<CoreButton> {
   bool isPressed = false;
+  bool isFocused = false;
+  late FocusNode _focusNode;
+
   double get _height {
     switch (widget.size) {
       case CoreButtonSize.large:
@@ -96,7 +99,11 @@ class _CoreButtonState extends State<CoreButton> {
     }
     switch (variant) {
       case CoreButtonVariant.primary:
-        return isPressed ? CoreButtonColors.press : CoreButtonColors.surface;
+        return isPressed
+            ? CoreButtonColors.press
+            : isFocused
+                ? CoreButtonColors.hover
+                : CoreButtonColors.surface;
       case CoreButtonVariant.secondary:
         return Colors.transparent;
       case CoreButtonVariant.social:
@@ -111,7 +118,11 @@ class _CoreButtonState extends State<CoreButton> {
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
-        return isPressed ? CoreButtonColors.press : CoreButtonColors.surface;
+        return isPressed
+            ? CoreButtonColors.press
+            : isFocused
+                ? CoreButtonColors.hover
+                : CoreButtonColors.surface;
       case CoreButtonVariant.social:
         return CoreBorderColors.lineDarkOutline;
     }
@@ -166,6 +177,23 @@ class _CoreButtonState extends State<CoreButton> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      setState(() {
+        isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.variant == CoreButtonVariant.social &&
         widget.size != CoreButtonSize.large) {
@@ -173,32 +201,34 @@ class _CoreButtonState extends State<CoreButton> {
     }
     final isEnabled = !widget.isDisabled && widget.onPressed != null;
 
-    return GestureDetector(
-      onTap: isEnabled ? widget.onPressed : null,
-      onTapDown: isEnabled ? (_) => setState(() => isPressed = true) : null,
-      onTapUp: isEnabled ? (_) => setState(() => isPressed = false) : null,
-      onTapCancel: isEnabled ? () => setState(() => isPressed = false) : null,
-      child: Container(
-        width: widget.fullWidth ? double.infinity : null,
-        height: widget.variant == CoreButtonVariant.social ? null : _height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          color: _getBackgroundColor(
-            isEnabled: isEnabled,
-            variant: widget.variant,
+    return Focus(
+      focusNode: _focusNode,
+      onFocusChange: (focused) => setState(() => isFocused = focused),
+      child: GestureDetector(
+        onTap: isEnabled ? widget.onPressed : null,
+        onTapDown: isEnabled ? (_) => setState(() => isPressed = true) : null,
+        onTapUp: isEnabled ? (_) => setState(() => isPressed = false) : null,
+        onTapCancel: isEnabled ? () => setState(() => isPressed = false) : null,
+        child: Container(
+          width: widget.fullWidth ? double.infinity : null,
+          height: widget.variant == CoreButtonVariant.social ? null : _height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            color: _getBackgroundColor(
+              isEnabled: isEnabled,
+              variant: widget.variant,
+            ),
+            border: Border.all(
+              color: _getBorderColor(isEnabled, widget.variant),
+              width: widget.variant == CoreButtonVariant.primary ? 0 : 2,
+            ),
           ),
-          border: Border.all(
-            color: _getBorderColor(isEnabled, widget.variant),
-            width: widget.variant == CoreButtonVariant.primary
-                ? 0
-                : 2,
+          child: Padding(
+            padding: widget.variant == CoreButtonVariant.social
+                ? const EdgeInsets.symmetric(vertical: 12, horizontal: 24)
+                : _padding,
+            child: _buildContentRow(),
           ),
-        ),
-        child: Padding(
-          padding: widget.variant == CoreButtonVariant.social
-              ? const EdgeInsets.symmetric(vertical: 12, horizontal: 24)
-              : _padding,
-          child: _buildContentRow(),
         ),
       ),
     );
