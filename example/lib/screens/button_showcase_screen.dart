@@ -37,7 +37,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
             CoreButton(
               label: 'Social Button',
               onPressed: () {},
-              icon: const CoreIconWidget(icon: CoreIcons.facebook),
+              icon: const CoreIconWidget(icon: CoreIcons.google),
               variant: CoreButtonVariant.social,
               spaceOut: true,
               isDisabled: _isDisabled,

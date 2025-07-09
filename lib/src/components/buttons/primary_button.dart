@@ -29,7 +29,7 @@ enum CoreButtonVariant { primary, secondary, social }
 /// [centerAlign] aligns the content in the center.
 /// [spaceOut] adds spacing between the icon and text.
 /// [trailing] places the icon at the end of the button.
-class CoreButton extends StatelessWidget {
+class CoreButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
   final CoreButtonSize size;
@@ -57,8 +57,14 @@ class CoreButton extends StatelessWidget {
     this.centerAlign = true,
   });
 
+  @override
+  State<CoreButton> createState() => _CoreButtonState();
+}
+
+class _CoreButtonState extends State<CoreButton> {
+  bool isPressed = false;
   double get _height {
-    switch (size) {
+    switch (widget.size) {
       case CoreButtonSize.large:
         return 48;
       case CoreButtonSize.medium:
@@ -69,7 +75,7 @@ class CoreButton extends StatelessWidget {
   }
 
   EdgeInsets get _padding {
-    switch (size) {
+    switch (widget.size) {
       case CoreButtonSize.large:
         return const EdgeInsets.symmetric(horizontal: 24);
       case CoreButtonSize.medium:
@@ -90,7 +96,7 @@ class CoreButton extends StatelessWidget {
     }
     switch (variant) {
       case CoreButtonVariant.primary:
-        return CoreButtonColors.surface;
+        return isPressed ? CoreButtonColors.press : CoreButtonColors.surface;
       case CoreButtonVariant.secondary:
         return CoreTextColors.inverse;
       case CoreButtonVariant.social:
@@ -133,70 +139,68 @@ class CoreButton extends StatelessWidget {
   }
 
   Widget _buildContentRow() {
-    final isEnabled = !isDisabled && onPressed != null;
-    final textWidget = Text(label,
+    final isEnabled = !widget.isDisabled && widget.onPressed != null;
+    final textWidget = Text(widget.label,
         style: CoreTypography.bodyLargeSemiBold(
-          color: _getContentColor(isEnabled: isEnabled, variant: variant),
+          color:
+              _getContentColor(isEnabled: isEnabled, variant: widget.variant),
         ));
-
     return Row(
-      mainAxisAlignment: (centerAlign && !spaceOut)
+      mainAxisAlignment: (widget.centerAlign && !widget.spaceOut)
           ? MainAxisAlignment.center
-          : (centerAlign && spaceOut)
+          : (widget.centerAlign && widget.spaceOut)
               ? MainAxisAlignment.spaceBetween
               : MainAxisAlignment.start,
       children: [
-        if (!trailing && icon != null) icon!,
-        if (!trailing && icon != null && !spaceOut) const SizedBox(width: 8),
-        if (trailing && spaceOut) const SizedBox(width: 24, height: 24),
+        if (!widget.trailing && widget.icon != null) widget.icon!,
+        if (!widget.trailing && widget.icon != null && !widget.spaceOut)
+          const SizedBox(width: 8),
+        if (widget.trailing && widget.spaceOut)
+          const SizedBox(width: 24, height: 24),
         textWidget,
-        if (trailing && icon != null && !spaceOut) const SizedBox(width: 8),
-        if (trailing && icon != null) icon!,
-        if (!trailing && spaceOut) const SizedBox(width: 24, height: 24),
+        if (widget.trailing && widget.icon != null && !widget.spaceOut)
+          const SizedBox(width: 8),
+        if (widget.trailing && widget.icon != null) widget.icon!,
+        if (!widget.trailing && widget.spaceOut)
+          const SizedBox(width: 24, height: 24),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (variant == CoreButtonVariant.social && size != CoreButtonSize.large) {
+    if (widget.variant == CoreButtonVariant.social &&
+        widget.size != CoreButtonSize.large) {
       throw ArgumentError('Social button variant must be large size');
     }
-    final isEnabled = !isDisabled && onPressed != null;
+    final isEnabled = !widget.isDisabled && widget.onPressed != null;
 
-    return Container(
-      width: fullWidth ? double.infinity : null,
-      height: variant == CoreButtonVariant.social ? null : _height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        color: _getBackgroundColor(
-          isEnabled: isEnabled,
-          variant: variant,
-        ),
-        border: Border.all(
-          color: _getBorderColor(isEnabled, variant),
-          width:
-              variant == CoreButtonVariant.social ? CoreSpacing.space1 / 2 : 0,
-        ),
-      ),
-      child: Material(
-        type: MaterialType.transparency,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: InkWell(
-          splashColor: variant == CoreButtonVariant.primary
-              ? CoreButtonColors.press
-              : _getBackgroundColor(isEnabled: isEnabled, variant: variant),
-          highlightColor: variant == CoreButtonVariant.primary
-              ? CoreButtonColors.surface
-              : _getBackgroundColor(isEnabled: isEnabled, variant: variant),
-          onTap: isEnabled ? onPressed : null,
-          borderRadius: BorderRadius.circular(borderRadius),
-          child: Padding(
-            padding: variant == CoreButtonVariant.social
-                ? const EdgeInsets.symmetric(vertical: 12, horizontal: 24)
-                : _padding,
-            child: _buildContentRow(),
+    return GestureDetector(
+      onTap: isEnabled ? widget.onPressed : null,
+      onTapDown: isEnabled ? (_) => setState(() => isPressed = true) : null,
+      onTapUp: isEnabled ? (_) => setState(() => isPressed = false) : null,
+      onTapCancel: isEnabled ? () => setState(() => isPressed = false) : null,
+      child: Container(
+        width: widget.fullWidth ? double.infinity : null,
+        height: widget.variant == CoreButtonVariant.social ? null : _height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          color: _getBackgroundColor(
+            isEnabled: isEnabled,
+            variant: widget.variant,
           ),
+          border: Border.all(
+            color: _getBorderColor(isEnabled, widget.variant),
+            width: widget.variant == CoreButtonVariant.social
+                ? CoreSpacing.space1 / 2
+                : 0,
+          ),
+        ),
+        child: Padding(
+          padding: widget.variant == CoreButtonVariant.social
+              ? const EdgeInsets.symmetric(vertical: 12, horizontal: 24)
+              : _padding,
+          child: _buildContentRow(),
         ),
       ),
     );
