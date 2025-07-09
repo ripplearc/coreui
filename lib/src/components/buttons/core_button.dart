@@ -29,6 +29,8 @@ enum CoreButtonVariant { primary, secondary, social }
 /// [centerAlign] aligns the content in the center.
 /// [spaceOut] adds spacing between the icon and text.
 /// [trailing] places the icon at the end of the button.
+/// [focusNode] used to control button focus state
+/// [autofocus] determines whether the button should be auto focused
 class CoreButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -41,6 +43,8 @@ class CoreButton extends StatefulWidget {
   final bool centerAlign;
   final bool spaceOut;
   final bool trailing;
+  final bool autofocus;
+  final FocusNode? focusNode;
 
   const CoreButton({
     super.key,
@@ -55,6 +59,8 @@ class CoreButton extends StatefulWidget {
     this.spaceOut = false,
     this.trailing = false,
     this.centerAlign = true,
+    this.focusNode,
+    this.autofocus = false,
   });
 
   @override
@@ -141,7 +147,11 @@ class _CoreButtonState extends State<CoreButton> {
       case CoreButtonVariant.primary:
         return CoreTextColors.inverse;
       case CoreButtonVariant.secondary:
-        return CoreButtonColors.surface;
+        return isPressed
+            ? CoreButtonColors.press
+            : isFocused
+                ? CoreButtonColors.hover
+                : CoreButtonColors.surface;
       case CoreButtonVariant.social:
         return CoreTextColors.headline;
     }
@@ -179,7 +189,8 @@ class _CoreButtonState extends State<CoreButton> {
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode();
+    _focusNode = widget.focusNode ?? FocusNode();
+    isFocused = widget.autofocus;
     _focusNode.addListener(() {
       setState(() {
         isFocused = _focusNode.hasFocus;
@@ -203,6 +214,7 @@ class _CoreButtonState extends State<CoreButton> {
 
     return Focus(
       focusNode: _focusNode,
+      autofocus: widget.autofocus,
       onFocusChange: (focused) => setState(() => isFocused = focused),
       child: GestureDetector(
         onTap: isEnabled ? widget.onPressed : null,
