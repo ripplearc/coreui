@@ -91,14 +91,14 @@ class _CoreButtonState extends State<CoreButton> {
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? CoreButtonColors.inverse
+          ? Colors.transparent
           : CoreButtonColors.disable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
         return isPressed ? CoreButtonColors.press : CoreButtonColors.surface;
       case CoreButtonVariant.secondary:
-        return CoreTextColors.inverse;
+        return Colors.transparent;
       case CoreButtonVariant.social:
         return CoreTextColors.inverse;
     }
@@ -106,14 +106,12 @@ class _CoreButtonState extends State<CoreButton> {
 
   Color _getBorderColor(bool isEnabled, CoreButtonVariant variant) {
     if (!isEnabled) {
-      return variant == CoreButtonVariant.secondary
-          ? CoreTextColors.disable
-          : CoreButtonColors.disable;
+      return CoreButtonColors.disable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
-        return CoreButtonColors.surface;
+        return isPressed ? CoreButtonColors.press : CoreButtonColors.surface;
       case CoreButtonVariant.social:
         return CoreBorderColors.lineDarkOutline;
     }
@@ -191,9 +189,9 @@ class _CoreButtonState extends State<CoreButton> {
           ),
           border: Border.all(
             color: _getBorderColor(isEnabled, widget.variant),
-            width: widget.variant == CoreButtonVariant.social
-                ? CoreSpacing.space1 / 2
-                : 0,
+            width: widget.variant == CoreButtonVariant.primary
+                ? 0
+                : 2,
           ),
         ),
         child: Padding(
