@@ -130,7 +130,7 @@ class _CoreButtonState extends State<CoreButton> {
                 ? CoreButtonColors.hover
                 : CoreButtonColors.surface;
       case CoreButtonVariant.social:
-        return CoreBorderColors.lineDarkOutline;
+        return CoreBorderColors.lineMid;
     }
   }
 
@@ -232,7 +232,11 @@ class _CoreButtonState extends State<CoreButton> {
             ),
             border: Border.all(
               color: _getBorderColor(isEnabled, widget.variant),
-              width: widget.variant == CoreButtonVariant.primary ? 0 : 2,
+              width: widget.variant == CoreButtonVariant.primary
+                  ? widget.variant == CoreButtonVariant.social
+                      ? 1
+                      : 0
+                  : 2,
             ),
           ),
           child: Padding(
