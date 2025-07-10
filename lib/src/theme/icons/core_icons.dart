@@ -100,6 +100,7 @@ class CoreIcons {
   static const link = CoreMaterialIcons.link;
   static const check = CoreMaterialIcons.check;
   static const checkBlank = CoreMaterialIcons.checkBlank;
+  static const checkCircle = CoreMaterialIcons.checkCircle;
   static const favorite = CoreMaterialIcons.favorite;
   static const eye = CoreMaterialIcons.eye;
   static const eyeOff = CoreMaterialIcons.eyeOff;

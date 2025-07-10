@@ -35,14 +35,14 @@ void main() {
           CoreTextField(
             controller: TextEditingController(text: 'Input'),
             label: 'Label',
-            errorText: 'Error Message',
+            errorTextList: ['Error Message'],
             helperText: 'Helper Text',
           ))
       ..addScenario(
           'DefaultError',
           CoreTextField(
             controller: TextEditingController(),
-            errorText: 'Error Message',
+            errorTextList: ['Error Message'],
             label: 'Label',
           ))
       ..addScenario(
@@ -99,7 +99,7 @@ void main() {
             onPhonePrefixChanged: (_) {},
             controller: TextEditingController(text: '1234567890'),
             label: 'Label',
-            errorText: 'Error Message',
+            errorTextList: ['Error Message'],
           ));
 
     await tester.pumpWidgetBuilder(

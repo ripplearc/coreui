@@ -27,7 +27,7 @@ void main() {
           home: Scaffold(
             body: CoreTextField(
               label: 'Password',
-              errorText: 'Invalid password',
+              errorTextList: ['Invalid password'],
               obscureText: true,
               controller: TextEditingController(),
             ),
