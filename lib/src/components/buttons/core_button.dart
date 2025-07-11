@@ -130,7 +130,11 @@ class _CoreButtonState extends State<CoreButton> {
                 ? CoreButtonColors.hover
                 : CoreButtonColors.surface;
       case CoreButtonVariant.social:
-        return CoreBorderColors.lineMid;
+        return isPressed
+            ? CoreBorderColors.outlineHover
+            : isFocused
+                ? CoreBorderColors.lineDarkOutline
+                : CoreBorderColors.lineMid;
     }
   }
 
