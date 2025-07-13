@@ -40,6 +40,19 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
             ),
             const SizedBox(height: 16),
             CoreButton(
+              label: 'Primary Focused',
+              onPressed: () {},
+              variant: CoreButtonVariant.primary,
+              isDisabled: _isDisabled,
+              autofocus: true,
+              icon: CoreIconWidget(
+                icon: CoreIcons.checkCircle,
+                color:
+                    _isDisabled ? CoreTextColors.body : CoreTextColors.inverse,
+              ),
+            ),
+            const SizedBox(height: 16),
+            CoreButton(
               label: 'Secondary Button',
               onPressed: () {},
               variant: CoreButtonVariant.secondary,
@@ -60,6 +73,20 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
             ),
             const SizedBox(height: 16),
             CoreButton(
+              label: 'Secondary Focused',
+              onPressed: () {},
+              variant: CoreButtonVariant.secondary,
+              isDisabled: _isDisabled,
+              autofocus: true,
+              icon: CoreIconWidget(
+                icon: CoreIcons.checkCircle,
+                color: _isDisabled
+                    ? CoreTextColors.disable
+                    : CoreButtonColors.hover,
+              ),
+            ),
+            const SizedBox(height: 16),
+            CoreButton(
               label: 'Social Button',
               onPressed: () {},
               icon: const CoreIconWidget(icon: CoreIcons.microsoft),
@@ -73,6 +100,16 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               icon: const CoreIconWidget(icon: CoreIcons.google),
               variant: CoreButtonVariant.social,
               spaceOut: true,
+              isDisabled: _isDisabled,
+            ),
+            const SizedBox(height: 16),
+            CoreButton(
+              label: 'Social Focused',
+              onPressed: () {},
+              icon: const CoreIconWidget(icon: CoreIcons.google),
+              variant: CoreButtonVariant.social,
+              spaceOut: true,
+              autofocus: true,
               isDisabled: _isDisabled,
             ),
             const SizedBox(height: 16),
