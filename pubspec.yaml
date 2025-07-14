@@ -3,7 +3,7 @@ description: A Flutter design system package with design tokens and basic compon
 version: 0.0.1
 homepage: https://github.com/ripplearc/coreui
 repository: https://github.com/ripplearc/coreui.git
-publisher: ripplearc.com
+publish_to: https://pub.dev
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

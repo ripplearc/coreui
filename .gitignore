@@ -83,7 +83,6 @@ debug.log
 .dart_tool/extension_discovery/vs_code.json
 .idea/workspace.xml
 .idea/libraries/Dart_Packages.xml
-example/pubspec.lock
 
 /review_pr.sh
 /review_result.txt
