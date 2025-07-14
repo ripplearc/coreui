@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:core_ui/core_ui.dart';
+import 'package:flutter/material.dart';
 
 /// A widget that allows the user to select a single item from a list of items
 /// This widget uses a bottom sheet to display the list of items for selection.

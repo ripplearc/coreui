@@ -19,14 +19,14 @@ class CoreIconWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const CoreIconWidget({
-    Key? key,
+    super.key,
     required this.icon,
     this.size,
     this.color,
     this.semanticLabel,
     this.onTap,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

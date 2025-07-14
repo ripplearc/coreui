@@ -101,7 +101,6 @@ class ToastShowcaseScreen extends StatelessWidget {
     BuildContext context, {
     required String title,
     required Widget toast,
-    String? description,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,14 +184,16 @@ class ToastShowcaseScreen extends StatelessWidget {
             );
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: toast,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: toast,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
       });
     }
   }

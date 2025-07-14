@@ -12,7 +12,7 @@ class SingleItemSelectorShowcaseScreen extends StatefulWidget {
 class _SingleItemSelectorShowcaseScreenState extends State<SingleItemSelectorShowcaseScreen> {
   final List<String> _roles = ['Engineer', 'Designer', 'Manager'];
   String? _selectedRole;
-  String? _selectedRoleDisabled = 'Manager';
+  String? selectedRoleDisabled = 'Manager';
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class _SingleItemSelectorShowcaseScreenState extends State<SingleItemSelectorSho
               hintText: 'Select your role',
               modalTitle: 'Choose a Role',
               items: _roles,
-              selectedItem: _selectedRoleDisabled,
+              selectedItem: selectedRoleDisabled,
               isDisabled: true,
               onItemSelected: (_) {},
             ),

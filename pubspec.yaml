@@ -1,7 +1,9 @@
 name: core_ui
 description: A Flutter design system package with design tokens and basic components.
 version: 0.0.1
-homepage: https://github.com/yourusername/core_ui
+homepage: https://github.com/ripplearc/coreui
+repository: https://github.com/ripplearc/coreui.git
+publisher: ripplearc.com
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

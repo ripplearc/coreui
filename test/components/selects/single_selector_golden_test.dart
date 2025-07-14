@@ -1,7 +1,7 @@
+import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
-import 'package:core_ui/core_ui.dart';
 
 void main() {
   testGoldens('SingleItemSelector Golden Test', (WidgetTester tester) async {

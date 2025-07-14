@@ -2,7 +2,7 @@ import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 
 class ShadowShowcaseScreen extends StatelessWidget {
-  const ShadowShowcaseScreen({Key? key}) : super(key: key);
+  const ShadowShowcaseScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ void main() {
     await loadAppFonts();
   });
 
-  Widget _buildSpacingRow(
+  Widget buildSpacingRow(
       String name, String remValue, String pixelValue, double size) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -79,10 +79,10 @@ void main() {
               const SizedBox(height: 24),
 
               // Header row
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+              const Padding(
+                padding:  EdgeInsets.only(bottom: 16),
                 child: Row(
-                  children: const [
+                  children:  [
                     SizedBox(
                       width: 60,
                       child: Text(
@@ -131,27 +131,27 @@ void main() {
               ),
 
               // Spacing rows
-              _buildSpacingRow('space1', '0.25rem', '4px', CoreSpacing.space1),
-              _buildSpacingRow('space2', '0.5rem', '8px', CoreSpacing.space2),
-              _buildSpacingRow('space3', '0.75rem', '12px', CoreSpacing.space3),
-              _buildSpacingRow('space4', '1rem', '16px', CoreSpacing.space4),
-              _buildSpacingRow('space5', '1.25rem', '20px', CoreSpacing.space5),
-              _buildSpacingRow('space6', '1.5rem', '24px', CoreSpacing.space6),
-              _buildSpacingRow('space8', '2rem', '32px', CoreSpacing.space8),
-              _buildSpacingRow(
+              buildSpacingRow('space1', '0.25rem', '4px', CoreSpacing.space1),
+              buildSpacingRow('space2', '0.5rem', '8px', CoreSpacing.space2),
+              buildSpacingRow('space3', '0.75rem', '12px', CoreSpacing.space3),
+              buildSpacingRow('space4', '1rem', '16px', CoreSpacing.space4),
+              buildSpacingRow('space5', '1.25rem', '20px', CoreSpacing.space5),
+              buildSpacingRow('space6', '1.5rem', '24px', CoreSpacing.space6),
+              buildSpacingRow('space8', '2rem', '32px', CoreSpacing.space8),
+              buildSpacingRow(
                   'space10', '2.5rem', '40px', CoreSpacing.space10),
-              _buildSpacingRow('space12', '3rem', '48px', CoreSpacing.space12),
-              _buildSpacingRow('space16', '4rem', '64px', CoreSpacing.space16),
-              _buildSpacingRow('space20', '5rem', '80px', CoreSpacing.space20),
-              _buildSpacingRow('space24', '6rem', '96px', CoreSpacing.space24),
-              _buildSpacingRow('space32', '8rem', '128px', CoreSpacing.space32),
-              _buildSpacingRow(
+              buildSpacingRow('space12', '3rem', '48px', CoreSpacing.space12),
+              buildSpacingRow('space16', '4rem', '64px', CoreSpacing.space16),
+              buildSpacingRow('space20', '5rem', '80px', CoreSpacing.space20),
+              buildSpacingRow('space24', '6rem', '96px', CoreSpacing.space24),
+              buildSpacingRow('space32', '8rem', '128px', CoreSpacing.space32),
+              buildSpacingRow(
                   'space40', '10rem', '160px', CoreSpacing.space40),
-              _buildSpacingRow(
+              buildSpacingRow(
                   'space48', '12rem', '192px', CoreSpacing.space48),
-              _buildSpacingRow(
+              buildSpacingRow(
                   'space56', '14rem', '224px', CoreSpacing.space56),
-              _buildSpacingRow(
+              buildSpacingRow(
                   'space64', '16rem', '256px', CoreSpacing.space64),
             ],
           ),
