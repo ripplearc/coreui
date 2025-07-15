@@ -2,7 +2,7 @@ import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldScreen extends StatefulWidget {
-  const TextFieldScreen({Key? key}) : super(key: key);
+  const TextFieldScreen({super.key});
 
   @override
   State<TextFieldScreen> createState() => _TextFieldScreenState();

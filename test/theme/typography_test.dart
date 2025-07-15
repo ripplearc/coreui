@@ -8,7 +8,7 @@ void main() {
     await loadAppFonts();
   });
 
-  Widget _buildTypographyRow(String name, String fontFamily, String weight,
+  Widget buildTypographyRow(String name, String fontFamily, String weight,
       String size, TextStyle style) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -36,7 +36,7 @@ void main() {
     );
   }
 
-  Widget _buildTypographySection(String title, List<Widget> rows) {
+  Widget buildTypographySection(String title, List<Widget> rows) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,17 +67,17 @@ void main() {
               const SizedBox(height: 16),
 
               // Headline Large
-              _buildTypographySection(
+              buildTypographySection(
                 'Headline Large',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Headline Large',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '32/40',
                     CoreTypography.headlineLargeRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Headline Large',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -88,17 +88,17 @@ void main() {
               ),
 
               // Headline Medium
-              _buildTypographySection(
+              buildTypographySection(
                 'Headline Medium',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Headline Medium',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '24/32',
                     CoreTypography.headlineMediumRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Headline Medium',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -109,24 +109,24 @@ void main() {
               ),
 
               // Title Large
-              _buildTypographySection(
+              buildTypographySection(
                 'Title Large',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Large',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '20/28',
                     CoreTypography.titleLargeRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Large',
                     'IBM Plex Sans Hebrew',
                     'Medium',
                     '20/28',
                     CoreTypography.titleLargeMedium(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Large',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -137,24 +137,24 @@ void main() {
               ),
 
               // Title Medium
-              _buildTypographySection(
+              buildTypographySection(
                 'Title Medium',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Medium',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '18/26',
                     CoreTypography.titleMediumRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Medium',
                     'IBM Plex Sans Hebrew',
                     'Medium',
                     '18/26',
                     CoreTypography.titleMediumMedium(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Title Medium',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -165,24 +165,24 @@ void main() {
               ),
 
               // Body Large
-              _buildTypographySection(
+              buildTypographySection(
                 'Body Large',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Large',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '16/24',
                     CoreTypography.bodyLargeRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Large',
                     'IBM Plex Sans Hebrew',
                     'Medium',
                     '16/24',
                     CoreTypography.bodyLargeMedium(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Large',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -193,24 +193,24 @@ void main() {
               ),
 
               // Body Medium
-              _buildTypographySection(
+              buildTypographySection(
                 'Body Medium',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Medium',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '14/20',
                     CoreTypography.bodyMediumRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Medium',
                     'IBM Plex Sans Hebrew',
                     'Medium',
                     '14/20',
                     CoreTypography.bodyMediumMedium(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Medium',
                     'IBM Plex Sans Hebrew',
                     'Semibold',
@@ -221,24 +221,24 @@ void main() {
               ),
 
               // Body Small
-              _buildTypographySection(
+              buildTypographySection(
                 'Body Small',
                 [
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Small',
                     'IBM Plex Sans Hebrew',
                     'Regular',
                     '12/16',
                     CoreTypography.bodySmallRegular(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Small',
                     'IBM Plex Sans Hebrew',
                     'Medium',
                     '12/16',
                     CoreTypography.bodySmallMedium(),
                   ),
-                  _buildTypographyRow(
+                  buildTypographyRow(
                     'Body Small',
                     'IBM Plex Sans Hebrew',
                     'Semibold',

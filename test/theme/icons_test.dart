@@ -8,7 +8,7 @@ void main() {
     await loadAppFonts();
   });
 
-  Widget _buildIconGrid(
+  Widget buildIconGrid(
     String sizeTitle,
     List<MapEntry<String, CoreIconData>> icons,
     double size, {
@@ -76,7 +76,7 @@ void main() {
               const SizedBox(height: 32),
 
               // 16x16 Icons
-              _buildIconGrid(
+              buildIconGrid(
                 '16×16',
                 [
                   const MapEntry('info', CoreIcons.info),
@@ -91,7 +91,7 @@ void main() {
               ),
 
               // 20x20 Icons
-              _buildIconGrid(
+              buildIconGrid(
                 '20×20',
                 [
                   const MapEntry('close', CoreIcons.close),
@@ -131,7 +131,7 @@ void main() {
               ),
 
               // 24x24 Icons Row 1
-              _buildIconGrid(
+              buildIconGrid(
                 '24×24',
                 [
                   const MapEntry('eye', CoreIcons.eye),
@@ -164,7 +164,7 @@ void main() {
               ),
 
               // 24x24 Icons Row 2
-              _buildIconGrid(
+              buildIconGrid(
                 '',
                 [
                   const MapEntry('bell', CoreIcons.notification),
@@ -191,7 +191,7 @@ void main() {
               ),
 
               // 24x24 Icons Row 3
-              _buildIconGrid(
+              buildIconGrid(
                 '',
                 [
                   const MapEntry('chat', CoreIcons.message),
@@ -218,7 +218,7 @@ void main() {
               ),
 
               // 24x24 Icons Row 4
-              _buildIconGrid(
+              buildIconGrid(
                 '',
                 [
                   const MapEntry(
@@ -241,7 +241,7 @@ void main() {
               ),
 
               // 32x32 Icons
-              _buildIconGrid(
+              buildIconGrid(
                 '32×32',
                 [
                   const MapEntry('plus', CoreIcons.addFile),
