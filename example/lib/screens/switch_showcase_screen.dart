@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:core_ui/core_ui.dart';
+import 'package:flutter/material.dart';
 
 class SwitchShowcaseScreen extends StatefulWidget {
   const SwitchShowcaseScreen({super.key});
@@ -9,103 +9,113 @@ class SwitchShowcaseScreen extends StatefulWidget {
 }
 
 class _SwitchShowcaseScreenState extends State<SwitchShowcaseScreen> {
-  bool _basicSwitchValue = false;
-  bool _lockValue = false;
-  bool _showValue = false;
-  bool _privacyValue = false;
+  bool isLocked = false;
+  bool isPrivate = false;
+  bool isMetric = false;
+  bool normalCompact = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Switch Components'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(title: const Text('Core Switch Showcase')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Switches',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Switch Types',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Basic switches
-            _buildSectionTitle(context, 'Basic Switches'),
-            const SizedBox(height: 16),
-            Row(
+            // Normal Type Section
+            Text(
+              'Normal Type (Grey, Width: 71px labeled / 32px compact)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              runSpacing: 15,
+              spacing: 20,
               children: [
-                CustomSwitch(
-                  value: _basicSwitchValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _basicSwitchValue = value;
-                    });
-                  },
-                  variant: SwitchVariant.basic,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Compact (no labels):'),
+                    const SizedBox(height: 5),
+                    CoreSwitch(
+                      type: CoreSwitchType.normal,
+                      value: normalCompact,
+                      onChanged: (v) => setState(() => normalCompact = v),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Text(
-                  _basicSwitchValue ? 'ON' : 'OFF',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('With labels:'),
+                    const SizedBox(height: 5),
+                    CoreSwitch(
+                      type: CoreSwitchType.normal,
+                      value: isPrivate,
+                      onChanged: (v) => setState(() => isPrivate = v),
+                      activeLabel: 'Public',
+                      inactiveLabel: 'Private',
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 32),
 
-            // Action switches
-            _buildSectionTitle(context, 'Action Switches'),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
+            const SizedBox(height: 30),
+
+            // Lock Type Section
+            Text(
+              'Lock Type (Red, Width: 71px)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomSwitch(
-                  value: _lockValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _lockValue = value;
-                    });
-                  },
-                  variant: SwitchVariant.lockUnlock,
-                  // activeColor: Colors.blue[700],
-                  // activeTrackColor: Colors.blue[100],
+                const Text('Lock/Unlock switch:'),
+                const SizedBox(height: 5),
+                CoreSwitch(
+                  type: CoreSwitchType.lock,
+                  value: isLocked,
+                  onChanged: (v) => setState(() => isLocked = v),
+                  activeLabel: 'Lock',
+                  inactiveLabel: 'Unlock',
                 ),
-                CustomSwitch(
-                  value: _showValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _showValue = value;
-                    });
-                  },
-                  variant: SwitchVariant.showHide,
-                  // activeColor: Colors.blue[700],
-                  // activeTrackColor: Colors.blue[100],
-                ),
-                CustomSwitch(
-                  value: _privacyValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _privacyValue = value;
-                    });
-                  },
-                  variant: SwitchVariant.privatePublic,
-                  // activeColor: Colors.blue[700],
-                  // activeTrackColor: Colors.blue[100],
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            // Imperial Type Section
+            Text(
+              'Imperial Type (Green, Width: 77px)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Metric/Imperial switch:'),
+                const SizedBox(height: 5),
+                CoreSwitch(
+                  type: CoreSwitchType.imperial,
+                  value: isMetric,
+                  onChanged: (v) => setState(() => isMetric = v),
+                  activeLabel: 'Metric',
+                  inactiveLabel: 'Imperial',
                 ),
               ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleLarge,
     );
   }
 }
