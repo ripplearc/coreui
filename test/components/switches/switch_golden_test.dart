@@ -11,7 +11,7 @@ void main() {
   group('Switch Golden Tests', () {
     testGoldens('Switch Component Visual Regression Test', (tester) async {
       final builder = GoldenBuilder.grid(
-          columns: 3, widthToHeightRatio: 1.5, bgColor: Colors.white)
+          columns: 2, widthToHeightRatio: 2.5, bgColor: Colors.white)
         // Normal switches - compact (no labels)
         ..addScenario(
           'Normal Off',
@@ -100,7 +100,7 @@ void main() {
           color: Colors.white,
           child: builder.build(),
         ),
-        surfaceSize: const Size(500, 500),
+        surfaceSize: const Size(500, 800),
       );
 
       await screenMatchesGolden(tester, 'switch_component');
