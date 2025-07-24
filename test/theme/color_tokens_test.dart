@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:core_ui/src/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,8 +9,24 @@ void main() {
   setUpAll(() async {
     await loadAppFonts();
   });
+  String separateName(String name) {
+    // Insert a space before each uppercase letter
+    String separatedName = name.replaceAllMapped(
+      RegExp(r'([A-Z])'),
+      (Match match) => ' ${match.group(1)}',
+    );
 
-  Widget _buildColorSwatch(String name, Color color) {
+    // Capitalize the first letter of the result
+    separatedName = separatedName.trim();
+    if (separatedName.isNotEmpty) {
+      separatedName =
+          separatedName[0].toUpperCase() + separatedName.substring(1);
+    }
+
+    return separatedName;
+  }
+
+  Widget buildColorSwatch(String name, Color color) {
     return SizedBox(
       width: 100,
       child: Column(
@@ -25,7 +43,7 @@ void main() {
           ),
           const SizedBox(height: 8),
           Text(
-            name,
+            separateName(name),
             style: const TextStyle(fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -40,7 +58,7 @@ void main() {
     );
   }
 
-  Widget _buildColorGrid(String title, List<MapEntry<String, Color>> colors) {
+  Widget buildColorGrid(String title, List<MapEntry<String, Color>> colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,7 +66,7 @@ void main() {
           spacing: 16,
           runSpacing: 16,
           children: colors.map((entry) {
-            return _buildColorSwatch(entry.key, entry.value);
+            return buildColorSwatch(entry.key, entry.value);
           }).toList(),
         ),
       ],
@@ -59,156 +77,156 @@ void main() {
     final builder = GoldenBuilder.column()
       ..addScenario(
         'Text Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Text Colors',
           [
-            MapEntry('headline', CoreTextColors.headline),
-            MapEntry('dark', CoreTextColors.dark),
-            MapEntry('body', CoreTextColors.body),
-            MapEntry('disable', CoreTextColors.disable),
-            MapEntry('inverse', CoreTextColors.inverse),
-            MapEntry('link', CoreTextColors.link),
-            MapEntry('info', CoreTextColors.info),
-            MapEntry('warning', CoreTextColors.warning),
-            MapEntry('error', CoreTextColors.error),
-            MapEntry('success', CoreTextColors.success),
+            const MapEntry('headline', CoreTextColors.headline),
+            const MapEntry('dark', CoreTextColors.dark),
+            const MapEntry('body', CoreTextColors.body),
+            const MapEntry('disable', CoreTextColors.disable),
+            const MapEntry('inverse', CoreTextColors.inverse),
+            const MapEntry('link', CoreTextColors.link),
+            const MapEntry('info', CoreTextColors.info),
+            const MapEntry('warning', CoreTextColors.warning),
+            const MapEntry('error', CoreTextColors.error),
+            const MapEntry('success', CoreTextColors.success),
           ],
         ),
       )
       ..addScenario(
         'Background Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Background Colors',
           [
-            MapEntry('pageBackground', CoreBackgroundColors.pageBackground),
-            MapEntry('backgroundGrayLight',
+            const MapEntry('pageBackground', CoreBackgroundColors.pageBackground),
+            const MapEntry('backgroundGrayLight',
                 CoreBackgroundColors.backgroundGrayLight),
-            MapEntry(
+            const MapEntry(
                 'backgroundGrayMid', CoreBackgroundColors.backgroundGrayMid),
-            MapEntry('backgroundBlueLight',
+            const MapEntry('backgroundBlueLight',
                 CoreBackgroundColors.backgroundBlueLight),
-            MapEntry(
+            const MapEntry(
                 'backgroundBlueMid', CoreBackgroundColors.backgroundBlueMid),
-            MapEntry('backgroundGreenLight',
+            const MapEntry('backgroundGreenLight',
                 CoreBackgroundColors.backgroundGreenLight),
-            MapEntry(
+            const MapEntry(
                 'backgroundGreenMid', CoreBackgroundColors.backgroundGreenMid),
-            MapEntry(
+            const MapEntry(
                 'backgroundRedLight', CoreBackgroundColors.backgroundRedLight),
-            MapEntry('backgroundRedMid', CoreBackgroundColors.backgroundRedMid),
-            MapEntry('backgroundOrangeLight',
+            const MapEntry('backgroundRedMid', CoreBackgroundColors.backgroundRedMid),
+            const MapEntry('backgroundOrangeLight',
                 CoreBackgroundColors.backgroundOrangeLight),
-            MapEntry('backgroundOrangeMid',
+            const MapEntry('backgroundOrangeMid',
                 CoreBackgroundColors.backgroundOrangeMid),
-            MapEntry(
+            const MapEntry(
                 'backgroundDarkGray', CoreBackgroundColors.backgroundDarkGray),
-            MapEntry('backgroundDarkOrient',
+            const MapEntry('backgroundDarkOrient',
                 CoreBackgroundColors.backgroundDarkOrient),
-            MapEntry('backgroundOrientLight',
+            const MapEntry('backgroundOrientLight',
                 CoreBackgroundColors.backgroundOrientLight),
-            MapEntry('backgroundOrientMid',
+            const MapEntry('backgroundOrientMid',
                 CoreBackgroundColors.backgroundOrientMid),
           ],
         ),
       )
       ..addScenario(
         'Border Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Border Colors',
           [
-            MapEntry('lineLight', CoreBorderColors.lineLight),
-            MapEntry('lineMid', CoreBorderColors.lineMid),
-            MapEntry('lineDarkOutline', CoreBorderColors.lineDarkOutline),
-            MapEntry('lineHighlight', CoreBorderColors.lineHighlight),
-            MapEntry('outlineHover', CoreBorderColors.outlineHover),
-            MapEntry('outlineFocus', CoreBorderColors.outlineFocus),
-            MapEntry('tabsHighlight', CoreBorderColors.tabsHighlight),
+            const MapEntry('lineLight', CoreBorderColors.lineLight),
+            const MapEntry('lineMid', CoreBorderColors.lineMid),
+            const MapEntry('lineDarkOutline', CoreBorderColors.lineDarkOutline),
+            const MapEntry('lineHighlight', CoreBorderColors.lineHighlight),
+            const MapEntry('outlineHover', CoreBorderColors.outlineHover),
+            const MapEntry('outlineFocus', CoreBorderColors.outlineFocus),
+            const MapEntry('tabsHighlight', CoreBorderColors.tabsHighlight),
           ],
         ),
       )
       ..addScenario(
         'Status Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Status Colors',
           [
-            MapEntry('error', CoreStatusColors.error),
-            MapEntry('success', CoreStatusColors.success),
+            const MapEntry('error', CoreStatusColors.error),
+            const MapEntry('success', CoreStatusColors.success),
           ],
         ),
       )
       ..addScenario(
         'Keyboard Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Keyboard Colors',
           [
-            MapEntry('numbers', CoreKeyboardColors.numbers),
-            MapEntry('calculate', CoreKeyboardColors.calculate),
-            MapEntry('units', CoreKeyboardColors.units),
-            MapEntry('functions', CoreKeyboardColors.functions),
-            MapEntry('actions', CoreKeyboardColors.actions),
-            MapEntry('main', CoreKeyboardColors.main),
+            const MapEntry('numbers', CoreKeyboardColors.numbers),
+            const MapEntry('calculate', CoreKeyboardColors.calculate),
+            const MapEntry('units', CoreKeyboardColors.units),
+            const MapEntry('functions', CoreKeyboardColors.functions),
+            const MapEntry('actions', CoreKeyboardColors.actions),
+            const MapEntry('main', CoreKeyboardColors.main),
           ],
         ),
       )
       ..addScenario(
         'Icon Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Icon Colors',
           [
-            MapEntry('dark', CoreIconColors.dark),
-            MapEntry('grayDark', CoreIconColors.grayDark),
-            MapEntry('grayMid', CoreIconColors.grayMid),
-            MapEntry('grayLight', CoreIconColors.grayLight),
-            MapEntry('white', CoreIconColors.white),
-            MapEntry('red', CoreIconColors.red),
-            MapEntry('orient', CoreIconColors.orient),
-            MapEntry('orange', CoreIconColors.orange),
-            MapEntry('blue', CoreIconColors.blue),
-            MapEntry('green', CoreIconColors.green),
+            const MapEntry('dark', CoreIconColors.dark),
+            const MapEntry('grayDark', CoreIconColors.grayDark),
+            const MapEntry('grayMid', CoreIconColors.grayMid),
+            const MapEntry('grayLight', CoreIconColors.grayLight),
+            const MapEntry('white', CoreIconColors.white),
+            const MapEntry('red', CoreIconColors.red),
+            const MapEntry('orient', CoreIconColors.orient),
+            const MapEntry('orange', CoreIconColors.orange),
+            const MapEntry('blue', CoreIconColors.blue),
+            const MapEntry('green', CoreIconColors.green),
           ],
         ),
       )
       ..addScenario(
         'Chip Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Chip Colors',
           [
-            MapEntry('grey', CoreChipColors.gray),
-            MapEntry('primary', CoreChipColors.primary),
-            MapEntry('red', CoreChipColors.red),
-            MapEntry('orange', CoreChipColors.orange),
-            MapEntry('blue', CoreChipColors.blue),
-            MapEntry('green', CoreChipColors.green),
+            const MapEntry('grey', CoreChipColors.gray),
+            const MapEntry('primary', CoreChipColors.primary),
+            const MapEntry('red', CoreChipColors.red),
+            const MapEntry('orange', CoreChipColors.orange),
+            const MapEntry('blue', CoreChipColors.blue),
+            const MapEntry('green', CoreChipColors.green),
           ],
         ),
       )
       ..addScenario(
         'Button Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Button Colors',
           [
-            MapEntry('surface', CoreButtonColors.surface),
-            MapEntry('hover', CoreButtonColors.hover),
-            MapEntry('press', CoreButtonColors.press),
-            MapEntry('disable', CoreButtonColors.disable),
+            const MapEntry('surface', CoreButtonColors.surface),
+            const MapEntry('hover', CoreButtonColors.hover),
+            const MapEntry('press', CoreButtonColors.press),
+            const MapEntry('disable', CoreButtonColors.disable),
           ],
         ),
       )
       ..addScenario(
         'Alert Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Alert Colors',
           [
-            MapEntry('red', CoreAlertColors.red),
-            MapEntry('orange', CoreAlertColors.orange),
-            MapEntry('blue', CoreAlertColors.blue),
-            MapEntry('green', CoreAlertColors.green),
+            const MapEntry('red', CoreAlertColors.red),
+            const MapEntry('orange', CoreAlertColors.orange),
+            const MapEntry('blue', CoreAlertColors.blue),
+            const MapEntry('green', CoreAlertColors.green),
           ],
         ),
       )
       ..addScenario(
         'Shadow Colors',
-        _buildColorGrid(
+        buildColorGrid(
           'Shadow Colors',
           [
             MapEntry('shadowGrey3', CoreShadowColors.shadowGrey3),

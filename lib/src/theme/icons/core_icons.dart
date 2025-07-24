@@ -19,6 +19,7 @@ class CoreIcons {
   static const divide = CoreIconData.svg(CoreSvgIcons.divide);
   static const plusMinus = CoreIconData.svg(CoreSvgIcons.plusMinus);
   static const slash = CoreIconData.svg(CoreSvgIcons.slash);
+  static const cChar = CoreIconData.svg(CoreSvgIcons.cChar);
 
   // Navigation (Material)
   static const backspaceLeft = CoreMaterialIcons.backspaceLeft;
@@ -28,12 +29,14 @@ class CoreIcons {
   static const arrowDown = CoreMaterialIcons.arrowDown;
   static const arrowDropDown = CoreMaterialIcons.arrowDropDown;
   static const arrowDropUp = CoreMaterialIcons.arrowDropUp;
+  static const unfoldLess = CoreMaterialIcons.unfoldLess;
+  static const unfoldMore = CoreMaterialIcons.unfoldMore;
   static const moreVert = CoreMaterialIcons.moreVert;
   static const moreHoriz = CoreMaterialIcons.moreHoriz;
 
   // Actions
   static const add = CoreMaterialIcons.add;
-  static const remove = CoreMaterialIcons.remove;
+  static const minus = CoreMaterialIcons.minus;
   static const edit = CoreMaterialIcons.edit;
   static const delete = CoreIconData.svg(CoreSvgIcons.delete); // SVG version
   static const rename = CoreIconData.svg(CoreSvgIcons.rename); // SVG version
@@ -44,6 +47,8 @@ class CoreIcons {
   static const download = CoreMaterialIcons.download;
   static const share = CoreMaterialIcons.share;
   static const copy = CoreMaterialIcons.copy;
+  static const backSpace = CoreMaterialIcons.backSpace;
+
   static const launch = CoreMaterialIcons.launch;
   static const plagiarism = CoreMaterialIcons.plagiarism;
 
@@ -57,7 +62,6 @@ class CoreIcons {
   // Communication
   static const email = CoreMaterialIcons.email;
   static const message = CoreMaterialIcons.message;
-  static const chat = CoreMaterialIcons.chat;
   static const notification = CoreMaterialIcons.notification;
   static const phone = CoreIconData.svg(CoreSvgIcons.phone); // SVG version
 
@@ -82,9 +86,41 @@ class CoreIcons {
   static const unlock = CoreMaterialIcons.unlock;
 
   // Date & Time
-  static const calendar = CoreMaterialIcons.calendar;
+  static const calendar = CoreIconData.svg(CoreSvgIcons.calendar);
   static const history = CoreMaterialIcons.history;
 
   // Business
   static const cost = CoreIconData.svg(CoreSvgIcons.cost);
+
+  // Missed icons
+  static const tabDuplicate = CoreIconData.svg(CoreSvgIcons.tabDuplicate);
+
+  static const percent = CoreMaterialIcons.percent;
+  static const cross = CoreMaterialIcons.cross;
+  static const link = CoreMaterialIcons.link;
+  static const check = CoreMaterialIcons.check;
+  static const checkBlank = CoreMaterialIcons.checkBlank;
+  static const checkCircle = CoreMaterialIcons.checkCircle;
+  static const favorite = CoreMaterialIcons.favorite;
+  static const eye = CoreMaterialIcons.eye;
+  static const eyeOff = CoreMaterialIcons.eyeOff;
+  static const apple = CoreMaterialIcons.apple;
+  static const mathOperations = CoreMaterialIcons.mathOperations;
+  static const fileSearch = CoreMaterialIcons.fileSearch;
+  static const editDocument = CoreIconData.svg(CoreSvgIcons.editDocument);
+  static const emptyFile = CoreMaterialIcons.emptyFile;
+  static const addComment = CoreMaterialIcons.addComment;
+  static const radioChecked = CoreMaterialIcons.radioChecked;
+  static const radio = CoreMaterialIcons.radio;
+  static const indeterminateCheckBox = CoreMaterialIcons.indeterminateCheckBox;
+  static const dollar = CoreMaterialIcons.dollar;
+  static const cloudOff = CoreMaterialIcons.cloudOff;
+  static const play = CoreMaterialIcons.play;
+  static const cameraSwitch = CoreMaterialIcons.cameraSwitch;
+  static const block = CoreMaterialIcons.block;
+  static const checkMark = CoreMaterialIcons.checkMark;
+  static const tag = CoreIconData.svg(CoreSvgIcons.tag);
+  static const verified = CoreMaterialIcons.verified;
+  static const addFile = CoreMaterialIcons.addFile;
+  static const docs = CoreIconData.svg(CoreSvgIcons.docs);
 }
