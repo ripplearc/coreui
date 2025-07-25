@@ -29,7 +29,7 @@ jobs:
           # flutter test test/components/toast/toast_golden_test.dart
           # flutter test test/components/text_fields/core_text_field_golden_test.dart
           # flutter test test/components/selects/single_selector_golden_test.dart
-          flutter test test/components/switches/switch_golden_test.dart
+          flutter test test/components/switches/switch_golden_test.dart --update-goldens
 
       - name: Upload Golden Images
         if: success()
