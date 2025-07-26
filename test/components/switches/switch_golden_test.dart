@@ -11,7 +11,7 @@ void main() {
   group('Switch Golden Tests', () {
     testGoldens('Switch Component Visual Regression Test', (tester) async {
       final builder = GoldenBuilder.grid(
-          columns: 2, widthToHeightRatio: 2.5, bgColor: Colors.white)
+          columns: 1, widthToHeightRatio: 2, bgColor: Colors.white)
         // Normal switches - compact (no labels)
         ..addScenario(
           'Normal Off',
@@ -32,7 +32,7 @@ void main() {
 
         // Lock switches with labels
         ..addScenario(
-          'Lock Off (Unlock)',
+          'Lock Off',
           CoreSwitch(
             type: CoreSwitchType.lock,
             value: false,
@@ -42,7 +42,7 @@ void main() {
           ),
         )
         ..addScenario(
-          'Lock On (Lock)',
+          'Lock On',
           CoreSwitch(
             type: CoreSwitchType.lock,
             value: true,
@@ -100,7 +100,7 @@ void main() {
           color: Colors.white,
           child: builder.build(),
         ),
-        surfaceSize: const Size(500, 800),
+        surfaceSize: const Size(200, 600),
       );
 
       await screenMatchesGolden(tester, 'switch_component');

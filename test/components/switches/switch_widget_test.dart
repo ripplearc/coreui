@@ -21,11 +21,9 @@ void main() {
         ),
       );
 
-      // Find the switch widget
       final switchFinder = find.byType(CoreSwitch);
       expect(switchFinder, findsOneWidget);
 
-      // Find the GestureDetector
       final gestureDetectorFinder = find.byType(GestureDetector);
       expect(gestureDetectorFinder, findsOneWidget);
     });
@@ -50,11 +48,9 @@ void main() {
         ),
       );
 
-      // Find the switch widget
       final switchFinder = find.byType(CoreSwitch);
       expect(switchFinder, findsOneWidget);
 
-      // Find the inactive label text
       final unlockTextFinder = find.text('Unlock');
       expect(unlockTextFinder, findsOneWidget);
 
@@ -83,11 +79,9 @@ void main() {
         ),
       );
 
-      // Find the switch widget
       final switchFinder = find.byType(CoreSwitch);
       expect(switchFinder, findsOneWidget);
 
-      // Find the inactive label text
       final metricTextFinder = find.text('Metric');
       expect(metricTextFinder, findsOneWidget);
 
@@ -120,21 +114,16 @@ void main() {
         ),
       );
 
-      // Initial state should be false
       expect(switchValue, isFalse);
 
-      // Tap the switch
       await tester.tap(find.byType(CoreSwitch));
       await tester.pumpAndSettle();
 
-      // Value should now be true
       expect(switchValue, isTrue);
 
-      // Tap again
       await tester.tap(find.byType(CoreSwitch));
       await tester.pumpAndSettle();
 
-      // Value should be false again
       expect(switchValue, isFalse);
     });
 
@@ -168,51 +157,12 @@ void main() {
       expect(find.text('Private'), findsOneWidget);
       expect(find.text('Public'), findsNothing);
 
-      // Tap to activate
       await tester.tap(find.byType(CoreSwitch));
       await tester.pumpAndSettle();
 
       // Should now show active label
       expect(find.text('Public'), findsOneWidget);
       expect(find.text('Private'), findsNothing);
-    });
-
-    testWidgets('switch animation completes properly',
-        (WidgetTester tester) async {
-      bool switchValue = false;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StatefulBuilder(
-              builder: (context, setState) {
-                return CoreSwitch(
-                  type: CoreSwitchType.normal,
-                  value: switchValue,
-                  onChanged: (value) {
-                    setState(() {
-                      switchValue = value;
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-      );
-
-      // Tap the switch
-      await tester.tap(find.byType(CoreSwitch));
-
-      // Pump a few frames to let animation start
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // Complete the animation
-      await tester.pumpAndSettle();
-
-      // Verify the switch is in the correct state
-      expect(switchValue, isTrue);
     });
 
     testWidgets('switch respects custom inactive color',
@@ -232,11 +182,9 @@ void main() {
         ),
       );
 
-      // Find the switch widget
       final switchFinder = find.byType(CoreSwitch);
       expect(switchFinder, findsOneWidget);
 
-      // The widget should render without errors
       await tester.pumpAndSettle();
     });
   });
