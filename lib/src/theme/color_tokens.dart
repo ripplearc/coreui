@@ -206,6 +206,6 @@ class CoreShadowColors {
       _CoreColorPalette.gray900.withAlpha((0.18 * 255).toInt());
 }
 
-class CorePrimaryColors {
-  static const Color brand = _CoreColorPalette.orient900;
+class CoreBrandColors {
+  static const Color orient = _CoreColorPalette.orient900;
 }

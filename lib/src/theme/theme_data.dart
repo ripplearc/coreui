@@ -99,7 +99,7 @@ class CoreTheme {
     return ThemeData(
       package: 'core_ui',
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      primaryColor: CorePrimaryColors.brand,
+      primaryColor: CoreBrandColors.orient,
       extensions: [
         _getAppColors(),
         TypographyExtension.create(),
