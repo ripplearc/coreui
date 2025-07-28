@@ -7,9 +7,6 @@ void main() {
   setUpAll(() async {
     // Load Roboto fonts for golden tests
     final fontLoader = FontLoader('Roboto');
-    fontLoader.addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf'));
-    fontLoader.addFont(rootBundle.load('assets/fonts/Roboto-Medium.ttf'));
-    fontLoader.addFont(rootBundle.load('assets/fonts/Roboto-Bold.ttf'));
     await fontLoader.load();
   });
 
