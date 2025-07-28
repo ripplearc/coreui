@@ -1,108 +1,204 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadAppFonts();
+    await loadFonts(); // ensure IBM Plex is loaded
   });
 
-  testGoldens('CoreButton Medium - Narrow View - With Pressed State', (tester) async {
-    final builder = GoldenBuilder.grid(columns: 2, widthToHeightRatio: 2);
-    builder
-      ..addScenario('Primary', CoreButton(
-        label: 'Primary',
-        onPressed: () {},
-        variant: CoreButtonVariant.primary,
-        size: CoreButtonSize.medium,
-      ))
-      ..addScenario('Primary + Icon', CoreButton(
-        label: 'Primary',
-        onPressed: () {},
-        variant: CoreButtonVariant.primary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft, color: CoreTextColors.inverse),
-      ))
-      ..addScenario('Primary Disabled + Icon', CoreButton(
-        label: 'Primary',
-        onPressed: () {},
-        isDisabled: true,
-        variant: CoreButtonVariant.primary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft, color: CoreTextColors.body),
-      ))
-      ..addScenario('Primary Focused', CoreButton(
-        label: 'Primary',
-        onPressed: () {},
-        variant: CoreButtonVariant.primary,
-        size: CoreButtonSize.medium,
-        autofocus: true,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft, color: CoreTextColors.inverse),
-      ))
-      ..addScenario('Primary Pressed', CoreButton(
-        key: const Key('pressed_primary'),
-        label: 'Primary',
-        onPressed: () {},
-        variant: CoreButtonVariant.primary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft, color: CoreTextColors.inverse),
-      ))
-      ..addScenario('Secondary', CoreButton(
-        label: 'Secondary',
-        onPressed: () {},
-        variant: CoreButtonVariant.secondary,
-        size: CoreButtonSize.medium,
-      ))
-      ..addScenario('Secondary + Icon', CoreButton(
-        label: 'Secondary',
-        onPressed: () {},
-        variant: CoreButtonVariant.secondary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft,color: CoreButtonColors.surface,),
-      ))
-      ..addScenario('Secondary Disabled + Icon', CoreButton(
-        label: 'Secondary',
-        onPressed: () {},
-        isDisabled: true,
-        variant: CoreButtonVariant.secondary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft,color: CoreTextColors.disable),
-      ))
-      ..addScenario('Secondary Focused', CoreButton(
-        label: 'Secondary',
-        onPressed: () {},
-        variant: CoreButtonVariant.secondary,
-        size: CoreButtonSize.medium,
-        autofocus: true,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft,color: CoreButtonColors.hover),
-      ))
-      ..addScenario('Secondary Pressed', CoreButton(
-        key: const Key('pressed_secondary'),
-        label: 'Secondary',
-        onPressed: () {},
-        variant: CoreButtonVariant.secondary,
-        size: CoreButtonSize.medium,
-        icon: const CoreIconWidget(icon: CoreIcons.arrowLeft,color: CoreButtonColors.press,),
-      ));
+  testWidgets('CoreButton Medium - Narrow View - With Pressed State',
+      (tester) async {
+    const pressedPrimaryKey = Key('pressed_primary');
+    const pressedSecondaryKey = Key('pressed_secondary');
 
-    await tester.pumpWidgetBuilder(
-      Container(
-        color: CoreBackgroundColors.pageBackground,
-        child: builder.build(),
+    Widget scenario(String title, Widget button) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 4),
+          button,
+        ],
+      );
+    }
+
+    final buttons = [
+      scenario(
+        'Primary',
+        CoreButton(
+          label: 'Primary',
+          onPressed: () {},
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.medium,
+        ),
       ),
-      surfaceSize: const Size(500, 900),
+      scenario(
+        'Primary + Icon',
+        CoreButton(
+          label: 'Primary',
+          onPressed: () {},
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreTextColors.inverse,
+          ),
+        ),
+      ),
+      scenario(
+        'Primary Disabled + Icon',
+        CoreButton(
+          label: 'Primary',
+          onPressed: () {},
+          isDisabled: true,
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreTextColors.body,
+          ),
+        ),
+      ),
+      scenario(
+        'Primary Focused',
+        CoreButton(
+          label: 'Primary',
+          onPressed: () {},
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.medium,
+          autofocus: true,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreTextColors.inverse,
+          ),
+        ),
+      ),
+      scenario(
+        'Primary Pressed',
+        CoreButton(
+          key: pressedPrimaryKey,
+          label: 'Primary',
+          onPressed: () {},
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreTextColors.inverse,
+          ),
+        ),
+      ),
+      scenario(
+        'Secondary',
+        CoreButton(
+          label: 'Secondary',
+          onPressed: () {},
+          variant: CoreButtonVariant.secondary,
+          size: CoreButtonSize.medium,
+        ),
+      ),
+      scenario(
+        'Secondary + Icon',
+        CoreButton(
+          label: 'Secondary',
+          onPressed: () {},
+          variant: CoreButtonVariant.secondary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreButtonColors.surface,
+          ),
+        ),
+      ),
+      scenario(
+        'Secondary Disabled + Icon',
+        CoreButton(
+          label: 'Secondary',
+          onPressed: () {},
+          isDisabled: true,
+          variant: CoreButtonVariant.secondary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreTextColors.disable,
+          ),
+        ),
+      ),
+      scenario(
+        'Secondary Focused',
+        CoreButton(
+          label: 'Secondary',
+          onPressed: () {},
+          variant: CoreButtonVariant.secondary,
+          size: CoreButtonSize.medium,
+          autofocus: true,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreButtonColors.hover,
+          ),
+        ),
+      ),
+      scenario(
+        'Secondary Pressed',
+        CoreButton(
+          key: pressedSecondaryKey,
+          label: 'Secondary',
+          onPressed: () {},
+          variant: CoreButtonVariant.secondary,
+          size: CoreButtonSize.medium,
+          icon: const CoreIconWidget(
+            icon: CoreIcons.arrowLeft,
+            color: CoreButtonColors.press,
+          ),
+        ),
+      ),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          backgroundColor: CoreBackgroundColors.pageBackground,
+          body: Center(
+            child: SizedBox(
+              width: 500,
+              height: 900,
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                // match GoldenBuilder widthToHeightRatio
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                padding: const EdgeInsets.all(16),
+                children: buttons,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
 
-    final primaryFinder = find.byKey(const Key('pressed_primary'));
-    final primaryGesture = await tester.startGesture(tester.getCenter(primaryFinder));
+    // Simulate pressed states
+    final primaryGesture = await tester
+        .startGesture(tester.getCenter(find.byKey(pressedPrimaryKey)));
     await tester.pumpAndSettle();
 
-    final secondaryFinder = find.byKey(const Key('pressed_secondary'));
-    final secondaryGesture = await tester.startGesture(tester.getCenter(secondaryFinder));
+    final secondaryGesture = await tester
+        .startGesture(tester.getCenter(find.byKey(pressedSecondaryKey)));
     await tester.pumpAndSettle();
 
-    await screenMatchesGolden(tester, 'core_button_medium');
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/core_button_medium.png'),
+    );
 
     await primaryGesture.up();
     await secondaryGesture.up();
