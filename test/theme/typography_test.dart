@@ -5,8 +5,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUpAll(() async {
-    // Load Roboto fonts for golden tests
-    final fontLoader = FontLoader('Roboto');
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    final robotoRegular = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
+    final robotoMedium = await rootBundle.load('assets/fonts/Roboto-Medium.ttf');
+    final robotoBold = await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
+
+    final fontLoader = FontLoader('Roboto')
+      ..addFont(Future.value(robotoRegular))
+      ..addFont(Future.value(robotoMedium))
+      ..addFont(Future.value(robotoBold));
+
     await fontLoader.load();
   });
 
