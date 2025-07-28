@@ -1,66 +1,69 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../../load_fonts.dart';
 
 void main() {
-  testGoldens('CoreTextField Golden Test', (WidgetTester tester) async {
-    await loadAppFonts(); // required for consistent text rendering
-
-    final builder = GoldenBuilder.column()
-      ..addScenario(
+  setUpAll(() async {
+    await loadFonts();
+    TestWidgetsFlutterBinding.ensureInitialized();
+  });
+  testWidgets('CoreTextField Golden Test', (WidgetTester tester) async {
+    final scenarios = <Widget>[
+      _buildScenario(
           'Default',
           CoreTextField(
             controller: TextEditingController(),
             helperText: 'Helper Text',
             label: 'Label',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Focus',
           CoreTextField(
             controller: TextEditingController(text: 'Hello, Suyang!'),
             label: 'Label',
             helperText: 'Helper Text',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Active',
           CoreTextField(
             controller: TextEditingController(text: 'Input'),
             label: 'Label',
             helperText: 'Helper Text',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Error',
           CoreTextField(
             controller: TextEditingController(text: 'Input'),
             label: 'Label',
             errorTextList: ['Error Message'],
             helperText: 'Helper Text',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'DefaultError',
           CoreTextField(
             controller: TextEditingController(),
             errorTextList: ['Error Message'],
             label: 'Label',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Default Disable',
           CoreTextField(
             controller: TextEditingController(),
             enabled: false,
             helperText: 'Helper Text',
             label: 'Label',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Active Disable',
           CoreTextField(
             controller: TextEditingController(text: 'Input'),
             label: 'Label',
             helperText: 'Helper Text',
             enabled: false,
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Mobile Number Default',
           CoreTextField(
             isPhoneNumber: true,
@@ -70,8 +73,8 @@ void main() {
             controller: TextEditingController(),
             helperText: 'Helper Text',
             label: 'Label',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Mobile Number Active',
           CoreTextField(
             isPhoneNumber: true,
@@ -81,15 +84,15 @@ void main() {
             controller: TextEditingController(text: '1234567890'),
             label: 'Label',
             helperText: 'Helper Text',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Password',
           CoreTextField(
             obscureText: true,
             controller: TextEditingController(text: '1234567890'),
             label: 'Password',
-          ))
-      ..addScenario(
+          )),
+      _buildScenario(
           'Mobile Number Error',
           CoreTextField(
             isPhoneNumber: true,
@@ -99,16 +102,40 @@ void main() {
             controller: TextEditingController(text: '1234567890'),
             label: 'Label',
             errorTextList: ['Error Message'],
-          ));
+          )),
+    ];
 
-    await tester.pumpWidgetBuilder(
-      Container(
-        color: Colors.white,
-        child: builder.build(),
+    final widget = MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: scenarios,
+        ),
       ),
-      surfaceSize: const Size(400, 1600),
     );
 
-    await screenMatchesGolden(tester, 'core_text_field');
+    await tester.binding.setSurfaceSize(const Size(400, 1600));
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/core_text_field.png'),
+    );
   });
+}
+
+Widget _buildScenario(String title, Widget child) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        child,
+      ],
+    ),
+  );
 }
