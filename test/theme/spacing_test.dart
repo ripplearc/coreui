@@ -3,18 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../load_fonts.dart';
+
 void main() {
   setUpAll(() async {
-    // Load Roboto font
-    final robotoRegular =
-        await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
-    final robotoBold = await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
-
-    final fontLoader = FontLoader('Roboto')
-      ..addFont(Future.value(robotoRegular))
-      ..addFont(Future.value(robotoBold));
-
-    await fontLoader.load();
+    await loadFonts();
   });
 
   Widget buildSpacingRow(

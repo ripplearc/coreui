@@ -1,22 +1,12 @@
 import 'package:core_ui/src/theme/typography.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-
-    final robotoRegular = await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
-    final robotoMedium = await rootBundle.load('assets/fonts/Roboto-Medium.ttf');
-    final robotoBold = await rootBundle.load('assets/fonts/Roboto-Bold.ttf');
-
-    final fontLoader = FontLoader('Roboto')
-      ..addFont(Future.value(robotoRegular))
-      ..addFont(Future.value(robotoMedium))
-      ..addFont(Future.value(robotoBold));
-
-    await fontLoader.load();
+    await loadFonts();
   });
 
   Widget buildTypographyRow(

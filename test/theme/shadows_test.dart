@@ -1,16 +1,12 @@
 import 'package:core_ui/src/theme/shadows.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    // Load Roboto font
-    final robotoRegular =
-        await rootBundle.load('assets/fonts/Roboto-Regular.ttf');
-    final fontLoader = FontLoader('Roboto')
-      ..addFont(Future.value(robotoRegular));
-    await fontLoader.load();
+    await loadFonts();
   });
 
   Widget buildShadowBox(String name, List<BoxShadow> shadows) {
