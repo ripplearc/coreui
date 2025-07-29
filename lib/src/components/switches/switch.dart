@@ -136,15 +136,29 @@ class CoreSwitch extends StatelessWidget {
 
   /// Gets the inactive color based on switch type or custom color.
   /// Returns red for lock, green for imperial, grey for normal.
-  Color get _getInactiveColor {
+  Color get _getInactiveBorderColor {
     if (inactiveColor != null) return inactiveColor!;
     switch (type) {
       case CoreSwitchType.lock:
         return CoreIconColors.red;
       case CoreSwitchType.imperial:
-        return CoreTextColors.success;
+        return CoreIconColors.green;
       case CoreSwitchType.normal:
         return CoreBorderColors.lineDarkOutline;
+    }
+  }
+
+  /// Gets the inactive text color based on switch type or custom color.
+  /// Returns red for lock, green for imperial, grey for normal.
+  Color get _getInactiveTextColor {
+    if (inactiveColor != null) return inactiveColor!;
+    switch (type) {
+      case CoreSwitchType.lock:
+        return CoreTextColors.error;
+      case CoreSwitchType.imperial:
+        return CoreTextColors.success;
+      case CoreSwitchType.normal:
+        return CoreTextColors.body;
     }
   }
 
@@ -203,7 +217,8 @@ class CoreSwitch extends StatelessWidget {
             : _SwitchConstants.thumbPaddingSmallInactive;
 
     final Color effectiveActiveColor = CoreIconColors.dark;
-    final Color effectiveInactiveColor = _getInactiveColor;
+    final Color effectiveInactiveBorderColor = _getInactiveBorderColor;
+    final Color effectiveInactiveTextColor = _getInactiveTextColor;
 
     // Background and border colors based on state
     final backgroundColor =
@@ -236,7 +251,7 @@ class CoreSwitch extends StatelessWidget {
                       style: CoreTypography.bodySmallRegular(
                         color: value
                             ? CoreTextColors.inverse
-                            : effectiveInactiveColor,
+                            : effectiveInactiveTextColor,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -253,8 +268,9 @@ class CoreSwitch extends StatelessWidget {
               child: Container(
                 width: thumbSize,
                 decoration: BoxDecoration(
-                  color:
-                      value ? CoreTextColors.inverse : effectiveInactiveColor,
+                  color: value
+                      ? CoreTextColors.inverse
+                      : effectiveInactiveBorderColor,
                   shape: BoxShape.circle,
                 ),
               ),
