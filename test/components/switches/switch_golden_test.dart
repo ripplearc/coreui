@@ -1,109 +1,96 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadAppFonts();
+    await loadFonts();
   });
 
-  group('Switch Golden Tests', () {
-    testGoldens('Switch Component Visual Regression Test', (tester) async {
-      final builder = GoldenBuilder.grid(
-          columns: 1, widthToHeightRatio: 2, bgColor: Colors.white)
-        // Normal switches - compact (no labels)
-        ..addScenario(
-          'Normal Off',
-          CoreSwitch(
-            type: CoreSwitchType.normal,
-            value: false,
-            onChanged: (_) {},
+  testWidgets('CoreSwitch Golden Test - All Variants',
+      (WidgetTester tester) async {
+    final widget = MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CoreSwitch(
+                type: CoreSwitchType.normal,
+                value: false,
+                onChanged: (_) {},
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.normal,
+                value: true,
+                onChanged: (_) {},
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.lock,
+                value: false,
+                onChanged: (_) {},
+                activeLabel: 'Lock',
+                inactiveLabel: 'Unlock',
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.lock,
+                value: true,
+                onChanged: (_) {},
+                activeLabel: 'Lock',
+                inactiveLabel: 'Unlock',
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.normal,
+                value: false,
+                onChanged: (_) {},
+                activeLabel: 'Public',
+                inactiveLabel: 'Private',
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.normal,
+                value: true,
+                onChanged: (_) {},
+                activeLabel: 'Public',
+                inactiveLabel: 'Private',
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.imperial,
+                value: false,
+                onChanged: (_) {},
+                activeLabel: 'Metric',
+                inactiveLabel: 'Imperial',
+              ),
+              const SizedBox(height: 16),
+              CoreSwitch(
+                type: CoreSwitchType.imperial,
+                value: true,
+                onChanged: (_) {},
+                activeLabel: 'Metric',
+                inactiveLabel: 'Imperial',
+              ),
+            ],
           ),
-        )
-        ..addScenario(
-          'Normal On',
-          CoreSwitch(
-            type: CoreSwitchType.normal,
-            value: true,
-            onChanged: (_) {},
-          ),
-        )
-
-        // Lock switches with labels
-        ..addScenario(
-          'Lock Off',
-          CoreSwitch(
-            type: CoreSwitchType.lock,
-            value: false,
-            onChanged: (_) {},
-            activeLabel: 'Lock',
-            inactiveLabel: 'Unlock',
-          ),
-        )
-        ..addScenario(
-          'Lock On',
-          CoreSwitch(
-            type: CoreSwitchType.lock,
-            value: true,
-            onChanged: (_) {},
-            activeLabel: 'Lock',
-            inactiveLabel: 'Unlock',
-          ),
-        )
-
-        // Normal switches with labels (Private/Public)
-        ..addScenario(
-          'Private Off',
-          CoreSwitch(
-            type: CoreSwitchType.normal,
-            value: false,
-            onChanged: (_) {},
-            activeLabel: 'Public',
-            inactiveLabel: 'Private',
-          ),
-        )
-        ..addScenario(
-          'Public On',
-          CoreSwitch(
-            type: CoreSwitchType.normal,
-            value: true,
-            onChanged: (_) {},
-            activeLabel: 'Public',
-            inactiveLabel: 'Private',
-          ),
-        )
-        // Imperial switches with labels
-        ..addScenario(
-          'Imperial',
-          CoreSwitch(
-            type: CoreSwitchType.imperial,
-            value: false,
-            onChanged: (_) {},
-            activeLabel: 'Metric',
-            inactiveLabel: 'Imperial',
-          ),
-        )
-        ..addScenario(
-          'Metric',
-          CoreSwitch(
-            type: CoreSwitchType.imperial,
-            value: true,
-            onChanged: (_) {},
-            activeLabel: 'Metric',
-            inactiveLabel: 'Imperial',
-          ),
-        );
-
-      await tester.pumpWidgetBuilder(
-        Container(
-          color: Colors.white,
-          child: builder.build(),
         ),
-        surfaceSize: const Size(200, 600),
-      );
+      ),
+    );
+    await tester.binding.setSurfaceSize(const Size(200, 400));
 
-      await screenMatchesGolden(tester, 'switch_component');
-    });
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/switch_component.png'),
+    );
   });
 }
