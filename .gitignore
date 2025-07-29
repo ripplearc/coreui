@@ -88,3 +88,7 @@ debug.log
 /review_result.txt
 
 test/**/failures/
+# Generated Flutter files
+example/**/flutter/generated_plugin_registrant.*
+example/**/flutter/generated_plugins.cmake
+example/**/Flutter/GeneratedPluginRegistrant.swift

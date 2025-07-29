@@ -1,5 +1,6 @@
 import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
+import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:flutter/material.dart';
@@ -30,12 +31,12 @@ class ComponentsScreen extends StatelessWidget {
               'Text Field Components',
               const TextFieldScreen(),
             ),
-              _buildShowcaseButton(
+            _buildShowcaseButton(
               context,
               'Single Select Field Components',
               const SingleItemSelectorShowcaseScreen(),
             ),
-                      _buildShowcaseButton(
+            _buildShowcaseButton(
               context,
               'Button Components',
               const ButtonShowcaseScreen(),
@@ -43,8 +44,14 @@ class ComponentsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildShowcaseButton(
               context,
-             'Toast Components',
+              'Toast Components',
               const ToastShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Switch Components',
+              const SwitchShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
           ],
