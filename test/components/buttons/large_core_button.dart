@@ -6,7 +6,7 @@ import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadFonts(); // ensure IBM Plex is loaded
+    await loadFonts();
   });
 
   testWidgets('CoreButton Large - Narrow View - With Pressed State',
