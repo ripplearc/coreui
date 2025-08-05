@@ -1,45 +1,68 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../await_images_extension.dart';
+import '../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadAppFonts();
+    await loadFonts();
+    TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  group('SuccessModal Golden Tests', () {
-    testGoldens('SuccessModal Component Visual Regression Test', (tester) async {
-      final builder = GoldenBuilder.column()
-        // Default success modal
-        ..addScenario(
-          'Default Success Modal',
-          _buildSuccessModalContent(
-            message: 'Operation Successful',
-            buttonLabel: 'Continue',
-          ),
-        )
-        // Custom message and button
-        ..addScenario(
-          'Custom Message and Button',
-          _buildSuccessModalContent(
-            message: 'Account created successfully!',
-            buttonLabel: 'Great!',
-          ),
-        );
-
-      await tester.pumpWidgetBuilder(
-      Container(
-        color: CoreBackgroundColors.pageBackground,
-        padding: const EdgeInsets.all(16),
-        child: builder.build(),
+  testWidgets('SuccessModal Golden Test', (WidgetTester tester) async {
+    final scenarios = <Widget>[
+      _buildScenario(
+        'Default Success Modal',
+        _buildSuccessModalContent(
+          message: 'Operation Successful',
+          buttonLabel: 'Continue',
+        ),
       ),
-      surfaceSize: const Size(400, 700),
+      _buildScenario(
+        'Custom Message and Button',
+        _buildSuccessModalContent(
+          message: 'Account created successfully!',
+          buttonLabel: 'Great!',
+        ),
+      ),
+    ];
+
+    final widget = MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: scenarios,
+        ),
+      ),
     );
 
-      await screenMatchesGolden(tester, 'success_modal_component');
-    });
+    await tester.binding.setSurfaceSize(const Size(400, 700));
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+    await tester.awaitImages();
+
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/success_modal_component.png'),
+    );
   });
+}
+
+Widget _buildScenario(String title, Widget child) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        child,
+      ],
+    ),
+  );
 }
 
 Widget _buildSuccessModalContent({
