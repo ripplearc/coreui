@@ -1,68 +1,78 @@
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../../load_fonts.dart';
 
 void main() {
-  testGoldens('SingleItemSelector Golden Test', (WidgetTester tester) async {
-    await loadAppFonts();
-
-    final builder = GoldenBuilder.column()
-      ..addScenario(
-        'Default (no selection)',
-        SingleItemSelector<String>(
-          labelText: 'Role',
-          hintText: 'Select a role',
-          modalTitle: 'Select Role',
-          items: ['Engineer', 'Designer'],
-          selectedItem: null,
-          onItemSelected: (_) {},
-          isDisabled: false,
-        ),
-      )
-      ..addScenario(
-        'Selected',
-        SingleItemSelector<String>(
-          labelText: 'Role',
-          hintText: 'Select a role',
-          modalTitle: 'Select Role',
-          items: ['Engineer', 'Designer'],
-          selectedItem: 'Designer',
-          onItemSelected: (_) {},
-          isDisabled: false,
-        ),
-      )
-      ..addScenario(
-        'Disabled',
-        SingleItemSelector<String>(
-          labelText: 'Role',
-          hintText: 'Select a role',
-          modalTitle: 'Select Role',
-          items: ['Engineer', 'Designer'],
-          selectedItem: 'Designer',
-          onItemSelected: (_) {},
-          isDisabled: true,
-        ),
-      );
-
-    await tester.pumpWidgetBuilder(
-      Container(
-        color: CoreBackgroundColors.pageBackground,
-        padding: const EdgeInsets.all(16),
-        child: builder.build(),
-      ),
-      surfaceSize: const Size(400, 500),
-    );
-
-    await screenMatchesGolden(tester, 'single_item_selector');
+  setUpAll(() async {
+    await loadFonts();
   });
 
-  testGoldens('SingleItemSelector with bottom sheet', (tester) async {
-    await loadAppFonts();
+  testWidgets('SingleItemSelector - all variants', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 600));
 
-    final items = ['Engineer', 'Designer', 'Manager'];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Container(
+            color: CoreBackgroundColors.pageBackground,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Default (no selection)'),
+                const SizedBox(height: 8),
+                SingleItemSelector<String>(
+                  labelText: 'Role',
+                  hintText: 'Select a role',
+                  modalTitle: 'Select Role',
+                  items: const ['Engineer', 'Designer'],
+                  selectedItem: null,
+                  onItemSelected: (_) {},
+                  isDisabled: false,
+                ),
+                const SizedBox(height: 16),
+                const Text('Selected'),
+                const SizedBox(height: 8),
+                SingleItemSelector<String>(
+                  labelText: 'Role',
+                  hintText: 'Select a role',
+                  modalTitle: 'Select Role',
+                  items: const ['Engineer', 'Designer'],
+                  selectedItem: 'Designer',
+                  onItemSelected: (_) {},
+                  isDisabled: false,
+                ),
+                const SizedBox(height: 16),
+                const Text('Disabled'),
+                const SizedBox(height: 8),
+                SingleItemSelector<String>(
+                  labelText: 'Role',
+                  hintText: 'Select a role',
+                  modalTitle: 'Select Role',
+                  items: const ['Engineer', 'Designer'],
+                  selectedItem: 'Designer',
+                  onItemSelected: (_) {},
+                  isDisabled: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
-    await tester.pumpWidgetBuilder(
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/single_item_selector.png'),
+    );
+  });
+
+  testWidgets('SingleItemSelector with bottom sheet', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 800));
+
+    await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: Center(
@@ -70,31 +80,29 @@ void main() {
               labelText: 'Role',
               hintText: 'Select your role',
               modalTitle: 'Select Role',
-              items: items,
+              items: const ['Engineer', 'Designer', 'Manager'],
               selectedItem: null,
               onItemSelected: (_) {},
             ),
           ),
         ),
       ),
-      surfaceSize: const Size(400, 800),
     );
 
-    // Tap the selector to open bottom sheet
     await tester.tap(find.byType(SingleItemSelector<String>));
     await tester.pumpAndSettle();
 
-    // Take golden screenshot with bottom sheet visible
-    await screenMatchesGolden(tester, 'single_item_selector_with_bottom_sheet');
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/single_item_selector_with_bottom_sheet.png'),
+    );
   });
 
-  testGoldens('SingleItemSelector with bottom sheet and selected item',
+  testWidgets('SingleItemSelector with bottom sheet and selected item',
       (tester) async {
-    await loadAppFonts();
+    await tester.binding.setSurfaceSize(const Size(400, 800));
 
-    final items = ['Engineer', 'Designer', 'Manager'];
-
-    await tester.pumpWidgetBuilder(
+    await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: Center(
@@ -102,22 +110,22 @@ void main() {
               labelText: 'Role',
               hintText: 'Select your role',
               modalTitle: 'Select Role',
-              items: items,
+              items: const ['Engineer', 'Designer', 'Manager'],
               selectedItem: 'Designer',
               onItemSelected: (_) {},
             ),
           ),
         ),
       ),
-      surfaceSize: const Size(400, 800),
     );
 
-    // Tap the selector to open bottom sheet
     await tester.tap(find.byType(SingleItemSelector<String>));
     await tester.pumpAndSettle();
 
-    // Take screenshot
-    await screenMatchesGolden(
-        tester, 'single_item_selector_with_bottom_sheet_selected');
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile(
+          'goldens/single_item_selector_with_bottom_sheet_selected.png'),
+    );
   });
 }

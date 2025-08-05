@@ -1,11 +1,12 @@
 import 'package:core_ui/src/theme/shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+
+import '../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadAppFonts();
+    await loadFonts();
   });
 
   Widget buildShadowBox(String name, List<BoxShadow> shadows) {
@@ -19,6 +20,7 @@ void main() {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
+              fontFamily: 'Roboto',
             ),
           ),
         ),
@@ -56,15 +58,16 @@ void main() {
     );
   }
 
-  testGoldens('Core Shadow Tokens Test', (tester) async {
-    // Enable shadows for this test
+  testWidgets('Core Shadow Tokens Test', (tester) async {
+    // Enable shadows
     debugDisableShadows = false;
 
-    final builder = GoldenBuilder.column()
-      ..addScenario(
-        'Shadow Variations',
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
+    await tester.binding.setSurfaceSize(const Size(1200, 1600));
+
+    final widget = MaterialApp(
+      theme: ThemeData(fontFamily: 'Roboto'),
+      home: Scaffold(
+        body: SingleChildScrollView(
           child: Container(
             color: const Color(0xFFF5F5F5),
             child: Column(
@@ -83,14 +86,16 @@ void main() {
             ),
           ),
         ),
-      );
-
-    await tester.pumpWidgetBuilder(
-      builder.build(),
-      surfaceSize: const Size(1200, 1600),
+      ),
     );
 
-    await screenMatchesGolden(tester, 'core_shadow_tokens');
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_shadow_tokens.png'),
+    );
 
     // Reset shadows to default value
     debugDisableShadows = true;

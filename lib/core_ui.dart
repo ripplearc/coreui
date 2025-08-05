@@ -3,6 +3,7 @@ export 'src/components/alerts/toast.dart';
 export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/selects/single_item_selector.dart';
+export 'src/components/switches/switch.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';

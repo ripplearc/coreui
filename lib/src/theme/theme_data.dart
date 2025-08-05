@@ -97,8 +97,9 @@ class CoreTheme {
 
   static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
-      package: 'core_ui', //It's necessary for the assets.
+      package: 'core_ui',
       materialTapTargetSize: MaterialTapTargetSize.padded,
+      primaryColor: CoreBrandColors.orient,
       extensions: [
         _getAppColors(),
         TypographyExtension.create(),
