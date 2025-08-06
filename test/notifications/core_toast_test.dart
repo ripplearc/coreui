@@ -22,7 +22,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, null),
+                onPressed: () => CoreToast.showSuccess(context, 'Request Successful'),
                 child: const Text('Show Toast'),
               ),
             ),

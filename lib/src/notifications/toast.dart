@@ -3,20 +3,32 @@ import 'dart:async';
 import 'package:core_ui/core_ui.dart';
 import 'package:flutter/material.dart';
 
+/// Used to show a toast message to the user.
+/// It provides a static interface to easily display a toast message conveniently.
+/// It has the following methods:
+/// [showError] shows an error toast.
+/// [showSuccess] shows a success toast.
+/// [showWarning] shows a warning toast.
+/// [showCustomToast] shows a custom toast.
+/// example:
+/// ```dart
+/// CoreToast.showError(context, 'An Error Occured');
+/// ```
 class CoreToast {
+  // The entry for the toast.
   static OverlayEntry? _entry;
+  // The timer for the toast.
   static Timer? _timer;
-  
-  /// Set to true to disable timers (useful for testing)
+  // Set to true to disable timers (useful for testing)
   static bool _disableTimers = false;
 
   /// Shows an error toast.
-  /// Accepts a context and an optional message as parameters.
+  /// Accepts a [context] and an optional [message] as parameters.
   static void showError(BuildContext context, String? message) {
     showCustomToast(
       context,
       (overlayContext) => Toast.error(
-        description: message ?? 'An Error Occured',
+        description: '$message',
         closeLabel: 'Close',
         onClose: () {
           _entry?.remove();
@@ -26,12 +38,12 @@ class CoreToast {
   }
 
   /// Shows a success toast.
-  /// Accepts a context and an optional message as parameters.
+  /// Accepts a [context] and an optional [message] as parameters.
   static void showSuccess(BuildContext context, String? message) {
     showCustomToast(
       context,
       (overlayContext) => Toast.success(
-        description: message ?? 'Request Successful',
+        description: '$message',
         closeLabel: 'Close',
         onClose: () {
           _entry?.remove();
@@ -41,12 +53,12 @@ class CoreToast {
   }
 
   /// Shows a warning toast.
-  /// Accepts a context and an optional message as parameters.
+  /// Accepts a [context] and an optional [message] as parameters.
   static void showWarning(BuildContext context, String? message) {
     showCustomToast(
       context,
       (overlayContext) => Toast.warning(
-        description: message ?? 'Warning',
+        description: '$message',
         closeLabel: 'Close',
         onClose: () {
           _entry?.remove();
@@ -56,7 +68,7 @@ class CoreToast {
   }
 
   /// Shows a custom toast.
-  /// Accepts a context, a toast builder, and an optional duration as parameters.
+  /// Accepts a [context], a [toastBuilder], and an optional [duration] as parameters.
   static void showCustomToast(
     BuildContext context,
     Widget Function(BuildContext context) toastBuilder, {
@@ -87,7 +99,7 @@ class CoreToast {
     if (entryToAdd != null) {
       overlay.insert(entryToAdd);
     }
-    
+
     // Only create timer if timers are not disabled
     if (!_disableTimers) {
       _timer = Timer(duration, () {
