@@ -26,7 +26,7 @@ class SuccessModal {
     bool isDismissible = false,
     bool enableDrag = false,
     required VoidCallback onPressed,
-    String? buttonLabel,
+    required String buttonLabel,
   }) {
     showModalBottomSheet(
       context: context,
@@ -44,7 +44,7 @@ class SuccessModal {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/icons/success.png', width: 90, height: 90),
+              Image.asset('assets/icons/success.png', width: 90, height: 90, package: 'core_ui'),
               const SizedBox(height: 16),
               Text(
                 '$message',
@@ -54,7 +54,7 @@ class SuccessModal {
               const SizedBox(height: 24),
               CoreButton(
                 onPressed: onPressed,
-                label: '$buttonLabel',
+                label: buttonLabel,
                 centerAlign: true,
               ),
             ],
