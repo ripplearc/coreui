@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 ///     Navigator.pop(context);
 ///   },
 /// );
+/// ```
 class SuccessModal {
   static void show(
     BuildContext context, {
@@ -44,6 +45,7 @@ class SuccessModal {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // TODO: Update success.png image to use an animated checkmark(https://ripplearc.youtrack.cloud/issue/CA-56/TODO-Animate-success-bottom-sheet-check-mark?preview=CA-56).
               Image.asset('assets/icons/success.png', width: 90, height: 90, package: 'core_ui'),
               const SizedBox(height: 16),
               Text(
