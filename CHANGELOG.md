@@ -1,6 +1,15 @@
 # Changelog
 
-## [0.0.1] - Initial Release
+
+## [0.2.0] - Release 0.2.0
+
+### ✨ Features
+- **UI Components**
+  - **SuccessModal**: A bottom sheet that is displayed to the user when an operation is successful.
+  - **Toast**: Provides a static interface to display toast messages, Toast.showSuccess, Toast.showError, Toast.showWarning.
+--- 
+
+## [0.1.0] - Initial Release
 
 ### ✨ Features
 
