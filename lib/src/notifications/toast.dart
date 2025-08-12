@@ -24,12 +24,12 @@ class CoreToast {
 
   /// Shows an error toast.
   /// Accepts a [context] and an optional [message] as parameters.
-  static void showError(BuildContext context, String? message) {
+  static void showError(BuildContext context, String? message, String closeLabel) {
     showCustomToast(
       context,
       (overlayContext) => Toast.error(
         description: '$message',
-        closeLabel: 'Close',
+        closeLabel: closeLabel,
         onClose: () {
           _entry?.remove();
         },
@@ -39,12 +39,12 @@ class CoreToast {
 
   /// Shows a success toast.
   /// Accepts a [context] and an optional [message] as parameters.
-  static void showSuccess(BuildContext context, String? message) {
+  static void showSuccess(BuildContext context, String? message, String closeLabel) {
     showCustomToast(
       context,
       (overlayContext) => Toast.success(
         description: '$message',
-        closeLabel: 'Close',
+        closeLabel: closeLabel,
         onClose: () {
           _entry?.remove();
         },
@@ -54,12 +54,12 @@ class CoreToast {
 
   /// Shows a warning toast.
   /// Accepts a [context] and an optional [message] as parameters.
-  static void showWarning(BuildContext context, String? message) {
+  static void showWarning(BuildContext context, String? message, String closeLabel) {
     showCustomToast(
       context,
       (overlayContext) => Toast.warning(
         description: '$message',
-        closeLabel: 'Close',
+        closeLabel: closeLabel,
         onClose: () {
           _entry?.remove();
         },

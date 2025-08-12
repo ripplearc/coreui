@@ -22,7 +22,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Request Successful'),
+                onPressed: () => CoreToast.showSuccess(context, 'Request Successful', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -44,7 +44,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showError(context, 'Custom error message'),
+                onPressed: () => CoreToast.showError(context, 'Custom error message', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -65,7 +65,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showWarning(context, 'Custom warning message'),
+                onPressed: () => CoreToast.showWarning(context, 'Custom warning message', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -115,11 +115,11 @@ void main() {
               builder: (context) => Column(
                 children: [
                   ElevatedButton(
-                    onPressed: () => CoreToast.showSuccess(context, 'First toast'),
+                    onPressed: () => CoreToast.showSuccess(context, 'First toast', 'Close'),
                     child: const Text('Show First'),
                   ),
                   ElevatedButton(
-                    onPressed: () => CoreToast.showError(context, 'Second toast'),
+                    onPressed: () => CoreToast.showError(context, 'Second toast', 'Close'),
                     child: const Text('Show Second'),
                   ),
                 ],
@@ -149,7 +149,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Test toast'),
+                onPressed: () => CoreToast.showSuccess(context, 'Test toast', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -175,7 +175,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Test toast'),
+                onPressed: () => CoreToast.showSuccess(context, 'Test toast', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
