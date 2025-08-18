@@ -1,3 +1,4 @@
+import 'package:example/screens/bottom_navigation_showcase_screen.dart';
 import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
@@ -59,6 +60,12 @@ class ComponentsScreen extends StatelessWidget {
               context,
               'Success Modal Components',
               const SuccessModalShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Bottom Navigation Components',
+              const BottomNavigationShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
           ],
