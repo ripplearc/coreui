@@ -71,7 +71,8 @@ class CoreIcons {
   static const camera = CoreMaterialIcons.camera;
 
   // Interface
-  static const home = CoreMaterialIcons.home;
+  static const home =  CoreIconData.svg(CoreSvgIcons.home);
+  static const calculation =  CoreIconData.svg(CoreSvgIcons.calculation);
   static const list = CoreMaterialIcons.list;
   static const placeholder = CoreIconData.svg(CoreSvgIcons.placeholder);
 
