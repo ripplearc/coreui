@@ -21,10 +21,12 @@ class CoreSvgIcons {
   static const String phone = '$_basePath/phone.svg';
   static const String rename = '$_basePath/rename.svg';
   static const String delete = '$_basePath/delete.svg';
+  static const String home = '$_basePath/home.svg';
 
   /// Calculation Icons
   static const String calculator = '$_basePath/calculator.svg';
   static const String calculate = '$_basePath/calculate.svg';
+  static const String calculation = '$_basePath/calculation.svg';
   static const String cost = '$_basePath/cost.svg';
   static const String tabDuplicate = '$_basePath/tab_duplicate.svg';
   static const String editDocument = '$_basePath/edit_document.svg';
