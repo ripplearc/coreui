@@ -125,15 +125,16 @@ class BottomNavTab {
 /// )
 /// ```
 ///
-/// ### 3) External state (BLoC / Riverpod)
+/// ### 3) External state (BLoC)
 /// ```dart
 /// CoreBottomNavBar(
 ///   tabs: _tabs,
-///   selectedIndex: context.select((ShellCubit c) => c.state.index),
-///   onTabSelected: (i) => context.read<ShellCubit>().setIndex(i),
+///   selectedIndex: context.select((BottomNavBloc b) => b.state.index),
+///   onTabSelected: (i) =>
+///       context.read<BottomNavBloc>().add(BottomNavTabSelectedEvent(i)),
 /// )
 /// ```
-///
+
 
 
 class CoreBottomNavBar extends StatefulWidget {
