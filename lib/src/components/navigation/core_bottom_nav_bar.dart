@@ -135,8 +135,6 @@ class BottomNavTab {
 /// )
 /// ```
 
-
-
 class CoreBottomNavBar extends StatefulWidget {
   /// The four tabs rendered by the navigation bar.
   ///
@@ -177,6 +175,7 @@ class CoreBottomNavBar extends StatefulWidget {
   @override
   State<CoreBottomNavBar> createState() => _CoreBottomNavBarState();
 }
+
 class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   @override
   Widget build(BuildContext context) {
@@ -281,7 +280,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       width: layout.tabRowBarWidth,
       padding: EdgeInsets.symmetric(horizontal: layout.barHorizontalPad),
       decoration: BoxDecoration(
-        color: colors?.backgroundDarkGray ?? CoreBackgroundColors.backgroundDarkGray,
+        color: colors?.backgroundDarkGray ??
+            CoreBackgroundColors.backgroundDarkGray,
         borderRadius: BorderRadius.circular(60),
       ),
       clipBehavior: Clip.antiAlias,
@@ -305,7 +305,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       child: Container(
         decoration: BoxDecoration(
           color: colors?.pageBackground ?? CoreBackgroundColors.pageBackground,
-          border: Border.all(color: colors?.lineMid ?? CoreBorderColors.lineMid, width: 2),
+          border: Border.all(
+              color: colors?.lineMid ?? CoreBorderColors.lineMid, width: 2),
           borderRadius: BorderRadius.circular(layout.pillRadius),
         ),
       ),
@@ -343,7 +344,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
             CoreIconWidget(
               icon: widget.tabs[index].icon,
               size: layout.iconSize,
-              color: isActive ? colors?.iconDark ?? CoreIconColors.dark : colors?.iconGrayMid ?? CoreIconColors.grayMid,
+              color: isActive
+                  ? colors?.iconDark ?? CoreIconColors.dark
+                  : colors?.iconGrayMid ?? CoreIconColors.grayMid,
             ),
             AnimatedSwitcher(
               duration: widget.animationDuration,
@@ -353,8 +356,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                 alignment: Alignment.centerLeft,
                 children: [
                   for (final prev in previousChildren)
-                  Opacity(opacity: 0.2, child: prev),
-                  if (currentChild != null) currentChild, 
+                    Opacity(opacity: 0.2, child: prev),
+                  if (currentChild != null) currentChild,
                 ],
               ),
               transitionBuilder: (child, anim) =>
@@ -388,7 +391,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       width: layout.actionButtonSize,
       height: layout.actionButtonSize,
       decoration: BoxDecoration(
-        color: colors?.backgroundDarkGray ?? CoreBackgroundColors.backgroundDarkGray,
+        color: colors?.backgroundDarkGray ??
+            CoreBackgroundColors.backgroundDarkGray,
         borderRadius: BorderRadius.circular(layout.actionButtonSize / 2),
       ),
       child: Center(
@@ -404,6 +408,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     );
   }
 }
+
 /// Design tokens / reference dimensions for the bottom navigation bar.
 /// Values are based on design specs (e.g., from Figma) and used for scaling.
 class _BaseBottomNavBarDimensions {
