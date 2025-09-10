@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - Release 0.3.0
+
+### ✨ Features
+- **UI Components**
+  - **CoreBottomNavBar**: A customizable bottom navigation bar component with responsive sizing and smooth animations..
+--- 
+
+
 ## [0.2.0] - Release 0.2.0
 
 ### ✨ Features
