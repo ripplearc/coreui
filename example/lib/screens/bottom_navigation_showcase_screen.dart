@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:core_ui/core_ui.dart';
+import 'package:ripplearc_core_ui/core_ui.dart';
 
 class BottomNavigationShowcaseScreen extends StatefulWidget {
   const BottomNavigationShowcaseScreen({super.key});
