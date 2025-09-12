@@ -1,8 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:core_ui/src/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ripplearc_core_ui/src/theme/color_tokens.dart';
 
 import '../load_fonts.dart';
 
