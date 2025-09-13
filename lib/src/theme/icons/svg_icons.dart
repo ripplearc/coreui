@@ -1,6 +1,6 @@
 /// Core SVG icons paths
 class CoreSvgIcons {
-  static const String _basePath = 'packages/core_ui/assets/icons';
+  static const String _basePath = 'packages/ripplearc_coreui/assets/icons';
 
   /// Brand Icons
   static const String microsoft = '$_basePath/microsoft.svg';

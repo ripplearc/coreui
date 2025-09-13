@@ -97,7 +97,7 @@ class CoreTheme {
 
   static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
-      package: 'core_ui',
+      package: 'ripplearc_coreui',
       materialTapTargetSize: MaterialTapTargetSize.padded,
       primaryColor: CoreBrandColors.orient,
       extensions: [

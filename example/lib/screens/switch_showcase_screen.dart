@@ -1,4 +1,4 @@
-import 'package:ripplearc_coreui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:flutter/material.dart';
 
 class SwitchShowcaseScreen extends StatefulWidget {
