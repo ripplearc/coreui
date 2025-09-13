@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_core_ui/src/theme/typography_extension.dart';
+import 'package:ripplearc_coreui/src/theme/typography_extension.dart';
 
 import 'color_tokens.dart';
 import 'theme_extensions.dart';

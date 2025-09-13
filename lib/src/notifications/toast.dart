@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:ripplearc_core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/core_ui.dart';
 
 /// Used to show a toast message to the user.
 /// It provides a static interface to easily display a toast message conveniently.

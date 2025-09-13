@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ripplearc_core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/core_ui.dart';
 
 void main() {
   testWidgets('SuccessModal displays default content and triggers callback', (

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/core_ui.dart';
 
 /// A modal that shows a success message and a button to continue.
 ///
