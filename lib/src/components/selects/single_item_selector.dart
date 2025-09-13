@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_coreui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A widget that allows the user to select a single item from a list of items
 /// This widget uses a bottom sheet to display the list of items for selection.

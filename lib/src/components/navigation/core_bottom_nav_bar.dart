@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_coreui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Describes a single bottom navigation tab.
 ///
