@@ -1,11 +1,11 @@
-# Core UI
+# Ripplearc Core UI
 
 A Flutter design system package with design tokens and basic components.
 
 ## Package Structure
 
 ```
-ripplearc_coreui/
+coreui/
 │
 ├── lib/
 │   ├── ripplearc_coreui.dart               # Entry point
