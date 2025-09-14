@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core_ui.dart';
+import '../../../ripplearc_coreui.dart';
 
 /// Defines the type and behavior of the switch component.
 /// - [normal]: Standard switch with grey colors (width: 71px with labels, 32px compact).

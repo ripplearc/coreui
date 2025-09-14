@@ -1,4 +1,4 @@
-import 'package:core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:example/screens/components_screen.dart';
 import 'package:example/screens/tokens_screen.dart';
 import 'package:flutter/material.dart';

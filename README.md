@@ -1,14 +1,14 @@
-# Core UI
+# Ripplearc Core UI
 
 A Flutter design system package with design tokens and basic components.
 
 ## Package Structure
 
 ```
-core_ui/
+coreui/
 │
 ├── lib/
-│   ├── core_ui.dart               # Entry point
+│   ├── ripplearc_coreui.dart               # Entry point
 │   └── src/
 │       ├── theme/                 # Theming system and tokens
 │       │   ├── color_tokens.dart
@@ -54,7 +54,7 @@ Add this package to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  core_ui:
+  ripplearc_coreui:
     git:
       url: https://github.com/ripplearc/coreui.git
       ref: main
@@ -63,7 +63,7 @@ dependencies:
 ## Usage
 
 ```dart
-import 'package:core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 // Use theme
 MaterialApp(

@@ -1,5 +1,5 @@
-import 'package:core_ui/src/theme/typography_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/src/theme/typography_extension.dart';
 
 import 'color_tokens.dart';
 import 'theme_extensions.dart';
@@ -97,7 +97,7 @@ class CoreTheme {
 
   static ThemeData _buildTheme({required bool isDark}) {
     return ThemeData(
-      package: 'core_ui',
+      package: 'ripplearc_coreui',
       materialTapTargetSize: MaterialTapTargetSize.padded,
       primaryColor: CoreBrandColors.orient,
       extensions: [

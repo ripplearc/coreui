@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:core_ui/core_ui.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:flutter/material.dart';
 
 class ColorShowcaseScreen extends StatelessWidget {

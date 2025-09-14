@@ -1,6 +1,6 @@
-import 'package:core_ui/src/theme/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ripplearc_coreui/src/theme/typography.dart';
 
 import '../load_fonts.dart';
 
