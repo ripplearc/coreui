@@ -7,6 +7,7 @@ import 'package:example/screens/select_button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
+import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
@@ -102,6 +103,12 @@ class ComponentsScreen extends StatelessWidget {
               context,
               'Select button Components',
               const SelectButtonShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Tabs Components',
+              const TabsShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
           ],
