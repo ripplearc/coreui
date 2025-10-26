@@ -1,10 +1,11 @@
 export 'src/components/alerts/toast.dart';
-// Component exports
 export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
+// Component exports
+export 'src/components/tabs/core_tabs.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
