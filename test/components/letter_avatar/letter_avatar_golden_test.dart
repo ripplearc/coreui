@@ -18,21 +18,15 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         children: [
           CoreLetterAvatar(name: name),
-          const SizedBox(height: 8),
+          const SizedBox(height: CoreSpacing.space2),
           Text(
             letter,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
+            style: CoreTypography.bodyMediumSemiBold(color: CoreTextColors.dark),
             textAlign: TextAlign.center,
           ),
           Text(
             name,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
+            style: CoreTypography.bodySmallRegular(color: CoreTextColors.body),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -76,21 +70,18 @@ void main() {
       home: Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(CoreSpacing.space8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Letter Avatars (A-Z)',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: CoreTypography.bodyLargeSemiBold(color: CoreTextColors.dark),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: CoreSpacing.space6),
               Wrap(
-                spacing: 24,
-                runSpacing: 24,
+                spacing: CoreSpacing.space6,
+                runSpacing: CoreSpacing.space6,
                 children: letterAvatars,
               ),
             ],
