@@ -1,6 +1,6 @@
 # Letter Avatar Component
 
-The Letter Avatar component is a widget that displays a PNG avatar image based on the first letter of a name. It automatically maps the first letter of the provided name (A-Z) to the corresponding letter avatar PNG file.
+The Letter Avatar component is a widget that displays a WEBP avatar image based on the first letter of a name. It automatically maps the first letter of the provided name (A-Z) to the corresponding letter avatar WEBP file.
 
 ## Usage
 
@@ -36,12 +36,12 @@ CoreLetterAvatar(
 
 ## Letter Mapping
 
-The component extracts the first letter from the `name` parameter and maps it to the corresponding PNG file:
+The component extracts the first letter from the `name` parameter and maps it to the corresponding WEBP file:
 
 - The first letter is extracted and converted to uppercase
-- Letters A-Z map to `A.png` through `Z.png` in the `assets/letter_avatars/` directory
-- If the name is empty or the first character is not a letter (A-Z), it defaults to `R.png`
-- Non-letter characters (numbers, symbols, etc.) also default to `R.png`
+- Letters A-Z map to `A.webp` through `Z.webp` in the `assets/letter_avatars/` directory
+- If the name is empty or the first character is not a letter (A-Z), it defaults to `R.webp`
+- Non-letter characters (numbers, symbols, etc.) also default to `R.webp`
 
 ## Accessibility
 
@@ -53,7 +53,7 @@ The Letter Avatar component includes semantic labels for accessibility:
 
 ## Implementation Details
 
-- **Asset Format**: PNG images (not SVG)
+- **Asset Format**: WEBP images
 - **Asset Location**: `assets/letter_avatars/` directory within the package
 - **Package Assets**: Assets are automatically bundled with the package and work when the package is imported as a dependency
 - **Image Loading**: Uses `Image.asset` with `package: 'ripplearc_coreui'` for proper asset resolution

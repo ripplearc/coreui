@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/src/constants.dart';
 
 import '../../theme/icons/letter_avatar_icons.dart';
 
@@ -21,7 +22,7 @@ class CoreLetterAvatar extends StatelessWidget {
     final imagePath = CoreLetterAvatarPaths.getLetterAvatarPath(name);
     final imageWidget = Image.asset(
       imagePath,
-      package: 'ripplearc_coreui',
+      package: CoreConstants.packageName,
       semanticLabel: semanticLabel ?? 'Letter avatar for $name',
     );
     
