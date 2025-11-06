@@ -2,6 +2,7 @@ export 'src/components/alerts/toast.dart';
 // Component exports
 export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
+export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
@@ -12,6 +13,7 @@ export 'src/notifications/toast.dart';
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';
 export 'src/theme/icons/icon_data.dart';
+export 'src/theme/icons/letter_avatar_icons.dart';
 export 'src/theme/icons/material_icons.dart';
 export 'src/theme/icons/svg_icons.dart';
 export 'src/theme/shadows.dart';

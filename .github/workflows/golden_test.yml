@@ -19,17 +19,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Generate Golden Images
+      - name: Run Golden Tests
         run: |
-          flutter test test/theme/color_tokens_test.dart --update-goldens
-          flutter test test/theme/spacing_test.dart --update-goldens
-          flutter test test/theme/icons_test.dart --update-goldens
-          flutter test test/theme/shadows_test.dart --update-goldens
-          flutter test test/theme/typography_test.dart --update-goldens
-          flutter test test/components/toast/toast_golden_test.dart --update-goldens
-          flutter test test/components/text_fields/core_text_field_golden_test.dart --update-goldens
-          flutter test test/components/selects/single_selector_golden_test.dart --update-goldens
-          flutter test test/components/switches/switch_golden_test.dart --update-goldens
+          flutter test test/components/*
+          flutter test test/theme/*
+          flutter test test/notifications/*
 
       - name: Upload Golden Images
         if: success()
