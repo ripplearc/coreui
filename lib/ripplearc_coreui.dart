@@ -1,5 +1,6 @@
 export 'src/components/alerts/toast.dart';
 // Component exports
+export 'src/components/avatar/avatar.dart';
 export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
