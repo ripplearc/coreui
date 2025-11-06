@@ -22,6 +22,7 @@ class CoreSvgIcons {
   static const String rename = '$_basePath/rename.svg';
   static const String delete = '$_basePath/delete.svg';
   static const String home = '$_basePath/home.svg';
+  static const String emptyEstimation = '$_basePath/empty_estimation.svg';
 
   /// Calculation Icons
   static const String calculator = '$_basePath/calculator.svg';
