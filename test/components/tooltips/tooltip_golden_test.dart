@@ -14,6 +14,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -49,6 +50,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -84,6 +86,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(500, 300));
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -119,6 +122,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(500, 300));
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -154,6 +158,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(

@@ -9,8 +9,9 @@ void main() {
 
     testWidgets('renders child widget correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: CoreTooltip(
               message: testMessage,
               child: testChild,
@@ -24,8 +25,9 @@ void main() {
 
     testWidgets('shows tooltip on tap', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: CoreTooltip(
               message: testMessage,
               child: testChild,
@@ -49,8 +51,9 @@ void main() {
 
     testWidgets('hides tooltip on second tap', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: CoreTooltip(
               message: testMessage,
               child: testChild,
@@ -76,8 +79,9 @@ void main() {
 
     testWidgets('shows tooltip with top position', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.top(
                 message: testMessage,
@@ -100,8 +104,9 @@ void main() {
     testWidgets('shows tooltip with bottom position',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.bottom(
                 message: testMessage,
@@ -124,8 +129,9 @@ void main() {
     testWidgets('shows tooltip with left position',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.left(
                 message: testMessage,
@@ -148,8 +154,9 @@ void main() {
     testWidgets('shows tooltip with right position',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.right(
                 message: testMessage,
@@ -171,8 +178,9 @@ void main() {
 
     testWidgets('shows tooltip with no arrow', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.none(
                 message: testMessage,
@@ -196,8 +204,9 @@ void main() {
       const customMessage = 'Custom tooltip message';
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: CoreTooltip.none(
               message: customMessage,
               child: testChild,
@@ -218,8 +227,9 @@ void main() {
     testWidgets('tooltip appears above child when using .top()',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
             body: Center(
               child: CoreTooltip.top(
                 message: testMessage,

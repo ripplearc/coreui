@@ -217,9 +217,11 @@ class _TooltipBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+
     final text = Text(
       message,
-      style: CoreTypography.bodySmallRegular(color: CoreTextColors.inverse),
+      style: CoreTypography.bodySmallRegular(color: colors.textInverse),
     );
 
     final tooltipBody = Container(
@@ -228,7 +230,7 @@ class _TooltipBubble extends StatelessWidget {
         horizontal: CoreSpacing.space2,
       ),
       decoration: BoxDecoration(
-        color: CoreBackgroundColors.backgroundDarkGray,
+        color: colors.backgroundDarkGray,
         borderRadius: BorderRadius.circular(CoreSpacing.space1),
       ),
       child: text,
@@ -237,7 +239,7 @@ class _TooltipBubble extends StatelessWidget {
     final arrow = CustomPaint(
       size: const Size(12, 6),
       painter: _TooltipArrowPainter(
-        color: CoreBackgroundColors.backgroundDarkGray,
+        color: colors.backgroundDarkGray,
         position: arrowPosition,
       ),
     );
