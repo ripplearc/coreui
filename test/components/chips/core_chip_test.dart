@@ -10,6 +10,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Test Chip',
@@ -29,6 +30,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Chip with Icon',
@@ -48,6 +50,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Toggle Chip',
@@ -77,6 +80,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Callback Chip',
@@ -102,6 +106,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Small Chip',
@@ -121,6 +126,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Medium Chip',
@@ -140,6 +146,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Large Chip',
@@ -159,6 +166,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Chip with Close',
@@ -178,6 +186,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Persistent Chip',
@@ -194,6 +203,7 @@ void main() {
       // Trigger a rebuild
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
               label: 'Persistent Chip',

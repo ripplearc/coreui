@@ -71,24 +71,23 @@ class CoreChip extends StatelessWidget {
     bool pressed,
   ) {
     final bool isLarge = size == CoreChipSize.large;
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
 
     // ---------------- TEXT STYLE ----------------
     final textStyle = isLarge
         ? CoreTypography.bodySmallRegular()
         : CoreTypography.bodyLargeRegular();
 
-    // ---- COLORS ----
-    final bgDefault = isLarge ? CoreButtonColors.inverse : CoreChipColors.gray;
-    final bgHighlight =
-        isLarge ? CoreButtonColors.inverse : CoreChipColors.gray;
-    final bgPressed = CoreButtonColors.inverse;
-    final bgSelected = CoreButtonColors.inverse;
+    // ---- COLORS (Theme-aware) ----
+    final bgDefault = isLarge ? colors.buttonSurface : colors.chipGrey;
+    final bgHighlight = isLarge ? colors.buttonSurface : colors.chipGrey;
+    final bgPressed = colors.buttonPress;
+    final bgSelected = colors.buttonSurface;
 
-    final borderDefault =
-        isLarge ? CoreBorderColors.lineMid : CoreChipColors.gray;
-    final borderHighlight = CoreBorderColors.lineHighlight;
-    final borderPressed = CoreBorderColors.lineDarkOutline;
-    final borderSelected = CoreBorderColors.outlineHover;
+    final borderDefault = isLarge ? colors.lineMid : colors.chipGrey;
+    final borderHighlight = colors.lineHighlight;
+    final borderPressed = colors.lineDarkOutline;
+    final borderSelected = colors.outlineHover;
 
     // ---------------- BACKGROUNDS ----------------
     Color background = bgDefault;
@@ -139,7 +138,7 @@ class CoreChip extends StatelessWidget {
             CoreIconWidget(
               icon: icon!,
               size: CoreSpacing.space5,
-              color: CoreBorderColors.outlineFocus,
+              color: colors.outlineFocus,
             ),
           ],
           Padding(
@@ -148,10 +147,10 @@ class CoreChip extends StatelessWidget {
                 end: CoreSpacing.space2),
             child: Text(label, style: textStyle),
           ),
-          const CoreIconWidget(
+          CoreIconWidget(
             icon: CoreIcons.close,
             size: CoreSpacing.space5,
-            color: CoreIconColors.grayMid,
+            color: colors.iconGrayMid,
           ),
         ],
       ),

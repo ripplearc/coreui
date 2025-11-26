@@ -149,6 +149,7 @@ void main() {
     ];
 
     final widget = MaterialApp(
+      theme: CoreTheme.light(),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
