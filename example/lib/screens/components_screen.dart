@@ -4,6 +4,7 @@ import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
 import 'package:example/screens/select_button_showcase_screen.dart';
+import 'package:example/screens/chip_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
@@ -48,6 +49,12 @@ class ComponentsScreen extends StatelessWidget {
               context,
               'Button Components',
               const ButtonShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Chip Components',
+              const ChipShowcaseScreen(),
             ),
             const SizedBox(height: 16),
             _buildShowcaseButton(
