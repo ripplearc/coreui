@@ -30,24 +30,27 @@ class _CoreTabsState extends State<CoreTabs>
       vsync: this,
       initialIndex: widget.initialIndex,
     );
+    _controller.addListener(_onTabChanged);
+  }
 
-    _controller.addListener(() {
-      if (_controller.indexIsChanging) {
-        widget.onChanged?.call(_controller.index);
-      }
-    });
+  void _onTabChanged() {
+    if (_controller.indexIsChanging) {
+      widget.onChanged?.call(_controller.index);
+    }
   }
 
   @override
   void didUpdateWidget(covariant CoreTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.tabs.length != widget.tabs.length) {
+      _controller.removeListener(_onTabChanged);
       _controller.dispose();
       _controller = TabController(
         length: widget.tabs.length,
         vsync: this,
         initialIndex: widget.initialIndex,
       );
+      _controller.addListener(_onTabChanged);
     }
   }
 
