@@ -70,6 +70,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        theme: CoreTheme.light(),
         home: Scaffold(
           backgroundColor: CoreBackgroundColors.pageBackground,
           body: Center(
