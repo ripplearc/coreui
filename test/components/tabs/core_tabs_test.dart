@@ -8,6 +8,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -31,6 +32,7 @@ void main() {
     testWidgets('renders with 2 tabs', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
               tabs: const ['Tab 1', 'Tab 2'],
@@ -46,6 +48,7 @@ void main() {
     testWidgets('renders with 5 tabs', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
@@ -67,6 +70,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -94,6 +98,7 @@ void main() {
     testWidgets('respects initialIndex parameter', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -113,6 +118,7 @@ void main() {
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: StatefulBuilder(
               builder: (context, setState) {
