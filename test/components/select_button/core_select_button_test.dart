@@ -13,6 +13,7 @@ void main() {
     testWidgets('renders all tabs correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -30,6 +31,7 @@ void main() {
     testWidgets('highlights initial selected tab', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -57,6 +59,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -79,6 +82,7 @@ void main() {
     testWidgets('handles single tab', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Only Tab'],
@@ -96,6 +100,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: StatefulBuilder(
               builder: (context, setState) {
@@ -133,6 +138,7 @@ void main() {
     testWidgets('renders with correct styling', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
@@ -153,6 +159,7 @@ void main() {
     testWidgets('handles null onChanged callback', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
@@ -176,6 +183,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
               tabs: tabs,

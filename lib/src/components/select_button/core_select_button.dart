@@ -15,9 +15,11 @@ class CoreSelectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+
     return Container(
       decoration: BoxDecoration(
-        color: CoreTextColors.inverse,
+        color: colors.textInverse,
         borderRadius: BorderRadius.circular(CoreSpacing.space12),
         boxShadow: CoreShadows.small,
       ),
@@ -52,6 +54,8 @@ class CoreSelectButton extends StatelessWidget {
     required bool selected,
     required VoidCallback onTap,
   }) {
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+
     return InkWell(
       borderRadius: BorderRadius.circular(CoreSpacing.space12),
       onTap: onTap,
@@ -63,7 +67,7 @@ class CoreSelectButton extends StatelessWidget {
           vertical: CoreSpacing.space2,
         ),
         decoration: BoxDecoration(
-          color: selected ? CoreBorderColors.tabsHighlight : Colors.transparent,
+          color: selected ? colors.tabsHighlight : Colors.transparent,
           borderRadius: BorderRadius.circular(CoreSpacing.space12),
           boxShadow: selected ? CoreShadows.medium : [],
         ),
@@ -71,10 +75,10 @@ class CoreSelectButton extends StatelessWidget {
           label,
           style: selected
               ? CoreTypography.bodyMediumSemiBold(
-                  color: CoreTextColors.headline,
+                  color: colors.textHeadline,
                 )
               : CoreTypography.bodyMediumRegular(
-                  color: CoreTextColors.body,
+                  color: colors.textBody,
                 ),
         ),
       ),
