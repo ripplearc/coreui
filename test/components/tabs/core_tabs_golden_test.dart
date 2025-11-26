@@ -14,8 +14,9 @@ void main() {
       (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 1200));
 
-    final widget = const MaterialApp(
-      home: Scaffold(
+    final widget = MaterialApp(
+      theme: CoreTheme.light(),
+      home: const Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Padding(
