@@ -59,6 +59,8 @@ class _CoreTabsState extends State<CoreTabs>
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: TabBar(
@@ -66,14 +68,14 @@ class _CoreTabsState extends State<CoreTabs>
         controller: _controller,
         isScrollable: true,
         tabAlignment: TabAlignment.start,
-        indicatorColor: CoreBorderColors.tabsHighlight,
+        indicatorColor: colors.tabsHighlight,
         indicatorWeight: CoreSpacing.space1,
-        labelColor: CoreTextColors.headline,
-        unselectedLabelColor: CoreTextColors.body,
+        labelColor: colors.textHeadline,
+        unselectedLabelColor: colors.textBody,
         labelStyle:
-            CoreTypography.bodyMediumSemiBold(color: CoreTextColors.headline),
+            CoreTypography.bodyMediumSemiBold(color: colors.textHeadline),
         unselectedLabelStyle:
-            CoreTypography.bodyMediumRegular(color: CoreTextColors.body),
+            CoreTypography.bodyMediumRegular(color: colors.textBody),
         tabs: [
           for (final label in widget.tabs)
             Padding(
