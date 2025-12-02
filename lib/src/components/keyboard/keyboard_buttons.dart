@@ -29,8 +29,9 @@ class CoreDigitInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final effectiveSize = size ?? CoreSpacing.space16;
     final backgroundColor = isEmphasized
         ? (colors?.keyboardCalculate ?? CoreKeyboardColors.calculate)
@@ -73,8 +74,9 @@ class CoreOperatorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final effectiveSize = size ?? CoreSpacing.space16;
     final backgroundColor = colors?.keyboardCalculate ?? CoreKeyboardColors.calculate;
     final textColor = colors?.textHeadline ?? CoreTextColors.headline;
@@ -118,12 +120,13 @@ class CoreUnitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final effectiveHeight = height ??
         (width != null
             ? width! * _unitHeightRatio
-            : CoreSpacing.space12 + CoreSpacing.space3); // 60px
+            : _defaultUnitHeight);
     final backgroundColor = colors?.keyboardUnits ?? CoreKeyboardColors.units;
     final textColor = colors?.textHeadline ?? CoreTextColors.headline;
 
@@ -145,6 +148,8 @@ class CoreUnitButton extends StatelessWidget {
   }
 
   static const double _unitHeightRatio = 0.78;
+  // Default height when width is not provided: 60px (space12 + space3)
+  static const double _defaultUnitHeight = CoreSpacing.space12 + CoreSpacing.space3;
 }
 
 /// A button widget for control actions on the keyboard.
@@ -169,8 +174,9 @@ class CoreControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final backgroundColor = switch (action) {
       ControlAction.clearAll => colors?.keyboardActions ?? CoreKeyboardColors.actions,
       ControlAction.delete => colors?.keyboardMain ?? CoreKeyboardColors.main,
@@ -251,12 +257,13 @@ class CoreResultButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final effectiveHeight = height ??
         (width != null
             ? width! * _resultHeightRatio
-            : CoreSpacing.space12 + CoreSpacing.space2); // 56px
+            : _defaultResultHeight);
     final backgroundColor = colors?.keyboardMain ?? CoreKeyboardColors.main;
     final textColor = colors?.textInverse ?? CoreTextColors.inverse;
     final label = resultType.label(customLabel).toUpperCase();
@@ -280,6 +287,8 @@ class CoreResultButton extends StatelessWidget {
   }
 
   static const double _resultHeightRatio = 0.53;
+  // Default height when width is not provided: 56px (space12 + space2)
+  static const double _defaultResultHeight = CoreSpacing.space12 + CoreSpacing.space2;
 }
 
 class _KeyboardButton extends StatelessWidget {
@@ -294,6 +303,7 @@ class _KeyboardButton extends StatelessWidget {
   final BorderRadius borderRadius;
 
   static const double _defaultSize = CoreSpacing.space16;
+  // Border width of 2px (not on 4px grid per design spec)
   static const double _defaultBorderWidth = 2.0;
 
   const _KeyboardButton({
@@ -334,10 +344,12 @@ class _KeyboardButton extends StatelessWidget {
           onTap: onPressed,
           child: Center(
             child: icon ??
-                Text(
-                  label ?? '',
-                  style: textStyle,
-                ),
+                (label != null && label.isNotEmpty
+                    ? Text(
+                        label,
+                        style: textStyle,
+                      )
+                    : const SizedBox.shrink()),
           ),
         ),
       ),
