@@ -1,5 +1,6 @@
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:example/screens/components_screen.dart';
+import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/tokens_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,9 @@ class MyApp extends StatelessWidget {
       title: 'Core UI Demo',
       theme: CoreTheme.light(),
       darkTheme: CoreTheme.dark(),
-      home: const HomeScreen(),
+      // home: const HomeScreen(),
+      home: const KeyboardShowcaseScreen(),
+      
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
+import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -38,6 +39,7 @@ class ComponentsScreen extends StatelessWidget {
               'Single Select Field Components',
               const SingleItemSelectorShowcaseScreen(),
             ),
+
             _buildShowcaseButton(
               context,
               'Button Components',
@@ -66,6 +68,12 @@ class ComponentsScreen extends StatelessWidget {
               context,
               'Bottom Navigation Components',
               const BottomNavigationShowcaseScreen(),
+            ),
+            const SizedBox(height: 16),
+            _buildShowcaseButton(
+              context,
+              'Keyboard Components',
+              const KeyboardShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
           ],
