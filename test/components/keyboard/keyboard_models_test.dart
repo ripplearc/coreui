@@ -34,7 +34,7 @@ void main() {
     test('label returns correct string for all unit types', () {
       expect(UnitType.yards.label, equals('Yards'));
       expect(UnitType.feet.label, equals('Feet'));
-      expect(UnitType.inch.label, equals('Inch'));
+      expect(UnitType.inch.label, equals('Inches'));
       expect(UnitType.meter.label, equals('Meters'));
       expect(UnitType.centimeter.label, equals('Centimeters'));
       expect(UnitType.millimeter.label, equals('Millimeters'));
