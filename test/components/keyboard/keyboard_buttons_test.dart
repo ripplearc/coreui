@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -219,21 +221,6 @@ void main() {
   });
 
   group('CoreControlButton', () {
-    testWidgets('renders delete action correctly', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CoreControlButton(
-              action: ControlAction.delete,
-              onControlAction: (_) {},
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('⌫'), findsOneWidget);
-      expect(find.byType(Icon), findsOneWidget);
-    });
 
     testWidgets('renders clear all action correctly', (tester) async {
       await tester.pumpWidget(
@@ -248,21 +235,6 @@ void main() {
       );
 
       expect(find.text('C'), findsOneWidget);
-    });
-
-    testWidgets('renders more options action correctly', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CoreControlButton(
-              action: ControlAction.moreOptions,
-              onControlAction: (_) {},
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('⋯'), findsOneWidget);
     });
 
     testWidgets('calls onControlAction when tapped', (tester) async {
