@@ -316,7 +316,7 @@ class _KeyboardButton extends StatelessWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
-  }) : borderRadius = borderRadius ?? BorderRadius.circular(CoreSpacing.space8);
+  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
   Widget build(BuildContext context) {
@@ -344,9 +344,9 @@ class _KeyboardButton extends StatelessWidget {
           onTap: onPressed,
           child: Center(
             child: icon ??
-                (label != null && label.isNotEmpty
+                (label != null && label!.isNotEmpty
                     ? Text(
-                        label,
+                        label!,
                         style: textStyle,
                       )
                     : const SizedBox.shrink()),
