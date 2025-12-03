@@ -39,7 +39,6 @@ class ComponentsScreen extends StatelessWidget {
               'Single Select Field Components',
               const SingleItemSelectorShowcaseScreen(),
             ),
-
             _buildShowcaseButton(
               context,
               'Button Components',

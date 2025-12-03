@@ -17,9 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Core UI Demo',
       theme: CoreTheme.light(),
       darkTheme: CoreTheme.dark(),
-      // home: const HomeScreen(),
-      home: const KeyboardShowcaseScreen(),
-      
+      home: const HomeScreen(),
     );
   }
 }

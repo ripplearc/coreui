@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 import 'package:ripplearc_coreui/src/components/keyboard/keyboard_models.dart';
 import 'package:ripplearc_coreui/src/theme/color_tokens.dart';
+import 'package:ripplearc_coreui/src/theme/spacing.dart';
 import 'package:ripplearc_coreui/src/theme/theme_extensions.dart';
 
 class KeyboardShowcaseScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
         KeyType(id: 'lbs', label: 'Lbs'),
         KeyType(id: 'kg', label: 'Kg'),
         KeyType(id: 'tons', label: 'Tons'),
-        KeyType(id: 'drywall', label: 'Drywal'),
+        KeyType(id: 'drywall', label: 'Drywall'),
       ],
     ),
     FunctionGroup(
@@ -56,7 +57,6 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       _log('Operator pressed: ${operatorType.symbol}');
 
   void _handleUnit(UnitType unit) {
-    // setState(() => _selectedUnit = unit);
     _log('Unit selected: ${unit.label}');
   }
 
@@ -87,28 +87,33 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     };
   }
 
+  Widget _buildKeyboard(BuildContext context) {
+    final accentColors = _groupAccentColors(context);
+    return CoreKeyboard(
+      currentGroup: _currentGroup,
+      allGroups: _groups,
+      onDigitPressed: _handleDigit,
+      onUnitSelected: _handleUnit,
+      onOperatorPressed: _handleOperator,
+      onControlAction: _handleControl,
+      onResultTapped: () => _log('Result tapped'),
+      onGroupSelected: _handleGroup,
+      onKeyTapped: _handleKey,
+      result: ResultType.equals,
+      currentUnitSystem: _currentUnitSystem,
+      onUnitSystemChanged: _handleUnitSystem,
+      groupAccentColors: accentColors,
+    );
+  }
+
   void _openBottomSheet() {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Padding(
-        padding: const EdgeInsets.only(top: 32),
-        child: CoreKeyboard(
-          currentGroup: _currentGroup,
-          allGroups: _groups,
-          onDigitPressed: _handleDigit,
-          onUnitSelected: _handleUnit,
-          onOperatorPressed: _handleOperator,
-          onControlAction: _handleControl,
-          onResultTapped: () => _log('Result tapped'),
-          onGroupSelected: _handleGroup,
-          onKeyTapped: _handleKey,
-          result: ResultType.equals,
-          currentUnitSystem: _currentUnitSystem,
-          onUnitSystemChanged: _handleUnitSystem,
-          groupAccentColors: _groupAccentColors(context),
-        ),
+        padding: const EdgeInsets.only(top: CoreSpacing.space8),
+        child: _buildKeyboard(context),
       ),
     );
   }
@@ -116,7 +121,6 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    final accentColors = _groupAccentColors(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Keyboard Component', style: theme.titleLarge),
@@ -125,7 +129,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(CoreSpacing.space4),
               child: Text(
                 'Interact with the keyboard below or open it as a bottom sheet. '
                 'Each tap prints to the console for quick inspection.',
@@ -136,25 +140,11 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
               onPressed: _openBottomSheet,
               child: const Text('Show keyboard sheet'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: CoreKeyboard(
-                  currentGroup: _currentGroup,
-                  allGroups: _groups,
-                  onDigitPressed: _handleDigit,
-                  onUnitSelected: _handleUnit,
-                  onOperatorPressed: _handleOperator,
-                  onControlAction: _handleControl,
-                  onResultTapped: () => _log('Result tapped'),
-                  onGroupSelected: _handleGroup,
-                  onKeyTapped: _handleKey,
-                  result: ResultType.equals,
-                  currentUnitSystem: _currentUnitSystem,
-                  onUnitSystemChanged: _handleUnitSystem,
-                 
-                ),
+                child: _buildKeyboard(context),
               ),
             ),
           ],
