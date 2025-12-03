@@ -10,8 +10,84 @@ import 'function_bottom_sheet.dart';
 import 'keyboard_buttons.dart';
 import 'keyboard_models.dart';
 
+/// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
+///
+/// This component provides a full keyboard interface with:
+/// - Numeric digit input (0-9, decimal)
+/// - Mathematical operators (+, -, ×, ÷, %)
+/// - Unit selection buttons (imperial/metric)
+/// - Control actions (clear, delete, more options)
+/// - Function key groups with expandable bottom sheet
+///
+/// Example usage:
+/// ```dart
+/// CoreKeyboard(
+///   currentGroup: GroupNameType.basicGeometry,
+///   allGroups: functionGroups,
+///   onDigitPressed: (digit) => handleDigit(digit),
+///   onUnitSelected: (unit) => handleUnit(unit),
+///   onOperatorPressed: (op) => handleOperator(op),
+///   onControlAction: (action) => handleControl(action),
+///   onResultTapped: () => calculateResult(),
+///   onGroupSelected: (group) => selectGroup(group),
+///   onKeyTapped: (key) => handleKey(key),
+///   onUnitSystemChanged: (system) => changeUnitSystem(system),
+/// )
+/// ```
+///
+/// [currentGroup] is the currently active function group.
+/// [allGroups] is the list of all available function groups.
+/// [onDigitPressed] is called when a digit button is pressed.
+/// [onUnitSelected] is called when a unit button is selected.
+/// [onOperatorPressed] is called when an operator button is pressed.
+/// [onControlAction] is called when a control action is triggered.
+/// [onResultTapped] is called when the result button is tapped.
+/// [onGroupSelected] is called when a function group is selected.
+/// [onKeyTapped] is called when a function key is tapped.
+/// [onUnitSystemChanged] is called when the unit system changes.
+/// [result] is the type of result to display on the result button.
+/// [currentUnitSystem] is the current unit system (imperial or metric).
+/// [groupAccentColors] is a map of group names to their accent colors.
+/// [customResultLabel] is an optional custom label for the result button.
 class CoreKeyboard extends StatelessWidget {
-  CoreKeyboard({
+  // Layout constants
+  /// Keyboard height as percentage of screen height
+  static const double _keyboardHeightRatio = 0.6;
+  
+  /// Minimum height to be considered a small screen (in logical pixels)
+  static const double _smallScreenThreshold = 500.0;
+  
+  /// Estimated header height in logical pixels
+  static const double _estimatedHeaderHeight = CoreSpacing.space8;
+  
+  /// Estimated function strip height in logical pixels
+  static const double _estimatedFunctionStripHeight = CoreSpacing.space10;
+  
+  /// Button spacing as percentage of available width for small screens
+  static const double _smallScreenButtonSpacingRatio = 0.012;
+  
+  /// Button spacing as percentage of available width for normal screens
+  static const double _normalScreenButtonSpacingRatio = 0.015;
+  
+  /// Column width ratios for 5-column grid
+  static const double _column1WidthRatio = 0.22;
+  static const double _column2to5WidthRatio = 0.195;
+  
+  /// Minimum column width ratio threshold
+  static const double _minColumnWidthRatio = 0.8;
+  
+  /// Number of keyboard rows
+  static const int _keyboardRowCount = 5;
+  
+  /// Number of gaps between rows
+  static const int _keyboardRowGaps = 4;
+  
+  /// Drag handle width
+  static  final double _dragHandleWidth = CoreSpacing.space12; // 48px
+  
+  /// Aspect ratio for function key tiles in grid
+  static const double _functionKeyTileAspectRatio = 2.4;
+  const CoreKeyboard({
     super.key,
     required this.currentGroup,
     required this.allGroups,
@@ -27,7 +103,6 @@ class CoreKeyboard extends StatelessWidget {
     this.currentUnitSystem = UnitSystem.imperial,
     this.groupAccentColors = const {},
     this.customResultLabel,
-
   });
 
   final GroupNameType currentGroup;
@@ -58,15 +133,15 @@ class CoreKeyboard extends StatelessWidget {
 
     final colors = Theme.of(context).extension<AppColorsExtension>();
     
-    // Get screen height and set keyboard to 60% of screen
+    // Get screen height and set keyboard to configured percentage of screen
     final screenHeight = MediaQuery.of(context).size.height;
-    final keyboardHeight = screenHeight * 0.6;
+    final keyboardHeight = screenHeight * _keyboardHeightRatio;
 
     return Container(
       height: keyboardHeight,
       decoration: BoxDecoration(
-        color: colors?.pageBackground!,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        color: colors?.pageBackground ?? CoreBackgroundColors.pageBackground,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(CoreSpacing.space8)),
         boxShadow: [
           BoxShadow(
             color: CoreShadowColors.shadowGrey6,
@@ -80,45 +155,50 @@ class CoreKeyboard extends StatelessWidget {
           final availableHeight = constraints.maxHeight;
           final availableWidth = constraints.maxWidth;
           
-          // Calculate padding
-          const horizontalPadding = 12.0;
-          const verticalPadding = 12.0;
-          const dragHandleHeight = 4.0;
-          const dragHandleSpacing = 16.0;
+          // Calculate padding using design tokens
+          const horizontalPadding = CoreSpacing.space3;
+          const verticalPadding = CoreSpacing.space3;
+          const dragHandleHeight = CoreSpacing.space1;
+          const dragHandleSpacing = CoreSpacing.space4;
           
           // Calculate available space for content
           final contentHeight = availableHeight - (verticalPadding * 2) - dragHandleHeight - dragHandleSpacing;
           
           // Calculate adaptive spacing - use smaller values on small screens
-          final isSmallScreen = availableHeight < 500;
-          final headerSpacing = isSmallScreen ? 8.0 : 12.0;
-          final functionStripSpacing = isSmallScreen ? 8.0 : 12.0;
-          final keyboardSpacing = isSmallScreen ? 6.0 : 8.0;
+          final isSmallScreen = availableHeight < _smallScreenThreshold;
+          final headerSpacing = isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
+          final functionStripSpacing = isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
+          final keyboardSpacing = isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space2;
           
           // Estimate header and function strip heights
-          final headerHeight = 32.0;
-          final functionStripHeight = 40.0;
+          final headerHeight = _estimatedHeaderHeight;
+          final functionStripHeight = _estimatedFunctionStripHeight;
           
-          // Calculate available height for keyboard grid (5 rows)
+          // Calculate available height for keyboard grid
           final keyboardAvailableHeight = contentHeight - 
               headerHeight - headerSpacing - 
               functionStripHeight - functionStripSpacing - 
-              keyboardSpacing * 4; // 4 gaps between 5 rows
+              keyboardSpacing * _keyboardRowGaps;
           
-          // Calculate button height based on available space
-          final buttonHeight = keyboardAvailableHeight / 5; // 5 rows
+          // Calculate button height based on available space with safety check
+          final buttonHeight = keyboardAvailableHeight > 0 
+              ? keyboardAvailableHeight / _keyboardRowCount 
+              : CoreSpacing.space12; // Fallback to minimum button height
           
           return Padding(
             padding: const EdgeInsets.fromLTRB(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 56,
-                  height: dragHandleHeight,
-                  decoration: BoxDecoration(
-                    color: CoreBorderColors.lineMid,
-                    borderRadius: BorderRadius.circular(2),
+                Semantics(
+                  label: 'Keyboard drag handle',
+                  child: Container(
+                    width: _dragHandleWidth,
+                    height: dragHandleHeight,
+                    decoration: BoxDecoration(
+                      color: CoreBorderColors.lineMid,
+                      borderRadius: BorderRadius.circular(CoreSpacing.space1),
+                    ),
                   ),
                 ),
                 SizedBox(height: headerSpacing),
@@ -146,29 +226,32 @@ class CoreKeyboard extends StatelessWidget {
   }
 
 
+  /// Builds the column layout for the keyboard grid.
+  ///
+  /// Calculates button sizes and spacing based on available width and screen size.
+  /// Handles a 5-column grid where column 1 (units) is wider than columns 2-5.
   Widget _buildColumnLayout(
     BuildContext context, {
     required double buttonHeight,
     required double availableWidth,
     required bool isSmallScreen,
   }) {
-  
-      const imperialUnitsOrder = [UnitType.yards, UnitType.feet, UnitType.inch];
-      const metricUnitsOrder = [UnitType.meter, UnitType.centimeter, UnitType.millimeter];
-      final activeUnits = currentUnitSystem == UnitSystem.imperial ? imperialUnitsOrder : metricUnitsOrder;
+    const imperialUnitsOrder = [UnitType.yards, UnitType.feet, UnitType.inch];
+    const metricUnitsOrder = [UnitType.meter, UnitType.centimeter, UnitType.millimeter];
+    final activeUnits = currentUnitSystem == UnitSystem.imperial ? imperialUnitsOrder : metricUnitsOrder;
     
-    // Calculate button spacing
+    // Calculate button spacing based on screen size
     final buttonSpacing = isSmallScreen 
-        ? availableWidth * 0.012 
-        : availableWidth * 0.015;
+        ? availableWidth * _smallScreenButtonSpacingRatio 
+        : availableWidth * _normalScreenButtonSpacingRatio;
     
     // Calculate button sizes for 5-column grid
     // Total spacing: 4 gaps between 5 columns = 4 * buttonSpacing
     final totalSpacing = buttonSpacing * 4;
     final availableForButtons = availableWidth - totalSpacing;
     // Column 1 (units) is wider: ~22%, columns 2-5 are equal: ~19.5% each
-    final column1Width = availableForButtons * 0.22;
-    final column2to5Width = availableForButtons * 0.195;
+    final column1Width = availableForButtons * _column1WidthRatio;
+    final column2to5Width = availableForButtons * _column2to5WidthRatio;
     
     // For circular buttons, use the minimum of width-based size and height
     // This ensures buttons maintain circular shape while fitting in the layout
@@ -181,7 +264,7 @@ class CoreKeyboard extends StatelessWidget {
     final spaceForCircularButtons = (buttonSize * 4) + (buttonSpacing * 3);
     final adjustedColumn1Width = availableWidth - spaceForCircularButtons - buttonSpacing;
     // Use the larger of calculated width or minimum, but prefer the original proportion
-    final finalColumn1Width = adjustedColumn1Width > column1Width * 0.8
+    final finalColumn1Width = adjustedColumn1Width > column1Width * _minColumnWidthRatio
         ? adjustedColumn1Width
         : column1Width;
         
@@ -191,30 +274,30 @@ class CoreKeyboard extends StatelessWidget {
         Expanded(
           child: _buildGridRow(
             children: [
-              ControlButton(
+              CoreControlButton(
                 action: ControlAction.clearAll,
                 onControlAction: onControlAction,
                 width: finalColumn1Width,
                 height: buttonHeight,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.divideSymbol,
                 onDigitPressed: onDigitPressed,
                 isEmphasized: true,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              OperatorButton(
+              CoreOperatorButton(
                 operatorType: OperatorType.percent,
                 onOperatorPressed: onOperatorPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              OperatorButton(
+              CoreOperatorButton(
                 operatorType: OperatorType.divide,
                 onOperatorPressed: onOperatorPressed,
-                radius: buttonSize,
+                size: buttonSize,
 
               ),
-              ControlButton(
+              CoreControlButton(
                 action: ControlAction.delete,
                 onControlAction: onControlAction,
                 width: buttonSize,
@@ -229,31 +312,31 @@ class CoreKeyboard extends StatelessWidget {
         Expanded(
           child: _buildGridRow(
             children: [
-              UnitButton(
+              CoreUnitButton(
                 unit: activeUnits[0],
                 onUnitSelected: onUnitSelected,
                 width: finalColumn1Width,
                 height: buttonHeight,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.seven,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.eight,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.nine,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              OperatorButton(
+              CoreOperatorButton(
                 operatorType: OperatorType.multiply,
                 onOperatorPressed: onOperatorPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
             ],
             spacing: buttonSpacing,
@@ -264,31 +347,31 @@ class CoreKeyboard extends StatelessWidget {
         Expanded(
           child: _buildGridRow(
             children: [
-              UnitButton(
+              CoreUnitButton(
                 unit: activeUnits[1],
                 onUnitSelected: onUnitSelected,
                 width: finalColumn1Width,
                 height: buttonHeight,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.four,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.five,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.six,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              OperatorButton(
+              CoreOperatorButton(
                 operatorType: OperatorType.subtract,
                 onOperatorPressed: onOperatorPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
             ],
             spacing: buttonSpacing,
@@ -299,31 +382,31 @@ class CoreKeyboard extends StatelessWidget {
         Expanded(
           child: _buildGridRow(
             children: [
-              UnitButton(
+              CoreUnitButton(
                 unit: activeUnits[2],
                 onUnitSelected: onUnitSelected,
                 width: finalColumn1Width,
                 height: buttonHeight,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.one,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.two,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              DigitInput(
+              CoreDigitInput(
                 digit: DigitType.three,
                 onDigitPressed: onDigitPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
-              OperatorButton(
+              CoreOperatorButton(
                 operatorType: OperatorType.add,
                 onOperatorPressed: onOperatorPressed,
-                radius: buttonSize,
+                size: buttonSize,
               ),
             ],
             spacing: buttonSpacing,
@@ -343,6 +426,10 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
+  /// Builds a horizontal row of widgets with consistent spacing.
+  ///
+  /// [children] are the widgets to display in the row.
+  /// [spacing] is the spacing between each widget.
   Widget _buildGridRow({
     required List<Widget> children,
     required double spacing,
@@ -357,6 +444,10 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
+  /// Builds the bottom row of the keyboard with result button spanning 2 columns.
+  ///
+  /// The result button takes up columns 4-5, while columns 1-3 contain
+  /// more options, zero, and decimal buttons respectively.
   Widget _buildBottomRow({
     required double buttonSpacing,
     required double column1Width,
@@ -369,7 +460,7 @@ class CoreKeyboard extends StatelessWidget {
     return Row(
       children: [
         // Column 1: moreOptions
-        ControlButton(
+        CoreControlButton(
           action: ControlAction.moreOptions,
           onControlAction: onControlAction,
           width: column1Width,
@@ -377,21 +468,21 @@ class CoreKeyboard extends StatelessWidget {
         ),
         SizedBox(width: buttonSpacing),
         // Column 2: 0
-        DigitInput(
+        CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: onDigitPressed,
-          radius: buttonSize,
+          size: buttonSize,
         ),
         SizedBox(width: buttonSpacing),
         // Column 3: .
-        DigitInput(
+        CoreDigitInput(
           digit: DigitType.decimal,
           onDigitPressed: onDigitPressed,
-          radius: buttonSize,
+          size: buttonSize,
         ),
         SizedBox(width: buttonSpacing),
         // Columns 4-5: Result button (spans 2 columns)
-        ResultButton(
+        CoreResultButton(
           resultType: result,
           customLabel: customResultLabel,
           onTap: onResultTapped,
@@ -408,12 +499,12 @@ class CoreKeyboard extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: colors?.pageBackground,
+      backgroundColor: colors?.pageBackground ?? CoreBackgroundColors.pageBackground,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(CoreSpacing.space6)),
       ),
       builder: (context) {
-        return FunctionBottomSheet(
+        return CoreFunctionBottomSheet(
           groups: allGroups,
           groupAccentColors: groupAccentColors,
           selectedGroup: currentGroup,
@@ -455,15 +546,6 @@ class _FunctionKeyStrip extends StatelessWidget {
     }
     final colors = Theme.of(context).extension<AppColorsExtension>();
     final typography = Theme.of(context).extension<TypographyExtension>();
-    
-    // Split keys into rows of 4 (2 rows × 4 columns grid)
-    final rows = <List<KeyType>>[];
-    for (var i = 0; i < group.keys.length && i < 8; i += 4) {
-      rows.add(group.keys.sublist(
-        i,
-        i + 4 > group.keys.length ? group.keys.length : i + 4,
-      ));
-    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -478,39 +560,44 @@ class _FunctionKeyStrip extends StatelessWidget {
                 color: colors?.textHeadline ?? CoreTextColors.headline,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: CoreSpacing.space2),
             Container(
-              width: 8,
-              height: 8,
+              width: CoreSpacing.space2,
+              height: CoreSpacing.space2,
               decoration: BoxDecoration(
                 color: accentColor,
                 shape: BoxShape.circle,
               ),
             ),
             const Spacer(),
-            TextButton(
-              onPressed: onViewAll,
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'View all',
-                    style: typography?.bodySmallMedium.copyWith(
-                      color: colors?.buttonSurface
+            Semantics(
+              label: 'View all function keys',
+              button: true,
+              hint: 'Opens a bottom sheet with all available function keys',
+              child: TextButton(
+                onPressed: onViewAll,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'View all',
+                      style: typography?.bodySmallMedium.copyWith(
+                        color: colors?.buttonSurface
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.chevron_right,
-                    size: 16,
-                    color: colors?.buttonSurface,
-                  ),
-                ],
+                    const SizedBox(width: CoreSpacing.space1),
+                    Icon(
+                      Icons.chevron_right,
+                      size: CoreSpacing.space4,
+                      color: colors?.buttonSurface,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -522,7 +609,7 @@ class _FunctionKeyStrip extends StatelessWidget {
           mainAxisSpacing: CoreSpacing.space1,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.4,
+          childAspectRatio: CoreKeyboard._functionKeyTileAspectRatio,
           children: group.keys.map((key) {
             return _FunctionKeyTile(
               keyType: key,
@@ -551,38 +638,43 @@ class _FunctionKeyTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorsExtension>();
     final typography = Theme.of(context).extension<TypographyExtension>();
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CoreSpacing.space1,
-          vertical: CoreSpacing.space1,
-        ),  
-        
-        decoration: BoxDecoration(
-          color: colors?.backgroundGrayMid,
-          borderRadius: BorderRadius.circular(CoreSpacing.space2),
-        ),
-        child: Center(child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (keyType.icon != null) ...[
-              Icon(
-                keyType.icon,
-                color: colors?.textHeadline,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-            ],
-            Text(
-              keyType.label,
-              style: typography?.bodyMediumRegular.copyWith(
-                color: colors?.textHeadline,
-              ),
+    return Semantics(
+      label: '${keyType.label} function key',
+      button: true,
+      hint: keyType.action != null ? 'Tap to execute ${keyType.label}' : null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoreSpacing.space1,
+            vertical: CoreSpacing.space1,
+          ),
+          decoration: BoxDecoration(
+            color: colors?.backgroundGrayMid,
+            borderRadius: BorderRadius.circular(CoreSpacing.space2),
+          ),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (keyType.icon != null) ...[
+                  Icon(
+                    keyType.icon,
+                    color: colors?.textHeadline,
+                    size: CoreSpacing.space4,
+                  ),
+                  const SizedBox(width: CoreSpacing.space1),
+                ],
+                Text(
+                  keyType.label,
+                  style: typography?.bodyMediumRegular.copyWith(
+                    color: colors?.textHeadline,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),)
-       ,
+          ),
+        ),
       ),
     );
   }

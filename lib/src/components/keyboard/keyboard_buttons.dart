@@ -7,77 +7,110 @@ import '../../theme/typography.dart';
 import '../../theme/typography_extension.dart';
 import 'keyboard_models.dart';
 
-class DigitInput extends StatelessWidget {
+/// A button widget for numeric digit input on the keyboard.
+///
+/// [digit] is the type of digit to display (0-9, decimal, or divide symbol).
+/// [onDigitPressed] is called when the button is pressed.
+/// [isEmphasized] determines if the button uses emphasized styling.
+/// [size] is the width and height of the button (defaults to 64px).
+class CoreDigitInput extends StatelessWidget {
   final DigitType digit;
   final ValueChanged<DigitType> onDigitPressed;
   final bool isEmphasized;
-  final double? radius;
+  final double? size;
 
-
-  const DigitInput({
+  const CoreDigitInput({
     super.key,
     required this.digit,
     required this.onDigitPressed,
     this.isEmphasized = false,
-    this.radius,
+    this.size,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
-    return _KeyboardButton(
-      label: digit.label,
-      backgroundColor: isEmphasized
-          ? colors?.keyboardCalculate 
-          : colors?.keyboardNumbers,
-      onPressed: () => onDigitPressed(digit),
-      textStyle: typography?.titleLargeSemiBold.copyWith(
-        color: colors?.textHeadline,
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
+    final effectiveSize = size ?? CoreSpacing.space16;
+    final backgroundColor = isEmphasized
+        ? (colors?.keyboardCalculate ?? CoreKeyboardColors.calculate)
+        : (colors?.keyboardNumbers ?? CoreKeyboardColors.numbers);
+    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
+
+    return Semantics(
+      label: '${digit.label} button',
+      button: true,
+      child: _KeyboardButton(
+        label: digit.label,
+        backgroundColor: backgroundColor,
+        onPressed: () => onDigitPressed(digit),
+        textStyle: typography?.titleLargeSemiBold.copyWith(
+          color: textColor,
+        ),
+        width: effectiveSize,
+        height: effectiveSize,
       ),
-        width: radius!,
-        height: radius!,
     );
   }
 }
 
-class OperatorButton extends StatelessWidget {
+/// A button widget for mathematical operators on the keyboard.
+///
+/// [operatorType] is the type of operator to display (+, −, ×, ÷, %).
+/// [onOperatorPressed] is called when the button is pressed.
+/// [size] is the width and height of the button (defaults to 64px).
+class CoreOperatorButton extends StatelessWidget {
   final OperatorType operatorType;
   final ValueChanged<OperatorType> onOperatorPressed;
-  final double? radius;
+  final double? size;
 
-  const OperatorButton({
+  const CoreOperatorButton({
     super.key,
     required this.operatorType,
     required this.onOperatorPressed,
-    this.radius,
+    this.size,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
-    return _KeyboardButton(
-      label: operatorType.symbol,
-      backgroundColor: colors?.keyboardCalculate!,
-      onPressed: () => onOperatorPressed(operatorType),
-      textStyle: typography?.titleLargeMedium.copyWith(
-        color: colors?.textHeadline,
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
+    final effectiveSize = size ?? CoreSpacing.space16;
+    final backgroundColor = colors?.keyboardCalculate ?? CoreKeyboardColors.calculate;
+    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
+
+    return Semantics(
+      label: '${operatorType.symbol} operator button',
+      button: true,
+      child: _KeyboardButton(
+        label: operatorType.symbol,
+        backgroundColor: backgroundColor,
+        onPressed: () => onOperatorPressed(operatorType),
+        textStyle: typography?.titleLargeMedium.copyWith(
+          color: textColor,
+        ),
+        width: effectiveSize,
+        height: effectiveSize,
       ),
-      width: radius,
-      height: radius,
     );
   }
 }
 
-class UnitButton extends StatelessWidget {
+/// A button widget for measurement units on the keyboard.
+///
+/// [unit] is the type of unit to display (yards, feet, inches, meters, etc.).
+/// [onUnitSelected] is called when the button is pressed.
+/// [width] is the width of the button.
+/// [height] is the height of the button. If not provided, defaults to 78% of width or 60px.
+class CoreUnitButton extends StatelessWidget {
   final UnitType unit;
   final ValueChanged<UnitType> onUnitSelected;
   final double? width;
   final double? height;
-  
 
-  const UnitButton({
+  const CoreUnitButton({
     super.key,
     required this.unit,
     required this.onUnitSelected,
@@ -87,29 +120,51 @@ class UnitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
-    return _KeyboardButton(
-      label: unit.label,
-      backgroundColor: colors?.keyboardUnits,
-      onPressed: () => onUnitSelected(unit),
-      width: width,
-      height: height ?? (width != null ? width! * 0.78 : 60),
-      borderRadius: BorderRadius.circular(CoreSpacing.space6),
-      textStyle: typography?.bodyLargeMedium.copyWith(
-        color: colors?.textHeadline,
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
+    final effectiveHeight = height ??
+        (width != null
+            ? width! * _unitHeightRatio
+            : _defaultUnitHeight);
+    final backgroundColor = colors?.keyboardUnits ?? CoreKeyboardColors.units;
+    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
+
+    return Semantics(
+      label: '${unit.label} unit button',
+      button: true,
+      child: _KeyboardButton(
+        label: unit.label,
+        backgroundColor: backgroundColor,
+        onPressed: () => onUnitSelected(unit),
+        width: width,
+        height: effectiveHeight,
+        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+        textStyle: typography?.bodyLargeMedium.copyWith(
+          color: textColor,
+        ),
       ),
     );
   }
+
+  static const double _unitHeightRatio = 0.78;
+  // Default height when width is not provided: 60px (space12 + space3)
+  static const double _defaultUnitHeight = CoreSpacing.space12 + CoreSpacing.space3;
 }
 
-class ControlButton extends StatelessWidget {
+/// A button widget for control actions on the keyboard.
+///
+/// [action] is the type of control action (delete, clear all, more options).
+/// [onControlAction] is called when the button is pressed.
+/// [width] is the width of the button.
+/// [height] is the height of the button.
+class CoreControlButton extends StatelessWidget {
   final ControlAction action;
   final ValueChanged<ControlAction> onControlAction;
   final double? width;
   final double? height;
 
-  const ControlButton({
+  const CoreControlButton({
     super.key,
     required this.action,
     required this.onControlAction,
@@ -119,42 +174,79 @@ class ControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
     final backgroundColor = switch (action) {
-      ControlAction.clearAll => colors?.keyboardActions, 
-      ControlAction.delete => colors?.keyboardMain ,
-      ControlAction.moreOptions => colors?.keyboardCalculate,
+      ControlAction.clearAll => colors?.keyboardActions ?? CoreKeyboardColors.actions,
+      ControlAction.delete => colors?.keyboardMain ?? CoreKeyboardColors.main,
+      ControlAction.moreOptions => colors?.keyboardCalculate ?? CoreKeyboardColors.calculate,
     };
-    final isMoreAction = action ==  ControlAction.moreOptions;
-    
-    return _KeyboardButton(
-      label: action.label,
-      icon:  action.icon != null
-          ? Icon(action.icon, 
-          color: isMoreAction ? colors?.keyboardActions : colors?.textInverse
-          )
-          : null,
-      borderColor: isMoreAction ? colors?.keyboardActions : null,
-      backgroundColor: backgroundColor!,
-      onPressed: () => onControlAction(action),
-      textStyle: typography?.bodyLargeMedium.copyWith(
-        color: colors?.textInverse,
+    final isMoreAction = action == ControlAction.moreOptions;
+    final iconColor = isMoreAction
+        ? (colors?.keyboardActions ?? CoreKeyboardColors.actions)
+        : (colors?.textInverse ?? CoreTextColors.inverse);
+    final textColor = colors?.textInverse ?? CoreTextColors.inverse;
+    final borderColor = isMoreAction
+        ? (colors?.keyboardActions ?? CoreKeyboardColors.actions)
+        : null;
+
+    return Semantics(
+      label: _getSemanticLabel(action),
+      button: true,
+      hint: _getSemanticHint(action),
+      child: _KeyboardButton(
+        label: action.label,
+        icon: action.icon != null
+            ? Icon(
+                action.icon,
+                color: iconColor,
+              )
+            : null,
+        borderColor: borderColor,
+        backgroundColor: backgroundColor,
+        onPressed: () => onControlAction(action),
+        textStyle: typography?.bodyLargeMedium.copyWith(
+          color: textColor,
+        ),
+        width: width,
+        height: height,
       ),
-      width: width,
-      height: height,
     );
+  }
+
+  String _getSemanticLabel(ControlAction action) {
+    return switch (action) {
+      ControlAction.delete => 'Delete button',
+      ControlAction.clearAll => 'Clear all button',
+      ControlAction.moreOptions => 'More options button',
+    };
+  }
+
+  String _getSemanticHint(ControlAction action) {
+    return switch (action) {
+      ControlAction.delete => 'Deletes the last entered character',
+      ControlAction.clearAll => 'Clears all input',
+      ControlAction.moreOptions => 'Shows additional options',
+    };
   }
 }
 
-class ResultButton extends StatelessWidget {
+/// A button widget for result actions on the keyboard.
+///
+/// [resultType] is the type of result to display (equals, area, volume, density, or custom).
+/// [onTap] is called when the button is pressed.
+/// [customLabel] is an optional custom label used when [resultType] is [ResultType.custom].
+/// [width] is the width of the button.
+/// [height] is the height of the button. If not provided, defaults to 53% of width or 56px.
+class CoreResultButton extends StatelessWidget {
   final ResultType resultType;
   final VoidCallback onTap;
   final String? customLabel;
   final double? width;
   final double? height;
 
-  const ResultButton({
+  const CoreResultButton({
     super.key,
     required this.resultType,
     required this.onTap,
@@ -165,20 +257,38 @@ class ResultButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
-    return _KeyboardButton(
-      label: resultType.label(customLabel).toUpperCase(),
-      backgroundColor: colors?.keyboardMain,
-      onPressed: onTap,
-      height: height ?? (width != null ? width! * 0.53 : 56),
-      width: width,
-      borderRadius: BorderRadius.circular(CoreSpacing.space8),
-      textStyle: typography?.titleLargeSemiBold.copyWith(
-        color: colors?.textInverse ,
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+    final typography = theme.extension<TypographyExtension>();
+    final effectiveHeight = height ??
+        (width != null
+            ? width! * _resultHeightRatio
+            : _defaultResultHeight);
+    final backgroundColor = colors?.keyboardMain ?? CoreKeyboardColors.main;
+    final textColor = colors?.textInverse ?? CoreTextColors.inverse;
+    final label = resultType.label(customLabel).toUpperCase();
+
+    return Semantics(
+      label: '$label button',
+      button: true,
+      hint: 'Calculates and displays the result',
+      child: _KeyboardButton(
+        label: label,
+        backgroundColor: backgroundColor,
+        onPressed: onTap,
+        height: effectiveHeight,
+        width: width,
+        borderRadius: BorderRadius.circular(CoreSpacing.space8),
+        textStyle: typography?.titleLargeSemiBold.copyWith(
+          color: textColor,
+        ),
       ),
     );
   }
+
+  static const double _resultHeightRatio = 0.53;
+  // Default height when width is not provided: 56px (space12 + space2)
+  static const double _defaultResultHeight = CoreSpacing.space12 + CoreSpacing.space2;
 }
 
 class _KeyboardButton extends StatelessWidget {
@@ -192,6 +302,10 @@ class _KeyboardButton extends StatelessWidget {
   final double? height;
   final BorderRadius borderRadius;
 
+  static const double _defaultSize = CoreSpacing.space16;
+  // Border width of 2px (not on 4px grid per design spec)
+  static const double _defaultBorderWidth = 2.0;
+
   const _KeyboardButton({
     this.label,
     this.icon,
@@ -202,36 +316,43 @@ class _KeyboardButton extends StatelessWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
-  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(32));
+  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
   Widget build(BuildContext context) {
-    final effectiveWidth = width ?? 64;
+    final effectiveWidth = width ?? _defaultSize;
     final effectiveHeight = height ?? effectiveWidth;
+    final effectiveBackgroundColor = backgroundColor ?? Colors.transparent;
+    final effectiveBorderColor = borderColor ?? effectiveBackgroundColor;
+
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color:borderColor ?? backgroundColor!,width:2),
+        border: Border.all(
+          color: effectiveBorderColor,
+          width: _defaultBorderWidth,
+        ),
         borderRadius: borderRadius,
-        color: backgroundColor!,
+        color: effectiveBackgroundColor,
       ),
       width: effectiveWidth,
       height: effectiveHeight,
       child: Material(
-        color: backgroundColor!,
+        color: effectiveBackgroundColor,
         borderRadius: borderRadius,
         child: InkWell(
           borderRadius: borderRadius,
           onTap: onPressed,
           child: Center(
             child: icon ??
-                Text(
-                  label ?? '',
-                  style: textStyle,
-                ),
+                (label != null && label!.isNotEmpty
+                    ? Text(
+                        label!,
+                        style: textStyle,
+                      )
+                    : const SizedBox.shrink()),
           ),
         ),
       ),
     );
   }
 }
-
