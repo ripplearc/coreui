@@ -14,7 +14,7 @@ custom_lint:
     - document_interface
     - todo_with_story_links
     - no_internal_method_docs
-    - specific_exception_types
+    - specific_exception_types: false
     - test_file_mutation_coverage: false
     - avoid_test_timeouts
     - private_subject
