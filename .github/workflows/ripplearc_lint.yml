@@ -8,6 +8,9 @@ jobs:
   lint:
     name: Run ripplearc_linter on changed files
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     steps:
       - name: Checkout PR Code
@@ -19,18 +22,20 @@ jobs:
       - name: Attempt Rebase (Check Mergeability)
         id: rebase
         run: |
+          BASE_REF="${{ github.base_ref || 'main' }}"
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git fetch origin ${{ github.base_ref }}
-          echo "Attempting to rebase on origin/${{ github.base_ref }}..."
+          git fetch origin "$BASE_REF"
+          echo "Attempting to rebase on origin/$BASE_REF..."
           
-          if ! git rebase origin/${{ github.base_ref }}; then
-            echo "::error::Merge conflict detected! The PR cannot be rebased onto ${{ github.base_ref }}."
+          if ! git rebase "origin/$BASE_REF"; then
+            echo "::error::Merge conflict detected! The PR cannot be rebased onto $BASE_REF."
             echo "::error::Please resolve conflicts locally and push again."
+            git rebase --abort || true
             exit 1
           fi
           
-          echo "Rebase successful! Code is now up-to-date with ${{ github.base_ref }}."
+          echo "Rebase successful! Code is now up-to-date with $BASE_REF."
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -39,12 +44,17 @@ jobs:
           channel: stable
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          if ! flutter pub get; then
+            echo "::error::Failed to install Flutter dependencies. Please check your pubspec.yaml file for errors."
+            exit 1
+          fi
 
       - name: Collect changed Dart files
         id: changed
         run: |
-          CHANGED_DART_FILES=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }} HEAD -- '*.dart')
+          BASE_REF="${{ github.base_ref || 'main' }}"
+          CHANGED_DART_FILES=$(git diff --name-only --diff-filter=d "origin/$BASE_REF" HEAD -- '*.dart')
 
           if [ -z "$CHANGED_DART_FILES" ]; then
             echo "has_changed_files=false" >> "$GITHUB_OUTPUT"
