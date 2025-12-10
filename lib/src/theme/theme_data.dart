@@ -53,7 +53,6 @@ class CoreTheme {
       buttonHover: CoreButtonColors.hover,
       buttonDisable: CoreButtonColors.disable,
       buttonPress: CoreButtonColors.press,
-      buttonInverse: CoreButtonColors.inverse,
 
       // Icon Colors
       iconDark: CoreIconColors.dark,
