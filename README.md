@@ -78,21 +78,29 @@ PrimaryButton(
   onPressed: () {},
 );
 ```
-### Colors & Typography usage
+### Colors & Typography Usage
 
-Always access tokens through the theme extension so they stay light/dark aware. Avoid static direct access.
+**Strict Rule:** Do not use static constants (e.g., `CoreAlertColors.red` or `CoreTypography.body`). Static access breaks Dark Mode support.
 
-Incorrect (bypasses theme, not dark-mode aware):
+Always access tokens through the **Theme Extension** so the UI adapts to the active theme.
+
+**Incorrect** — bypasses the theme; won’t update in Dark Mode.
 ```dart
-// Direct static access - NOT theme aware
-color: AppColors.backgroundBlueLight
+// This will fail the build
+Container(
+  color: AppColors.backgroundBlueLight,
+  child: Text(
+    'Hello',
+    style: CoreTypography.bodyMedium,
+  ),
+);
 ```
 
-Correct (uses theme extension, light/dark aware):
+**Correct** — uses `BuildContext` to read the current theme tokens.
 ```dart
-// Theme extension access - Supports Dark/Light mode
+// Adapts to Light/Dark mode automatically
 final colors = Theme.of(context).extension<AppColorsExtension>()!;
-final typography = Theme.of(context).extension<AppTypographyExtension>()!;
+final typography = Theme.of(context).extension<TypographyExtension>()!;
 
 Container(
   color: colors.pageBackground,
