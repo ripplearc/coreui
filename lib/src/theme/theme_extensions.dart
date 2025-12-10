@@ -48,7 +48,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color buttonHover;
   final Color buttonDisable;
   final Color buttonPress;
-  final Color buttonInverse;
 
   // Icon Colors
   final Color iconDark;
@@ -122,9 +121,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.buttonSurface,
     required this.buttonHover,
     required this.buttonDisable,
-    required this.buttonPress,
-    required this.buttonInverse,
-    required this.iconDark,
+    required this.buttonPress,    required this.iconDark,
     required this.iconGrayDark,
     required this.iconGrayMid,
     required this.iconGrayLight,
@@ -151,6 +148,19 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.keyboardActions,
     required this.keyboardMain,
   });
+
+   /// Static method to get the current AppColorsExtension from context.
+  static AppColorsExtension of(BuildContext context) {
+    final AppColorsExtension? extension =
+        Theme.of(context).extension<AppColorsExtension>();
+    if (extension == null) {
+      throw FlutterError(
+        'AppColorsExtension not found in Theme. '
+        'Did you wrap your widget tree with a Theme that includes this extension?',
+      );
+    }
+    return extension;
+  }
 
   @override
   ThemeExtension<AppColorsExtension> copyWith({
@@ -192,7 +202,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? buttonHover,
     Color? buttonDisable,
     Color? buttonPress,
-    Color? buttonInverse,
     Color? iconDark,
     Color? iconGrayDark,
     Color? iconGrayMid,
@@ -260,7 +269,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       buttonHover: buttonHover ?? this.buttonHover,
       buttonDisable: buttonDisable ?? this.buttonDisable,
       buttonPress: buttonPress ?? this.buttonPress,
-      buttonInverse: buttonInverse ?? this.buttonInverse,
       iconDark: iconDark ?? this.iconDark,
       iconGrayDark: iconGrayDark ?? this.iconGrayDark,
       iconGrayMid: iconGrayMid ?? this.iconGrayMid,
@@ -347,7 +355,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       buttonHover: Color.lerp(buttonHover, other.buttonHover, t)!,
       buttonDisable: Color.lerp(buttonDisable, other.buttonDisable, t)!,
       buttonPress: Color.lerp(buttonPress, other.buttonPress, t)!,
-      buttonInverse: Color.lerp(buttonInverse, other.buttonInverse, t)!,
       iconDark: Color.lerp(iconDark, other.iconDark, t)!,
       iconGrayDark: Color.lerp(iconGrayDark, other.iconGrayDark, t)!,
       iconGrayMid: Color.lerp(iconGrayMid, other.iconGrayMid, t)!,
