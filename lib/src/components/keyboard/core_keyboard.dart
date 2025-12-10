@@ -51,7 +51,7 @@ class CoreKeyboard extends StatelessWidget {
   static const int _keyboardRowGaps = 4;
 
   /// Drag handle width
-  static final double _dragHandleWidth = CoreSpacing.space12; // 48px
+  static final double _dragHandleWidth = CoreSpacing.space12;
 
   /// Aspect ratio for function key tiles in grid
   static const double _functionKeyTileAspectRatio = 2.4;
@@ -100,7 +100,6 @@ class CoreKeyboard extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final accent =
         groupAccentColors[currentGroup] ?? colors.backgroundBlueLight;
-    // Get screen height and set keyboard to configured percentage of screen
     final screenHeight = MediaQuery.of(context).size.height;
     final keyboardHeight = screenHeight * _keyboardHeightRatio;
 
@@ -123,19 +122,16 @@ class CoreKeyboard extends StatelessWidget {
           final availableHeight = constraints.maxHeight;
           final availableWidth = constraints.maxWidth;
 
-          // Calculate padding using design tokens
           const horizontalPadding = CoreSpacing.space3;
           const verticalPadding = CoreSpacing.space3;
           const dragHandleHeight = CoreSpacing.space1;
           const dragHandleSpacing = CoreSpacing.space4;
 
-          // Calculate available space for content
           final contentHeight = availableHeight -
               (verticalPadding * 2) -
               dragHandleHeight -
               dragHandleSpacing;
 
-          // Calculate adaptive spacing - use smaller values on small screens
           final isSmallScreen = availableHeight < _smallScreenThreshold;
           final headerSpacing =
               isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
@@ -143,11 +139,9 @@ class CoreKeyboard extends StatelessWidget {
               isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
           final keyboardSpacing = CoreSpacing.space2;
 
-          // Estimate header and function strip heights
           final headerHeight = _estimatedHeaderHeight;
           final functionStripHeight = _estimatedFunctionStripHeight;
 
-          // Calculate available height for keyboard grid
           final keyboardAvailableHeight = contentHeight -
               headerHeight -
               headerSpacing -
@@ -155,10 +149,9 @@ class CoreKeyboard extends StatelessWidget {
               functionStripSpacing -
               keyboardSpacing * _keyboardRowGaps;
 
-          // Calculate button height based on available space with safety check
           final buttonHeight = keyboardAvailableHeight > 0
               ? keyboardAvailableHeight / _keyboardRowCount
-              : CoreSpacing.space12; // Fallback to minimum button height
+              : CoreSpacing.space12;
 
           return Padding(
             padding: const EdgeInsets.fromLTRB(horizontalPadding,
@@ -172,7 +165,7 @@ class CoreKeyboard extends StatelessWidget {
                     width: _dragHandleWidth,
                     height: dragHandleHeight,
                     decoration: BoxDecoration(
-                      color: CoreBorderColors.lineMid,
+                      color: colors.backgroundGrayLight,
                       borderRadius: BorderRadius.circular(CoreSpacing.space1),
                     ),
                   ),
@@ -181,7 +174,7 @@ class CoreKeyboard extends StatelessWidget {
                 _FunctionKeyStrip(
                   group: group,
                   onKeyTapped: onKeyTapped,
-                  accentColor: accent!,
+                  accentColor: accent,
                   onViewAll: () => _showFunctionsSheet(context),
                 ),
                 SizedBox(height: keyboardSpacing),
@@ -202,9 +195,6 @@ class CoreKeyboard extends StatelessWidget {
   }
 
   /// Builds the column layout for the keyboard grid.
-  ///
-  /// Calculates button sizes and spacing based on available width and screen size.
-  /// Handles a 5-column grid where column 1 (units) is wider than columns 2-5.
   Widget _buildColumnLayout(
     BuildContext context, {
     required double buttonHeight,
@@ -221,30 +211,21 @@ class CoreKeyboard extends StatelessWidget {
         ? imperialUnitsOrder
         : metricUnitsOrder;
 
-    // Calculate button spacing based on screen size
     final buttonSpacing = isSmallScreen
         ? availableWidth * _smallScreenButtonSpacingRatio
         : availableWidth * _normalScreenButtonSpacingRatio;
 
-    // Calculate button sizes for 5-column grid
-    // Total spacing: 4 gaps between 5 columns = 4 * buttonSpacing
     final totalSpacing = buttonSpacing * 4;
     final availableForButtons = availableWidth - totalSpacing;
-    // Column 1 (units) is wider: ~22%, columns 2-5 are equal: ~19.5% each
     final column1Width = availableForButtons * _column1WidthRatio;
     final column2to5Width = availableForButtons * _column2to5WidthRatio;
 
-    // For circular buttons, use the minimum of width-based size and height
-    // This ensures buttons maintain circular shape while fitting in the layout
     final buttonSize =
         column2to5Width < buttonHeight ? column2to5Width : buttonHeight;
 
-    // Recalculate column1Width to fit properly with the actual buttonSize
-    // If buttonSize was constrained, we need to adjust column1Width
     final spaceForCircularButtons = (buttonSize * 4) + (buttonSpacing * 3);
     final adjustedColumn1Width =
         availableWidth - spaceForCircularButtons - buttonSpacing;
-    // Use the larger of calculated width or minimum, but prefer the original proportion
     final finalColumn1Width =
         adjustedColumn1Width > column1Width * _minColumnWidthRatio
             ? adjustedColumn1Width
@@ -425,8 +406,7 @@ class CoreKeyboard extends StatelessWidget {
   }
 
   /// Builds the bottom row of the keyboard with result button spanning 2 columns.
-  ///
-  /// The result button takes up columns 4-5, while columns 1-3 contain
+
   /// more options, zero, and decimal buttons respectively.
   Widget _buildBottomRow({
     required double buttonSpacing,
@@ -620,7 +600,7 @@ class _FunctionKeyTile extends StatelessWidget {
     return Semantics(
       label: '${keyType.label} function key',
       button: true,
-      hint: keyType.action != null ? 'Tap to execute ${keyType.label}' : null,
+      hint: keyType.semanticLabel,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
