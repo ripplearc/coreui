@@ -74,3 +74,4 @@ jobs:
         run: |
           RIPPLEARC_LINTER_RULES="prefer_fake_over_mock,no_optional_operators_in_tests,document_fake_parameters,document_interface,todo_with_story_links,no_internal_method_docs,avoid_test_timeouts,private_subject,sealed_over_dynamic"
           dart run ripplearc_linter:standalone_checker --rules "$RIPPLEARC_LINTER_RULES" ${{ steps.changed.outputs.dart_files }}
+          
