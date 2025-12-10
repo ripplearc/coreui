@@ -8,23 +8,6 @@ import 'keyboard_models.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///
-/// This component provides a modal bottom sheet interface for displaying
-/// organized groups of function keys with optional unit system toggle.
-///
-/// Example usage:
-/// ```dart
-/// CoreFunctionBottomSheet(
-///   groups: functionGroups,
-///   groupAccentColors: accentColorMap,
-///   selectedGroup: GroupNameType.trigonometry,
-///   onGroupSelected: (group) => print('Selected: $group'),
-///   onKeyTapped: (key) => print('Tapped: ${key.label}'),
-///   showUnitToggle: true,
-///   currentUnitSystem: UnitSystem.imperial,
-///   onUnitSystemChanged: (system) => print('Unit system: $system'),
-/// )
-/// ```
-///
 /// [groups] is the list of function groups to display.
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [selectedGroup] is the currently selected function group.
@@ -91,7 +74,8 @@ class CoreFunctionBottomSheet extends StatelessWidget {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: groups.length,
-                separatorBuilder: (_, __) => const SizedBox(height: CoreSpacing.space3),
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: CoreSpacing.space3),
                 itemBuilder: (context, index) {
                   final group = groups[index];
                   final accent = groupAccentColors[group.name] ??
@@ -177,25 +161,23 @@ class _UnitSystemToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
 
     final bool isImperial = unitSystem == UnitSystem.imperial;
 
-    final activeColor = isImperial
-        ? (colors?.iconGreen ?? CoreIconColors.green)
-        : (colors?.iconBlue ?? CoreIconColors.blue);
-    final backgroundColor = isImperial
-        ? (colors?.pageBackground ?? CoreBackgroundColors.pageBackground)
-        : (colors?.iconBlue ?? CoreIconColors.blue);
-
+    final activeColor = isImperial ? colors.iconGreen : colors.iconBlue;
+    final backgroundColor =
+        isImperial ? colors.pageBackground : colors.iconBlue;
     return Semantics(
       label: 'Unit system toggle, currently ${unitSystem.label}',
       button: true,
-      hint: 'Tap to switch between ${UnitSystem.imperial.label} and ${UnitSystem.metric.label}',
+      hint:
+          'Tap to switch between ${UnitSystem.imperial.label} and ${UnitSystem.metric.label}',
       child: GestureDetector(
         onTap: () {
-          final nextSystem = isImperial ? UnitSystem.metric : UnitSystem.imperial;
+          final nextSystem =
+              isImperial ? UnitSystem.metric : UnitSystem.imperial;
           onChanged(nextSystem);
         },
         child: Container(
@@ -213,22 +195,20 @@ class _UnitSystemToggle extends StatelessWidget {
             textDirection: isImperial ? TextDirection.ltr : TextDirection.rtl,
             children: [
               Container(
-                width: CoreSpacing.space3 + CoreSpacing.space1,
-                height: CoreSpacing.space3 + CoreSpacing.space1,
+                width: CoreSpacing.space4,
+                height: CoreSpacing.space4,
                 decoration: BoxDecoration(
-                  color: isImperial
-                      ? activeColor
-                      : (colors?.pageBackground ?? CoreBackgroundColors.pageBackground),
+                  color: isImperial ? activeColor : colors.pageBackground,
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: CoreSpacing.space1),
               Text(
-                isImperial ? UnitSystem.imperial.label : UnitSystem.metric.label,
-                style: typography?.bodySmallSemiBold.copyWith(
-                  color: isImperial
-                      ? activeColor
-                      : (colors?.textInverse ?? CoreTextColors.inverse),
+                isImperial
+                    ? UnitSystem.imperial.label
+                    : UnitSystem.metric.label,
+                style: typography.bodySmallSemiBold.copyWith(
+                  color: isImperial ? activeColor : colors.textInverse,
                 ),
               ),
             ],
@@ -251,8 +231,8 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,8 +240,8 @@ class _Header extends StatelessWidget {
           children: [
             Text(
               'Function keys',
-              style: typography?.titleMediumSemiBold.copyWith(
-                color: colors?.textHeadline,
+              style: typography.titleMediumSemiBold.copyWith(
+                color: colors.textHeadline,
               ),
             ),
             const Spacer(),
@@ -275,8 +255,8 @@ class _Header extends StatelessWidget {
         const SizedBox(height: CoreSpacing.space2),
         Text(
           'Measurement System',
-          style: typography?.bodyMediumSemiBold.copyWith(
-            color: colors?.textHeadline,
+          style: typography.bodyMediumSemiBold.copyWith(
+            color: colors.textHeadline,
           ),
         ),
       ],
@@ -300,8 +280,8 @@ class _GroupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     return Semantics(
       label: 'Function group header for $name',
       button: true,
@@ -313,15 +293,15 @@ class _GroupHeader extends StatelessWidget {
               quarterTurns: 1,
               child: Icon(
                 Icons.drag_indicator,
-                color: colors?.iconGrayMid,
+                color: colors.iconGrayMid,
                 semanticLabel: 'Drag indicator for $name group',
               ),
             ),
             const SizedBox(width: CoreSpacing.space2),
             Text(
               '$name group',
-              style: typography?.bodyMediumSemiBold.copyWith(
-                color: colors?.textHeadline,
+              style: typography.bodyMediumSemiBold.copyWith(
+                color: colors.textHeadline,
               ),
             ),
             const SizedBox(width: CoreSpacing.space2),
@@ -352,8 +332,8 @@ class _FunctionKeyTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     return Semantics(
       label: 'Function key ${keyType.label}',
       button: true,
@@ -362,7 +342,7 @@ class _FunctionKeyTile extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: colors?.backgroundGrayMid,
+            color: colors.backgroundGrayMid,
             borderRadius: BorderRadius.circular(CoreSpacing.space2),
           ),
           child: Center(
@@ -372,15 +352,15 @@ class _FunctionKeyTile extends StatelessWidget {
                 if (keyType.icon != null) ...[
                   Icon(
                     keyType.icon,
-                    color: colors?.textHeadline ?? CoreTextColors.headline,
+                    color: colors.textHeadline,
                     size: CoreSpacing.space4,
                   ),
                   const SizedBox(width: CoreSpacing.space1),
                 ],
                 Text(
                   keyType.label,
-                  style: typography?.bodyMediumRegular.copyWith(
-                    color: colors?.textHeadline ?? CoreTextColors.headline,
+                  style: typography.bodyMediumRegular.copyWith(
+                    color: colors.textHeadline,
                   ),
                 ),
               ],
