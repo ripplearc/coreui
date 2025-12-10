@@ -200,6 +200,7 @@ extension UnitSystemX on UnitSystem {
 /// [label] is the text displayed on the key.
 /// [icon] is an optional icon to display instead of or alongside the label.
 /// [action] is the callback function executed when the key is pressed.
+/// [semanticLabel] is an optional label for accessibility purposes.
 @immutable
 class KeyType {
   /// Unique identifier for the key.
@@ -214,12 +215,16 @@ class KeyType {
   /// Callback function executed when the key is pressed.
   final VoidCallback? action;
 
+  /// Semantic label for accessibility.
+  final String? semanticLabel;
+
   /// Creates a [KeyType] instance.
   const KeyType({
     required this.id,
     required this.label,
     this.icon,
     this.action,
+    this.semanticLabel,
   });
 }
 
