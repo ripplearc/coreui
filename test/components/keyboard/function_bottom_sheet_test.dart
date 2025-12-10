@@ -29,6 +29,7 @@ void main() {
       KeyType? tappedKey;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -53,6 +54,7 @@ void main() {
       GroupNameType? selectedGroup;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -75,6 +77,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -97,6 +100,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -118,6 +122,7 @@ void main() {
       UnitSystem? changedSystem;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -141,6 +146,7 @@ void main() {
     testWidgets('has proper semantics for function keys', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
@@ -161,6 +167,7 @@ void main() {
     testWidgets('has proper semantics for unit toggle', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionBottomSheet(
               groups: testGroups,
