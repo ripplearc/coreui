@@ -7,7 +7,7 @@ void main() {
   group('CoreKeyboard', () {
     final testGroups = [
       FunctionGroup(
-        name: GroupNameType.basicGeometry,
+        name: const GroupNameType(label: "Basic Geometry"),
         keys: [
           KeyType(id: 'area', label: 'Area', action: () {}),
           KeyType(id: 'perimeter', label: 'Perimeter', action: () {}),
@@ -15,17 +15,14 @@ void main() {
       ),
     ];
 
-    final testAccentColors = {
-      GroupNameType.basicGeometry: Colors.blue,
-    };
-
-    testWidgets('renders keyboard with all required components', (tester) async {
+    testWidgets('renders keyboard with all required components',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -44,14 +41,15 @@ void main() {
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
 
-    testWidgets('calls onDigitPressed when digit button is tapped', (tester) async {
+    testWidgets('calls onDigitPressed when digit button is tapped',
+        (tester) async {
       DigitType? pressedDigit;
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (digit) => pressedDigit = digit,
               onUnitSelected: (_) {},
@@ -76,14 +74,15 @@ void main() {
       }
     });
 
-    testWidgets('calls onOperatorPressed when operator button is tapped', (tester) async {
+    testWidgets('calls onOperatorPressed when operator button is tapped',
+        (tester) async {
       OperatorType? pressedOperator;
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -108,14 +107,15 @@ void main() {
       }
     });
 
-    testWidgets('calls onResultTapped when result button is tapped', (tester) async {
+    testWidgets('calls onResultTapped when result button is tapped',
+        (tester) async {
       bool resultTapped = false;
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -140,13 +140,14 @@ void main() {
       }
     });
 
-    testWidgets('displays correct unit buttons for imperial system', (tester) async {
+    testWidgets('displays correct unit buttons for imperial system',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -169,13 +170,14 @@ void main() {
       expect(find.text('Inches'), findsWidgets);
     });
 
-    testWidgets('displays correct unit buttons for metric system', (tester) async {
+    testWidgets('displays correct unit buttons for metric system',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -201,7 +203,7 @@ void main() {
     testWidgets('handles empty function groups gracefully', (tester) async {
       final emptyGroups = [
         const FunctionGroup(
-          name: GroupNameType.basicGeometry,
+          name: const GroupNameType(label: ""),
           keys: [],
         ),
       ];
@@ -211,7 +213,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: GroupNameType.basicGeometry,
+              currentGroup: const GroupNameType(label: ""),
               allGroups: emptyGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -232,4 +234,3 @@ void main() {
     });
   });
 }
-
