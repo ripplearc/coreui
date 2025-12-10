@@ -164,76 +164,21 @@ extension ControlActionX on ControlAction {
 }
 
 /// Defines the types of function groups available on the keyboard.
-/// - [trigonometry]: Trigonometry functions group
-/// - [materials]: Materials functions group
-/// - [carpentry]: Carpentry functions group
-/// - [memory]: Memory functions group
-/// - [basicGeometry]: Basic geometry functions group
-/// - [unit]: Unit conversion functions group
-enum GroupNameType {
-  trigonometry,
-  materials,
-  carpentry,
-  memory,
-  basicGeometry,
-  unit,
+/// - [label]: The label of the group
+
+class GroupNameType{
+ final String label;
+ const GroupNameType({required this.label});
+
 }
 
-/// Extension providing label strings for [GroupNameType] enum values.
-extension GroupNameTypeX on GroupNameType {
-  /// Returns the string label representation of the group name type.
-  String get label {
-    switch (this) {
-      case GroupNameType.trigonometry:
-        return 'Trigonometry';
-      case GroupNameType.materials:
-        return 'Materials';
-      case GroupNameType.carpentry:
-        return 'Carpentry';
-      case GroupNameType.memory:
-        return 'Memory';
-      case GroupNameType.basicGeometry:
-        return 'Basic Geometry';
-      case GroupNameType.unit:
-        return 'Unit';
-    }
-  }
-}
 
 /// Defines the types of results that can be displayed on the keyboard.
-/// - [equals]: Standard equals result (=)
-/// - [area]: Area calculation result
-/// - [volume]: Volume calculation result
-/// - [density]: Density calculation result
-/// - [custom]: Custom result with optional label
-enum ResultType {
-  equals,
-  area,
-  volume,
-  density,
-  custom,
-}
+/// - [label]: The label of the result
+class ResultType {
+  final String label;
+  const ResultType({required this.label});
 
-/// Extension providing label strings for [ResultType] enum values.
-extension ResultTypeX on ResultType {
-  /// Returns the string label representation of the result type.
-  /// 
-  /// [customLabel] is an optional parameter used when [ResultType.custom]
-  /// is selected. If not provided for custom type, defaults to '='.
-  String label([String? customLabel]) {
-    switch (this) {
-      case ResultType.equals:
-        return '=';
-      case ResultType.area:
-        return 'Area';
-      case ResultType.volume:
-        return 'Volume';
-      case ResultType.density:
-        return 'Density';
-      case ResultType.custom:
-        return customLabel ?? '=';
-    }
-  }
 }
 
 /// Defines the unit system types available on the keyboard.
