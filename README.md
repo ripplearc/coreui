@@ -77,7 +77,7 @@ PrimaryButton(
   label: 'Click me',
   onPressed: () {},
 );
-
+```
 ### Colors & Typography usage
 
 Always access tokens through the theme extension so they stay light/dark aware. Avoid static direct access.
