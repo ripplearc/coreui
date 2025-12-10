@@ -13,12 +13,12 @@ class KeyboardShowcaseScreen extends StatefulWidget {
 }
 
 class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
-  GroupNameType _currentGroup = GroupNameType.basicGeometry;
+  GroupNameType _currentGroup = GroupNameType(label: "Basic Geometry");
   UnitSystem _currentUnitSystem = UnitSystem.imperial;
 
   final List<FunctionGroup> _groups = const [
     FunctionGroup(
-      name: GroupNameType.basicGeometry,
+      name: GroupNameType(label: "Basic Geometry"),
       keys: [
         KeyType(id: 'width', label: 'Width'),
         KeyType(id: 'length', label: 'Length'),
@@ -28,7 +28,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       ],
     ),
     FunctionGroup(
-      name: GroupNameType.materials,
+      name: GroupNameType(label: "Materials"),
       keys: [
         KeyType(id: 'lbs', label: 'Lbs'),
         KeyType(id: 'kg', label: 'Kg'),
@@ -37,7 +37,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       ],
     ),
     FunctionGroup(
-      name: GroupNameType.trigonometry,
+      name: GroupNameType(label: "Trigonometry"),
       keys: [
         KeyType(id: 'sin', label: 'SIN'),
         KeyType(id: 'cos', label: 'COS'),
@@ -78,11 +78,11 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
   Map<GroupNameType, Color> _groupAccentColors(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorsExtension>();
     return {
-      GroupNameType.basicGeometry:
+      GroupNameType(label: "Basic Geometry"):
           colors?.keyboardFunctions ?? CoreKeyboardColors.functions,
-      GroupNameType.materials:
+      GroupNameType(label: "Materials"):
           colors?.keyboardUnits ?? CoreKeyboardColors.units,
-      GroupNameType.trigonometry:
+      GroupNameType(label: "Trigonometry"):
           colors?.keyboardActions ?? CoreKeyboardColors.actions,
     };
   }
@@ -99,7 +99,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       onResultTapped: () => _log('Result tapped'),
       onGroupSelected: _handleGroup,
       onKeyTapped: _handleKey,
-      result: ResultType.equals,
+      result: ResultType(label: "="),
       currentUnitSystem: _currentUnitSystem,
       onUnitSystemChanged: _handleUnitSystem,
       groupAccentColors: accentColors,
@@ -153,4 +153,3 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     );
   }
 }
-
