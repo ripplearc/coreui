@@ -77,6 +77,31 @@ PrimaryButton(
   label: 'Click me',
   onPressed: () {},
 );
+
+### Colors & Typography usage
+
+Always access tokens through the theme extension so they stay light/dark aware. Avoid static direct access.
+
+Incorrect (bypasses theme, not dark-mode aware):
+```dart
+// Direct static access - NOT theme aware
+color: AppColors.backgroundBlueLight
+```
+
+Correct (uses theme extension, light/dark aware):
+```dart
+// Theme extension access - Supports Dark/Light mode
+final colors = Theme.of(context).extension<AppColorsExtension>()!;
+final typography = Theme.of(context).extension<AppTypographyExtension>()!;
+
+Container(
+  color: colors.pageBackground,
+  child: Text(
+    'Hello',
+    style: typography.bodyMedium,
+  ),
+);
+```
 ```
 
 ## Development
