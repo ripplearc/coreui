@@ -102,7 +102,6 @@ Container(
   ),
 );
 ```
-```
 
 ## Development
 
