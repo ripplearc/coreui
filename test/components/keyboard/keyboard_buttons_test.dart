@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 void main() {
-
   group('CoreDigitInput', () {
     testWidgets('renders with correct label', (tester) async {
       DigitType? pressedDigit;
@@ -44,7 +43,8 @@ void main() {
       expect(pressedDigit, equals(DigitType.three));
     });
 
-    testWidgets('uses emphasized styling when isEmphasized is true', (tester) async {
+    testWidgets('uses emphasized styling when isEmphasized is true',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -232,7 +232,6 @@ void main() {
   });
 
   group('CoreControlButton', () {
-
     testWidgets('renders clear all action correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -327,7 +326,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType:const ResultType(label: 'Calculate'),
+              resultType: const ResultType(label: 'Calculate'),
               customLabel: 'Calculate',
               onTap: () {},
             ),

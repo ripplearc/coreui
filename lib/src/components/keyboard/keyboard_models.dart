@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
 /// - [decimal]: Decimal point symbol (.)
@@ -99,7 +98,6 @@ enum UnitType {
   centimeter,
   millimeter,
   divideSymbol,
-
 }
 
 /// Extension providing label strings for [UnitType] enum values.
@@ -166,19 +164,16 @@ extension ControlActionX on ControlAction {
 /// Defines the types of function groups available on the keyboard.
 /// - [label]: The label of the group
 
-class GroupNameType{
- final String label;
- const GroupNameType({required this.label});
-
+class GroupNameType {
+  final String label;
+  const GroupNameType({required this.label});
 }
-
 
 /// Defines the types of results that can be displayed on the keyboard.
 /// - [label]: The label of the result
 class ResultType {
   final String label;
   const ResultType({required this.label});
-
 }
 
 /// Defines the unit system types available on the keyboard.
@@ -200,7 +195,7 @@ extension UnitSystemX on UnitSystem {
 }
 
 /// Represents a key on the keyboard with its properties.
-/// 
+///
 /// [id] is a unique identifier for the key.
 /// [label] is the text displayed on the key.
 /// [icon] is an optional icon to display instead of or alongside the label.
@@ -209,13 +204,13 @@ extension UnitSystemX on UnitSystem {
 class KeyType {
   /// Unique identifier for the key.
   final String id;
-  
+
   /// Text label displayed on the key.
   final String label;
-  
+
   /// Optional icon to display on the key.
   final IconData? icon;
-  
+
   /// Callback function executed when the key is pressed.
   final VoidCallback? action;
 
@@ -229,7 +224,7 @@ class KeyType {
 }
 
 /// Represents a group of function keys on the keyboard.
-/// 
+///
 /// [name] identifies the type of function group.
 /// [keys] is the list of keys belonging to this function group.
 /// [unitSystem] is an optional unit system associated with this group.
@@ -237,10 +232,10 @@ class KeyType {
 class FunctionGroup {
   /// The type of function group.
   final GroupNameType name;
-  
+
   /// List of keys belonging to this function group.
   final List<KeyType> keys;
-  
+
   /// Optional unit system associated with this function group.
   final UnitSystem? unitSystem;
 
