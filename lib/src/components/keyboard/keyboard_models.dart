@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../theme/icons/material_icons.dart';
 
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
@@ -19,7 +18,6 @@ enum DigitType {
   eight,
   nine,
   decimal,
-  divideSymbol,
 }
 
 /// Extension providing label strings for [DigitType] enum values.
@@ -49,8 +47,6 @@ extension DigitTypeX on DigitType {
         return '9';
       case DigitType.decimal:
         return '.';
-      case DigitType.divideSymbol:
-        return '/';
     }
   }
 }
@@ -102,6 +98,8 @@ enum UnitType {
   meter,
   centimeter,
   millimeter,
+  divideSymbol,
+
 }
 
 /// Extension providing label strings for [UnitType] enum values.
@@ -121,6 +119,8 @@ extension UnitTypeX on UnitType {
         return 'Centimeters';
       case UnitType.millimeter:
         return 'Millimeters';
+      case UnitType.divideSymbol:
+        return '/';
     }
   }
 }
@@ -145,7 +145,7 @@ extension ControlActionX on ControlAction {
       case ControlAction.clearAll:
         return 'C';
       case ControlAction.moreOptions:
-        return '⋯';
+        return '⋮';
     }
   }
 
@@ -154,9 +154,9 @@ extension ControlActionX on ControlAction {
   IconData? get icon {
     switch (this) {
       case ControlAction.delete:
-        return CoreMaterialIcons.backSpace.materialIcon;
+        return CoreIcons.backspaceLeft.materialIcon;
       case ControlAction.moreOptions:
-        return CoreMaterialIcons.moreVert.materialIcon;
+        return CoreIcons.moreVert.materialIcon;
       case ControlAction.clearAll:
         return null;
     }
