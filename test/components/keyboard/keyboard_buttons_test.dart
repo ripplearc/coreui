@@ -10,6 +10,7 @@ void main() {
       DigitType? pressedDigit;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDigitInput(
               digit: DigitType.five,
@@ -26,6 +27,7 @@ void main() {
       DigitType? pressedDigit;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDigitInput(
               digit: DigitType.three,
@@ -41,7 +43,8 @@ void main() {
       expect(pressedDigit, equals(DigitType.three));
     });
 
-    testWidgets('uses emphasized styling when isEmphasized is true', (tester) async {
+    testWidgets('uses emphasized styling when isEmphasized is true',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -69,6 +72,7 @@ void main() {
       const customSize = 80.0;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDigitInput(
               digit: DigitType.one,
@@ -87,6 +91,7 @@ void main() {
     testWidgets('has proper semantics', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDigitInput(
               digit: DigitType.seven,
@@ -106,6 +111,7 @@ void main() {
     testWidgets('renders with correct operator symbol', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreOperatorButton(
               operatorType: OperatorType.add,
@@ -122,6 +128,7 @@ void main() {
       OperatorType? pressedOperator;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreOperatorButton(
               operatorType: OperatorType.multiply,
@@ -149,6 +156,7 @@ void main() {
       for (final op in operators) {
         await tester.pumpWidget(
           MaterialApp(
+            theme: CoreTheme.light(),
             home: Scaffold(
               body: CoreOperatorButton(
                 operatorType: op,
@@ -167,6 +175,7 @@ void main() {
     testWidgets('renders with correct unit label', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreUnitButton(
               unit: UnitType.feet,
@@ -183,6 +192,7 @@ void main() {
       UnitType? selectedUnit;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreUnitButton(
               unit: UnitType.meter,
@@ -203,6 +213,7 @@ void main() {
       const customHeight = 80.0;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreUnitButton(
               unit: UnitType.yards,
@@ -221,10 +232,10 @@ void main() {
   });
 
   group('CoreControlButton', () {
-
     testWidgets('renders clear all action correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreControlButton(
               action: ControlAction.clearAll,
@@ -241,6 +252,7 @@ void main() {
       ControlAction? pressedAction;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreControlButton(
               action: ControlAction.clearAll,
@@ -259,6 +271,7 @@ void main() {
     testWidgets('has proper semantic labels and hints', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreControlButton(
               action: ControlAction.delete,
@@ -278,9 +291,10 @@ void main() {
     testWidgets('renders equals result type correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType: ResultType.equals,
+              resultType: const ResultType(label: '='),
               onTap: () {},
             ),
           ),
@@ -293,9 +307,10 @@ void main() {
     testWidgets('renders area result type correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType: ResultType.area,
+              resultType: const ResultType(label: 'Area'),
               onTap: () {},
             ),
           ),
@@ -308,9 +323,10 @@ void main() {
     testWidgets('renders custom result type with custom label', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType: ResultType.custom,
+              resultType: const ResultType(label: 'Calculate'),
               customLabel: 'Calculate',
               onTap: () {},
             ),
@@ -325,9 +341,10 @@ void main() {
       bool wasTapped = false;
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType: ResultType.equals,
+              resultType: const ResultType(label: 'Volume'),
               onTap: () => wasTapped = true,
             ),
           ),
@@ -343,9 +360,10 @@ void main() {
     testWidgets('has proper semantics', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
-              resultType: ResultType.volume,
+              resultType: const ResultType(label: 'Volume'),
               onTap: () {},
             ),
           ),
@@ -358,4 +376,3 @@ void main() {
     });
   });
 }
-

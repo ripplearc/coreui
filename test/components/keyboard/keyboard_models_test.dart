@@ -16,7 +16,6 @@ void main() {
       expect(DigitType.eight.label, equals('8'));
       expect(DigitType.nine.label, equals('9'));
       expect(DigitType.decimal.label, equals('.'));
-      expect(DigitType.divideSymbol.label, equals('/'));
     });
   });
 
@@ -38,6 +37,7 @@ void main() {
       expect(UnitType.meter.label, equals('Meters'));
       expect(UnitType.centimeter.label, equals('Centimeters'));
       expect(UnitType.millimeter.label, equals('Millimeters'));
+      expect(UnitType.divideSymbol.label, equals('/'));
     });
   });
 
@@ -45,7 +45,7 @@ void main() {
     test('label returns correct string for all control actions', () {
       expect(ControlAction.delete.label, equals('⌫'));
       expect(ControlAction.clearAll.label, equals('C'));
-      expect(ControlAction.moreOptions.label, equals('⋯'));
+      expect(ControlAction.moreOptions.label, equals('⋮'));
     });
 
     test('icon returns correct IconData for actions with icons', () {
@@ -57,32 +57,11 @@ void main() {
     test('icon returns IconData from CoreMaterialIcons', () {
       final deleteIcon = ControlAction.delete.icon;
       final moreOptionsIcon = ControlAction.moreOptions.icon;
-      
+
       expect(deleteIcon, isNotNull);
       expect(moreOptionsIcon, isNotNull);
       expect(deleteIcon, isA<IconData>());
       expect(moreOptionsIcon, isA<IconData>());
-    });
-  });
-
-
-  group('ResultType', () {
-    test('label returns correct string for standard result types', () {
-      expect(ResultType.equals.label(), equals('='));
-      expect(ResultType.area.label(), equals('Area'));
-      expect(ResultType.volume.label(), equals('Volume'));
-      expect(ResultType.density.label(), equals('Density'));
-    });
-
-
-    test('label returns default "=" when customLabel is null for custom type', () {
-      expect(ResultType.custom.label(), equals('='));
-      expect(ResultType.custom.label(null), equals('='));
-    });
-
-    test('label does not use customLabel for non-custom types', () {
-      expect(ResultType.equals.label('Should Ignore'), equals('='));
-      expect(ResultType.area.label('Should Ignore'), equals('Area'));
     });
   });
 
@@ -92,6 +71,4 @@ void main() {
       expect(UnitSystem.metric.label, equals('Metric'));
     });
   });
-
 }
-

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/color_tokens.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/typography.dart';
 import '../../theme/typography_extension.dart';
 import 'keyboard_models.dart';
 
@@ -29,14 +27,12 @@ class CoreDigitInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
-    final typography = theme.extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
-    final backgroundColor = isEmphasized
-        ? (colors?.keyboardCalculate ?? CoreKeyboardColors.calculate)
-        : (colors?.keyboardNumbers ?? CoreKeyboardColors.numbers);
-    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
+    final backgroundColor =
+        isEmphasized ? colors.keyboardCalculate : colors.keyboardNumbers;
+    final textColor = colors.textHeadline;
 
     return Semantics(
       label: '${digit.label} button',
@@ -45,7 +41,7 @@ class CoreDigitInput extends StatelessWidget {
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
-        textStyle: typography?.titleLargeSemiBold.copyWith(
+        textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
         ),
         width: effectiveSize,
@@ -74,13 +70,11 @@ class CoreOperatorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
-    final typography = theme.extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
-    final backgroundColor = colors?.keyboardCalculate ?? CoreKeyboardColors.calculate;
-    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
-
+    final backgroundColor = colors.keyboardCalculate;
+    final textColor = colors.textHeadline;
     return Semantics(
       label: '${operatorType.symbol} operator button',
       button: true,
@@ -88,7 +82,7 @@ class CoreOperatorButton extends StatelessWidget {
         label: operatorType.symbol,
         backgroundColor: backgroundColor,
         onPressed: () => onOperatorPressed(operatorType),
-        textStyle: typography?.titleLargeMedium.copyWith(
+        textStyle: typography.titleLargeMedium.copyWith(
           color: textColor,
         ),
         width: effectiveSize,
@@ -120,15 +114,11 @@ class CoreUnitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
-    final typography = theme.extension<TypographyExtension>();
-    final effectiveHeight = height ??
-        (width != null
-            ? width! * _unitHeightRatio
-            : _defaultUnitHeight);
-    final backgroundColor = colors?.keyboardUnits ?? CoreKeyboardColors.units;
-    final textColor = colors?.textHeadline ?? CoreTextColors.headline;
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
+    final effectiveHeight = height;
+    final backgroundColor = colors.keyboardUnits;
+    final textColor = colors.textHeadline;
 
     return Semantics(
       label: '${unit.label} unit button',
@@ -140,16 +130,12 @@ class CoreUnitButton extends StatelessWidget {
         width: width,
         height: effectiveHeight,
         borderRadius: BorderRadius.circular(CoreSpacing.space6),
-        textStyle: typography?.bodyLargeMedium.copyWith(
+        textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
         ),
       ),
     );
   }
-
-  static const double _unitHeightRatio = 0.78;
-  // Default height when width is not provided: 60px (space12 + space3)
-  static const double _defaultUnitHeight = CoreSpacing.space12 + CoreSpacing.space3;
 }
 
 /// A button widget for control actions on the keyboard.
@@ -174,22 +160,18 @@ class CoreControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
-    final typography = theme.extension<TypographyExtension>();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
     final backgroundColor = switch (action) {
-      ControlAction.clearAll => colors?.keyboardActions ?? CoreKeyboardColors.actions,
-      ControlAction.delete => colors?.keyboardMain ?? CoreKeyboardColors.main,
-      ControlAction.moreOptions => colors?.keyboardCalculate ?? CoreKeyboardColors.calculate,
+      ControlAction.clearAll => colors.keyboardActions,
+      ControlAction.delete => colors.keyboardMain,
+      ControlAction.moreOptions => colors.keyboardCalculate,
     };
     final isMoreAction = action == ControlAction.moreOptions;
-    final iconColor = isMoreAction
-        ? (colors?.keyboardActions ?? CoreKeyboardColors.actions)
-        : (colors?.textInverse ?? CoreTextColors.inverse);
-    final textColor = colors?.textInverse ?? CoreTextColors.inverse;
-    final borderColor = isMoreAction
-        ? (colors?.keyboardActions ?? CoreKeyboardColors.actions)
-        : null;
+    final iconColor =
+        isMoreAction ? colors.keyboardActions : colors.textInverse;
+    final textColor = colors.textInverse;
+    final borderColor = isMoreAction ? colors.keyboardActions : null;
 
     return Semantics(
       label: _getSemanticLabel(action),
@@ -206,7 +188,7 @@ class CoreControlButton extends StatelessWidget {
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: typography?.bodyLargeMedium.copyWith(
+        textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
         ),
         width: width,
@@ -257,16 +239,12 @@ class CoreResultButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
-    final typography = theme.extension<TypographyExtension>();
-    final effectiveHeight = height ??
-        (width != null
-            ? width! * _resultHeightRatio
-            : _defaultResultHeight);
-    final backgroundColor = colors?.keyboardMain ?? CoreKeyboardColors.main;
-    final textColor = colors?.textInverse ?? CoreTextColors.inverse;
-    final label = resultType.label(customLabel).toUpperCase();
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
+    final effectiveHeight = height;
+    final backgroundColor = colors.keyboardMain;
+    final textColor = colors.textInverse;
+    final label = resultType.label.toUpperCase();
 
     return Semantics(
       label: '$label button',
@@ -279,16 +257,12 @@ class CoreResultButton extends StatelessWidget {
         height: effectiveHeight,
         width: width,
         borderRadius: BorderRadius.circular(CoreSpacing.space8),
-        textStyle: typography?.titleLargeSemiBold.copyWith(
+        textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
         ),
       ),
     );
   }
-
-  static const double _resultHeightRatio = 0.53;
-  // Default height when width is not provided: 56px (space12 + space2)
-  static const double _defaultResultHeight = CoreSpacing.space12 + CoreSpacing.space2;
 }
 
 class _KeyboardButton extends StatelessWidget {
@@ -303,7 +277,6 @@ class _KeyboardButton extends StatelessWidget {
   final BorderRadius borderRadius;
 
   static const double _defaultSize = CoreSpacing.space16;
-  // Border width of 2px (not on 4px grid per design spec)
   static const double _defaultBorderWidth = 2.0;
 
   const _KeyboardButton({
@@ -316,12 +289,13 @@ class _KeyboardButton extends StatelessWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
-  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(CoreSpacing.space8));
+  }) : borderRadius = borderRadius ??
+            const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
   Widget build(BuildContext context) {
     final effectiveWidth = width ?? _defaultSize;
-    final effectiveHeight = height ?? effectiveWidth;
+    final effectiveHeight = height;
     final effectiveBackgroundColor = backgroundColor ?? Colors.transparent;
     final effectiveBorderColor = borderColor ?? effectiveBackgroundColor;
 
@@ -343,14 +317,12 @@ class _KeyboardButton extends StatelessWidget {
           borderRadius: borderRadius,
           onTap: onPressed,
           child: Center(
-            child: icon ??
-                (label != null && label!.isNotEmpty
-                    ? Text(
-                        label!,
-                        style: textStyle,
-                      )
-                    : const SizedBox.shrink()),
-          ),
+              child: label!.isNotEmpty
+                  ? Text(
+                      label!,
+                      style: textStyle,
+                    )
+                  : icon),
         ),
       ),
     );
