@@ -57,7 +57,7 @@ void main() {
     test('icon returns IconData from CoreMaterialIcons', () {
       final deleteIcon = ControlAction.delete.icon;
       final moreOptionsIcon = ControlAction.moreOptions.icon;
-      
+
       expect(deleteIcon, isNotNull);
       expect(moreOptionsIcon, isNotNull);
       expect(deleteIcon, isA<IconData>());
@@ -65,13 +65,10 @@ void main() {
     });
   });
 
-
   group('UnitSystem', () {
     test('label returns correct string for all unit systems', () {
       expect(UnitSystem.imperial.label, equals('Imperial'));
       expect(UnitSystem.metric.label, equals('Metric'));
     });
   });
-
 }
-

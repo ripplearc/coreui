@@ -30,9 +30,8 @@ class CoreDigitInput extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
-    final backgroundColor = isEmphasized
-        ? colors.keyboardCalculate 
-        : colors.keyboardNumbers;
+    final backgroundColor =
+        isEmphasized ? colors.keyboardCalculate : colors.keyboardNumbers;
     final textColor = colors.textHeadline;
 
     return Semantics(
@@ -137,7 +136,6 @@ class CoreUnitButton extends StatelessWidget {
       ),
     );
   }
-
 }
 
 /// A button widget for control actions on the keyboard.
@@ -170,13 +168,10 @@ class CoreControlButton extends StatelessWidget {
       ControlAction.moreOptions => colors.keyboardCalculate,
     };
     final isMoreAction = action == ControlAction.moreOptions;
-    final iconColor = isMoreAction
-        ? colors.keyboardActions
-        : colors.textInverse;
+    final iconColor =
+        isMoreAction ? colors.keyboardActions : colors.textInverse;
     final textColor = colors.textInverse;
-    final borderColor = isMoreAction
-        ? colors.keyboardActions
-        : null;
+    final borderColor = isMoreAction ? colors.keyboardActions : null;
 
     return Semantics(
       label: _getSemanticLabel(action),
@@ -294,7 +289,8 @@ class _KeyboardButton extends StatelessWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
-  }) : borderRadius = borderRadius ?? const BorderRadius.all(Radius.circular(CoreSpacing.space8));
+  }) : borderRadius = borderRadius ??
+            const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
   Widget build(BuildContext context) {
@@ -321,11 +317,12 @@ class _KeyboardButton extends StatelessWidget {
           borderRadius: borderRadius,
           onTap: onPressed,
           child: Center(
-            child: label!.isNotEmpty ? Text(
-                        label!,
-                        style: textStyle,
-                      ) : icon
-          ),
+              child: label!.isNotEmpty
+                  ? Text(
+                      label!,
+                      style: textStyle,
+                    )
+                  : icon),
         ),
       ),
     );
