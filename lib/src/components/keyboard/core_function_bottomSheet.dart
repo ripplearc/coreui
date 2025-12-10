@@ -8,23 +8,6 @@ import 'keyboard_models.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///
-/// This component provides a modal bottom sheet interface for displaying
-/// organized groups of function keys with optional unit system toggle.
-///
-/// Example usage:
-/// ```dart
-/// CoreFunctionBottomSheet(
-///   groups: functionGroups,
-///   groupAccentColors: accentColorMap,
-///   selectedGroup: GroupNameType.trigonometry,
-///   onGroupSelected: (group) => print('Selected: $group'),
-///   onKeyTapped: (key) => print('Tapped: ${key.label}'),
-///   showUnitToggle: true,
-///   currentUnitSystem: UnitSystem.imperial,
-///   onUnitSystemChanged: (system) => print('Unit system: $system'),
-/// )
-/// ```
-///
 /// [groups] is the list of function groups to display.
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [selectedGroup] is the currently selected function group.
@@ -212,8 +195,8 @@ class _UnitSystemToggle extends StatelessWidget {
             textDirection: isImperial ? TextDirection.ltr : TextDirection.rtl,
             children: [
               Container(
-                width: CoreSpacing.space3 + CoreSpacing.space1,
-                height: CoreSpacing.space3 + CoreSpacing.space1,
+                width: CoreSpacing.space4,
+                height: CoreSpacing.space4,
                 decoration: BoxDecoration(
                   color: isImperial ? activeColor : colors.pageBackground,
                   shape: BoxShape.circle,
