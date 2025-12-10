@@ -121,8 +121,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.buttonSurface,
     required this.buttonHover,
     required this.buttonDisable,
-    required this.buttonPress,
-    required this.iconDark,
+    required this.buttonPress,    required this.iconDark,
     required this.iconGrayDark,
     required this.iconGrayMid,
     required this.iconGrayLight,
@@ -149,6 +148,19 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.keyboardActions,
     required this.keyboardMain,
   });
+
+   /// Static method to get the current AppColorsExtension from context.
+  static AppColorsExtension of(BuildContext context) {
+    final AppColorsExtension? extension =
+        Theme.of(context).extension<AppColorsExtension>();
+    if (extension == null) {
+      throw FlutterError(
+        'AppColorsExtension not found in Theme. '
+        'Did you wrap your widget tree with a Theme that includes this extension?',
+      );
+    }
+    return extension;
+  }
 
   @override
   ThemeExtension<AppColorsExtension> copyWith({

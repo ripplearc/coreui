@@ -142,7 +142,7 @@ class CoreStatusColors {
 class CoreKeyboardColors {
   static const Color numbers = _CoreColorPalette.gray200;
   static const Color calculate = _CoreColorPalette.blue50;
-  static const Color units = _CoreColorPalette.blue500;
+  static const Color units = _CoreColorPalette.blue200;
   static const Color functions = _CoreColorPalette.blue600;
   static const Color actions = _CoreColorPalette.blue700;
   static const Color main = _CoreColorPalette.blue800;
