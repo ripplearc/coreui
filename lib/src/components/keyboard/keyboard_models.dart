@@ -4,7 +4,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
 /// - [decimal]: Decimal point symbol (.)
-/// - [divideSymbol]: Division symbol (/)
 enum DigitType {
   zero,
   one,
@@ -90,6 +89,7 @@ extension OperatorTypeX on OperatorType {
 /// - [meter]: Meter unit
 /// - [centimeter]: Centimeter unit
 /// - [millimeter]: Millimeter unit
+/// - [divideSymbol]: Division symbol (/) for compound units
 enum UnitType {
   yards,
   feet,
