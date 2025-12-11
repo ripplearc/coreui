@@ -220,17 +220,6 @@ class CoreKeyboard extends StatelessWidget {
     final column1Width = availableForButtons * _column1WidthRatio;
     final column2to5Width = availableForButtons * _column2to5WidthRatio;
 
-    final buttonSize =
-        column2to5Width < buttonHeight ? column2to5Width : buttonHeight;
-
-    final spaceForCircularButtons = (buttonSize * 4) + (buttonSpacing * 3);
-    final adjustedColumn1Width =
-        availableWidth - spaceForCircularButtons - buttonSpacing;
-    final finalColumn1Width =
-        adjustedColumn1Width > column1Width * _minColumnWidthRatio
-            ? adjustedColumn1Width
-            : column1Width;
-
     return Column(
       children: [
         // Row 1: C, /, %, ÷, backspace
@@ -240,29 +229,32 @@ class CoreKeyboard extends StatelessWidget {
               CoreControlButton(
                 action: ControlAction.clearAll,
                 onControlAction: onControlAction,
-                width: finalColumn1Width,
+                width: column1Width,
                 height: buttonHeight,
               ),
               CoreUnitButton(
-                  unit: UnitType.divideSymbol,
-                  onUnitSelected: onUnitSelected,
-                  height: buttonSize,
-                  width: buttonSize),
+                unit: UnitType.divideSymbol,
+                onUnitSelected: onUnitSelected,
+                width: column2to5Width,
+                height: buttonHeight,
+              ),
               CoreOperatorButton(
                 operatorType: OperatorType.percent,
                 onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.divide,
                 onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreControlButton(
                 action: ControlAction.delete,
                 onControlAction: onControlAction,
-                width: buttonSize,
-                height: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
             ],
             spacing: buttonSpacing,
@@ -276,28 +268,32 @@ class CoreKeyboard extends StatelessWidget {
               CoreUnitButton(
                 unit: activeUnits[0],
                 onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
+                width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.seven,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.eight,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.nine,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.multiply,
                 onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
             ],
             spacing: buttonSpacing,
@@ -311,28 +307,32 @@ class CoreKeyboard extends StatelessWidget {
               CoreUnitButton(
                 unit: activeUnits[1],
                 onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
+                width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.four,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.five,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.six,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.subtract,
                 onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
             ],
             spacing: buttonSpacing,
@@ -346,28 +346,32 @@ class CoreKeyboard extends StatelessWidget {
               CoreUnitButton(
                 unit: activeUnits[2],
                 onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
+                width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.one,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.two,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.three,
                 onDigitPressed: onDigitPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.add,
                 onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
+                width: column2to5Width,
+                height: buttonHeight,
               ),
             ],
             spacing: buttonSpacing,
@@ -378,8 +382,8 @@ class CoreKeyboard extends StatelessWidget {
         Expanded(
           child: _buildBottomRow(
             buttonSpacing: buttonSpacing,
-            column1Width: finalColumn1Width,
-            buttonSize: buttonSize,
+            column1Width: column1Width,
+            column2to5Width: column2to5Width,
             buttonHeight: buttonHeight,
           ),
         ),
@@ -406,16 +410,15 @@ class CoreKeyboard extends StatelessWidget {
   }
 
   /// Builds the bottom row of the keyboard with result button spanning 2 columns.
-
   /// more options, zero, and decimal buttons respectively.
   Widget _buildBottomRow({
     required double buttonSpacing,
     required double column1Width,
-    required double buttonSize,
+    required double column2to5Width,
     required double buttonHeight,
   }) {
     // Result button spans 2 columns (columns 4-5)
-    final resultButtonWidth = (buttonSize * 2) + buttonSpacing;
+    final resultButtonWidth = (column2to5Width * 2) + buttonSpacing;
 
     return Row(
       children: [
@@ -431,14 +434,16 @@ class CoreKeyboard extends StatelessWidget {
         CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: onDigitPressed,
-          size: buttonSize,
+          width: column2to5Width,
+          height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         // Column 3: .
         CoreDigitInput(
           digit: DigitType.decimal,
           onDigitPressed: onDigitPressed,
-          size: buttonSize,
+          width: column2to5Width,
+          height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         // Columns 4-5: Result button (spans 2 columns)

@@ -16,6 +16,8 @@ class CoreDigitInput extends StatelessWidget {
   final ValueChanged<DigitType> onDigitPressed;
   final bool isEmphasized;
   final double? size;
+  final double? width;
+  final double? height;
 
   const CoreDigitInput({
     super.key,
@@ -23,6 +25,8 @@ class CoreDigitInput extends StatelessWidget {
     required this.onDigitPressed,
     this.isEmphasized = false,
     this.size,
+    this.width,
+    this.height,
   });
 
   @override
@@ -30,6 +34,8 @@ class CoreDigitInput extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
+    final effectiveWidth = width ?? effectiveSize;
+    final effectiveHeight = height ?? effectiveSize;
     final backgroundColor =
         isEmphasized ? colors.keyboardCalculate : colors.keyboardNumbers;
     final textColor = colors.textHeadline;
@@ -44,8 +50,8 @@ class CoreDigitInput extends StatelessWidget {
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
         ),
-        width: effectiveSize,
-        height: effectiveSize,
+        width: effectiveWidth,
+        height: effectiveHeight,
       ),
     );
   }
@@ -60,12 +66,16 @@ class CoreOperatorButton extends StatelessWidget {
   final OperatorType operatorType;
   final ValueChanged<OperatorType> onOperatorPressed;
   final double? size;
+  final double? width;
+  final double? height;
 
   const CoreOperatorButton({
     super.key,
     required this.operatorType,
     required this.onOperatorPressed,
     this.size,
+    this.width,
+    this.height,
   });
 
   @override
@@ -73,6 +83,8 @@ class CoreOperatorButton extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
+    final effectiveWidth = width ?? effectiveSize;
+    final effectiveHeight = height ?? effectiveSize;
     final backgroundColor = colors.keyboardCalculate;
     final textColor = colors.textHeadline;
     return Semantics(
@@ -85,8 +97,8 @@ class CoreOperatorButton extends StatelessWidget {
         textStyle: typography.titleLargeMedium.copyWith(
           color: textColor,
         ),
-        width: effectiveSize,
-        height: effectiveSize,
+        width: effectiveWidth,
+        height: effectiveHeight,
       ),
     );
   }
@@ -170,7 +182,8 @@ class CoreControlButton extends StatelessWidget {
     final isMoreAction = action == ControlAction.moreOptions;
     final iconColor =
         isMoreAction ? colors.keyboardActions : colors.textInverse;
-    final textColor = colors.textInverse;
+    final textColor =
+        isMoreAction ? colors.keyboardActions : colors.textInverse;
     final borderColor = isMoreAction ? colors.keyboardActions : null;
 
     return Semantics(
