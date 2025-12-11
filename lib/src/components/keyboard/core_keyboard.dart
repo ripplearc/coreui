@@ -21,38 +21,27 @@ import 'function_key_tile.dart';
 /// [customResultLabel] is an optional custom label for the result button.
 class CoreKeyboard extends StatelessWidget {
   // Layout constants
-  /// Keyboard height as percentage of screen height
   static const double _keyboardHeightRatio = 0.6;
 
-  /// Minimum height to be considered a small screen (in logical pixels)
   static const double _smallScreenThreshold = 500.0;
 
-  /// Estimated header height in logical pixels
   static const double _estimatedHeaderHeight = CoreSpacing.space8;
 
-  /// Estimated function strip height in logical pixels
   static const double _estimatedFunctionStripHeight = CoreSpacing.space10;
 
-  /// Button spacing as percentage of available width for small screens
   static const double _smallScreenButtonSpacingRatio = 0.012;
 
-  /// Button spacing as percentage of available width for normal screens
   static const double _normalScreenButtonSpacingRatio = 0.015;
 
-  /// Column width ratios for 5-column grid
   static const double _column1WidthRatio = 0.22;
   static const double _column2to5WidthRatio = 0.195;
 
-  /// Number of keyboard rows
   static const int _keyboardRowCount = 5;
 
-  /// Number of gaps between rows
   static const int _keyboardRowGaps = 4;
 
-  /// Drag handle width
   static final double _dragHandleWidth = CoreSpacing.space12;
 
-  /// Aspect ratio for function key tiles in grid
   static const double _functionKeyTileAspectRatio = 2.4;
   const CoreKeyboard({
     super.key,
@@ -193,7 +182,6 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
-  /// Builds the column layout for the keyboard grid.
   Widget _buildColumnLayout(
     BuildContext context, {
     required double buttonHeight,
@@ -221,7 +209,6 @@ class CoreKeyboard extends StatelessWidget {
 
     return Column(
       children: [
-        // Row 1: C, /, %, ÷, backspace
         Expanded(
           child: _buildGridRow(
             children: [
@@ -260,7 +247,6 @@ class CoreKeyboard extends StatelessWidget {
           ),
         ),
         SizedBox(height: buttonSpacing),
-        // Row 2: Yards, 7, 8, 9, ×
         Expanded(
           child: _buildGridRow(
             children: [
@@ -299,7 +285,6 @@ class CoreKeyboard extends StatelessWidget {
           ),
         ),
         SizedBox(height: buttonSpacing),
-        // Row 3: Feet, 4, 5, 6, -
         Expanded(
           child: _buildGridRow(
             children: [
@@ -338,7 +323,6 @@ class CoreKeyboard extends StatelessWidget {
           ),
         ),
         SizedBox(height: buttonSpacing),
-        // Row 4: Inch, 1, 2, 3, +
         Expanded(
           child: _buildGridRow(
             children: [
@@ -377,7 +361,6 @@ class CoreKeyboard extends StatelessWidget {
           ),
         ),
         SizedBox(height: buttonSpacing),
-        // Row 5: ..., 0, ., Area (Area spans 2 columns)
         Expanded(
           child: _buildBottomRow(
             buttonSpacing: buttonSpacing,
@@ -408,20 +391,16 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
-  /// Builds the bottom row of the keyboard with result button spanning 2 columns.
-  /// more options, zero, and decimal buttons respectively.
   Widget _buildBottomRow({
     required double buttonSpacing,
     required double column1Width,
     required double column2to5Width,
     required double buttonHeight,
   }) {
-    // Result button spans 2 columns (columns 4-5)
     final resultButtonWidth = (column2to5Width * 2) + buttonSpacing;
 
     return Row(
       children: [
-        // Column 1: moreOptions
         CoreControlButton(
           action: ControlAction.moreOptions,
           onControlAction: onControlAction,
@@ -429,7 +408,6 @@ class CoreKeyboard extends StatelessWidget {
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
-        // Column 2: 0
         CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: onDigitPressed,
@@ -437,7 +415,6 @@ class CoreKeyboard extends StatelessWidget {
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
-        // Column 3: .
         CoreDigitInput(
           digit: DigitType.decimal,
           onDigitPressed: onDigitPressed,
@@ -445,7 +422,6 @@ class CoreKeyboard extends StatelessWidget {
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
-        // Columns 4-5: Result button (spans 2 columns)
         CoreResultButton(
           resultType: result,
           customLabel: customResultLabel,
@@ -468,7 +444,7 @@ class CoreKeyboard extends StatelessWidget {
             BorderRadius.vertical(top: Radius.circular(CoreSpacing.space6)),
       ),
       builder: (context) {
-        return CoreFunctionBottomSheet(
+        return CoreFunctionKeyBottomSheet(
           groups: allGroups,
           groupAccentColors: groupAccentColors,
           selectedGroup: currentGroup,
@@ -515,7 +491,6 @@ class _FunctionKeyStrip extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header: Group name with dot + "View all" link
         Row(
           children: [
             Text(

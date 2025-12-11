@@ -16,7 +16,7 @@ import 'keyboard_models.dart';
 /// [showUnitToggle] determines whether to show the unit system toggle.
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [onUnitSystemChanged] is called when the unit system is changed.
-class CoreFunctionBottomSheet extends StatefulWidget {
+class CoreFunctionKeyBottomSheet extends StatefulWidget {
   final List<FunctionGroup> groups;
   final Map<GroupNameType, Color> groupAccentColors;
   final GroupNameType selectedGroup;
@@ -26,7 +26,7 @@ class CoreFunctionBottomSheet extends StatefulWidget {
   final UnitSystem currentUnitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
 
-  const CoreFunctionBottomSheet({
+  const CoreFunctionKeyBottomSheet({
     super.key,
     required this.groups,
     required this.groupAccentColors,
@@ -39,11 +39,12 @@ class CoreFunctionBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<CoreFunctionBottomSheet> createState() =>
-      _CoreFunctionBottomSheetState();
+  State<CoreFunctionKeyBottomSheet> createState() =>
+      _CoreFunctionKeyBottomSheetState();
 }
 
-class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
+class _CoreFunctionKeyBottomSheetState
+    extends State<CoreFunctionKeyBottomSheet> {
   late List<FunctionGroup> _groups;
 
   static const double _maxHeightRatio = 0.7;
@@ -145,7 +146,6 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
   }
 }
 
-/// A section widget that displays a single function group.
 class _FunctionGroupSection extends StatelessWidget {
   final int index;
   final FunctionGroup group;
@@ -198,7 +198,6 @@ class _FunctionGroupSection extends StatelessWidget {
   }
 }
 
-/// A header widget for the bottom sheet.
 class _Header extends StatelessWidget {
   final UnitSystem unitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
@@ -244,7 +243,6 @@ class _Header extends StatelessWidget {
   }
 }
 
-/// A header widget for a function group section.
 class _GroupHeader extends StatelessWidget {
   final int index;
   final String name;

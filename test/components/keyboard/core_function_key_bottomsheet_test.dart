@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 void main() {
-  group('CoreFunctionBottomSheet', () {
+  group('CoreFunctionKeyBottomSheet', () {
     final testGroups = [
       FunctionGroup(
         name: const GroupNameType(label: 'Trigonomety'),
@@ -31,7 +31,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -56,7 +56,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -79,7 +79,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -102,7 +102,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -124,7 +124,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -148,7 +148,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -169,7 +169,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
