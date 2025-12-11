@@ -49,6 +49,7 @@ class CoreDigitInput extends StatelessWidget {
         onPressed: () => onDigitPressed(digit),
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
+          fontSize: effectiveHeight * 0.35,
         ),
         width: effectiveWidth,
         height: effectiveHeight,
@@ -96,6 +97,7 @@ class CoreOperatorButton extends StatelessWidget {
         onPressed: () => onOperatorPressed(operatorType),
         textStyle: typography.titleLargeMedium.copyWith(
           color: textColor,
+          fontSize: effectiveHeight * 0.35,
         ),
         width: effectiveWidth,
         height: effectiveHeight,
@@ -146,6 +148,8 @@ class CoreUnitButton extends StatelessWidget {
             : BorderRadius.circular(CoreSpacing.space6),
         textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
+          fontSize:
+              unit == UnitType.divideSymbol ? effectiveHeight! * 0.35 : null,
         ),
       ),
     );
@@ -198,13 +202,15 @@ class CoreControlButton extends StatelessWidget {
             ? Icon(
                 action.icon,
                 color: iconColor,
+                size: height! * 0.35,
               )
             : null,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: typography.bodyLargeMedium.copyWith(
+        textStyle: typography.bodySmallRegular.copyWith(
           color: textColor,
+          fontSize: height! * 0.25,
         ),
         width: width,
         height: height,
@@ -275,6 +281,7 @@ class CoreResultButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoreSpacing.space8),
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
+          fontSize: height! * 0.35,
         ),
       ),
     );
