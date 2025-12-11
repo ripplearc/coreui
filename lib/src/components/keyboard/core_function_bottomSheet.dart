@@ -80,7 +80,7 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           children: [
             Center(
               child: Container(
@@ -215,34 +215,9 @@ class _Header extends StatelessWidget {
             ),
             const Spacer(),
             if (onUnitSystemChanged != null)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    UnitSystem.imperial.label,
-                    style: typography.bodySmallSemiBold.copyWith(
-                      color:
-                          isImperial ? colors.textHeadline : colors.textInverse,
-                    ),
-                  ),
-                  Switch(
-                    value: !isImperial,
-                    onChanged: (value) {
-                      onUnitSystemChanged!(
-                        value ? UnitSystem.metric : UnitSystem.imperial,
-                      );
-                    },
-                    activeColor: colors.buttonSurface,
-                  ),
-                  Text(
-                    UnitSystem.metric.label,
-                    style: typography.bodySmallSemiBold.copyWith(
-                      color: !isImperial
-                          ? colors.textHeadline
-                          : colors.textInverse,
-                    ),
-                  ),
-                ],
+              _UnitSystemToggle(
+                currentSystem: unitSystem,
+                onChanged: onUnitSystemChanged!,
               ),
           ],
         ),
@@ -365,6 +340,120 @@ class _FunctionKeyTile extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UnitSystemToggle extends StatefulWidget {
+  final UnitSystem currentSystem;
+  final ValueChanged<UnitSystem> onChanged;
+
+  const _UnitSystemToggle({
+    required this.currentSystem,
+    required this.onChanged,
+  });
+
+  @override
+  State<_UnitSystemToggle> createState() => _UnitSystemToggleState();
+}
+
+class _UnitSystemToggleState extends State<_UnitSystemToggle> {
+  late bool _isImperial;
+
+  @override
+  void initState() {
+    super.initState();
+    _isImperial = widget.currentSystem == UnitSystem.imperial;
+  }
+
+  @override
+  void didUpdateWidget(_UnitSystemToggle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentSystem != widget.currentSystem) {
+      _isImperial = widget.currentSystem == UnitSystem.imperial;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
+
+    final greenColor = colors.keyboardUnits ?? CoreKeyboardColors.units;
+    final blueColor = colors.buttonSurface;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isImperial = !_isImperial;
+        });
+        widget.onChanged(_isImperial ? UnitSystem.imperial : UnitSystem.metric);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 110,
+        height: 32,
+        decoration: BoxDecoration(
+          color: _isImperial ? Colors.transparent : blueColor,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: _isImperial ? greenColor : blueColor,
+            width: 1.5,
+          ),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: _isImperial ? 1.0 : 0.0,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Text(
+                    'Imperial',
+                    style: typography.bodySmallSemiBold.copyWith(
+                      color: greenColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: !_isImperial ? 1.0 : 0.0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    'Metric',
+                    style: typography.bodySmallSemiBold.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 200),
+              alignment: _isImperial ? Alignment.centerLeft : Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: _isImperial ? greenColor : Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
