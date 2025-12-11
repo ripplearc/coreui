@@ -141,7 +141,9 @@ class CoreUnitButton extends StatelessWidget {
         onPressed: () => onUnitSelected(unit),
         width: width,
         height: effectiveHeight,
-        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+        borderRadius: unit == UnitType.divideSymbol
+            ? BorderRadius.circular(100)
+            : BorderRadius.circular(CoreSpacing.space6),
         textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
         ),
@@ -206,6 +208,7 @@ class CoreControlButton extends StatelessWidget {
         ),
         width: width,
         height: height,
+        borderRadius: BorderRadius.circular(100),
       ),
     );
   }
