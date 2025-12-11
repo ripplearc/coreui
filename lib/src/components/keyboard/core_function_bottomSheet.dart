@@ -46,14 +46,29 @@ class CoreFunctionBottomSheet extends StatefulWidget {
 class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
   late List<FunctionGroup> _groups;
 
+  /// Maximum height ratio for the bottom sheet (70% of screen height)
+  static const double _maxHeightRatio = 0.7;
+
   @override
   void initState() {
     super.initState();
     _groups = List.from(widget.groups);
   }
 
+  /// Handles reordering of function groups in the list.
+  ///
+  /// When an item is moved, the [newIndex] is adjusted if the item is moved
+  /// downward (oldIndex < newIndex) because Flutter's ReorderableListView
+  /// reports the new index before the item is removed from the old position.
   void _onReorder(int oldIndex, int newIndex) {
+    if (_groups.isEmpty || oldIndex < 0 || newIndex < 0 || 
+        oldIndex >= _groups.length || newIndex >= _groups.length) {
+      return;
+    }
+    
     setState(() {
+      // Adjust newIndex when moving downward because the list shifts
+      // after removing the item at oldIndex
       if (oldIndex < newIndex) {
         newIndex -= 1;
       }
@@ -69,7 +84,7 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
     return SafeArea(
         child: ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: screenHeight * 0.7,
+        maxHeight: screenHeight * _maxHeightRatio,
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -292,58 +307,15 @@ class _GroupHeader extends StatelessWidget {
   }
 }
 
-/// A tile widget for a single function key.
-class _FunctionKeyTile extends StatelessWidget {
-  final KeyType keyType;
-  final VoidCallback onTap;
 
-  const _FunctionKeyTile({
-    required this.keyType,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
-    return Semantics(
-      label: 'Function key ${keyType.label}',
-      button: true,
-      hint: 'Tap to use ${keyType.label} function',
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            color: colors.backgroundGrayMid,
-            borderRadius: BorderRadius.circular(CoreSpacing.space2),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (keyType.icon != null) ...[
-                  Icon(
-                    keyType.icon,
-                    color: colors.textHeadline,
-                    size: CoreSpacing.space4,
-                  ),
-                  const SizedBox(width: CoreSpacing.space1),
-                ],
-                Text(
-                  keyType.label,
-                  style: typography.bodyMediumRegular.copyWith(
-                    color: colors.textHeadline,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
+/// A toggle widget for switching between unit systems (Imperial and Metric).
+///
+/// This widget displays an animated toggle that allows users to switch between
+/// Imperial and Metric unit systems. The toggle includes smooth animations for
+/// the indicator circle and text opacity transitions.
+///
+/// [currentSystem] is the currently selected unit system.
+/// [onChanged] is called when the user switches the unit system.
 class _UnitSystemToggle extends StatefulWidget {
   final UnitSystem currentSystem;
   final ValueChanged<UnitSystem> onChanged;
@@ -360,6 +332,24 @@ class _UnitSystemToggle extends StatefulWidget {
 class _UnitSystemToggleState extends State<_UnitSystemToggle> {
   late bool _isImperial;
 
+  // Animation durations
+  /// Duration for container and text opacity animations (300ms for smoother transitions)
+  static const Duration _containerAnimationDuration = Duration(milliseconds: 300);
+  
+  /// Duration for indicator circle animation (200ms for snappier feel)
+  static const Duration _indicatorAnimationDuration = Duration(milliseconds: 200);
+
+  // Layout constants using design tokens
+  static const double _toggleWidth = 90.0;
+  static const double _toggleHeight = CoreSpacing.space8; // 32px
+  static const double _borderWidth = 1.5;
+  static const double _indicatorSize = CoreSpacing.space5; // 20px
+  static const double _indicatorPadding = CoreSpacing.space1; // 4px
+  static const double _textHorizontalPadding = CoreSpacing.space3; // 12px
+  
+  /// Border radius for fully circular toggle (100 is used for perfect circle)
+  static const double _circularBorderRadius = 100.0;
+
   @override
   void initState() {
     super.initState();
@@ -374,11 +364,90 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  /// Builds the animated container for the toggle background
+  Widget _buildToggleContainer(BuildContext context, bool isImperial) {
+    final colors = AppColorsExtension.of(context);
+    return AnimatedContainer(
+      duration: _containerAnimationDuration,
+      width: _toggleWidth,
+      height: _toggleHeight,
+      decoration: BoxDecoration(
+        color: isImperial ? colors.textInverse : colors.buttonSurface,
+        borderRadius: BorderRadius.circular(_circularBorderRadius),
+        border: Border.all(
+          color: isImperial ? colors.iconGreen : colors.buttonSurface,
+          width: _borderWidth,
+        ),
+      ),
+    );
+  }
+
+  /// Builds the animated text for Imperial label
+  Widget _buildImperialText(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
+    return AnimatedOpacity(
+      duration: _containerAnimationDuration,
+      opacity: isImperial ? 1.0 : 0.0,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.only(right: _textHorizontalPadding),
+          child: Text(
+            'Imperial',
+            style: typography.bodySmallRegular.copyWith(
+              color: colors.iconGreen,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
+  /// Builds the animated text for Metric label
+  Widget _buildMetricText(BuildContext context, bool isImperial) {
+    final colors = AppColorsExtension.of(context);
+    final typography = TypographyExtension.of(context);
+    return AnimatedOpacity(
+      duration: _indicatorAnimationDuration,
+      opacity: !isImperial ? 1.0 : 0.0,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: _textHorizontalPadding),
+          child: Text(
+            'Metric',
+            style: typography.bodySmallRegular.copyWith(
+              color: colors.textInverse,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the animated indicator circle
+  Widget _buildIndicatorCircle(BuildContext context, bool isImperial) {
+    final colors = AppColorsExtension.of(context);
+    return AnimatedAlign(
+      duration: _indicatorAnimationDuration,
+      alignment: isImperial ? Alignment.centerLeft : Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.all(_indicatorPadding),
+        child: Container(
+          width: _indicatorSize,
+          height: _indicatorSize,
+          decoration: BoxDecoration(
+            color: isImperial ? colors.iconGreen : colors.textInverse,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -386,71 +455,14 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
         });
         widget.onChanged(_isImperial ? UnitSystem.imperial : UnitSystem.metric);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        width: 90,
-        height: 32,
-        decoration: BoxDecoration(
-          color: _isImperial ? colors.textInverse : colors.buttonSurface,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(
-            color: _isImperial ? colors.iconGreen : colors.buttonSurface,
-            width: 1.5,
-          ),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: _isImperial ? 1.0 : 0.0,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Text(
-                    'Imperial',
-                    style: typography.bodySmallRegular.copyWith(
-                      color: colors.iconGreen,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              opacity: !_isImperial ? 1.0 : 0.0,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    'Metric',
-                    style: typography.bodySmallRegular.copyWith(
-                      color: colors.textInverse,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            AnimatedAlign(
-              duration: const Duration(milliseconds: 200),
-              alignment:
-                  _isImperial ? Alignment.centerLeft : Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: _isImperial ? colors.iconGreen : colors.textInverse,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          _buildToggleContainer(context, _isImperial),
+          _buildImperialText(context, _isImperial),
+          _buildMetricText(context, _isImperial),
+          _buildIndicatorCircle(context, _isImperial),
+        ],
       ),
     );
   }
