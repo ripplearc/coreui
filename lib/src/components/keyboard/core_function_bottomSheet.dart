@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/color_tokens.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
 import '../../theme/typography_extension.dart';
+import 'function_key_tile.dart';
 import 'keyboard_models.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
@@ -46,7 +46,6 @@ class CoreFunctionBottomSheet extends StatefulWidget {
 class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
   late List<FunctionGroup> _groups;
 
-  /// Maximum height ratio for the bottom sheet (70% of screen height)
   static const double _maxHeightRatio = 0.7;
 
   @override
@@ -58,17 +57,16 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
   /// Handles reordering of function groups in the list.
   ///
   /// When an item is moved, the [newIndex] is adjusted if the item is moved
-  /// downward (oldIndex < newIndex) because Flutter's ReorderableListView
-  /// reports the new index before the item is removed from the old position.
   void _onReorder(int oldIndex, int newIndex) {
-    if (_groups.isEmpty || oldIndex < 0 || newIndex < 0 || 
-        oldIndex >= _groups.length || newIndex >= _groups.length) {
+    if (_groups.isEmpty ||
+        oldIndex < 0 ||
+        newIndex < 0 ||
+        oldIndex >= _groups.length ||
+        newIndex >= _groups.length) {
       return;
     }
-    
+
     setState(() {
-      // Adjust newIndex when moving downward because the list shifts
-      // after removing the item at oldIndex
       if (oldIndex < newIndex) {
         newIndex -= 1;
       }
@@ -186,7 +184,7 @@ class _FunctionGroupSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: 2.4,
           children: group.keys.map((key) {
-            return _FunctionKeyTile(
+            return FunctionKeyTile(
               keyType: key,
               onTap: () {
                 onKeyTapped(key);
@@ -307,12 +305,7 @@ class _GroupHeader extends StatelessWidget {
   }
 }
 
-
 /// A toggle widget for switching between unit systems (Imperial and Metric).
-///
-/// This widget displays an animated toggle that allows users to switch between
-/// Imperial and Metric unit systems. The toggle includes smooth animations for
-/// the indicator circle and text opacity transitions.
 ///
 /// [currentSystem] is the currently selected unit system.
 /// [onChanged] is called when the user switches the unit system.
@@ -332,22 +325,19 @@ class _UnitSystemToggle extends StatefulWidget {
 class _UnitSystemToggleState extends State<_UnitSystemToggle> {
   late bool _isImperial;
 
-  // Animation durations
-  /// Duration for container and text opacity animations (300ms for smoother transitions)
-  static const Duration _containerAnimationDuration = Duration(milliseconds: 300);
-  
-  /// Duration for indicator circle animation (200ms for snappier feel)
-  static const Duration _indicatorAnimationDuration = Duration(milliseconds: 200);
+  static const Duration _containerAnimationDuration =
+      Duration(milliseconds: 300);
 
-  // Layout constants using design tokens
+  static const Duration _indicatorAnimationDuration =
+      Duration(milliseconds: 200);
+
   static const double _toggleWidth = 90.0;
-  static const double _toggleHeight = CoreSpacing.space8; // 32px
+  static const double _toggleHeight = CoreSpacing.space8;
   static const double _borderWidth = 1.5;
-  static const double _indicatorSize = CoreSpacing.space5; // 20px
-  static const double _indicatorPadding = CoreSpacing.space1; // 4px
-  static const double _textHorizontalPadding = CoreSpacing.space3; // 12px
-  
-  /// Border radius for fully circular toggle (100 is used for perfect circle)
+  static const double _indicatorSize = CoreSpacing.space5;
+  static const double _indicatorPadding = CoreSpacing.space1;
+  static const double _textHorizontalPadding = CoreSpacing.space3;
+
   static const double _circularBorderRadius = 100.0;
 
   @override
@@ -364,7 +354,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     }
   }
 
-  /// Builds the animated container for the toggle background
   Widget _buildToggleContainer(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
     return AnimatedContainer(
@@ -382,7 +371,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     );
   }
 
-  /// Builds the animated text for Imperial label
   Widget _buildImperialText(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
@@ -404,7 +392,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     );
   }
 
-  /// Builds the animated text for Metric label
   Widget _buildMetricText(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
@@ -426,7 +413,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     );
   }
 
-  /// Builds the animated indicator circle
   Widget _buildIndicatorCircle(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
     return AnimatedAlign(

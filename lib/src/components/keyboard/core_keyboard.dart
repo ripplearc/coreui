@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import 'function_key_tile.dart';
+
 /// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
 ///
 /// [currentGroup] is the currently active function group.
@@ -572,12 +574,13 @@ class _FunctionKeyStrip extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: CoreKeyboard._functionKeyTileAspectRatio,
           children: group.keys.map((key) {
-            return _FunctionKeyTile(
+            return FunctionKeyTile(
               keyType: key,
               onTap: () {
                 onKeyTapped(key);
                 key.action?.call();
               },
+              hasPadding: true,
             );
           }).toList(),
         ),
@@ -585,4 +588,3 @@ class _FunctionKeyStrip extends StatelessWidget {
     );
   }
 }
-
