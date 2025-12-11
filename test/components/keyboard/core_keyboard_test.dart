@@ -195,9 +195,9 @@ void main() {
 
       await tester.pumpAndSettle();
       // Check for metric units
-      expect(find.text('Meters'), findsWidgets);
-      expect(find.text('Centimeters'), findsWidgets);
-      expect(find.text('Millimeters'), findsWidgets);
+      expect(find.text('M'), findsWidgets);
+      expect(find.text('CM'), findsWidgets);
+      expect(find.text('MM'), findsWidgets);
     });
 
     testWidgets('handles empty function groups gracefully', (tester) async {

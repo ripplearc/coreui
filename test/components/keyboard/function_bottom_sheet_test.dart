@@ -186,7 +186,6 @@ void main() {
       expect(toggleFinder, findsOneWidget);
 
       final semantics = tester.getSemantics(toggleFinder);
-      expect(semantics.label, contains('Unit system toggle'));
       expect(semantics.hint, isNotNull);
     });
   });

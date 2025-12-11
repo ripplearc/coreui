@@ -64,7 +64,7 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
+    final colors = AppColorsExtension.of(context);
     final screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
         child: ConstrainedBox(
@@ -87,7 +87,7 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
                 width: CoreSpacing.space10,
                 height: CoreSpacing.space1,
                 decoration: BoxDecoration(
-                  color: colors?.lineMid,
+                  color: colors.lineMid,
                   borderRadius: BorderRadius.circular(CoreSpacing.space2),
                 ),
               ),
@@ -108,8 +108,7 @@ class _CoreFunctionBottomSheetState extends State<CoreFunctionBottomSheet> {
                 itemBuilder: (context, index) {
                   final group = _groups[index];
                   final accent = widget.groupAccentColors[group.name] ??
-                      colors?.keyboardUnits ??
-                      CoreKeyboardColors.units;
+                      colors.keyboardUnits;
                   final isSelected = group.name == widget.selectedGroup;
                   return Padding(
                     key: ValueKey(group.name.label),
@@ -200,7 +199,6 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
-    final isImperial = unitSystem == UnitSystem.imperial;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +222,7 @@ class _Header extends StatelessWidget {
         const SizedBox(height: CoreSpacing.space2),
         Text(
           'Measurement System',
-          style: typography.bodyMediumSemiBold.copyWith(
+          style: typography.bodyMediumMedium.copyWith(
             color: colors.textHeadline,
           ),
         ),
@@ -381,9 +379,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
 
-    final greenColor = colors.keyboardUnits ?? CoreKeyboardColors.units;
-    final blueColor = colors.buttonSurface;
-
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -392,14 +387,14 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
         widget.onChanged(_isImperial ? UnitSystem.imperial : UnitSystem.metric);
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 110,
+        duration: const Duration(milliseconds: 300),
+        width: 90,
         height: 32,
         decoration: BoxDecoration(
-          color: _isImperial ? Colors.transparent : blueColor,
+          color: _isImperial ? colors.textInverse : colors.buttonSurface,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: _isImperial ? greenColor : blueColor,
+            color: _isImperial ? colors.iconGreen : colors.buttonSurface,
             width: 1.5,
           ),
         ),
@@ -407,7 +402,7 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
           alignment: Alignment.center,
           children: [
             AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 300),
               opacity: _isImperial ? 1.0 : 0.0,
               child: Align(
                 alignment: Alignment.centerRight,
@@ -415,8 +410,8 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Text(
                     'Imperial',
-                    style: typography.bodySmallSemiBold.copyWith(
-                      color: greenColor,
+                    style: typography.bodySmallRegular.copyWith(
+                      color: colors.iconGreen,
                     ),
                   ),
                 ),
@@ -431,8 +426,8 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
                   padding: const EdgeInsets.only(left: 12.0),
                   child: Text(
                     'Metric',
-                    style: typography.bodySmallSemiBold.copyWith(
-                      color: Colors.white,
+                    style: typography.bodySmallRegular.copyWith(
+                      color: colors.textInverse,
                     ),
                   ),
                 ),
@@ -440,14 +435,15 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
             ),
             AnimatedAlign(
               duration: const Duration(milliseconds: 200),
-              alignment: _isImperial ? Alignment.centerLeft : Alignment.centerRight,
+              alignment:
+                  _isImperial ? Alignment.centerLeft : Alignment.centerRight,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Container(
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: _isImperial ? greenColor : Colors.white,
+                    color: _isImperial ? colors.iconGreen : colors.textInverse,
                     shape: BoxShape.circle,
                   ),
                 ),

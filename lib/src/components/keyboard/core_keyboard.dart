@@ -41,9 +41,6 @@ class CoreKeyboard extends StatelessWidget {
   static const double _column1WidthRatio = 0.22;
   static const double _column2to5WidthRatio = 0.195;
 
-  /// Minimum column width ratio threshold
-  static const double _minColumnWidthRatio = 0.8;
-
   /// Number of keyboard rows
   static const int _keyboardRowCount = 5;
 

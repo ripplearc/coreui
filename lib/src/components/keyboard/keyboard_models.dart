@@ -112,11 +112,11 @@ extension UnitTypeX on UnitType {
       case UnitType.inch:
         return 'Inches';
       case UnitType.meter:
-        return 'Meters';
+        return 'M';
       case UnitType.centimeter:
-        return 'Centimeters';
+        return 'CM';
       case UnitType.millimeter:
-        return 'Millimeters';
+        return 'MM';
       case UnitType.divideSymbol:
         return '/';
     }

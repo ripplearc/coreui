@@ -201,7 +201,7 @@ class CoreControlButton extends StatelessWidget {
         icon: action.icon != null
             ? Icon(
                 action.icon,
-                color: iconColor,
+                color: iconColor!,
                 size: height! * 0.35,
               )
             : null,

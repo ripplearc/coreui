@@ -15,6 +15,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.five,
               onDigitPressed: (digit) => pressedDigit = digit,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -32,6 +34,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.three,
               onDigitPressed: (digit) => pressedDigit = digit,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -53,6 +57,8 @@ void main() {
               digit: DigitType.zero,
               onDigitPressed: (_) {},
               isEmphasized: true,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -240,6 +246,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (_) {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -257,6 +265,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (action) => pressedAction = action,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -276,6 +286,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.delete,
               onControlAction: (_) {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -296,6 +308,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: '='),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -312,6 +326,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Area'),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -329,6 +345,8 @@ void main() {
               resultType: const ResultType(label: 'Calculate'),
               customLabel: 'Calculate',
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -346,6 +364,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () => wasTapped = true,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -365,6 +385,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
