@@ -150,7 +150,7 @@ class CoreUnitButton extends StatelessWidget {
           color: textColor,
           fontSize: unit == UnitType.divideSymbol
               ? effectiveHeight! * _KeyboardButton._largeFontSizeRatio
-              : null,
+              : effectiveHeight! * _KeyboardButton._smallFontSizeRatio,
         ),
       ),
     );
