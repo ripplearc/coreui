@@ -215,14 +215,21 @@ class _Header extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
             Text(
               'Function keys',
               style: typography.titleMediumSemiBold.copyWith(
                 color: colors.textHeadline,
               ),
             ),
+        const SizedBox(height: CoreSpacing.space2),
+        Row(
+          children: [
+             Text(
+          'Measurement System',
+          style: typography.bodyMediumMedium.copyWith(
+            color: colors.textHeadline,
+          ),
+        ),
             const Spacer(),
             if (onUnitSystemChanged != null)
               _UnitSystemToggle(
@@ -231,13 +238,7 @@ class _Header extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: CoreSpacing.space2),
-        Text(
-          'Measurement System',
-          style: typography.bodyMediumMedium.copyWith(
-            color: colors.textHeadline,
-          ),
-        ),
+       
       ],
     );
   }
@@ -329,12 +330,16 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
   static const Duration _indicatorAnimationDuration =
       Duration(milliseconds: 200);
 
-  static const double _toggleWidth = 90.0;
-  static const double _toggleHeight = CoreSpacing.space8;
-  static const double _borderWidth = 1.5;
-  static const double _indicatorSize = CoreSpacing.space5;
+  static const double _toggleWidth = 80.0;
+  static const double _toggleHeight = 24;
+
+  static const double _borderWidth = 1;
+
+  static const double _indicatorSize = 22;
+
   static const double _indicatorPadding = CoreSpacing.space1;
-  static const double _textHorizontalPadding = CoreSpacing.space3;
+  static const double _textHorizontalPadding = CoreSpacing.space2;
+
 
   static const double _circularBorderRadius = 100.0;
 
@@ -348,7 +353,9 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
   void didUpdateWidget(_UnitSystemToggle oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentSystem != widget.currentSystem) {
-      _isImperial = widget.currentSystem == UnitSystem.imperial;
+      setState(() {
+        _isImperial = widget.currentSystem == UnitSystem.imperial;
+      });
     }
   }
 
@@ -439,14 +446,18 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
         });
         widget.onChanged(_isImperial ? UnitSystem.imperial : UnitSystem.metric);
       },
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          _buildToggleContainer(context, _isImperial),
-          _buildImperialText(context, _isImperial),
-          _buildMetricText(context, _isImperial),
-          _buildIndicatorCircle(context, _isImperial),
-        ],
+      child: SizedBox(
+        width: _toggleWidth,
+        height: _toggleHeight,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            _buildToggleContainer(context, _isImperial),
+            _buildImperialText(context, _isImperial),
+            _buildMetricText(context, _isImperial),
+            _buildIndicatorCircle(context, _isImperial),
+          ],
+        ),
       ),
     );
   }
