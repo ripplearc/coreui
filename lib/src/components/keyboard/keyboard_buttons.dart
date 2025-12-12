@@ -431,12 +431,10 @@ class _KeyboardButtonState extends State<_KeyboardButton>
               onTapUp: _handleTapUp,
               onTapCancel: _handleTapCancel,
               child: Center(
-                  child: widget.label!.isNotEmpty
-                      ? Text(
-                          widget.label!,
-                          style: widget.textStyle,
-                        )
-                      : widget.icon),
+                  child: Text(
+                widget.label!,
+                style: widget.textStyle,
+              )),
             ),
           ),
         );
