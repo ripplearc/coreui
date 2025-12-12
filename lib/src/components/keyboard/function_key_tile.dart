@@ -11,7 +11,7 @@ import 'keyboard_models.dart';
 /// [onTap] is called when the key is tapped.
 /// [hasPadding] determines whether to add padding around the key (default: false).
 /// [customHint] is an optional custom semantic hint. If not provided, uses keyType.semanticLabel.
-class FunctionKeyTile extends StatelessWidget {
+class FunctionKeyTile extends StatefulWidget {
   final KeyType keyType;
   final VoidCallback onTap;
   final bool hasPadding;
@@ -26,57 +26,121 @@ class FunctionKeyTile extends StatelessWidget {
   });
 
   @override
+  State<FunctionKeyTile> createState() => _FunctionKeyTileState();
+}
+
+class _FunctionKeyTileState extends State<FunctionKeyTile>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    if (!_isPressed) {
+      setState(() => _isPressed = true);
+      _controller.forward();
+    }
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+      _controller.reverse();
+    }
+  }
+
+  void _handleTapCancel() {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+      _controller.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
 
-    final semanticHint = customHint ??
-        keyType.semanticLabel ??
-        'Tap to use ${keyType.label} function';
+    final semanticHint = widget.customHint ??
+        widget.keyType.semanticLabel ??
+        'Tap to use ${widget.keyType.label} function';
 
-    final semanticLabel = keyType.semanticLabel != null
-        ? '${keyType.label} function key'
-        : 'Function key ${keyType.label}';
+    final semanticLabel = widget.keyType.semanticLabel != null
+        ? '${widget.keyType.label} function key'
+        : 'Function key ${widget.keyType.label}';
 
     return Semantics(
       label: semanticLabel,
       button: true,
       hint: semanticHint,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: hasPadding
-              ? const EdgeInsets.symmetric(
-                  horizontal: CoreSpacing.space1,
-                  vertical: CoreSpacing.space1,
-                )
-              : null,
-          decoration: BoxDecoration(
-            color: colors.backgroundGrayMid,
-            borderRadius: BorderRadius.circular(CoreSpacing.space2),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (keyType.icon != null) ...[
-                  Icon(
-                    keyType.icon,
-                    color: colors.textHeadline,
-                    size: CoreSpacing.space4,
-                  ),
-                  const SizedBox(width: CoreSpacing.space1),
-                ],
-                Text(
-                  keyType.label,
-                  style: typography.bodyMediumRegular.copyWith(
-                    color: colors.textHeadline,
-                  ),
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          final currentBorderRadius = BorderRadius.lerp(
+            BorderRadius.circular(CoreSpacing.space2),
+            BorderRadius.circular(100.0),
+            _animation.value,
+          )!;
+
+          return GestureDetector(
+            onTap: widget.onTap,
+            onTapDown: _handleTapDown,
+            onTapUp: _handleTapUp,
+            onTapCancel: _handleTapCancel,
+            child: Container(
+              padding: widget.hasPadding
+                  ? const EdgeInsets.symmetric(
+                      horizontal: CoreSpacing.space1,
+                      vertical: CoreSpacing.space1,
+                    )
+                  : null,
+              decoration: BoxDecoration(
+                color: colors.backgroundGrayMid,
+                borderRadius: currentBorderRadius,
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.keyType.icon != null) ...[
+                      Icon(
+                        widget.keyType.icon,
+                        color: colors.textHeadline,
+                        size: CoreSpacing.space4,
+                      ),
+                      const SizedBox(width: CoreSpacing.space1),
+                    ],
+                    Text(
+                      widget.keyType.label,
+                      style: typography.bodyMediumRegular.copyWith(
+                        color: colors.textHeadline,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

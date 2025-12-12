@@ -88,6 +88,9 @@ class CoreTheme {
       keyboardActions: CoreKeyboardColors.actions,
       keyboardMain: CoreKeyboardColors.main,
       tabsHighlight: CoreBorderColors.tabsHighlight,
+
+      // Transparent
+      transparent: CoreKeyboardColors.transparent,
     );
   }
 
