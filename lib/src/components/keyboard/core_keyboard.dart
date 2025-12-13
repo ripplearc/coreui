@@ -19,30 +19,7 @@ import 'function_key_tile.dart';
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [customResultLabel] is an optional custom label for the result button.
-class CoreKeyboard extends StatelessWidget {
-  // Layout constants
-  static const double _keyboardHeightRatio = 0.6;
-
-  static const double _smallScreenThreshold = 500.0;
-
-  static const double _estimatedHeaderHeight = CoreSpacing.space8;
-
-  static const double _estimatedFunctionStripHeight = CoreSpacing.space10;
-
-  static const double _smallScreenButtonSpacingRatio = 0.012;
-
-  static const double _normalScreenButtonSpacingRatio = 0.015;
-
-  static const double _column1WidthRatio = 0.22;
-  static const double _column2to5WidthRatio = 0.195;
-
-  static const int _keyboardRowCount = 5;
-
-  static const int _keyboardRowGaps = 4;
-
-  static final double _dragHandleWidth = CoreSpacing.space12;
-
-  static const double _functionKeyTileAspectRatio = 2.4;
+class CoreKeyboard extends StatefulWidget {
   const CoreKeyboard({
     super.key,
     required this.currentGroup,
@@ -77,17 +54,78 @@ class CoreKeyboard extends StatelessWidget {
   final String? customResultLabel;
 
   @override
+  State<CoreKeyboard> createState() => _CoreKeyboardState();
+}
+
+class _CoreKeyboardState extends State<CoreKeyboard> {
+  // Layout constants
+  static const double _keyboardHeightRatio = 0.6;
+
+  static const double _smallScreenThreshold = 500.0;
+
+  static const double _estimatedHeaderHeight = CoreSpacing.space8;
+
+  static const double _estimatedFunctionStripHeight = CoreSpacing.space10;
+
+  static const double _smallScreenButtonSpacingRatio = 0.012;
+
+  static const double _normalScreenButtonSpacingRatio = 0.015;
+
+  static const double _column1WidthRatio = 0.22;
+  static const double _column2to5WidthRatio = 0.195;
+
+  static const int _keyboardRowCount = 5;
+
+  static const int _keyboardRowGaps = 4;
+
+  static final double _dragHandleWidth = CoreSpacing.space12;
+
+  static const double _functionKeyTileAspectRatio = 2.4;
+  // const CoreKeyboard({
+  //   super.key,
+  //   required this.currentGroup,
+  //   required this.allGroups,
+  //   required this.onDigitPressed,
+  //   required this.onUnitSelected,
+  //   required this.onOperatorPressed,
+  //   required this.onControlAction,
+  //   required this.onResultTapped,
+  //   required this.onGroupSelected,
+  //   required this.onKeyTapped,
+  //   required this.onUnitSystemChanged,
+  //   this.result = const ResultType(label: '='),
+  //   this.currentUnitSystem = UnitSystem.imperial,
+  //   this.groupAccentColors = const {},
+  //   this.customResultLabel,
+  // });
+
+  // final GroupNameType currentGroup;
+  // final List<FunctionGroup> allGroups;
+  // final ValueChanged<DigitType> onDigitPressed;
+  // final ValueChanged<UnitType> onUnitSelected;
+  // final ValueChanged<OperatorType> onOperatorPressed;
+  // final ValueChanged<ControlAction> onControlAction;
+  // final VoidCallback onResultTapped;
+  // final ValueChanged<GroupNameType> onGroupSelected;
+  // final ValueChanged<KeyType> onKeyTapped;
+  // final ResultType result;
+  // final UnitSystem currentUnitSystem;
+  // final ValueChanged<UnitSystem> onUnitSystemChanged;
+  // final Map<GroupNameType, Color> groupAccentColors;
+  // final String? customResultLabel;
+
+  @override
   Widget build(BuildContext context) {
-    final group = allGroups.firstWhere(
-      (g) => g.name == currentGroup,
-      orElse: () => allGroups.isNotEmpty
-          ? allGroups.first
+    final group = widget.allGroups.firstWhere(
+      (g) => g.name == widget.currentGroup,
+      orElse: () => widget.allGroups.isNotEmpty
+          ? widget.allGroups.first
           : const FunctionGroup(
               name: GroupNameType(label: "Basic Geometry"), keys: []),
     );
     final colors = AppColorsExtension.of(context);
-    final accent =
-        groupAccentColors[currentGroup] ?? colors.backgroundBlueLight;
+    final accent = widget.groupAccentColors[widget.currentGroup] ??
+        colors.backgroundBlueLight;
     final screenHeight = MediaQuery.of(context).size.height;
     final keyboardHeight = screenHeight * _keyboardHeightRatio;
 
@@ -161,7 +199,7 @@ class CoreKeyboard extends StatelessWidget {
                 SizedBox(height: headerSpacing),
                 _FunctionKeyStrip(
                   group: group,
-                  onKeyTapped: onKeyTapped,
+                  onKeyTapped: widget.onKeyTapped,
                   accentColor: accent,
                   onViewAll: () => _showFunctionsSheet(context),
                 ),
@@ -194,7 +232,7 @@ class CoreKeyboard extends StatelessWidget {
       UnitType.centimeter,
       UnitType.millimeter
     ];
-    final activeUnits = currentUnitSystem == UnitSystem.imperial
+    final activeUnits = widget.currentUnitSystem == UnitSystem.imperial
         ? imperialUnitsOrder
         : metricUnitsOrder;
 
@@ -214,31 +252,31 @@ class CoreKeyboard extends StatelessWidget {
             children: [
               CoreControlButton(
                 action: ControlAction.clearAll,
-                onControlAction: onControlAction,
+                onControlAction: widget.onControlAction,
                 width: column1Width,
                 height: buttonHeight,
               ),
               CoreUnitButton(
                 unit: UnitType.divideSymbol,
-                onUnitSelected: onUnitSelected,
+                onUnitSelected: widget.onUnitSelected,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.percent,
-                onOperatorPressed: onOperatorPressed,
+                onOperatorPressed: widget.onOperatorPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.divide,
-                onOperatorPressed: onOperatorPressed,
+                onOperatorPressed: widget.onOperatorPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreControlButton(
                 action: ControlAction.delete,
-                onControlAction: onControlAction,
+                onControlAction: widget.onControlAction,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
@@ -252,31 +290,31 @@ class CoreKeyboard extends StatelessWidget {
             children: [
               CoreUnitButton(
                 unit: activeUnits[0],
-                onUnitSelected: onUnitSelected,
+                onUnitSelected: widget.onUnitSelected,
                 width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.seven,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.eight,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.nine,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.multiply,
-                onOperatorPressed: onOperatorPressed,
+                onOperatorPressed: widget.onOperatorPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
@@ -290,31 +328,31 @@ class CoreKeyboard extends StatelessWidget {
             children: [
               CoreUnitButton(
                 unit: activeUnits[1],
-                onUnitSelected: onUnitSelected,
+                onUnitSelected: widget.onUnitSelected,
                 width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.four,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.five,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.six,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.subtract,
-                onOperatorPressed: onOperatorPressed,
+                onOperatorPressed: widget.onOperatorPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
@@ -328,31 +366,31 @@ class CoreKeyboard extends StatelessWidget {
             children: [
               CoreUnitButton(
                 unit: activeUnits[2],
-                onUnitSelected: onUnitSelected,
+                onUnitSelected: widget.onUnitSelected,
                 width: column1Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.one,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.two,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreDigitInput(
                 digit: DigitType.three,
-                onDigitPressed: onDigitPressed,
+                onDigitPressed: widget.onDigitPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
               CoreOperatorButton(
                 operatorType: OperatorType.add,
-                onOperatorPressed: onOperatorPressed,
+                onOperatorPressed: widget.onOperatorPressed,
                 width: column2to5Width,
                 height: buttonHeight,
               ),
@@ -403,29 +441,29 @@ class CoreKeyboard extends StatelessWidget {
       children: [
         CoreControlButton(
           action: ControlAction.moreOptions,
-          onControlAction: onControlAction,
+          onControlAction: widget.onControlAction,
           width: column1Width,
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreDigitInput(
           digit: DigitType.zero,
-          onDigitPressed: onDigitPressed,
+          onDigitPressed: widget.onDigitPressed,
           width: column2to5Width,
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreDigitInput(
           digit: DigitType.decimal,
-          onDigitPressed: onDigitPressed,
+          onDigitPressed: widget.onDigitPressed,
           width: column2to5Width,
           height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreResultButton(
-          resultType: result,
-          customLabel: customResultLabel,
-          onTap: onResultTapped,
+          resultType: widget.result,
+          customLabel: widget.customResultLabel,
+          onTap: widget.onResultTapped,
           width: resultButtonWidth,
           height: buttonHeight,
         ),
@@ -445,20 +483,20 @@ class CoreKeyboard extends StatelessWidget {
       ),
       builder: (context) {
         return CoreFunctionKeyBottomSheet(
-          groups: allGroups,
-          groupAccentColors: groupAccentColors,
-          selectedGroup: currentGroup,
+          groups: widget.allGroups,
+          groupAccentColors: widget.groupAccentColors,
+          selectedGroup: widget.currentGroup,
           onGroupSelected: (groupName) {
-            onGroupSelected(groupName);
+            widget.onGroupSelected(groupName);
             Navigator.of(context).pop();
           },
           onKeyTapped: (key) {
-            onKeyTapped(key);
+            widget.onKeyTapped(key);
             Navigator.of(context).pop();
           },
-          currentUnitSystem: currentUnitSystem,
+          currentUnitSystem: widget.currentUnitSystem,
           onUnitSystemChanged: (system) {
-            onUnitSystemChanged(system);
+            widget.onUnitSystemChanged(system);
           },
         );
       },
@@ -547,7 +585,7 @@ class _FunctionKeyStrip extends StatelessWidget {
           mainAxisSpacing: CoreSpacing.space1,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: CoreKeyboard._functionKeyTileAspectRatio,
+          childAspectRatio: _CoreKeyboardState._functionKeyTileAspectRatio,
           children: group.keys.map((key) {
             return FunctionKeyTile(
               keyType: key,

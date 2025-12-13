@@ -9,8 +9,9 @@ void main() {
       FunctionGroup(
         name: const GroupNameType(label: "Basic Geometry"),
         keys: [
-          KeyType(id: 'area', label: 'Area', action: () {}),
-          KeyType(id: 'perimeter', label: 'Perimeter', action: () {}),
+          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+          KeyType(
+              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
         ],
       ),
     ];

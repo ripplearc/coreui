@@ -20,28 +20,28 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     FunctionGroup(
       name: GroupNameType(label: "Basic Geometry"),
       keys: [
-        KeyType(id: 'width', label: 'Width'),
-        KeyType(id: 'length', label: 'Length'),
-        KeyType(id: 'height', label: 'Height'),
-        KeyType(id: 'pitch', label: 'Pitch'),
-        KeyType(id: 'circle', label: 'Circle'),
+        KeyType(groupName: 'Basic Geometry', label: 'Width'),
+        KeyType(groupName: 'Basic Geometry', label: 'Length'),
+        KeyType(groupName: 'Basic Geometry', label: 'Height'),
+        KeyType(groupName: 'Basic Geometry', label: 'Pitch'),
+        KeyType(groupName: 'Basic Geometry', label: 'Circle'),
       ],
     ),
     FunctionGroup(
       name: GroupNameType(label: "Materials"),
       keys: [
-        KeyType(id: 'lbs', label: 'Lbs'),
-        KeyType(id: 'kg', label: 'Kg'),
-        KeyType(id: 'tons', label: 'Tons'),
-        KeyType(id: 'drywall', label: 'Drywall'),
+        KeyType(groupName: 'Materials', label: 'Lbs'),
+        KeyType(groupName: 'Materials', label: 'Kg'),
+        KeyType(groupName: 'Materials', label: 'Tons'),
+        KeyType(groupName: 'Materials', label: 'Drywall'),
       ],
     ),
     FunctionGroup(
       name: GroupNameType(label: "Trigonometry"),
       keys: [
-        KeyType(id: 'sin', label: 'SIN'),
-        KeyType(id: 'cos', label: 'COS'),
-        KeyType(id: 'tan', label: 'TAN'),
+        KeyType(groupName: 'Trigonometry', label: 'SIN'),
+        KeyType(groupName: 'Trigonometry', label: 'COS'),
+        KeyType(groupName: 'Trigonometry', label: 'TAN'),
       ],
     ),
   ];
@@ -73,7 +73,19 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     _log('Unit system switched to: ${system.label}');
   }
 
-  void _handleKey(KeyType key) => _log('Function key tapped: ${key.label}');
+  void _handleKey(KeyType key) {
+    _log('Function key tapped: ${key.label}');
+    FunctionGroup? matched;
+    for (final g in _groups) {
+      if (g.name.label == key.groupName) {
+        matched = g;
+        break;
+      }
+    }
+    setState(() {
+      _currentGroup = matched?.name ?? GroupNameType(label: key.groupName);
+    });
+  }
 
   Map<GroupNameType, Color> _groupAccentColors(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorsExtension>();

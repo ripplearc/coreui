@@ -203,8 +203,8 @@ extension UnitSystemX on UnitSystem {
 /// [semanticLabel] is an optional label for accessibility purposes.
 @immutable
 class KeyType {
-  /// Unique identifier for the key.
-  final String id;
+  /// Unique identifier on which group the key exists for the key.
+  final String groupName;
 
   /// Text label displayed on the key.
   final String label;
@@ -220,7 +220,7 @@ class KeyType {
 
   /// Creates a [KeyType] instance.
   const KeyType({
-    required this.id,
+    required this.groupName,
     required this.label,
     this.icon,
     this.action,
