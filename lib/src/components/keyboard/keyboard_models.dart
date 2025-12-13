@@ -4,7 +4,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
 /// - [decimal]: Decimal point symbol (.)
-/// - [divideSymbol]: Division symbol (/)
 enum DigitType {
   zero,
   one,
@@ -90,6 +89,7 @@ extension OperatorTypeX on OperatorType {
 /// - [meter]: Meter unit
 /// - [centimeter]: Centimeter unit
 /// - [millimeter]: Millimeter unit
+/// - [divideSymbol]: Division symbol (/) for compound units
 enum UnitType {
   yards,
   feet,
@@ -112,11 +112,11 @@ extension UnitTypeX on UnitType {
       case UnitType.inch:
         return 'Inches';
       case UnitType.meter:
-        return 'Meters';
+        return 'M';
       case UnitType.centimeter:
-        return 'Centimeters';
+        return 'CM';
       case UnitType.millimeter:
-        return 'Millimeters';
+        return 'MM';
       case UnitType.divideSymbol:
         return '/';
     }
@@ -203,8 +203,8 @@ extension UnitSystemX on UnitSystem {
 /// [semanticLabel] is an optional label for accessibility purposes.
 @immutable
 class KeyType {
-  /// Unique identifier for the key.
-  final String id;
+  /// Unique identifier on which group the key exists for the key.
+  final String groupName;
 
   /// Text label displayed on the key.
   final String label;
@@ -220,7 +220,7 @@ class KeyType {
 
   /// Creates a [KeyType] instance.
   const KeyType({
-    required this.id,
+    required this.groupName,
     required this.label,
     this.icon,
     this.action,

@@ -9,8 +9,9 @@ void main() {
       FunctionGroup(
         name: const GroupNameType(label: "Basic Geometry"),
         keys: [
-          KeyType(id: 'area', label: 'Area', action: () {}),
-          KeyType(id: 'perimeter', label: 'Perimeter', action: () {}),
+          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+          KeyType(
+              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
         ],
       ),
     ];
@@ -195,9 +196,9 @@ void main() {
 
       await tester.pumpAndSettle();
       // Check for metric units
-      expect(find.text('Meters'), findsWidgets);
-      expect(find.text('Centimeters'), findsWidgets);
-      expect(find.text('Millimeters'), findsWidgets);
+      expect(find.text('M'), findsWidgets);
+      expect(find.text('CM'), findsWidgets);
+      expect(find.text('MM'), findsWidgets);
     });
 
     testWidgets('handles empty function groups gracefully', (tester) async {

@@ -16,6 +16,8 @@ class CoreDigitInput extends StatelessWidget {
   final ValueChanged<DigitType> onDigitPressed;
   final bool isEmphasized;
   final double? size;
+  final double? width;
+  final double? height;
 
   const CoreDigitInput({
     super.key,
@@ -23,6 +25,8 @@ class CoreDigitInput extends StatelessWidget {
     required this.onDigitPressed,
     this.isEmphasized = false,
     this.size,
+    this.width,
+    this.height,
   });
 
   @override
@@ -30,6 +34,8 @@ class CoreDigitInput extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
+    final effectiveWidth = width ?? effectiveSize;
+    final effectiveHeight = height ?? effectiveSize;
     final backgroundColor =
         isEmphasized ? colors.keyboardCalculate : colors.keyboardNumbers;
     final textColor = colors.textHeadline;
@@ -43,9 +49,13 @@ class CoreDigitInput extends StatelessWidget {
         onPressed: () => onDigitPressed(digit),
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
+          fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
         ),
-        width: effectiveSize,
-        height: effectiveSize,
+        width: effectiveWidth,
+        height: effectiveHeight,
+        borderRadius:
+            BorderRadius.circular(_KeyboardButton._circularBorderRadius),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
       ),
     );
   }
@@ -60,12 +70,16 @@ class CoreOperatorButton extends StatelessWidget {
   final OperatorType operatorType;
   final ValueChanged<OperatorType> onOperatorPressed;
   final double? size;
+  final double? width;
+  final double? height;
 
   const CoreOperatorButton({
     super.key,
     required this.operatorType,
     required this.onOperatorPressed,
     this.size,
+    this.width,
+    this.height,
   });
 
   @override
@@ -73,6 +87,8 @@ class CoreOperatorButton extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
+    final effectiveWidth = width ?? effectiveSize;
+    final effectiveHeight = height ?? effectiveSize;
     final backgroundColor = colors.keyboardCalculate;
     final textColor = colors.textHeadline;
     return Semantics(
@@ -84,9 +100,13 @@ class CoreOperatorButton extends StatelessWidget {
         onPressed: () => onOperatorPressed(operatorType),
         textStyle: typography.titleLargeMedium.copyWith(
           color: textColor,
+          fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
         ),
-        width: effectiveSize,
-        height: effectiveSize,
+        width: effectiveWidth,
+        height: effectiveHeight,
+        borderRadius:
+            BorderRadius.circular(_KeyboardButton._circularBorderRadius),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
       ),
     );
   }
@@ -129,9 +149,17 @@ class CoreUnitButton extends StatelessWidget {
         onPressed: () => onUnitSelected(unit),
         width: width,
         height: effectiveHeight,
-        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+        borderRadius: unit == UnitType.divideSymbol
+            ? BorderRadius.circular(_KeyboardButton._circularBorderRadius)
+            : BorderRadius.circular(CoreSpacing.space6),
+        pressedBorderRadius: unit == UnitType.divideSymbol
+            ? BorderRadius.circular(CoreSpacing.space3)
+            : BorderRadius.circular(_KeyboardButton._circularBorderRadius),
         textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
+          fontSize: unit == UnitType.divideSymbol
+              ? effectiveHeight! * _KeyboardButton._largeFontSizeRatio
+              : effectiveHeight! * _KeyboardButton._smallFontSizeRatio,
         ),
       ),
     );
@@ -170,7 +198,8 @@ class CoreControlButton extends StatelessWidget {
     final isMoreAction = action == ControlAction.moreOptions;
     final iconColor =
         isMoreAction ? colors.keyboardActions : colors.textInverse;
-    final textColor = colors.textInverse;
+    final textColor =
+        isMoreAction ? colors.keyboardActions : colors.textInverse;
     final borderColor = isMoreAction ? colors.keyboardActions : null;
 
     return Semantics(
@@ -183,16 +212,21 @@ class CoreControlButton extends StatelessWidget {
             ? Icon(
                 action.icon,
                 color: iconColor,
+                size: height! * _KeyboardButton._largeFontSizeRatio,
               )
             : null,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: typography.bodyLargeMedium.copyWith(
+        textStyle: typography.bodySmallRegular.copyWith(
           color: textColor,
+          fontSize: height! * _KeyboardButton._smallFontSizeRatio,
         ),
         width: width,
         height: height,
+        borderRadius:
+            BorderRadius.circular(_KeyboardButton._circularBorderRadius),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
       ),
     );
   }
@@ -256,16 +290,19 @@ class CoreResultButton extends StatelessWidget {
         onPressed: onTap,
         height: effectiveHeight,
         width: width,
-        borderRadius: BorderRadius.circular(CoreSpacing.space8),
+        borderRadius:
+            BorderRadius.circular(_KeyboardButton._circularBorderRadius),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
+          fontSize: effectiveHeight! * _KeyboardButton._largeFontSizeRatio,
         ),
       ),
     );
   }
 }
 
-class _KeyboardButton extends StatelessWidget {
+class _KeyboardButton extends StatefulWidget {
   final String? label;
   final Widget? icon;
   final Color? borderColor;
@@ -275,9 +312,16 @@ class _KeyboardButton extends StatelessWidget {
   final double? width;
   final double? height;
   final BorderRadius borderRadius;
+  final BorderRadius? pressedBorderRadius;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
+
+  static const double _largeFontSizeRatio = 0.35;
+
+  static const double _smallFontSizeRatio = 0.25;
+
+  static const double _circularBorderRadius = 100.0;
 
   const _KeyboardButton({
     this.label,
@@ -289,42 +333,112 @@ class _KeyboardButton extends StatelessWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
+    this.pressedBorderRadius,
   }) : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
-  Widget build(BuildContext context) {
-    final effectiveWidth = width ?? _defaultSize;
-    final effectiveHeight = height;
-    final effectiveBackgroundColor = backgroundColor ?? Colors.transparent;
-    final effectiveBorderColor = borderColor ?? effectiveBackgroundColor;
+  State<_KeyboardButton> createState() => _KeyboardButtonState();
+}
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: effectiveBorderColor,
-          width: _defaultBorderWidth,
-        ),
-        borderRadius: borderRadius,
-        color: effectiveBackgroundColor,
-      ),
-      width: effectiveWidth,
-      height: effectiveHeight,
-      child: Material(
-        color: effectiveBackgroundColor,
-        borderRadius: borderRadius,
-        child: InkWell(
-          borderRadius: borderRadius,
-          onTap: onPressed,
-          child: Center(
-              child: label!.isNotEmpty
-                  ? Text(
-                      label!,
-                      style: textStyle,
-                    )
-                  : icon),
-        ),
-      ),
+class _KeyboardButtonState extends State<_KeyboardButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    if (!_isPressed) {
+      setState(() => _isPressed = true);
+      _controller.forward();
+    }
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+      _controller.reverse();
+    }
+  }
+
+  void _handleTapCancel() {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+      _controller.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final effectiveWidth = widget.width ?? _KeyboardButton._defaultSize;
+    final effectiveHeight = widget.height;
+    final effectiveBackgroundColor =
+        widget.backgroundColor ?? colors.transparent;
+    final effectiveBorderColor = widget.borderColor ?? effectiveBackgroundColor;
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final currentBorderRadius = BorderRadius.lerp(
+          widget.borderRadius,
+          widget.pressedBorderRadius ?? widget.borderRadius,
+          _animation.value,
+        )!;
+
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: effectiveBorderColor,
+              width: _KeyboardButton._defaultBorderWidth,
+            ),
+            borderRadius: currentBorderRadius,
+            color: effectiveBackgroundColor,
+          ),
+          width: effectiveWidth,
+          height: effectiveHeight,
+          child: Material(
+            color: colors.transparent,
+            borderRadius: currentBorderRadius,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              borderRadius: currentBorderRadius,
+              splashColor: colors.transparent,
+              highlightColor: colors.transparent,
+              hoverColor: colors.transparent,
+              focusColor: colors.transparent,
+              onTap: widget.onPressed,
+              onTapDown: _handleTapDown,
+              onTapUp: _handleTapUp,
+              onTapCancel: _handleTapCancel,
+              child: Center(
+                  child: Text(
+                widget.label!,
+                style: widget.textStyle,
+              )),
+            ),
+          ),
+        );
+      },
     );
   }
 }

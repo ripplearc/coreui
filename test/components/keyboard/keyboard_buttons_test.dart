@@ -4,7 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../load_fonts.dart';
+
 void main() {
+  setUpAll(() async {
+    await loadFonts();
+  });
+
+  // Helper to pump widget with theme for golden tests
+  Future<void> pumpButton(WidgetTester tester, Widget button) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light(),
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: CoreTheme.light().scaffoldBackgroundColor,
+          body: Center(
+            child: button,
+          ),
+        ),
+      ),
+    );
+  }
+
   group('CoreDigitInput', () {
     testWidgets('renders with correct label', (tester) async {
       DigitType? pressedDigit;
@@ -15,6 +37,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.five,
               onDigitPressed: (digit) => pressedDigit = digit,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -32,6 +56,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.three,
               onDigitPressed: (digit) => pressedDigit = digit,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -53,6 +79,8 @@ void main() {
               digit: DigitType.zero,
               onDigitPressed: (_) {},
               isEmphasized: true,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -180,6 +208,8 @@ void main() {
             body: CoreUnitButton(
               unit: UnitType.feet,
               onUnitSelected: (_) {},
+              height: 60.0,
+              width: 80.0,
             ),
           ),
         ),
@@ -197,6 +227,8 @@ void main() {
             body: CoreUnitButton(
               unit: UnitType.meter,
               onUnitSelected: (unit) => selectedUnit = unit,
+              height: 60.0,
+              width: 80.0,
             ),
           ),
         ),
@@ -240,6 +272,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (_) {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -257,6 +291,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (action) => pressedAction = action,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -276,6 +312,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.delete,
               onControlAction: (_) {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -296,6 +334,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: '='),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -312,6 +352,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Area'),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -329,6 +371,8 @@ void main() {
               resultType: const ResultType(label: 'Calculate'),
               customLabel: 'Calculate',
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -346,6 +390,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () => wasTapped = true,
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -365,6 +411,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () {},
+              height: 60.0,
+              width: 60.0,
             ),
           ),
         ),
@@ -373,6 +421,268 @@ void main() {
       final semantics = tester.getSemantics(find.byType(CoreResultButton));
       expect(semantics.label, contains('VOLUME button'));
       expect(semantics.hint, contains('Calculates and displays the result'));
+    });
+  });
+
+  group('Keyboard Buttons Golden Tests', () {
+    testWidgets('CoreDigitInput (Normal) pressed vs normal', (tester) async {
+      final button = CoreDigitInput(
+        digit: DigitType.five,
+        onDigitPressed: (_) {},
+        height: 60,
+        width: 60,
+        size: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreDigitInput),
+        matchesGoldenFile('goldens/digit_input_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreDigitInput)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreDigitInput),
+        matchesGoldenFile('goldens/digit_input_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreDigitInput (Emphasized) pressed vs normal',
+        (tester) async {
+      final button = CoreDigitInput(
+        digit: DigitType.zero,
+        onDigitPressed: (_) {},
+        isEmphasized: true,
+        height: 60,
+        width: 60,
+        size: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreDigitInput),
+        matchesGoldenFile('goldens/digit_input_emphasized_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreDigitInput)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreDigitInput),
+        matchesGoldenFile('goldens/digit_input_emphasized_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreOperatorButton pressed vs normal', (tester) async {
+      final button = CoreOperatorButton(
+        operatorType: OperatorType.add,
+        onOperatorPressed: (_) {},
+        height: 60,
+        width: 60,
+        size: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreOperatorButton),
+        matchesGoldenFile('goldens/operator_button_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreOperatorButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreOperatorButton),
+        matchesGoldenFile('goldens/operator_button_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreUnitButton (Standard) pressed vs normal', (tester) async {
+      final button = CoreUnitButton(
+        unit: UnitType.feet,
+        onUnitSelected: (_) {},
+        height: 60,
+        width: 80,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreUnitButton),
+        matchesGoldenFile('goldens/unit_button_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreUnitButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreUnitButton),
+        matchesGoldenFile('goldens/unit_button_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreUnitButton (Divide Symbol) pressed vs normal',
+        (tester) async {
+      final button = CoreUnitButton(
+        unit: UnitType.divideSymbol,
+        onUnitSelected: (_) {},
+        height: 60,
+        width: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreUnitButton),
+        matchesGoldenFile('goldens/unit_button_divide_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreUnitButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreUnitButton),
+        matchesGoldenFile('goldens/unit_button_divide_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreControlButton (Delete) pressed vs normal', (tester) async {
+      final button = CoreControlButton(
+        action: ControlAction.delete,
+        onControlAction: (_) {},
+        height: 60,
+        width: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_delete_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreControlButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_delete_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreControlButton (Clear All) pressed vs normal',
+        (tester) async {
+      final button = CoreControlButton(
+        action: ControlAction.clearAll,
+        onControlAction: (_) {},
+        height: 60,
+        width: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_clear_all_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreControlButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_clear_all_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreControlButton (More Options) pressed vs normal',
+        (tester) async {
+      final button = CoreControlButton(
+        action: ControlAction.moreOptions,
+        onControlAction: (_) {},
+        height: 60,
+        width: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_more_options_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreControlButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreControlButton),
+        matchesGoldenFile('goldens/control_button_more_options_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('CoreResultButton pressed vs normal', (tester) async {
+      final button = CoreResultButton(
+        resultType: const ResultType(label: '='),
+        onTap: () {},
+        height: 60,
+        width: 60,
+      );
+
+      await pumpButton(tester, button);
+
+      await expectLater(
+        find.byType(CoreResultButton),
+        matchesGoldenFile('goldens/result_button_normal.png'),
+      );
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreResultButton)));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(CoreResultButton),
+        matchesGoldenFile('goldens/result_button_pressed.png'),
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
     });
   });
 }

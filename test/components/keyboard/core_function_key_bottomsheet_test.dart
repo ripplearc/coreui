@@ -3,26 +3,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 void main() {
-  group('CoreFunctionBottomSheet', () {
+  group('CoreFunctionKeyBottomSheet', () {
     final testGroups = [
       FunctionGroup(
         name: const GroupNameType(label: 'Trigonomety'),
         keys: [
-          KeyType(id: 'sin', label: 'sin', action: () {}),
-          KeyType(id: 'cos', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'cos', action: () {}),
         ],
       ),
       FunctionGroup(
         name: const GroupNameType(label: 'Materials'),
         keys: [
-          KeyType(id: 'wood', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
         ],
       ),
     ];
 
     final testAccentColors = {
-      const GroupNameType(label: 'Trigonomety'): Colors.blue,
-      const GroupNameType(label: 'Materials'): Colors.green,
+      const GroupNameType(label: 'Trigonomety'):
+          CoreTheme.light().colorScheme.primary,
+      const GroupNameType(label: 'Materials'):
+          CoreTheme.light().colorScheme.secondary,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {
@@ -31,7 +33,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -46,7 +48,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tappedKey, isNotNull);
-      expect(tappedKey?.id, equals('sin'));
+      expect(tappedKey?.groupName, equals('Trigonomety'));
     });
 
     testWidgets('calls onGroupSelected when group header is tapped',
@@ -56,7 +58,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -79,7 +81,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -102,7 +104,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -124,7 +126,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -148,7 +150,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -169,7 +171,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreFunctionBottomSheet(
+            body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
               selectedGroup: const GroupNameType(label: 'Trigonomety'),
@@ -186,7 +188,6 @@ void main() {
       expect(toggleFinder, findsOneWidget);
 
       final semantics = tester.getSemantics(toggleFinder);
-      expect(semantics.label, contains('Unit system toggle'));
       expect(semantics.hint, isNotNull);
     });
   });

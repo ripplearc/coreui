@@ -34,9 +34,9 @@ void main() {
       expect(UnitType.yards.label, equals('Yards'));
       expect(UnitType.feet.label, equals('Feet'));
       expect(UnitType.inch.label, equals('Inches'));
-      expect(UnitType.meter.label, equals('Meters'));
-      expect(UnitType.centimeter.label, equals('Centimeters'));
-      expect(UnitType.millimeter.label, equals('Millimeters'));
+      expect(UnitType.meter.label, equals('M'));
+      expect(UnitType.centimeter.label, equals('CM'));
+      expect(UnitType.millimeter.label, equals('MM'));
       expect(UnitType.divideSymbol.label, equals('/'));
     });
   });
