@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-// Base color palette
+/// Base color palette containing all core color definitions.
 abstract class _CoreColorPalette {
   // Brand Colour
   static const Color brandOrient = Color(0xFF015B7C);
