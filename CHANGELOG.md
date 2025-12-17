@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1] - Add transparent utility color
+
+### ✨ Features
+
+- **Design Tokens**
+  - Added **transparent utility color** to the core color palette and **AppColorsExtension** for consistent use across apps.
+
 ## [0.1.0] - Initial Release
 
 ### ✨ Features
