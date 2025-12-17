@@ -83,6 +83,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color keyboardActions;
   final Color keyboardMain;
 
+  // Utility Colors
+  final Color transparent;
+
   const AppColorsExtension({
     required this.textHeadline,
     required this.textDark,
@@ -148,6 +151,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.keyboardFunctions,
     required this.keyboardActions,
     required this.keyboardMain,
+    required this.transparent,
   });
 
   @override
@@ -216,6 +220,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? keyboardFunctions,
     Color? keyboardActions,
     Color? keyboardMain,
+    Color? transparent,
   }) {
     return AppColorsExtension(
       textHeadline: textHeadline ?? this.textHeadline,
@@ -283,6 +288,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       keyboardFunctions: keyboardFunctions ?? this.keyboardFunctions,
       keyboardActions: keyboardActions ?? this.keyboardActions,
       keyboardMain: keyboardMain ?? this.keyboardMain,
+      transparent: transparent ?? this.transparent,
     );
   }
 
@@ -371,6 +377,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           Color.lerp(keyboardFunctions, other.keyboardFunctions, t)!,
       keyboardActions: Color.lerp(keyboardActions, other.keyboardActions, t)!,
       keyboardMain: Color.lerp(keyboardMain, other.keyboardMain, t)!,
+      transparent: Color.lerp(transparent, other.transparent, t)!,
     );
   }
 }
