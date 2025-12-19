@@ -9,6 +9,8 @@ void main() {
     await loadFonts();
   });
 
+  final typography = TypographyExtension.create();
+
   testWidgets(
     'CoreButton Small - Narrow View - With Pressed State (All Variants)',
     (tester) async {
@@ -22,7 +24,7 @@ void main() {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: typography.bodySmallRegular.copyWith(
                 fontSize: 12,
                 color: Colors.black,
               ),
@@ -174,6 +176,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(
+            extensions: [typography],
+          ),
           home: Scaffold(
             body: Center(
               child: SizedBox(width: 250, height: 800, child: widget),
