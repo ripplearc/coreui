@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/keyboard_models.dart';
-import 'package:ripplearc_coreui/src/theme/color_tokens.dart';
-import 'package:ripplearc_coreui/src/theme/spacing.dart';
-import 'package:ripplearc_coreui/src/theme/theme_extensions.dart';
 
 class KeyboardShowcaseScreen extends StatefulWidget {
   const KeyboardShowcaseScreen({super.key});
@@ -47,33 +44,33 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
   ];
 
   void _log(String message) {
-    // ignore: avoid_print
     print('[Keyboard demo] $message');
   }
 
-  void _handleDigit(DigitType digit) => _log('Digit pressed: ${digit.label}');
+  void _onDigitPressed(DigitType digit) =>
+      _log('Digit pressed: ${digit.label}');
 
-  void _handleOperator(OperatorType operatorType) =>
+  void _onOperatorPressed(OperatorType operatorType) =>
       _log('Operator pressed: ${operatorType.symbol}');
 
-  void _handleUnit(UnitType unit) {
+  void _onUnitSelected(UnitType unit) {
     _log('Unit selected: ${unit.label}');
   }
 
-  void _handleControl(ControlAction action) =>
+  void _onControlActionTriggered(ControlAction action) =>
       _log('Control pressed: ${action.name}');
 
-  void _handleGroup(GroupNameType group) {
+  void _onGroupSelected(GroupNameType group) {
     setState(() => _currentGroup = group);
     _log('Group selected: ${group.label}');
   }
 
-  void _handleUnitSystem(UnitSystem system) {
+  void _onUnitSystemChanged(UnitSystem system) {
     setState(() => _currentUnitSystem = system);
     _log('Unit system switched to: ${system.label}');
   }
 
-  void _handleKey(KeyType key) {
+  void _onFunctionKeyTapped(KeyType key) {
     _log('Function key tapped: ${key.label}');
     FunctionGroup? matched;
     for (final g in _groups) {
@@ -104,16 +101,16 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     return CoreKeyboard(
       currentGroup: _currentGroup,
       allGroups: _groups,
-      onDigitPressed: _handleDigit,
-      onUnitSelected: _handleUnit,
-      onOperatorPressed: _handleOperator,
-      onControlAction: _handleControl,
+      onDigitPressed: _onDigitPressed,
+      onUnitSelected: _onUnitSelected,
+      onOperatorPressed: _onOperatorPressed,
+      onControlAction: _onControlActionTriggered,
       onResultTapped: () => _log('Result tapped'),
-      onGroupSelected: _handleGroup,
-      onKeyTapped: _handleKey,
+      onGroupSelected: _onGroupSelected,
+      onKeyTapped: _onFunctionKeyTapped,
       result: ResultType(label: "="),
       currentUnitSystem: _currentUnitSystem,
-      onUnitSystemChanged: _handleUnitSystem,
+      onUnitSystemChanged: _onUnitSystemChanged,
       groupAccentColors: accentColors,
     );
   }

@@ -82,8 +82,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color keyboardFunctions;
   final Color keyboardActions;
   final Color keyboardMain;
-
-  // Transparent Color
   final Color transparent;
 
   const AppColorsExtension({

@@ -58,7 +58,7 @@ class _CoreFunctionKeyBottomSheetState
   /// Handles reordering of function groups in the list.
   ///
   /// When an item is moved, the [newIndex] is adjusted if the item is moved
-  void _onReorder(int oldIndex, int newIndex) {
+  void _handleGroupReorder(int oldIndex, int newIndex) {
     if (_groups.isEmpty ||
         oldIndex < 0 ||
         newIndex < 0 ||
@@ -118,7 +118,7 @@ class _CoreFunctionKeyBottomSheetState
               child: ReorderableListView.builder(
                 buildDefaultDragHandles: false,
                 itemCount: _groups.length,
-                onReorder: _onReorder,
+                onReorder: _handleGroupReorder,
                 itemBuilder: (context, index) {
                   final group = _groups[index];
                   final accent = widget.groupAccentColors[group.name] ??
@@ -215,21 +215,21 @@ class _Header extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-            Text(
-              'Function keys',
-              style: typography.titleMediumSemiBold.copyWith(
-                color: colors.textHeadline,
-              ),
-            ),
-        const SizedBox(height: CoreSpacing.space2),
-        Row(
-          children: [
-             Text(
-          'Measurement System',
-          style: typography.bodyMediumMedium.copyWith(
+        Text(
+          'Function keys',
+          style: typography.titleMediumSemiBold.copyWith(
             color: colors.textHeadline,
           ),
         ),
+        const SizedBox(height: CoreSpacing.space2),
+        Row(
+          children: [
+            Text(
+              'Measurement System',
+              style: typography.bodyMediumMedium.copyWith(
+                color: colors.textHeadline,
+              ),
+            ),
             const Spacer(),
             if (onUnitSystemChanged != null)
               _UnitSystemToggle(
@@ -238,7 +238,6 @@ class _Header extends StatelessWidget {
               ),
           ],
         ),
-       
       ],
     );
   }
@@ -339,7 +338,6 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
 
   static const double _indicatorPadding = CoreSpacing.space1;
   static const double _textHorizontalPadding = CoreSpacing.space2;
-
 
   static const double _circularBorderRadius = 100.0;
 

@@ -208,13 +208,11 @@ class CoreControlButton extends StatelessWidget {
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
         label: action.label,
-        icon: action.icon != null
-            ? Icon(
-                action.icon,
-                color: iconColor,
-                size: height! * _KeyboardButton._largeFontSizeRatio,
-              )
-            : null,
+        icon: Icon(
+          action.icon,
+          color: iconColor,
+          size: height! * _KeyboardButton._largeFontSizeRatio,
+        ),
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
@@ -366,26 +364,30 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     super.dispose();
   }
 
-  void _handleTapDown(TapDownDetails details) {
+  void _startPressAnimation(TapDownDetails details) {
     if (!_isPressed) {
       setState(() => _isPressed = true);
       _controller.forward();
     }
   }
 
-  void _handleTapUp(TapUpDetails details) {
+  void _endPressAnimation(TapUpDetails details) {
     if (_isPressed) {
       setState(() => _isPressed = false);
       _controller.reverse();
     }
   }
 
-  void _handleTapCancel() {
+  void _cancelPressAnimation() {
     if (_isPressed) {
       setState(() => _isPressed = false);
       _controller.reverse();
     }
   }
+
+  void _handleTapDown(TapDownDetails details) => _startPressAnimation(details);
+  void _handleTapUp(TapUpDetails details) => _endPressAnimation(details);
+  void _handleTapCancel() => _cancelPressAnimation();
 
   @override
   Widget build(BuildContext context) {

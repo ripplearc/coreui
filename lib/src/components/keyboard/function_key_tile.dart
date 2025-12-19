@@ -54,26 +54,32 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
     super.dispose();
   }
 
-  void _handleTapDown(TapDownDetails details) {
+  void _startPressFeedback(TapDownDetails details) {
     if (!_isPressed) {
       setState(() => _isPressed = true);
       _controller.forward();
     }
   }
 
-  void _handleTapUp(TapUpDetails details) {
+  void _handleTapDown(TapDownDetails details) => _startPressFeedback(details);
+
+  void _endPressFeedback(TapUpDetails details) {
     if (_isPressed) {
       setState(() => _isPressed = false);
       _controller.reverse();
     }
   }
 
-  void _handleTapCancel() {
+  void _handleTapUp(TapUpDetails details) => _endPressFeedback(details);
+
+  void _cancelPressFeedback() {
     if (_isPressed) {
       setState(() => _isPressed = false);
       _controller.reverse();
     }
   }
+
+  void _handleTapCancel() => _cancelPressFeedback();
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +118,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
                       horizontal: CoreSpacing.space1,
                       vertical: CoreSpacing.space1,
                     )
-                  : null,
+                  : EdgeInsets.zero,
               decoration: BoxDecoration(
                 color: colors.backgroundGrayMid,
                 borderRadius: currentBorderRadius,

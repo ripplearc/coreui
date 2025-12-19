@@ -81,38 +81,6 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
   static final double _dragHandleWidth = CoreSpacing.space12;
 
   static const double _functionKeyTileAspectRatio = 2.4;
-  // const CoreKeyboard({
-  //   super.key,
-  //   required this.currentGroup,
-  //   required this.allGroups,
-  //   required this.onDigitPressed,
-  //   required this.onUnitSelected,
-  //   required this.onOperatorPressed,
-  //   required this.onControlAction,
-  //   required this.onResultTapped,
-  //   required this.onGroupSelected,
-  //   required this.onKeyTapped,
-  //   required this.onUnitSystemChanged,
-  //   this.result = const ResultType(label: '='),
-  //   this.currentUnitSystem = UnitSystem.imperial,
-  //   this.groupAccentColors = const {},
-  //   this.customResultLabel,
-  // });
-
-  // final GroupNameType currentGroup;
-  // final List<FunctionGroup> allGroups;
-  // final ValueChanged<DigitType> onDigitPressed;
-  // final ValueChanged<UnitType> onUnitSelected;
-  // final ValueChanged<OperatorType> onOperatorPressed;
-  // final ValueChanged<ControlAction> onControlAction;
-  // final VoidCallback onResultTapped;
-  // final ValueChanged<GroupNameType> onGroupSelected;
-  // final ValueChanged<KeyType> onKeyTapped;
-  // final ResultType result;
-  // final UnitSystem currentUnitSystem;
-  // final ValueChanged<UnitSystem> onUnitSystemChanged;
-  // final Map<GroupNameType, Color> groupAccentColors;
-  // final String? customResultLabel;
 
   @override
   Widget build(BuildContext context) {
