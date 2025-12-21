@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../load_fonts.dart';
 import '../../await_images_extension.dart';
+import '../../load_fonts.dart';
 
 ThemeData _createThemeWithFonts() {
   final baseTheme = CoreTheme.light();

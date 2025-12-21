@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
@@ -133,7 +132,7 @@ enum ControlAction {
   moreOptions,
 }
 
-/// Extension providing labels and icons for [ControlAction] enum values.
+/// Extension providing labels for [ControlAction] enum values.
 extension ControlActionX on ControlAction {
   /// Returns the string label representation of the control action.
   String get label {
@@ -144,19 +143,6 @@ extension ControlActionX on ControlAction {
         return 'C';
       case ControlAction.moreOptions:
         return '⋮';
-    }
-  }
-
-  /// Returns the icon data for the control action, if applicable.
-  /// Returns `null` for actions that use text labels instead of icons.
-  IconData? get icon {
-    switch (this) {
-      case ControlAction.delete:
-        return CoreIcons.backspaceLeft.materialIcon;
-      case ControlAction.moreOptions:
-        return CoreIcons.moreVert.materialIcon;
-      case ControlAction.clearAll:
-        return null;
     }
   }
 }

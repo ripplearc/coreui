@@ -4,6 +4,7 @@ export 'src/components/avatar/avatar.dart';
 export 'src/components/buttons/core_button.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/keyboard/core_function_key_bottomSheet.dart';
+export 'src/components/keyboard/core_keyboard.dart';
 export 'src/components/keyboard/keyboard_buttons.dart';
 export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';

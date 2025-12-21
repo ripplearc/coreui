@@ -196,8 +196,6 @@ class CoreControlButton extends StatelessWidget {
       ControlAction.moreOptions => colors.keyboardCalculate,
     };
     final isMoreAction = action == ControlAction.moreOptions;
-    final iconColor =
-        isMoreAction ? colors.keyboardActions : colors.textInverse;
     final textColor =
         isMoreAction ? colors.keyboardActions : colors.textInverse;
     final borderColor = isMoreAction ? colors.keyboardActions : null;
@@ -208,11 +206,6 @@ class CoreControlButton extends StatelessWidget {
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
         label: action.label,
-        icon: Icon(
-          action.icon,
-          color: iconColor,
-          size: height! * _KeyboardButton._largeFontSizeRatio,
-        ),
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
@@ -302,7 +295,6 @@ class CoreResultButton extends StatelessWidget {
 
 class _KeyboardButton extends StatefulWidget {
   final String? label;
-  final Widget? icon;
   final Color? borderColor;
   final Color? backgroundColor;
   final VoidCallback onPressed;
@@ -323,7 +315,6 @@ class _KeyboardButton extends StatefulWidget {
 
   const _KeyboardButton({
     this.label,
-    this.icon,
     this.borderColor,
     required this.backgroundColor,
     required this.onPressed,

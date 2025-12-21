@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 
-import '../../load_fonts.dart';
 import '../../await_images_extension.dart';
+import '../../load_fonts.dart';
 
 ThemeData _createThemeWithFonts() {
   final baseTheme = CoreTheme.light();
@@ -51,7 +50,6 @@ ThemeData _createThemeWithFonts() {
 
   return ThemeData(
     fontFamily: 'Roboto',
-    // materialTapTargetSize: baseTheme.materialTapTargetSize,
     extensions: [
       baseTheme.extension<AppColorsExtension>()!,
       testTypography,

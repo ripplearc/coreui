@@ -411,7 +411,6 @@ void main() {
   group('Keyboard Buttons Grid View', () {
     testWidgets('displays all button types in a grid layout', (tester) async {
       final buttons = <Widget>[
-        // Digit buttons
         CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: (_) {},
@@ -485,7 +484,6 @@ void main() {
           height: 60,
           width: 60,
         ),
-        // Operator buttons
         CoreOperatorButton(
           operatorType: OperatorType.add,
           onOperatorPressed: (_) {},
@@ -516,7 +514,6 @@ void main() {
           height: 60,
           width: 60,
         ),
-        // Unit buttons
         CoreUnitButton(
           unit: UnitType.feet,
           onUnitSelected: (_) {},
@@ -559,7 +556,6 @@ void main() {
           height: 60,
           width: 60,
         ),
-        // Control buttons
         CoreControlButton(
           action: ControlAction.delete,
           onControlAction: (_) {},
@@ -578,7 +574,6 @@ void main() {
           height: 60,
           width: 60,
         ),
-        // Result buttons
         CoreResultButton(
           resultType: const ResultType(label: '='),
           onTap: () {},

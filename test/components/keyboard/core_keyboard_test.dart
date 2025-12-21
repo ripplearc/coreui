@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 
 void main() {
   group('CoreKeyboard', () {
@@ -38,7 +37,6 @@ void main() {
         ),
       );
 
-      // Check that keyboard container is present
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
 
@@ -66,7 +64,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap a digit button (e.g., "1")
       final digitButton = find.text('1');
       if (digitButton.evaluate().isNotEmpty) {
         await tester.tap(digitButton);
@@ -99,7 +96,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap an operator button (e.g., "+")
       final operatorButton = find.text('+');
       if (operatorButton.evaluate().isNotEmpty) {
         await tester.tap(operatorButton);
@@ -132,7 +128,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap the result button
       final resultButton = find.text('=');
       if (resultButton.evaluate().isNotEmpty) {
         await tester.tap(resultButton);
@@ -165,7 +160,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Check for imperial units
       expect(find.text('Yards'), findsWidgets);
       expect(find.text('Feet'), findsWidgets);
       expect(find.text('Inches'), findsWidgets);
@@ -195,7 +189,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Check for metric units
       expect(find.text('M'), findsWidgets);
       expect(find.text('CM'), findsWidgets);
       expect(find.text('MM'), findsWidgets);
@@ -204,7 +197,7 @@ void main() {
     testWidgets('handles empty function groups gracefully', (tester) async {
       final emptyGroups = [
         const FunctionGroup(
-          name: const GroupNameType(label: ""),
+          name: GroupNameType(label: ""),
           keys: [],
         ),
       ];
@@ -230,7 +223,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Should render without crashing
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
   });

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../load_fonts.dart';
 import '../../await_images_extension.dart';
+import '../../load_fonts.dart';
 
 ThemeData _createThemeWithFonts() {
   final baseTheme = CoreTheme.light();
@@ -69,7 +69,6 @@ void main() {
 
   testWidgets('Keyboard Buttons Grid View Golden Test', (tester) async {
     final buttons = <Widget>[
-      // Digit buttons
       CoreDigitInput(
         digit: DigitType.zero,
         onDigitPressed: (_) {},
@@ -143,7 +142,6 @@ void main() {
         height: 60,
         width: 60,
       ),
-      // Operator buttons
       CoreOperatorButton(
         operatorType: OperatorType.add,
         onOperatorPressed: (_) {},
@@ -174,7 +172,6 @@ void main() {
         height: 60,
         width: 60,
       ),
-      // Unit buttons
       CoreUnitButton(
         unit: UnitType.feet,
         onUnitSelected: (_) {},
@@ -217,7 +214,6 @@ void main() {
         height: 60,
         width: 60,
       ),
-      // Control buttons
       CoreControlButton(
         action: ControlAction.delete,
         onControlAction: (_) {},
@@ -236,7 +232,6 @@ void main() {
         height: 60,
         width: 60,
       ),
-      // Result buttons
       CoreResultButton(
         resultType: const ResultType(label: '='),
         onTap: () {},

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 
 class KeyboardShowcaseScreen extends StatefulWidget {
   const KeyboardShowcaseScreen({super.key});

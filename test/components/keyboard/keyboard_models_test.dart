@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -46,22 +45,6 @@ void main() {
       expect(ControlAction.delete.label, equals('⌫'));
       expect(ControlAction.clearAll.label, equals('C'));
       expect(ControlAction.moreOptions.label, equals('⋮'));
-    });
-
-    test('icon returns correct IconData for actions with icons', () {
-      expect(ControlAction.delete.icon, isNotNull);
-      expect(ControlAction.moreOptions.icon, isNotNull);
-      expect(ControlAction.clearAll.icon, isNull);
-    });
-
-    test('icon returns IconData from CoreMaterialIcons', () {
-      final deleteIcon = ControlAction.delete.icon;
-      final moreOptionsIcon = ControlAction.moreOptions.icon;
-
-      expect(deleteIcon, isNotNull);
-      expect(moreOptionsIcon, isNotNull);
-      expect(deleteIcon, isA<IconData>());
-      expect(moreOptionsIcon, isA<IconData>());
     });
   });
 
