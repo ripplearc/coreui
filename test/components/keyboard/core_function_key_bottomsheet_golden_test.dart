@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 
 import '../../load_fonts.dart';
 import '../../await_images_extension.dart';
@@ -51,7 +50,11 @@ ThemeData _createThemeWithFonts() {
 
   return ThemeData(
     fontFamily: 'Roboto',
-    // materialTapTargetSize: baseTheme.materialTapTargetSize,
+    materialTapTargetSize: baseTheme.materialTapTargetSize,
+    primaryColor: baseTheme.primaryColor,
+    colorScheme: baseTheme.colorScheme,
+    useMaterial3: baseTheme.useMaterial3,
+    iconTheme: baseTheme.iconTheme.copyWith(),
     extensions: [
       baseTheme.extension<AppColorsExtension>()!,
       testTypography,
@@ -65,49 +68,47 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('CoreKeyboard Full UI Golden Test', (tester) async {
+  testWidgets('CoreFunctionKeyBottomSheet Golden Test', (tester) async {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: "Basic Geometry"),
+        name: const GroupNameType(label: 'Trigonomety'),
         keys: [
-          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
-          KeyType(groupName: 'Basic Geometry', label: 'Volume', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'tan', action: () {}),
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: "Advanced"),
+        name: const GroupNameType(label: 'Materials'),
         keys: [
-          KeyType(groupName: 'Advanced', label: 'sin', action: () {}),
-          KeyType(groupName: 'Advanced', label: 'cos', action: () {}),
-          KeyType(groupName: 'Advanced', label: 'tan', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Concrete', action: () {}),
         ],
       ),
     ];
 
     final testAccentColors = {
-      const GroupNameType(label: "Basic Geometry"):
+      const GroupNameType(label: 'Trigonomety'):
           CoreTheme.light().colorScheme.primary,
-      const GroupNameType(label: "Advanced"):
+      const GroupNameType(label: 'Materials'):
           CoreTheme.light().colorScheme.secondary,
     };
 
     final widget = MaterialApp(
       theme: _createThemeWithFonts(),
       home: Scaffold(
-        backgroundColor: CoreTheme.light().scaffoldBackgroundColor,
+        backgroundColor: CoreTheme.light().colorScheme.surface,
         body: Center(
-          child: CoreKeyboard(
-            currentGroup: const GroupNameType(label: "Basic Geometry"),
-            allGroups: testGroups,
-            onDigitPressed: (_) {},
-            onUnitSelected: (_) {},
-            onOperatorPressed: (_) {},
-            onControlAction: (_) {},
-            onResultTapped: () {},
+          child: CoreFunctionKeyBottomSheet(
+            groups: testGroups,
+            groupAccentColors: testAccentColors,
+            selectedGroup: const GroupNameType(label: 'Trigonomety'),
             onGroupSelected: (_) {},
             onKeyTapped: (_) {},
+            showUnitToggle: true,
+            currentUnitSystem: UnitSystem.imperial,
             onUnitSystemChanged: (_) {},
-            groupAccentColors: testAccentColors,
           ),
         ),
       ),
@@ -120,8 +121,8 @@ void main() {
     await tester.awaitImages();
 
     await expectLater(
-      find.byType(Scaffold),
-      matchesGoldenFile('goldens/core_keyboard_full_ui.png'),
+      find.byType(CoreFunctionKeyBottomSheet),
+      matchesGoldenFile('goldens/core_function_key_bottomsheet.png'),
     );
   });
 }

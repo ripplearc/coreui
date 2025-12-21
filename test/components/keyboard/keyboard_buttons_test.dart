@@ -11,22 +11,6 @@ void main() {
     await loadFonts();
   });
 
-  // Helper to pump widget with theme for golden tests
-  Future<void> pumpButton(WidgetTester tester, Widget button) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoreTheme.light(),
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: CoreTheme.light().scaffoldBackgroundColor,
-          body: Center(
-            child: button,
-          ),
-        ),
-      ),
-    );
-  }
-
   group('CoreDigitInput', () {
     testWidgets('renders with correct label', (tester) async {
       DigitType? pressedDigit;

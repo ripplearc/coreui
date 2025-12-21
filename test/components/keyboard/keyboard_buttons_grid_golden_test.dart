@@ -5,12 +5,10 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import '../../load_fonts.dart';
 import '../../await_images_extension.dart';
 
-/// Helper to create theme with proper Roboto and MaterialIcons fonts for golden tests
 ThemeData _createThemeWithFonts() {
   final baseTheme = CoreTheme.light();
   final typography = baseTheme.extension<TypographyExtension>()!;
 
-  // Create typography with Roboto font family applied to all styles
   final testTypography = TypographyExtension(
     headlineLargeRegular:
         typography.headlineLargeRegular.copyWith(fontFamily: 'Roboto'),
@@ -56,8 +54,6 @@ ThemeData _createThemeWithFonts() {
     primaryColor: baseTheme.primaryColor,
     colorScheme: baseTheme.colorScheme,
     useMaterial3: baseTheme.useMaterial3,
-    textTheme: baseTheme.textTheme.apply(fontFamily: 'Roboto'),
-    iconTheme: baseTheme.iconTheme.copyWith(),
     extensions: [
       baseTheme.extension<AppColorsExtension>()!,
       testTypography,
@@ -271,9 +267,8 @@ void main() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Keyboard Buttons Grid View',
-                style: CoreTheme.light().textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
               GridView.count(
