@@ -48,7 +48,7 @@ class SingleItemSelector<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
     return InkWell(
       onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
       child: InputDecorator(
@@ -56,17 +56,17 @@ class SingleItemSelector<T> extends StatelessWidget {
           labelText: labelText,
           hintText: hintText,
           enabled: !isDisabled,
-          labelStyle: typography?.bodyLargeSemiBold.copyWith(
+          labelStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
                 ? CoreTextColors.disable
                 : CoreBorderColors.outlineFocus,
           ),
-          hintStyle: typography?.bodyLargeSemiBold.copyWith(
+          hintStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
                 ? CoreTextColors.disable
                 : CoreBorderColors.outlineFocus,
           ),
-          floatingLabelStyle: typography?.bodyLargeSemiBold.copyWith(
+          floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
                 ? CoreTextColors.disable
                 : CoreBorderColors.outlineFocus,
@@ -83,7 +83,7 @@ class SingleItemSelector<T> extends StatelessWidget {
             Expanded(
               child: Text(
                 _getDisplayText(),
-                style: typography?.bodyLargeRegular.copyWith(
+                style: typography.bodyLargeRegular.copyWith(
                       color: (selectedItem == null || isDisabled)
                           ? Theme.of(context).hintColor
                           : null,
@@ -115,7 +115,7 @@ class SingleItemSelector<T> extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       builder: (context) {
-        final typography = Theme.of(context).extension<TypographyExtension>();
+        final typography = Theme.of(context).coreTypography;
         return FractionallySizedBox(
           heightFactor: 0.4,
           child: Column(
@@ -127,7 +127,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                   children: [
                     Text(
                       modalTitle,
-                      style: typography?.headlineMediumSemiBold,
+                      style: typography.headlineMediumSemiBold,
                     ),
                   ],
                 ),
@@ -160,7 +160,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                           children: [
                             Text(
                               itemToString?.call(item) ?? item.toString(),
-                              style: typography?.bodyMediumRegular,
+                              style: typography.bodyMediumRegular,
                             ),
                             const SizedBox(width: CoreSpacing.space2),
                             if (isSelected)

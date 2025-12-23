@@ -85,7 +85,7 @@ class CoreTextField extends StatelessWidget {
     }
 
     final bool isDisabled = !enabled || readOnly;
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
 
     return TextFormField(
       controller: controller,
@@ -99,11 +99,11 @@ class CoreTextField extends StatelessWidget {
       cursorColor:
           isDisabled ? Colors.transparent : CoreBorderColors.outlineFocus,
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
-      style: typography?.bodyLargeRegular.copyWith(
+      style: typography.bodyLargeRegular.copyWith(
         color: isDisabled ? CoreTextColors.disable : CoreTextColors.dark,
       ),
       decoration: InputDecoration(
-        floatingLabelStyle: typography?.bodyLargeSemiBold.copyWith(
+        floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
           color: isDisabled
               ? CoreTextColors.disable
               : CoreBorderColors.outlineFocus,
@@ -114,12 +114,12 @@ class CoreTextField extends StatelessWidget {
             isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
         filled: true,
         labelText: label,
-        labelStyle: typography?.bodyLargeRegular.copyWith(
+        labelStyle: typography.bodyLargeRegular.copyWith(
           color: isDisabled ? CoreTextColors.disable : CoreTextColors.headline,
         ),
         prefixIcon: prefixWidget,
         hintText: hintText,
-        hintStyle: typography?.bodyLargeRegular.copyWith(
+        hintStyle: typography.bodyLargeRegular.copyWith(
           color: isDisabled ? CoreTextColors.disable : CoreTextColors.disable,
         ),
         suffixIcon:
@@ -146,7 +146,7 @@ class CoreTextField extends StatelessWidget {
                   const SizedBox(width: CoreSpacing.space1),
                   Text(
                     helperText!,
-                    style: typography?.bodySmallRegular.copyWith(
+                    style: typography.bodySmallRegular.copyWith(
                         color: isDisabled
                             ? CoreTextColors.disable
                             : CoreTextColors.headline),
@@ -211,7 +211,7 @@ class CoreTextField extends StatelessWidget {
   }
 
   Widget _buildErrorWidget(BuildContext context, {String? errorText, Widget? errorWidget}) {
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -229,7 +229,7 @@ class CoreTextField extends StatelessWidget {
             child: Text(
               errorText,
               style:
-                   typography?.bodySmallRegular
+                   typography.bodySmallRegular
                   .copyWith(color: CoreTextColors.error),
             ),
           ),
@@ -238,7 +238,7 @@ class CoreTextField extends StatelessWidget {
   }
 
   Widget? _buildPhonePrefixButton(BuildContext context) {
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
     
     return IntrinsicWidth(
       child: Padding(
@@ -253,7 +253,7 @@ class CoreTextField extends StatelessWidget {
                 children: [
                   Text(
                     phonePrefix ?? '+1',
-                    style: typography?.bodyLargeRegular.copyWith(
+                    style: typography.bodyLargeRegular.copyWith(
                       color: CoreTextColors.headline,
                     ),
                   ),
@@ -283,7 +283,7 @@ class CoreTextField extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        final typography = Theme.of(context).extension<TypographyExtension>();
+        final typography = Theme.of(context).coreTypography;
         return Container(
           padding: const EdgeInsets.all(CoreSpacing.space4),
           child: Column(
@@ -291,7 +291,7 @@ class CoreTextField extends StatelessWidget {
             children: [
               Text(
                 countryCodePickerTitle ?? 'Select Country Code',
-                style: typography?.bodyLargeSemiBold,
+                style: typography.bodyLargeSemiBold,
               ),
               const SizedBox(height: CoreSpacing.space4),
               Flexible(
@@ -303,7 +303,7 @@ class CoreTextField extends StatelessWidget {
                     return ListTile(
                       title: Text(
                         prefix,
-                        style: typography?.bodyLargeRegular,
+                        style: typography.bodyLargeRegular,
                       ),
                       onTap: () {
                         onPhonePrefixChanged?.call(prefix);

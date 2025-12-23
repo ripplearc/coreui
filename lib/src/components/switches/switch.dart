@@ -225,7 +225,7 @@ class CoreSwitch extends StatelessWidget {
         value ? effectiveActiveColor : CoreBackgroundColors.backgroundGrayLight;
     final borderColor = value ? effectiveActiveColor : _getBorderColor;
 
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
 
     return GestureDetector(
       onTap: () => onChanged(!value),
@@ -250,7 +250,7 @@ class CoreSwitch extends StatelessWidget {
                   child: Center(
                     child: Text(
                       value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
-                      style: typography?.bodySmallRegular.copyWith(
+                      style: typography.bodySmallRegular.copyWith(
                         color: value
                             ? CoreTextColors.inverse
                             : effectiveInactiveTextColor,

@@ -97,7 +97,7 @@ class Toast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final typography = Theme.of(context).extension<TypographyExtension>();
+    final typography = Theme.of(context).coreTypography;
 
     return Semantics(
       container: true,
@@ -129,7 +129,7 @@ class Toast extends StatelessWidget {
                 children: [
                   Text(
                     title ?? description,
-                    style: typography?.bodyLargeMedium.copyWith(
+                    style: typography.bodyLargeMedium.copyWith(
                       color: CoreTextColors.dark,
                     ),
                   ),
@@ -138,7 +138,7 @@ class Toast extends StatelessWidget {
                       padding: const EdgeInsets.only(top: CoreSpacing.space1),
                       child: Text(
                         description,
-                        style: typography?.bodySmallRegular.copyWith(
+                        style: typography.bodySmallRegular.copyWith(
                           color: CoreTextColors.body,
                         ),
                       ),
@@ -158,7 +158,7 @@ class Toast extends StatelessWidget {
                   children: [
                     Text(
                       closeLabel,
-                      style: typography?.bodyMediumSemiBold.copyWith(
+                      style: typography.bodyMediumSemiBold.copyWith(
                         color: CoreTextColors.link,
                       ),
                     ),

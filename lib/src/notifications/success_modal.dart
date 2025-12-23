@@ -40,7 +40,7 @@ class SuccessModal {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        final typography = Theme.of(context).extension<TypographyExtension>();
+        final typography = Theme.of(context).coreTypography;
         return Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -52,7 +52,7 @@ class SuccessModal {
               Text(
                 '$message',
                 textAlign: TextAlign.center,
-                style: typography?.titleLargeMedium,
+                style: typography.titleLargeMedium,
               ),
               const SizedBox(height: 24),
               CoreButton(
