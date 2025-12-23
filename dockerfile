@@ -16,24 +16,26 @@ RUN groupadd --system flutter && \
 ENV FLUTTER_VERSION="3.29.2"
 RUN curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o flutter.tar.xz && \
     tar -xf flutter.tar.xz -C /opt && \
-    rm flutter.tar.xz
+    rm flutter.tar.xz && \
+    # IMPORTANT: Give the flutter user ownership of the SDK
+    chown -R flutter:flutter /opt/flutter
 
 # 5. Set Path
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# 6. Prepare Flutter environment
+# 6. Switch to non-root user for the rest of the setup
+USER flutter
+WORKDIR /app
+
+# 7. Prepare Flutter environment
 RUN git config --global --add safe.directory /opt/flutter && \
     flutter config --no-analytics && \
     flutter precache
 
-# 7. Set working directory
-WORKDIR /app
-
-# 8. Copy pubspec files first for better caching and install dependencies
-COPY pubspec.yaml pubspec.lock ./
-RUN chown flutter:flutter pubspec.yaml pubspec.lock /app
-USER flutter
+# 8. Copy pubspec files and get dependencies
+# We use --chown here to make sure the user can read/write these files
+COPY --chown=flutter:flutter pubspec.yaml pubspec.lock ./
 RUN flutter pub get
 
-# 9. Copy the rest of the application as non-root
+# 9. Copy the rest of the application
 COPY --chown=flutter:flutter . .
