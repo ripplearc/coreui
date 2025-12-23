@@ -80,6 +80,9 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
 
   static const double _functionKeyTileAspectRatio = 2.4;
 
+  static const double _dragIndicatorHeight = 6.0;
+  static const double _dragIndicatorWidth = 32.0;
+
   @override
   Widget build(BuildContext context) {
     final group = widget.allGroups.firstWhere(
@@ -159,7 +162,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                       bottom: CoreSpacing.space1,
                     ),
                     child: CustomPaint(
-                      size: const Size(32.0, 6.0),
+                      size:
+                          const Size(_dragIndicatorWidth, _dragIndicatorHeight),
                       painter: _CurvedDragHandlePainter(
                         color: colors.iconGrayLight,
                       ),
