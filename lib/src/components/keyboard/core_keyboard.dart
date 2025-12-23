@@ -93,7 +93,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
     );
     final colors = AppColorsExtension.of(context);
     final accent = widget.groupAccentColors[widget.currentGroup] ??
-        colors.backgroundBlueLight;
+        CoreKeyboardColors.functions;
     final screenHeight = MediaQuery.of(context).size.height;
     final keyboardHeight = screenHeight * _keyboardHeightRatio;
 

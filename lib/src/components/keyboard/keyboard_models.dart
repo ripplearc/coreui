@@ -153,6 +153,16 @@ extension ControlActionX on ControlAction {
 class GroupNameType {
   final String label;
   const GroupNameType({required this.label});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GroupNameType &&
+          runtimeType == other.runtimeType &&
+          label == other.label;
+
+  @override
+  int get hashCode => label.hashCode;
 }
 
 /// Defines the types of results that can be displayed on the keyboard.

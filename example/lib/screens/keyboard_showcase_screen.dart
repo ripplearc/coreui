@@ -83,20 +83,14 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     });
   }
 
-  Map<GroupNameType, Color> _groupAccentColors(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    return {
-      GroupNameType(label: "Basic Geometry"):
-          colors?.keyboardFunctions ?? CoreKeyboardColors.functions,
-      GroupNameType(label: "Materials"):
-          colors?.keyboardUnits ?? CoreKeyboardColors.units,
-      GroupNameType(label: "Trigonometry"):
-          colors?.keyboardActions ?? CoreKeyboardColors.actions,
-    };
-  }
+  final Map<GroupNameType, Color> _groupAccentColors = {
+    GroupNameType(label: "Basic Geometry"): CoreKeyboardColors.functions,
+    GroupNameType(label: "Materials"): CoreKeyboardColors.units,
+    GroupNameType(label: "Trigonometry"): CoreTextColors.success,
+  };
 
   Widget _buildKeyboard(BuildContext context) {
-    final accentColors = _groupAccentColors(context);
+    // final accentColors = _groupAccentColors();
     return CoreKeyboard(
       currentGroup: _currentGroup,
       allGroups: _groups,
@@ -110,7 +104,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       result: ResultType(label: "="),
       currentUnitSystem: _currentUnitSystem,
       onUnitSystemChanged: _onUnitSystemChanged,
-      groupAccentColors: accentColors,
+      groupAccentColors: _groupAccentColors,
     );
   }
 
