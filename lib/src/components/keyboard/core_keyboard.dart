@@ -78,8 +78,6 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
 
   static const int _keyboardRowGaps = 4;
 
-  static final double _dragHandleWidth = CoreSpacing.space12;
-
   static const double _functionKeyTileAspectRatio = 2.4;
 
   @override
@@ -155,12 +153,16 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
               children: [
                 Semantics(
                   label: 'Keyboard drag handle',
-                  child: Container(
-                    width: _dragHandleWidth,
-                    height: dragHandleHeight,
-                    decoration: BoxDecoration(
-                      color: colors.backgroundGrayLight,
-                      borderRadius: BorderRadius.circular(CoreSpacing.space1),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: CoreSpacing.space2,
+                      bottom: CoreSpacing.space1,
+                    ),
+                    child: CustomPaint(
+                      size: const Size(32.0, 6.0),
+                      painter: _CurvedDragHandlePainter(
+                        color: colors.iconGrayLight,
+                      ),
                     ),
                   ),
                 ),
@@ -567,5 +569,37 @@ class _FunctionKeyStrip extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Custom painter that draws a curved drag handle indicator.
+class _CurvedDragHandlePainter extends CustomPainter {
+  final Color color;
+
+  _CurvedDragHandlePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(0, size.height * 0.2);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height,
+      size.width,
+      size.height * 0.2,
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
