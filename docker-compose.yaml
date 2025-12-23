@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  flutter:
+    build: .
+    volumes:
+      # Mounts the whole project so code changes are seen and images are saved back
+      - .:/app
+    stdin_open: true
+    tty: true
+    working_dir: /app
