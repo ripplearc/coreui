@@ -135,10 +135,14 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
                       ),
                       const SizedBox(width: CoreSpacing.space1),
                     ],
-                    Text(
-                      widget.keyType.label,
-                      style: typography.bodyMediumRegular.copyWith(
-                        color: colors.textHeadline,
+                    Flexible(
+                      child: Text(
+                        widget.keyType.label,
+                        style: typography.bodyMediumRegular.copyWith(
+                          color: colors.textHeadline,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],

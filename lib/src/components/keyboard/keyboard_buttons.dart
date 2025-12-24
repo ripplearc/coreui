@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../theme/spacing.dart';
-import '../../theme/theme_extensions.dart';
-import '../../theme/typography_extension.dart';
-import 'keyboard_models.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A button widget for numeric digit input on the keyboard.
 ///
@@ -55,7 +51,7 @@ class CoreDigitInput extends StatelessWidget {
         height: effectiveHeight,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -106,7 +102,7 @@ class CoreOperatorButton extends StatelessWidget {
         height: effectiveHeight,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -149,12 +145,12 @@ class CoreUnitButton extends StatelessWidget {
         onPressed: () => onUnitSelected(unit),
         width: width,
         height: effectiveHeight,
-        borderRadius: unit == UnitType.divideSymbol
-            ? BorderRadius.circular(_KeyboardButton._circularBorderRadius)
-            : BorderRadius.circular(CoreSpacing.space4),
-        pressedBorderRadius: unit == UnitType.divideSymbol
-            ? BorderRadius.circular(CoreSpacing.space3)
-            : BorderRadius.circular(_KeyboardButton._circularBorderRadius),
+        borderRadius: BorderRadius.circular(unit == UnitType.divideSymbol
+            ? _KeyboardButton._circularBorderRadius
+            : CoreSpacing.space3),
+        pressedBorderRadius: BorderRadius.circular(unit == UnitType.divideSymbol
+            ? CoreSpacing.space4
+            : _KeyboardButton._circularBorderRadius),
         textStyle: typography.bodyLargeMedium.copyWith(
           color: textColor,
           fontSize: unit == UnitType.divideSymbol
@@ -217,7 +213,7 @@ class CoreControlButton extends StatelessWidget {
         height: height,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -283,7 +279,7 @@ class CoreResultButton extends StatelessWidget {
         width: width,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space3),
+        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
         textStyle: typography.titleLargeSemiBold.copyWith(
           color: textColor,
           fontSize: effectiveHeight! * _KeyboardButton._largeFontSizeRatio,

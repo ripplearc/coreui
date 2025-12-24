@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -17,6 +19,10 @@ void main() {
 
     testWidgets('renders keyboard with all required components',
         (tester) async {
+      // Set test window size to accommodate circular buttons
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue =
+          const ui.Size(800, 1200); // Increased height for circular buttons
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -42,6 +48,9 @@ void main() {
 
     testWidgets('calls onDigitPressed when digit button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       DigitType? pressedDigit;
       await tester.pumpWidget(
         MaterialApp(
@@ -74,6 +83,9 @@ void main() {
 
     testWidgets('calls onOperatorPressed when operator button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       OperatorType? pressedOperator;
       await tester.pumpWidget(
         MaterialApp(
@@ -106,6 +118,9 @@ void main() {
 
     testWidgets('calls onResultTapped when result button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       bool resultTapped = false;
       await tester.pumpWidget(
         MaterialApp(
@@ -138,6 +153,9 @@ void main() {
 
     testWidgets('displays correct unit buttons for imperial system',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -167,6 +185,9 @@ void main() {
 
     testWidgets('displays correct unit buttons for metric system',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -195,6 +216,9 @@ void main() {
     });
 
     testWidgets('handles empty function groups gracefully', (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       final emptyGroups = [
         const FunctionGroup(
           name: GroupNameType(label: ""),
