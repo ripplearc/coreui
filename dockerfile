@@ -6,6 +6,7 @@ FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git unzip xz-utils libglu1-mesa ca-certificates \
     fonts-droid-fallback libsqlite3-dev \
+    openssh-client \
  && rm -rf /var/lib/apt/lists/*
 
 # 3. Create non-root user to run Flutter and tests
