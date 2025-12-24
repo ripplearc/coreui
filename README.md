@@ -134,8 +134,10 @@ Container(
 
 3. **Open shell in container:**
    ```bash
-   docker exec -it <NAME-OR-ID-OF-DOCKER-CONTAINER> bash
+   docker exec -it coreui-flutter-1 bash
    ```
+   
+   **Note:** If your container has a different name, use `docker container ps` to find it, or replace `coreui-flutter-1` with your container name/ID.
 
 4. **Run golden tests inside container:**
    ```bash
