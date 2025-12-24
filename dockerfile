@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN groupadd --system flutter && \
     useradd --system --create-home --gid flutter flutter
 
-# 4. Install Flutter (Set to 3.29.2 to match your GitHub Workflow)
-ENV FLUTTER_VERSION="3.29.2"
+# 4. Install Flutter 3.32.0 to match GitHub Actions
+ENV FLUTTER_VERSION="3.32.0"
 RUN curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o flutter.tar.xz && \
     tar -xf flutter.tar.xz -C /opt && \
     rm flutter.tar.xz && \
@@ -33,7 +33,6 @@ RUN git config --global --add safe.directory /opt/flutter && \
     flutter precache
 
 # 8. Copy pubspec files and get dependencies
-# We use --chown here to make sure the user can read/write these files
 COPY --chown=flutter:flutter pubspec.yaml pubspec.lock ./
 RUN flutter pub get
 
