@@ -115,6 +115,62 @@ Container(
 
 ### Running Tests
 
+#### Golden Tests with Docker
+
+**Why Docker?** Golden test screenshots vary between platforms (macOS, Linux, Windows). The Docker container matches the CI environment (Linux) to ensure consistent screenshots.
+
+#### Setup
+
+1. **Start Docker container:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Get container name:**
+   ```bash
+   docker container ps
+   ```
+   Look for `coreui-flutter-1` or similar.
+
+3. **Open shell in container:**
+   ```bash
+   docker exec -it <NAME-OR-ID-OF-DOCKER-CONTAINER> bash
+   ```
+
+4. **Run golden tests inside container:**
+   ```bash
+   # Verify golden tests (matching CI workflow)
+   flutter test test/components/*
+   flutter test test/theme/*
+   flutter test test/notifications/*
+
+   # Update golden images (Only run when a visual change is intended in a specific directory)
+   flutter test test/components/* --update-goldens
+   flutter test test/theme/* --update-goldens
+   flutter test test/notifications/* --update-goldens
+   ```
+
+5. **Exit container:**
+   ```bash
+   exit
+   ```
+
+**Note:** The `test/` and `lib/` directories are volume-mounted, so updated golden files automatically sync to your host machine. No need to copy files manually.
+
+#### Rebuilding Docker Image
+
+Rebuild the Docker image only when switching to a branch that changes underlying dependencies (for example when pubspec.yaml or pubspec.lock — or any other dependency files — differ). If those files did not change, you can skip the rebuild and just restart the containers.
+
+```bash
+# Stop container
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+```
+
+#### Local Development
+
 ```bash
 # Run unit and widget tests
 flutter test
@@ -122,6 +178,8 @@ flutter test
 # Run golden tests
 flutter test --update-goldens
 ```
+
+**Note:** For golden tests, use Docker (see [Golden Tests with Docker](#golden-tests-with-docker) above) to ensure consistent screenshots across platforms.
 
 ### Running the Showroom App
 
