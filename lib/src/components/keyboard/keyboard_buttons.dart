@@ -47,7 +47,7 @@ class CoreDigitInput extends StatelessWidget {
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
-        textStyle: typography.titleLargeSemiBold.copyWith(
+        textStyle: typography.titleLargeRegular.copyWith(
           color: textColor,
           fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
         ),
@@ -98,7 +98,7 @@ class CoreOperatorButton extends StatelessWidget {
         label: operatorType.symbol,
         backgroundColor: backgroundColor,
         onPressed: () => onOperatorPressed(operatorType),
-        textStyle: typography.titleLargeMedium.copyWith(
+        textStyle: typography.titleLargeRegular.copyWith(
           color: textColor,
           fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
         ),
@@ -151,7 +151,7 @@ class CoreUnitButton extends StatelessWidget {
         height: effectiveHeight,
         borderRadius: unit == UnitType.divideSymbol
             ? BorderRadius.circular(_KeyboardButton._circularBorderRadius)
-            : BorderRadius.circular(CoreSpacing.space6),
+            : BorderRadius.circular(CoreSpacing.space4),
         pressedBorderRadius: unit == UnitType.divideSymbol
             ? BorderRadius.circular(CoreSpacing.space3)
             : BorderRadius.circular(_KeyboardButton._circularBorderRadius),
@@ -209,7 +209,7 @@ class CoreControlButton extends StatelessWidget {
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: typography.bodySmallRegular.copyWith(
+        textStyle: typography.bodySmallSemiBold.copyWith(
           color: textColor,
           fontSize: height! * _KeyboardButton._smallFontSizeRatio,
         ),

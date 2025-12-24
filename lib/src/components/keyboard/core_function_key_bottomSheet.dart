@@ -119,6 +119,14 @@ class _CoreFunctionKeyBottomSheetState
                 buildDefaultDragHandles: false,
                 itemCount: _groups.length,
                 onReorder: _handleGroupReorder,
+                proxyDecorator:
+                    (Widget child, int index, Animation<double> animation) {
+                  return Material(
+                    color: colors.pageBackground,
+                    elevation: 6.0,
+                    child: child,
+                  );
+                },
                 itemBuilder: (context, index) {
                   final group = _groups[index];
                   final accent = widget.groupAccentColors[group.name] ??
