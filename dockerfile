@@ -32,9 +32,13 @@ RUN git config --global --add safe.directory /opt/flutter && \
     flutter config --no-analytics && \
     flutter precache
 
-# 8. Copy pubspec files and get dependencies
+# 8. Create .ssh directory and add alias to .bashrc for loading SSH key
+RUN mkdir -p /home/flutter/.ssh && \
+    echo "alias load_ripplearc_key='eval \"\$(ssh-agent -s)\" && ssh-add /home/flutter/.ssh/ripplearc_git_rsa'" >> /home/flutter/.bashrc
+
+# 9. Copy pubspec files and get dependencies
 COPY --chown=flutter:flutter pubspec.yaml pubspec.lock ./
 RUN flutter pub get
 
-# 9. Copy the rest of the application
+# 10. Copy the rest of the application
 COPY --chown=flutter:flutter . .
