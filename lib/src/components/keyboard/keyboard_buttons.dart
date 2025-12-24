@@ -106,7 +106,7 @@ class CoreOperatorButton extends StatelessWidget {
 
 /// A button widget for measurement units on the keyboard.
 ///
-/// [unit] is the type of unit to display (yards, feet, inches, meters, etc.).
+/// [unit] is the type of unit to display (yards, feet, inch, meters, etc.).
 /// [onUnitSelected] is called when the button is pressed.
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 78% of width or 60px.

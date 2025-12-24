@@ -110,7 +110,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
           final buttonSize = availableForButtons / _keyboardColumnCount;
 
           final headerSpacing = CoreSpacing.space3;
-          final functionStripSpacing = CoreSpacing.space3;
+          final functionStripSpacing = CoreSpacing.space4;
 
           return Container(
             padding: const EdgeInsets.fromLTRB(horizontalPadding,

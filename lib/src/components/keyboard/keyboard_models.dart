@@ -126,7 +126,7 @@ extension UnitTypeX on UnitType {
       case UnitType.feet:
         return 'Feet';
       case UnitType.inch:
-        return 'Inches';
+        return 'Inch';
       case UnitType.meter:
         return 'M';
       case UnitType.centimeter:
