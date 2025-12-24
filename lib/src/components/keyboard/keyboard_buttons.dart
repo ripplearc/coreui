@@ -40,6 +40,7 @@ class CoreDigitInput extends StatelessWidget {
       label: '${digit.label} button',
       button: true,
       child: _KeyboardButton(
+        islabel: true,
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
@@ -81,23 +82,18 @@ class CoreOperatorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
     final effectiveWidth = width ?? effectiveSize;
     final effectiveHeight = height ?? effectiveSize;
     final backgroundColor = colors.keyboardCalculate;
-    final textColor = colors.textHeadline;
     return Semantics(
       label: '${operatorType.symbol} operator button',
       button: true,
       child: _KeyboardButton(
-        label: operatorType.symbol,
+        islabel: false,
+        icon: operatorType.icon,
         backgroundColor: backgroundColor,
         onPressed: () => onOperatorPressed(operatorType),
-        textStyle: typography.titleLargeRegular.copyWith(
-          color: textColor,
-          fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
-        ),
         width: effectiveWidth,
         height: effectiveHeight,
         borderRadius:
@@ -140,7 +136,9 @@ class CoreUnitButton extends StatelessWidget {
       label: '${unit.label} unit button',
       button: true,
       child: _KeyboardButton(
-        label: unit.label,
+        label: unit == UnitType.divideSymbol ? null : unit.label,
+        icon: unit == UnitType.divideSymbol ? CoreIcons.slash : null,
+        islabel: unit != UnitType.divideSymbol,
         backgroundColor: backgroundColor,
         onPressed: () => onUnitSelected(unit),
         width: width,
@@ -201,11 +199,12 @@ class CoreControlButton extends StatelessWidget {
       button: true,
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
-        label: action.label,
+        islabel: false,
+        icon: action.icon,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: typography.bodySmallSemiBold.copyWith(
+        textStyle: typography.bodySmallRegular.copyWith(
           color: textColor,
           fontSize: height! * _KeyboardButton._smallFontSizeRatio,
         ),
@@ -273,6 +272,7 @@ class CoreResultButton extends StatelessWidget {
       hint: 'Calculates and displays the result',
       child: _KeyboardButton(
         label: label,
+        islabel: true,
         backgroundColor: backgroundColor,
         onPressed: onTap,
         height: effectiveHeight,
@@ -291,6 +291,7 @@ class CoreResultButton extends StatelessWidget {
 
 class _KeyboardButton extends StatefulWidget {
   final String? label;
+  final CoreIconData? icon;
   final Color? borderColor;
   final Color? backgroundColor;
   final VoidCallback onPressed;
@@ -299,6 +300,7 @@ class _KeyboardButton extends StatefulWidget {
   final double? height;
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
+  final bool islabel;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
@@ -309,17 +311,19 @@ class _KeyboardButton extends StatefulWidget {
 
   static const double _circularBorderRadius = 100.0;
 
-  const _KeyboardButton({
-    this.label,
-    this.borderColor,
-    required this.backgroundColor,
-    required this.onPressed,
-    this.textStyle,
-    this.width,
-    this.height,
-    BorderRadius? borderRadius,
-    this.pressedBorderRadius,
-  }) : borderRadius = borderRadius ??
+  const _KeyboardButton(
+      {this.label,
+      this.icon,
+      this.borderColor,
+      required this.backgroundColor,
+      required this.onPressed,
+      this.textStyle,
+      this.width,
+      this.height,
+      BorderRadius? borderRadius,
+      this.pressedBorderRadius,
+      required this.islabel})
+      : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
@@ -420,10 +424,17 @@ class _KeyboardButtonState extends State<_KeyboardButton>
               onTapUp: _handleTapUp,
               onTapCancel: _handleTapCancel,
               child: Center(
-                  child: Text(
-                widget.label!,
-                style: widget.textStyle,
-              )),
+                  child: widget.islabel
+                      ? Text(
+                          widget.label ?? '',
+                          style: widget.textStyle,
+                        )
+                      : CoreIconWidget(
+                          icon: widget.icon!,
+                          size: effectiveHeight! *
+                              _KeyboardButton._largeFontSizeRatio,
+                          color: widget.textStyle?.color ?? colors.textHeadline,
+                        )),
             ),
           ),
         );

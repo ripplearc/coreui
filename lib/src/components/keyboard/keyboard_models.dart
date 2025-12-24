@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
@@ -79,6 +80,22 @@ extension OperatorTypeX on OperatorType {
         return '%';
     }
   }
+
+  /// Returns the icon representation of the operator type.
+  CoreIconData get icon {
+    switch (this) {
+      case OperatorType.add:
+        return CoreIcons.addOperator;
+      case OperatorType.subtract:
+        return CoreIcons.subtractOperator;
+      case OperatorType.multiply:
+        return CoreIcons.multiplyOperator;
+      case OperatorType.divide:
+        return CoreIcons.divide;
+      case OperatorType.percent:
+        return CoreIcons.percentOperator;
+    }
+  }
 }
 
 /// Defines the types of measurement units available on the keyboard.
@@ -134,15 +151,15 @@ enum ControlAction {
 
 /// Extension providing labels for [ControlAction] enum values.
 extension ControlActionX on ControlAction {
-  /// Returns the string label representation of the control action.
-  String get label {
+  /// Returns the icon representation of the control action.
+  CoreIconData? get icon {
     switch (this) {
       case ControlAction.delete:
-        return '⌫';
+        return CoreIcons.backSpace;
       case ControlAction.clearAll:
-        return 'C';
+        return CoreIcons.cChar;
       case ControlAction.moreOptions:
-        return '⋮';
+        return CoreIcons.moreVert;
     }
   }
 }
