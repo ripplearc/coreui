@@ -192,7 +192,7 @@ class CoreTextField extends StatelessWidget {
       List<String>? errorTextList, List<Widget>? errorWidgetList) {
     if (errorTextList == null && errorWidgetList == null) return null;
     if (errorTextList != null && errorWidgetList != null) {
-      throw Exception(
+      throw ArgumentError(
           'errorTextList and errorWidgetList cannot be provided together');
     }
     if (errorTextList != null) {
