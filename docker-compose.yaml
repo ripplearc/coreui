@@ -4,7 +4,9 @@ services:
   flutter:
     build: .
     volumes:
-      - .:/app
+      - ./test:/app/test
+      - ./lib:/app/lib
+      - ~/.ssh:/home/flutter/.ssh:ro
     stdin_open: true
     tty: true
     working_dir: /app
