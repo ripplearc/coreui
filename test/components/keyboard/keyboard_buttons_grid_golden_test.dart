@@ -158,10 +158,10 @@ void main() {
         height: 80.0,
         width: 80.0,
       ),
-      CoreResultButton(
-        key: keyPrefix != null ? Key('${keyPrefix}_result_equals') : null,
-        resultType: const ResultType(label: '='),
-        onTap: () {},
+      CoreControlButton(
+        key: keyPrefix != null ? Key('${keyPrefix}_ctrl_more_options') : null,
+        action: ControlAction.moreOptions,
+        onControlAction: (_) {},
         height: 80.0,
         width: 80.0,
       ),
@@ -193,6 +193,14 @@ void main() {
               const SizedBox(height: 16),
               buildButtonGrid(normalButtons),
               const SizedBox(height: 16),
+              CoreResultButton(
+                key: const Key('normal_result_button'),
+                resultType: const ResultType(label: '='),
+                onTap: () {},
+                height: 80.0,
+                width: 160.0,
+              ),
+              const SizedBox(height: 32),
               Text(
                 'Pressed States',
                 style: CoreTypography.headlineMediumSemiBold(
@@ -201,13 +209,21 @@ void main() {
               ),
               const SizedBox(height: 16),
               buildButtonGrid(pressedButtons),
+              const SizedBox(height: 16),
+              CoreResultButton(
+                key: const Key('pressed_result_button'),
+                resultType: const ResultType(label: '='),
+                onTap: () {},
+                height: 80.0,
+                width: 160.0,
+              ),
             ],
           ),
         ),
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(600, 1050));
+    await tester.binding.setSurfaceSize(const Size(600, 1250));
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
@@ -216,10 +232,17 @@ void main() {
       final finder = find.byKey((button.key as Key));
       if (finder.evaluate().isNotEmpty) {
         await tester.startGesture(tester.getCenter(finder));
-        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 200));
       }
     }
 
+    // Simulate pressed state for the result button
+    final finder = find.byKey(const Key('pressed_result_button'));
+    if (finder.evaluate().isNotEmpty) {
+      await tester.startGesture(tester.getCenter(finder));
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    await tester.pump(const Duration(milliseconds: 200));
     await tester.awaitImages();
 
     await expectLater(
