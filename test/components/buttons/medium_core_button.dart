@@ -24,7 +24,6 @@ void main() {
           Text(
             title,
             style: typography.bodySmallRegular.copyWith(
-              fontSize: 12,
               color: Colors.black,
             ),
           ),
