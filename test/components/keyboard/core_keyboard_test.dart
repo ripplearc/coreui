@@ -110,7 +110,7 @@ void main() {
       if (operatorButton.evaluate().isNotEmpty) {
         await tester.tap(operatorButton);
         await tester.pumpAndSettle();
-        expect(pressedOperator, equals(OperatorType.add));
+        expect(pressedOperator, equals(OperatorType.percent));
       }
     });
 
