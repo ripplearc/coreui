@@ -162,9 +162,10 @@ class _CoreButtonState extends State<CoreButton> {
   }
 
   Widget _buildContentRow() {
+    final typography = Theme.of(context).coreTypography;
     final isEnabled = !widget.isDisabled && widget.onPressed != null;
     final textWidget = Text(widget.label,
-        style: CoreTypography.bodyLargeSemiBold(
+        style: typography.bodyLargeSemiBold.copyWith(
           color:
               _getContentColor(isEnabled: isEnabled, variant: widget.variant),
         ));

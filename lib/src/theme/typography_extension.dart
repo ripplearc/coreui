@@ -197,3 +197,8 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
     );
   }
 }
+
+extension TypographyTheme on ThemeData {
+  TypographyExtension get coreTypography => 
+      extension<TypographyExtension>() ?? TypographyExtension.create();
+}

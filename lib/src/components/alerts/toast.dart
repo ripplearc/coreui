@@ -5,7 +5,7 @@ import '../../theme/icons/core_icons.dart';
 import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
-import '../../theme/typography.dart';
+import '../../theme/typography_extension.dart';
 import '../core_icon.dart';
 
 class Toast extends StatelessWidget {
@@ -97,6 +97,8 @@ class Toast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final typography = Theme.of(context).coreTypography;
+
     return Semantics(
       container: true,
       button: onClose != null,
@@ -127,16 +129,18 @@ class Toast extends StatelessWidget {
                 children: [
                   Text(
                     title ?? description,
-                    style: CoreTypography.bodyLargeMedium(
-                        color: CoreTextColors.dark),
+                    style: typography.bodyLargeMedium.copyWith(
+                      color: CoreTextColors.dark,
+                    ),
                   ),
                   if (title != null)
                     Padding(
                       padding: const EdgeInsets.only(top: CoreSpacing.space1),
                       child: Text(
                         description,
-                        style: CoreTypography.bodySmallRegular(
-                            color: CoreTextColors.body),
+                        style: typography.bodySmallRegular.copyWith(
+                          color: CoreTextColors.body,
+                        ),
                       ),
                     ),
                 ],
@@ -154,8 +158,9 @@ class Toast extends StatelessWidget {
                   children: [
                     Text(
                       closeLabel,
-                      style: CoreTypography.bodyMediumSemiBold(
-                          color: CoreTextColors.link),
+                      style: typography.bodyMediumSemiBold.copyWith(
+                        color: CoreTextColors.link,
+                      ),
                     ),
                     const SizedBox(width: CoreSpacing.space2),
                     const CoreIconWidget(

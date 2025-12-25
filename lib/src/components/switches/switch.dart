@@ -225,6 +225,8 @@ class CoreSwitch extends StatelessWidget {
         value ? effectiveActiveColor : CoreBackgroundColors.backgroundGrayLight;
     final borderColor = value ? effectiveActiveColor : _getBorderColor;
 
+    final typography = Theme.of(context).coreTypography;
+
     return GestureDetector(
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
@@ -248,7 +250,7 @@ class CoreSwitch extends StatelessWidget {
                   child: Center(
                     child: Text(
                       value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
-                      style: CoreTypography.bodySmallRegular(
+                      style: typography.bodySmallRegular.copyWith(
                         color: value
                             ? CoreTextColors.inverse
                             : effectiveInactiveTextColor,
