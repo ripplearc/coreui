@@ -65,8 +65,7 @@ void main() {
 
     await tester.binding.setSurfaceSize(const Size(500, 800));
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
     await tester.awaitImages();
 
     await expectLater(

@@ -19,10 +19,8 @@ void main() {
 
     testWidgets('renders keyboard with all required components',
         (tester) async {
-      // Set test window size to accommodate circular buttons
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-      tester.binding.window.physicalSizeTestValue =
-          const ui.Size(800, 1200); // Increased height for circular buttons
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
