@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import 'function_key_tile.dart';
+
 /// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
 ///
 /// [currentGroup] is the currently active function group.
@@ -17,44 +19,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [customResultLabel] is an optional custom label for the result button.
-class CoreKeyboard extends StatelessWidget {
-  // Layout constants
-  /// Keyboard height as percentage of screen height
-  static const double _keyboardHeightRatio = 0.6;
-
-  /// Minimum height to be considered a small screen (in logical pixels)
-  static const double _smallScreenThreshold = 500.0;
-
-  /// Estimated header height in logical pixels
-  static const double _estimatedHeaderHeight = CoreSpacing.space8;
-
-  /// Estimated function strip height in logical pixels
-  static const double _estimatedFunctionStripHeight = CoreSpacing.space10;
-
-  /// Button spacing as percentage of available width for small screens
-  static const double _smallScreenButtonSpacingRatio = 0.012;
-
-  /// Button spacing as percentage of available width for normal screens
-  static const double _normalScreenButtonSpacingRatio = 0.015;
-
-  /// Column width ratios for 5-column grid
-  static const double _column1WidthRatio = 0.22;
-  static const double _column2to5WidthRatio = 0.195;
-
-  /// Minimum column width ratio threshold
-  static const double _minColumnWidthRatio = 0.8;
-
-  /// Number of keyboard rows
-  static const int _keyboardRowCount = 5;
-
-  /// Number of gaps between rows
-  static const int _keyboardRowGaps = 4;
-
-  /// Drag handle width
-  static final double _dragHandleWidth = CoreSpacing.space12;
-
-  /// Aspect ratio for function key tiles in grid
-  static const double _functionKeyTileAspectRatio = 2.4;
+class CoreKeyboard extends StatefulWidget {
   const CoreKeyboard({
     super.key,
     required this.currentGroup,
@@ -89,22 +54,34 @@ class CoreKeyboard extends StatelessWidget {
   final String? customResultLabel;
 
   @override
+  State<CoreKeyboard> createState() => _CoreKeyboardState();
+}
+
+class _CoreKeyboardState extends State<CoreKeyboard> {
+  // Layout constants
+  static const double _buttonSpacingRatio = 0.015;
+
+  static const int _keyboardColumnCount = 5;
+
+  static const double _functionKeyTileAspectRatio = 2.4;
+
+  static const double _dragIndicatorHeight = 6.0;
+  static const double _dragIndicatorWidth = 32.0;
+
+  @override
   Widget build(BuildContext context) {
-    final group = allGroups.firstWhere(
-      (g) => g.name == currentGroup,
-      orElse: () => allGroups.isNotEmpty
-          ? allGroups.first
+    final group = widget.allGroups.firstWhere(
+      (g) => g.name == widget.currentGroup,
+      orElse: () => widget.allGroups.isNotEmpty
+          ? widget.allGroups.first
           : const FunctionGroup(
               name: GroupNameType(label: "Basic Geometry"), keys: []),
     );
     final colors = AppColorsExtension.of(context);
-    final accent =
-        groupAccentColors[currentGroup] ?? colors.backgroundBlueLight;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final keyboardHeight = screenHeight * _keyboardHeightRatio;
+    final accent = widget.groupAccentColors[widget.currentGroup] ??
+        CoreKeyboardColors.functions;
 
     return Container(
-      height: keyboardHeight,
       decoration: BoxDecoration(
         color: colors.pageBackground,
         borderRadius: const BorderRadius.vertical(
@@ -119,41 +96,23 @@ class CoreKeyboard extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final availableHeight = constraints.maxHeight;
           final availableWidth = constraints.maxWidth;
 
           const horizontalPadding = CoreSpacing.space3;
           const verticalPadding = CoreSpacing.space3;
-          const dragHandleHeight = CoreSpacing.space1;
-          const dragHandleSpacing = CoreSpacing.space4;
 
-          final contentHeight = availableHeight -
-              (verticalPadding * 2) -
-              dragHandleHeight -
-              dragHandleSpacing;
+          final widthForContent = availableWidth - (horizontalPadding * 2);
+          final buttonSpacing =
+              (widthForContent * _buttonSpacingRatio).clamp(4.0, 12.0);
+          final totalSpacingWidth = buttonSpacing * 4;
+          final availableForButtons = widthForContent - totalSpacingWidth;
 
-          final isSmallScreen = availableHeight < _smallScreenThreshold;
-          final headerSpacing =
-              isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
-          final functionStripSpacing =
-              isSmallScreen ? CoreSpacing.space2 : CoreSpacing.space3;
-          final keyboardSpacing = CoreSpacing.space2;
+          final buttonSize = availableForButtons / _keyboardColumnCount;
 
-          final headerHeight = _estimatedHeaderHeight;
-          final functionStripHeight = _estimatedFunctionStripHeight;
+          final headerSpacing = CoreSpacing.space3;
+          final functionStripSpacing = CoreSpacing.space4;
 
-          final keyboardAvailableHeight = contentHeight -
-              headerHeight -
-              headerSpacing -
-              functionStripHeight -
-              functionStripSpacing -
-              keyboardSpacing * _keyboardRowGaps;
-
-          final buttonHeight = keyboardAvailableHeight > 0
-              ? keyboardAvailableHeight / _keyboardRowCount
-              : CoreSpacing.space12;
-
-          return Padding(
+          return Container(
             padding: const EdgeInsets.fromLTRB(horizontalPadding,
                 verticalPadding, horizontalPadding, verticalPadding),
             child: Column(
@@ -161,30 +120,32 @@ class CoreKeyboard extends StatelessWidget {
               children: [
                 Semantics(
                   label: 'Keyboard drag handle',
-                  child: Container(
-                    width: _dragHandleWidth,
-                    height: dragHandleHeight,
-                    decoration: BoxDecoration(
-                      color: colors.backgroundGrayLight,
-                      borderRadius: BorderRadius.circular(CoreSpacing.space1),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: CoreSpacing.space2,
+                      bottom: CoreSpacing.space1,
+                    ),
+                    child: CustomPaint(
+                      size:
+                          const Size(_dragIndicatorWidth, _dragIndicatorHeight),
+                      painter: _CurvedDragHandlePainter(
+                        color: colors.iconGrayLight,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: headerSpacing),
                 _FunctionKeyStrip(
                   group: group,
-                  onKeyTapped: onKeyTapped,
+                  onKeyTapped: widget.onKeyTapped,
                   accentColor: accent,
                   onViewAll: () => _showFunctionsSheet(context),
                 ),
-                SizedBox(height: keyboardSpacing),
-                Expanded(
-                  child: _buildColumnLayout(
-                    context,
-                    buttonHeight: buttonHeight,
-                    availableWidth: availableWidth - (horizontalPadding * 2),
-                    isSmallScreen: isSmallScreen,
-                  ),
+                SizedBox(height: functionStripSpacing),
+                _buildColumnLayout(
+                  context,
+                  buttonSize: buttonSize,
+                  buttonSpacing: buttonSpacing,
                 ),
               ],
             ),
@@ -194,12 +155,10 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
-  /// Builds the column layout for the keyboard grid.
   Widget _buildColumnLayout(
     BuildContext context, {
-    required double buttonHeight,
-    required double availableWidth,
-    required bool isSmallScreen,
+    required double buttonSize,
+    required double buttonSpacing,
   }) {
     const imperialUnitsOrder = [UnitType.yards, UnitType.feet, UnitType.inch];
     const metricUnitsOrder = [
@@ -207,181 +166,159 @@ class CoreKeyboard extends StatelessWidget {
       UnitType.centimeter,
       UnitType.millimeter
     ];
-    final activeUnits = currentUnitSystem == UnitSystem.imperial
+    final activeUnits = widget.currentUnitSystem == UnitSystem.imperial
         ? imperialUnitsOrder
         : metricUnitsOrder;
 
-    final buttonSpacing = isSmallScreen
-        ? availableWidth * _smallScreenButtonSpacingRatio
-        : availableWidth * _normalScreenButtonSpacingRatio;
-
-    final totalSpacing = buttonSpacing * 4;
-    final availableForButtons = availableWidth - totalSpacing;
-    final column1Width = availableForButtons * _column1WidthRatio;
-    final column2to5Width = availableForButtons * _column2to5WidthRatio;
-
-    final buttonSize =
-        column2to5Width < buttonHeight ? column2to5Width : buttonHeight;
-
-    final spaceForCircularButtons = (buttonSize * 4) + (buttonSpacing * 3);
-    final adjustedColumn1Width =
-        availableWidth - spaceForCircularButtons - buttonSpacing;
-    final finalColumn1Width =
-        adjustedColumn1Width > column1Width * _minColumnWidthRatio
-            ? adjustedColumn1Width
-            : column1Width;
-
     return Column(
       children: [
-        // Row 1: C, /, %, ÷, backspace
-        Expanded(
-          child: _buildGridRow(
-            children: [
-              CoreControlButton(
-                action: ControlAction.clearAll,
-                onControlAction: onControlAction,
-                width: finalColumn1Width,
-                height: buttonHeight,
-              ),
-              CoreUnitButton(
-                  unit: UnitType.divideSymbol,
-                  onUnitSelected: onUnitSelected,
-                  height: buttonSize,
-                  width: buttonSize),
-              CoreOperatorButton(
-                operatorType: OperatorType.percent,
-                onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
-              ),
-              CoreOperatorButton(
-                operatorType: OperatorType.divide,
-                onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
-              ),
-              CoreControlButton(
-                action: ControlAction.delete,
-                onControlAction: onControlAction,
-                width: buttonSize,
-                height: buttonSize,
-              ),
-            ],
-            spacing: buttonSpacing,
-          ),
+        _buildGridRow(
+          children: [
+            CoreControlButton(
+              action: ControlAction.clearAll,
+              onControlAction: widget.onControlAction,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreUnitButton(
+              unit: UnitType.divideSymbol,
+              onUnitSelected: widget.onUnitSelected,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreOperatorButton(
+              operatorType: OperatorType.percent,
+              onOperatorPressed: widget.onOperatorPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreOperatorButton(
+              operatorType: OperatorType.divide,
+              onOperatorPressed: widget.onOperatorPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreControlButton(
+              action: ControlAction.delete,
+              onControlAction: widget.onControlAction,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+          ],
+          spacing: buttonSpacing,
         ),
         SizedBox(height: buttonSpacing),
-        // Row 2: Yards, 7, 8, 9, ×
-        Expanded(
-          child: _buildGridRow(
-            children: [
-              CoreUnitButton(
-                unit: activeUnits[0],
-                onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
-                height: buttonHeight,
-              ),
-              CoreDigitInput(
-                digit: DigitType.seven,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.eight,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.nine,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreOperatorButton(
-                operatorType: OperatorType.multiply,
-                onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
-              ),
-            ],
-            spacing: buttonSpacing,
-          ),
+        _buildGridRow(
+          children: [
+            CoreUnitButton(
+              unit: activeUnits[0],
+              onUnitSelected: widget.onUnitSelected,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.seven,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.eight,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.nine,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreOperatorButton(
+              operatorType: OperatorType.multiply,
+              onOperatorPressed: widget.onOperatorPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+          ],
+          spacing: buttonSpacing,
         ),
         SizedBox(height: buttonSpacing),
-        // Row 3: Feet, 4, 5, 6, -
-        Expanded(
-          child: _buildGridRow(
-            children: [
-              CoreUnitButton(
-                unit: activeUnits[1],
-                onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
-                height: buttonHeight,
-              ),
-              CoreDigitInput(
-                digit: DigitType.four,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.five,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.six,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreOperatorButton(
-                operatorType: OperatorType.subtract,
-                onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
-              ),
-            ],
-            spacing: buttonSpacing,
-          ),
+        _buildGridRow(
+          children: [
+            CoreUnitButton(
+              unit: activeUnits[1],
+              onUnitSelected: widget.onUnitSelected,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.four,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.five,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.six,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreOperatorButton(
+              operatorType: OperatorType.subtract,
+              onOperatorPressed: widget.onOperatorPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+          ],
+          spacing: buttonSpacing,
         ),
         SizedBox(height: buttonSpacing),
-        // Row 4: Inch, 1, 2, 3, +
-        Expanded(
-          child: _buildGridRow(
-            children: [
-              CoreUnitButton(
-                unit: activeUnits[2],
-                onUnitSelected: onUnitSelected,
-                width: finalColumn1Width,
-                height: buttonHeight,
-              ),
-              CoreDigitInput(
-                digit: DigitType.one,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.two,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreDigitInput(
-                digit: DigitType.three,
-                onDigitPressed: onDigitPressed,
-                size: buttonSize,
-              ),
-              CoreOperatorButton(
-                operatorType: OperatorType.add,
-                onOperatorPressed: onOperatorPressed,
-                size: buttonSize,
-              ),
-            ],
-            spacing: buttonSpacing,
-          ),
+        _buildGridRow(
+          children: [
+            CoreUnitButton(
+              unit: activeUnits[2],
+              onUnitSelected: widget.onUnitSelected,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.one,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.two,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreDigitInput(
+              digit: DigitType.three,
+              onDigitPressed: widget.onDigitPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+            CoreOperatorButton(
+              operatorType: OperatorType.add,
+              onOperatorPressed: widget.onOperatorPressed,
+              width: buttonSize,
+              height: buttonSize,
+            ),
+          ],
+          spacing: buttonSpacing,
         ),
         SizedBox(height: buttonSpacing),
-        // Row 5: ..., 0, ., Area (Area spans 2 columns)
-        Expanded(
-          child: _buildBottomRow(
-            buttonSpacing: buttonSpacing,
-            column1Width: finalColumn1Width,
-            buttonSize: buttonSize,
-            buttonHeight: buttonHeight,
-          ),
+        _buildBottomRow(
+          buttonSize: buttonSize,
+          buttonSpacing: buttonSpacing,
         ),
       ],
     );
@@ -405,49 +342,39 @@ class CoreKeyboard extends StatelessWidget {
     );
   }
 
-  /// Builds the bottom row of the keyboard with result button spanning 2 columns.
-
-  /// more options, zero, and decimal buttons respectively.
   Widget _buildBottomRow({
-    required double buttonSpacing,
-    required double column1Width,
     required double buttonSize,
-    required double buttonHeight,
+    required double buttonSpacing,
   }) {
-    // Result button spans 2 columns (columns 4-5)
-    final resultButtonWidth = (buttonSize * 2) + buttonSpacing;
-
     return Row(
       children: [
-        // Column 1: moreOptions
         CoreControlButton(
           action: ControlAction.moreOptions,
-          onControlAction: onControlAction,
-          width: column1Width,
-          height: buttonHeight,
+          onControlAction: widget.onControlAction,
+          width: buttonSize,
+          height: buttonSize,
         ),
         SizedBox(width: buttonSpacing),
-        // Column 2: 0
         CoreDigitInput(
           digit: DigitType.zero,
-          onDigitPressed: onDigitPressed,
-          size: buttonSize,
+          onDigitPressed: widget.onDigitPressed,
+          width: buttonSize,
+          height: buttonSize,
         ),
         SizedBox(width: buttonSpacing),
-        // Column 3: .
         CoreDigitInput(
           digit: DigitType.decimal,
-          onDigitPressed: onDigitPressed,
-          size: buttonSize,
+          onDigitPressed: widget.onDigitPressed,
+          width: buttonSize,
+          height: buttonSize,
         ),
         SizedBox(width: buttonSpacing),
-        // Columns 4-5: Result button (spans 2 columns)
         CoreResultButton(
-          resultType: result,
-          customLabel: customResultLabel,
-          onTap: onResultTapped,
-          width: resultButtonWidth,
-          height: buttonHeight,
+          resultType: widget.result,
+          customLabel: widget.customResultLabel,
+          onTap: widget.onResultTapped,
+          width: buttonSize + buttonSize,
+          height: buttonSize,
         ),
       ],
     );
@@ -464,21 +391,21 @@ class CoreKeyboard extends StatelessWidget {
             BorderRadius.vertical(top: Radius.circular(CoreSpacing.space6)),
       ),
       builder: (context) {
-        return CoreFunctionBottomSheet(
-          groups: allGroups,
-          groupAccentColors: groupAccentColors,
-          selectedGroup: currentGroup,
+        return CoreFunctionKeyBottomSheet(
+          groups: widget.allGroups,
+          groupAccentColors: widget.groupAccentColors,
+          selectedGroup: widget.currentGroup,
           onGroupSelected: (groupName) {
-            onGroupSelected(groupName);
+            widget.onGroupSelected(groupName);
             Navigator.of(context).pop();
           },
           onKeyTapped: (key) {
-            onKeyTapped(key);
+            widget.onKeyTapped(key);
             Navigator.of(context).pop();
           },
-          currentUnitSystem: currentUnitSystem,
+          currentUnitSystem: widget.currentUnitSystem,
           onUnitSystemChanged: (system) {
-            onUnitSystemChanged(system);
+            widget.onUnitSystemChanged(system);
           },
         );
       },
@@ -511,13 +438,15 @@ class _FunctionKeyStrip extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header: Group name with dot + "View all" link
         Row(
           children: [
-            Text(
-              '${group.name.label} group',
-              style: typography.bodySmallMedium.copyWith(
-                color: colors.textHeadline,
+            Flexible(
+              child: Text(
+                '${group.name.label} group',
+                style: typography.bodySmallMedium.copyWith(
+                  color: colors.textHeadline,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: CoreSpacing.space2),
@@ -548,6 +477,7 @@ class _FunctionKeyStrip extends StatelessWidget {
                       'View all',
                       style: typography.bodySmallMedium
                           .copyWith(color: colors.buttonSurface),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(width: CoreSpacing.space1),
                     Icon(
@@ -568,14 +498,15 @@ class _FunctionKeyStrip extends StatelessWidget {
           mainAxisSpacing: CoreSpacing.space1,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: CoreKeyboard._functionKeyTileAspectRatio,
+          childAspectRatio: _CoreKeyboardState._functionKeyTileAspectRatio,
           children: group.keys.map((key) {
-            return _FunctionKeyTile(
+            return FunctionKeyTile(
               keyType: key,
               onTap: () {
                 onKeyTapped(key);
                 key.action?.call();
               },
+              hasPadding: true,
             );
           }).toList(),
         ),
@@ -584,57 +515,34 @@ class _FunctionKeyStrip extends StatelessWidget {
   }
 }
 
-class _FunctionKeyTile extends StatelessWidget {
-  final KeyType keyType;
-  final VoidCallback onTap;
+/// Custom painter that draws a curved drag handle indicator.
+class _CurvedDragHandlePainter extends CustomPainter {
+  final Color color;
 
-  const _FunctionKeyTile({
-    required this.keyType,
-    required this.onTap,
-  });
+  _CurvedDragHandlePainter({required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
-    return Semantics(
-      label: '${keyType.label} function key',
-      button: true,
-      hint: keyType.semanticLabel,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space1,
-            vertical: CoreSpacing.space1,
-          ),
-          decoration: BoxDecoration(
-            color: colors.backgroundGrayMid,
-            borderRadius: BorderRadius.circular(CoreSpacing.space2),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (keyType.icon != null) ...[
-                  Icon(
-                    keyType.icon,
-                    color: colors.textHeadline,
-                    size: CoreSpacing.space4,
-                  ),
-                  const SizedBox(width: CoreSpacing.space1),
-                ],
-                Text(
-                  keyType.label,
-                  style: typography.bodyMediumRegular.copyWith(
-                    color: colors.textHeadline,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(0, size.height * 0.2);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height,
+      size.width,
+      size.height * 0.2,
     );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }

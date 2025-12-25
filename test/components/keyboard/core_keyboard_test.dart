@@ -1,7 +1,8 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
-import 'package:ripplearc_coreui/src/components/keyboard/core_keyboard.dart';
 
 void main() {
   group('CoreKeyboard', () {
@@ -9,14 +10,17 @@ void main() {
       FunctionGroup(
         name: const GroupNameType(label: "Basic Geometry"),
         keys: [
-          KeyType(id: 'area', label: 'Area', action: () {}),
-          KeyType(id: 'perimeter', label: 'Perimeter', action: () {}),
+          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+          KeyType(
+              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
         ],
       ),
     ];
 
     testWidgets('renders keyboard with all required components',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -37,12 +41,14 @@ void main() {
         ),
       );
 
-      // Check that keyboard container is present
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
 
     testWidgets('calls onDigitPressed when digit button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       DigitType? pressedDigit;
       await tester.pumpWidget(
         MaterialApp(
@@ -65,7 +71,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap a digit button (e.g., "1")
       final digitButton = find.text('1');
       if (digitButton.evaluate().isNotEmpty) {
         await tester.tap(digitButton);
@@ -76,6 +81,9 @@ void main() {
 
     testWidgets('calls onOperatorPressed when operator button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       OperatorType? pressedOperator;
       await tester.pumpWidget(
         MaterialApp(
@@ -98,17 +106,19 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap an operator button (e.g., "+")
-      final operatorButton = find.text('+');
+      final operatorButton = find.byType(CoreOperatorButton).first;
       if (operatorButton.evaluate().isNotEmpty) {
         await tester.tap(operatorButton);
         await tester.pumpAndSettle();
-        expect(pressedOperator, equals(OperatorType.add));
+        expect(pressedOperator, equals(OperatorType.percent));
       }
     });
 
     testWidgets('calls onResultTapped when result button is tapped',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       bool resultTapped = false;
       await tester.pumpWidget(
         MaterialApp(
@@ -131,7 +141,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Find and tap the result button
       final resultButton = find.text('=');
       if (resultButton.evaluate().isNotEmpty) {
         await tester.tap(resultButton);
@@ -142,6 +151,9 @@ void main() {
 
     testWidgets('displays correct unit buttons for imperial system',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -164,14 +176,16 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Check for imperial units
       expect(find.text('Yards'), findsWidgets);
       expect(find.text('Feet'), findsWidgets);
-      expect(find.text('Inches'), findsWidgets);
+      expect(find.text('Inch'), findsWidgets);
     });
 
     testWidgets('displays correct unit buttons for metric system',
         (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -194,16 +208,18 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Check for metric units
-      expect(find.text('Meters'), findsWidgets);
-      expect(find.text('Centimeters'), findsWidgets);
-      expect(find.text('Millimeters'), findsWidgets);
+      expect(find.text('M'), findsWidgets);
+      expect(find.text('CM'), findsWidgets);
+      expect(find.text('MM'), findsWidgets);
     });
 
     testWidgets('handles empty function groups gracefully', (tester) async {
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.binding.window.physicalSizeTestValue = const ui.Size(800, 1200);
+
       final emptyGroups = [
         const FunctionGroup(
-          name: const GroupNameType(label: ""),
+          name: GroupNameType(label: ""),
           keys: [],
         ),
       ];
@@ -229,7 +245,6 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      // Should render without crashing
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
   });

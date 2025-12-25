@@ -84,6 +84,7 @@ abstract class _CoreColorPalette {
   static const Color green700 = Color(0xFF106446);
   static const Color green800 = Color(0xFF02523B);
   static const Color green900 = Color(0xFF002E22);
+  static const Color transparent = Color(0x00000000);
 }
 
 // Text-related color tokens
@@ -146,6 +147,7 @@ class CoreKeyboardColors {
   static const Color functions = _CoreColorPalette.blue600;
   static const Color actions = _CoreColorPalette.blue700;
   static const Color main = _CoreColorPalette.blue800;
+  static const Color transparent = _CoreColorPalette.transparent;
 }
 
 // Icon-related color tokens

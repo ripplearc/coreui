@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -33,35 +32,11 @@ void main() {
     test('label returns correct string for all unit types', () {
       expect(UnitType.yards.label, equals('Yards'));
       expect(UnitType.feet.label, equals('Feet'));
-      expect(UnitType.inch.label, equals('Inches'));
-      expect(UnitType.meter.label, equals('Meters'));
-      expect(UnitType.centimeter.label, equals('Centimeters'));
-      expect(UnitType.millimeter.label, equals('Millimeters'));
+      expect(UnitType.inch.label, equals('Inch'));
+      expect(UnitType.meter.label, equals('M'));
+      expect(UnitType.centimeter.label, equals('CM'));
+      expect(UnitType.millimeter.label, equals('MM'));
       expect(UnitType.divideSymbol.label, equals('/'));
-    });
-  });
-
-  group('ControlAction', () {
-    test('label returns correct string for all control actions', () {
-      expect(ControlAction.delete.label, equals('⌫'));
-      expect(ControlAction.clearAll.label, equals('C'));
-      expect(ControlAction.moreOptions.label, equals('⋮'));
-    });
-
-    test('icon returns correct IconData for actions with icons', () {
-      expect(ControlAction.delete.icon, isNotNull);
-      expect(ControlAction.moreOptions.icon, isNotNull);
-      expect(ControlAction.clearAll.icon, isNull);
-    });
-
-    test('icon returns IconData from CoreMaterialIcons', () {
-      final deleteIcon = ControlAction.delete.icon;
-      final moreOptionsIcon = ControlAction.moreOptions.icon;
-
-      expect(deleteIcon, isNotNull);
-      expect(moreOptionsIcon, isNotNull);
-      expect(deleteIcon, isA<IconData>());
-      expect(moreOptionsIcon, isA<IconData>());
     });
   });
 

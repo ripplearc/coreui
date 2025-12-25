@@ -4,7 +4,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// Defines the types of digits and symbols available on the keyboard.
 /// - [zero] through [nine]: Numeric digits 0-9
 /// - [decimal]: Decimal point symbol (.)
-/// - [divideSymbol]: Division symbol (/)
 enum DigitType {
   zero,
   one,
@@ -81,6 +80,22 @@ extension OperatorTypeX on OperatorType {
         return '%';
     }
   }
+
+  /// Returns the icon representation of the operator type.
+  CoreIconData get icon {
+    switch (this) {
+      case OperatorType.add:
+        return CoreIcons.addOperator;
+      case OperatorType.subtract:
+        return CoreIcons.subtractOperator;
+      case OperatorType.multiply:
+        return CoreIcons.multiplyOperator;
+      case OperatorType.divide:
+        return CoreIcons.divide;
+      case OperatorType.percent:
+        return CoreIcons.percentOperator;
+    }
+  }
 }
 
 /// Defines the types of measurement units available on the keyboard.
@@ -90,6 +105,7 @@ extension OperatorTypeX on OperatorType {
 /// - [meter]: Meter unit
 /// - [centimeter]: Centimeter unit
 /// - [millimeter]: Millimeter unit
+/// - [divideSymbol]: Division symbol (/) for compound units
 enum UnitType {
   yards,
   feet,
@@ -110,13 +126,13 @@ extension UnitTypeX on UnitType {
       case UnitType.feet:
         return 'Feet';
       case UnitType.inch:
-        return 'Inches';
+        return 'Inch';
       case UnitType.meter:
-        return 'Meters';
+        return 'M';
       case UnitType.centimeter:
-        return 'Centimeters';
+        return 'CM';
       case UnitType.millimeter:
-        return 'Millimeters';
+        return 'MM';
       case UnitType.divideSymbol:
         return '/';
     }
@@ -133,30 +149,17 @@ enum ControlAction {
   moreOptions,
 }
 
-/// Extension providing labels and icons for [ControlAction] enum values.
+/// Extension providing labels for [ControlAction] enum values.
 extension ControlActionX on ControlAction {
-  /// Returns the string label representation of the control action.
-  String get label {
+  /// Returns the icon representation of the control action.
+  CoreIconData? get icon {
     switch (this) {
       case ControlAction.delete:
-        return '⌫';
+        return CoreIcons.backSpace;
       case ControlAction.clearAll:
-        return 'C';
+        return CoreIcons.cChar;
       case ControlAction.moreOptions:
-        return '⋮';
-    }
-  }
-
-  /// Returns the icon data for the control action, if applicable.
-  /// Returns `null` for actions that use text labels instead of icons.
-  IconData? get icon {
-    switch (this) {
-      case ControlAction.delete:
-        return CoreIcons.backspaceLeft.materialIcon;
-      case ControlAction.moreOptions:
-        return CoreIcons.moreVert.materialIcon;
-      case ControlAction.clearAll:
-        return null;
+        return CoreIcons.moreVert;
     }
   }
 }
@@ -167,6 +170,16 @@ extension ControlActionX on ControlAction {
 class GroupNameType {
   final String label;
   const GroupNameType({required this.label});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GroupNameType &&
+          runtimeType == other.runtimeType &&
+          label == other.label;
+
+  @override
+  int get hashCode => label.hashCode;
 }
 
 /// Defines the types of results that can be displayed on the keyboard.
@@ -203,8 +216,8 @@ extension UnitSystemX on UnitSystem {
 /// [semanticLabel] is an optional label for accessibility purposes.
 @immutable
 class KeyType {
-  /// Unique identifier for the key.
-  final String id;
+  /// Unique identifier on which group the key exists for the key.
+  final String groupName;
 
   /// Text label displayed on the key.
   final String label;
@@ -220,7 +233,7 @@ class KeyType {
 
   /// Creates a [KeyType] instance.
   const KeyType({
-    required this.id,
+    required this.groupName,
     required this.label,
     this.icon,
     this.action,
