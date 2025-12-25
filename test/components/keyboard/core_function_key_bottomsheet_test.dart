@@ -22,9 +22,9 @@ void main() {
 
     final testAccentColors = {
       const GroupNameType(label: 'Trigonomety'):
-          CoreTheme.light().colorScheme.primary,
+          CoreBackgroundColors.backgroundDarkGray,
       const GroupNameType(label: 'Materials'):
-          CoreTheme.light().colorScheme.secondary,
+          CoreBackgroundColors.backgroundOrientMid,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {

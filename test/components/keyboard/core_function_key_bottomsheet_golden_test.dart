@@ -39,15 +39,15 @@ void main() {
 
     final testAccentColors = {
       const GroupNameType(label: 'Trigonomety'):
-          CoreTheme.light().colorScheme.primary,
+          CoreBackgroundColors.backgroundDarkGray,
       const GroupNameType(label: 'Materials'):
-          CoreTheme.light().colorScheme.secondary,
+          CoreBackgroundColors.backgroundOrientMid,
     };
 
     final widget = MaterialApp(
       theme: _createTestTheme(),
       home: Scaffold(
-        backgroundColor: CoreTheme.light().colorScheme.surface,
+        backgroundColor: CoreBackgroundColors.pageBackground,
         body: Center(
           child: CoreFunctionKeyBottomSheet(
             groups: testGroups,
