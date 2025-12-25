@@ -299,85 +299,96 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       return this;
     }
     return AppColorsExtension(
-      textHeadline: Color.lerp(textHeadline, other.textHeadline, t)!,
-      textDark: Color.lerp(textDark, other.textDark, t)!,
-      textBody: Color.lerp(textBody, other.textBody, t)!,
-      textDisable: Color.lerp(textDisable, other.textDisable, t)!,
-      textInverse: Color.lerp(textInverse, other.textInverse, t)!,
-      textLink: Color.lerp(textLink, other.textLink, t)!,
-      textInfo: Color.lerp(textInfo, other.textInfo, t)!,
-      textWarning: Color.lerp(textWarning, other.textWarning, t)!,
-      textError: Color.lerp(textError, other.textError, t)!,
-      textSuccess: Color.lerp(textSuccess, other.textSuccess, t)!,
-      pageBackground: Color.lerp(pageBackground, other.pageBackground, t)!,
+      textHeadline: Color.lerp(textHeadline, other.textHeadline, t) ?? textHeadline,
+      textDark: Color.lerp(textDark, other.textDark, t) ?? textDark,
+      textBody: Color.lerp(textBody, other.textBody, t) ?? textBody,
+      textDisable: Color.lerp(textDisable, other.textDisable, t) ?? textDisable,
+      textInverse: Color.lerp(textInverse, other.textInverse, t) ?? textInverse,
+      textLink: Color.lerp(textLink, other.textLink, t) ?? textLink,
+      textInfo: Color.lerp(textInfo, other.textInfo, t) ?? textInfo,
+      textWarning: Color.lerp(textWarning, other.textWarning, t) ?? textWarning,
+      textError: Color.lerp(textError, other.textError, t) ?? textError,
+      textSuccess: Color.lerp(textSuccess, other.textSuccess, t) ?? textSuccess,
+      pageBackground: Color.lerp(pageBackground, other.pageBackground, t) ?? pageBackground,
       backgroundGrayLight:
-          Color.lerp(backgroundGrayLight, other.backgroundGrayLight, t)!,
+          Color.lerp(backgroundGrayLight, other.backgroundGrayLight, t) ?? backgroundGrayLight,
       backgroundGrayMid:
-          Color.lerp(backgroundGrayMid, other.backgroundGrayMid, t)!,
+          Color.lerp(backgroundGrayMid, other.backgroundGrayMid, t) ?? backgroundGrayMid,
       backgroundBlueLight:
-          Color.lerp(backgroundBlueLight, other.backgroundBlueLight, t)!,
+          Color.lerp(backgroundBlueLight, other.backgroundBlueLight, t) ?? backgroundBlueLight,
       backgroundBlueMid:
-          Color.lerp(backgroundBlueMid, other.backgroundBlueMid, t)!,
+          Color.lerp(backgroundBlueMid, other.backgroundBlueMid, t) ?? backgroundBlueMid,
       backgroundGreenLight:
-          Color.lerp(backgroundGreenLight, other.backgroundGreenLight, t)!,
+          Color.lerp(backgroundGreenLight, other.backgroundGreenLight, t) ?? backgroundGreenLight,
       backgroundGreenMid:
-          Color.lerp(backgroundGreenMid, other.backgroundGreenMid, t)!,
+          Color.lerp(backgroundGreenMid, other.backgroundGreenMid, t) ?? backgroundGreenMid,
       backgroundRedLight:
-          Color.lerp(backgroundRedLight, other.backgroundRedLight, t)!,
+          Color.lerp(backgroundRedLight, other.backgroundRedLight, t) ?? backgroundRedLight,
       backgroundRedMid:
-          Color.lerp(backgroundRedMid, other.backgroundRedMid, t)!,
+          Color.lerp(backgroundRedMid, other.backgroundRedMid, t) ?? backgroundRedMid,
       backgroundOrangeLight:
-          Color.lerp(backgroundOrangeLight, other.backgroundOrangeLight, t)!,
+          Color.lerp(backgroundOrangeLight, other.backgroundOrangeLight, t) ?? backgroundOrangeLight,
       backgroundOrangeMid:
-          Color.lerp(backgroundOrangeMid, other.backgroundOrangeMid, t)!,
+          Color.lerp(backgroundOrangeMid, other.backgroundOrangeMid, t) ?? backgroundOrangeMid,
       backgroundDarkGray:
-          Color.lerp(backgroundDarkGray, other.backgroundDarkGray, t)!,
+          Color.lerp(backgroundDarkGray, other.backgroundDarkGray, t) ?? backgroundDarkGray,
       backgroundDarkOrient:
-          Color.lerp(backgroundDarkOrient, other.backgroundDarkOrient, t)!,
-      orientLight: Color.lerp(orientLight, other.orientLight, t)!,
-      orientMid: Color.lerp(orientMid, other.orientMid, t)!,
-      lineLight: Color.lerp(lineLight, other.lineLight, t)!,
-      lineMid: Color.lerp(lineMid, other.lineMid, t)!,
-      lineDarkOutline: Color.lerp(lineDarkOutline, other.lineDarkOutline, t)!,
-      lineHighlight: Color.lerp(lineHighlight, other.lineHighlight, t)!,
-      outlineHover: Color.lerp(outlineHover, other.outlineHover, t)!,
-      outlineFocus: Color.lerp(outlineFocus, other.outlineFocus, t)!,
-      tabsHighlight: Color.lerp(tabsHighlight, other.tabsHighlight, t)!,
-      statusError: Color.lerp(statusError, other.statusError, t)!,
-      statusSuccess: Color.lerp(statusSuccess, other.statusSuccess, t)!,
-      buttonSurface: Color.lerp(buttonSurface, other.buttonSurface, t)!,
-      buttonHover: Color.lerp(buttonHover, other.buttonHover, t)!,
-      buttonDisable: Color.lerp(buttonDisable, other.buttonDisable, t)!,
-      buttonPress: Color.lerp(buttonPress, other.buttonPress, t)!,
-      iconDark: Color.lerp(iconDark, other.iconDark, t)!,
-      iconGrayDark: Color.lerp(iconGrayDark, other.iconGrayDark, t)!,
-      iconGrayMid: Color.lerp(iconGrayMid, other.iconGrayMid, t)!,
-      iconGrayLight: Color.lerp(iconGrayLight, other.iconGrayLight, t)!,
-      iconWhite: Color.lerp(iconWhite, other.iconWhite, t)!,
-      iconRed: Color.lerp(iconRed, other.iconRed, t)!,
-      iconGreen: Color.lerp(iconGreen, other.iconGreen, t)!,
-      iconOrange: Color.lerp(iconOrange, other.iconOrange, t)!,
-      iconBlue: Color.lerp(iconBlue, other.iconBlue, t)!,
-      iconOrient: Color.lerp(iconOrient, other.iconOrient, t)!,
-      chipGrey: Color.lerp(chipGrey, other.chipGrey, t)!,
-      chipPrimary: Color.lerp(chipPrimary, other.chipPrimary, t)!,
-      chipRed: Color.lerp(chipRed, other.chipRed, t)!,
-      chipOrange: Color.lerp(chipOrange, other.chipOrange, t)!,
-      chipBlue: Color.lerp(chipBlue, other.chipBlue, t)!,
-      chipGreen: Color.lerp(chipGreen, other.chipGreen, t)!,
-      alertRed: Color.lerp(alertRed, other.alertRed, t)!,
-      alertOrange: Color.lerp(alertOrange, other.alertOrange, t)!,
-      alertBlue: Color.lerp(alertBlue, other.alertBlue, t)!,
-      alertGreen: Color.lerp(alertGreen, other.alertGreen, t)!,
-      keyboardNumbers: Color.lerp(keyboardNumbers, other.keyboardNumbers, t)!,
+          Color.lerp(backgroundDarkOrient, other.backgroundDarkOrient, t) ?? backgroundDarkOrient,
+      orientLight: Color.lerp(orientLight, other.orientLight, t) ?? orientLight,
+      orientMid: Color.lerp(orientMid, other.orientMid, t) ?? orientMid,
+      lineLight: Color.lerp(lineLight, other.lineLight, t) ?? lineLight,
+      lineMid: Color.lerp(lineMid, other.lineMid, t) ?? lineMid,
+      lineDarkOutline: Color.lerp(lineDarkOutline, other.lineDarkOutline, t) ?? lineDarkOutline,
+      lineHighlight:
+          Color.lerp(lineHighlight, other.lineHighlight, t) ?? lineHighlight,
+      outlineHover:
+          Color.lerp(outlineHover, other.outlineHover, t) ?? outlineHover,
+      outlineFocus:
+          Color.lerp(outlineFocus, other.outlineFocus, t) ?? outlineFocus,
+      tabsHighlight:
+          Color.lerp(tabsHighlight, other.tabsHighlight, t) ?? tabsHighlight,
+      statusError: Color.lerp(statusError, other.statusError, t) ?? statusError,
+      statusSuccess:
+          Color.lerp(statusSuccess, other.statusSuccess, t) ?? statusSuccess,
+      buttonSurface:
+          Color.lerp(buttonSurface, other.buttonSurface, t) ?? buttonSurface,
+      buttonHover: Color.lerp(buttonHover, other.buttonHover, t) ?? buttonHover,
+      buttonDisable:
+          Color.lerp(buttonDisable, other.buttonDisable, t) ?? buttonDisable,
+      buttonPress: Color.lerp(buttonPress, other.buttonPress, t) ?? buttonPress,
+      iconDark: Color.lerp(iconDark, other.iconDark, t) ?? iconDark,
+      iconGrayDark:
+          Color.lerp(iconGrayDark, other.iconGrayDark, t) ?? iconGrayDark,
+      iconGrayMid: Color.lerp(iconGrayMid, other.iconGrayMid, t) ?? iconGrayMid,
+      iconGrayLight:
+          Color.lerp(iconGrayLight, other.iconGrayLight, t) ?? iconGrayLight,
+      iconWhite: Color.lerp(iconWhite, other.iconWhite, t) ?? iconWhite,
+      iconRed: Color.lerp(iconRed, other.iconRed, t) ?? iconRed,
+      iconGreen: Color.lerp(iconGreen, other.iconGreen, t) ?? iconGreen,
+      iconOrange: Color.lerp(iconOrange, other.iconOrange, t) ?? iconOrange,
+      iconBlue: Color.lerp(iconBlue, other.iconBlue, t) ?? iconBlue,
+      iconOrient: Color.lerp(iconOrient, other.iconOrient, t) ?? iconOrient,
+      chipGrey: Color.lerp(chipGrey, other.chipGrey, t) ?? chipGrey,
+      chipPrimary: Color.lerp(chipPrimary, other.chipPrimary, t) ?? chipPrimary,
+      chipRed: Color.lerp(chipRed, other.chipRed, t) ?? chipRed,
+      chipOrange: Color.lerp(chipOrange, other.chipOrange, t) ?? chipOrange,
+      chipBlue: Color.lerp(chipBlue, other.chipBlue, t) ?? chipBlue,
+      chipGreen: Color.lerp(chipGreen, other.chipGreen, t) ?? chipGreen,
+      alertRed: Color.lerp(alertRed, other.alertRed, t) ?? alertRed,
+      alertOrange: Color.lerp(alertOrange, other.alertOrange, t) ?? alertOrange,
+      alertBlue: Color.lerp(alertBlue, other.alertBlue, t) ?? alertBlue,
+      alertGreen: Color.lerp(alertGreen, other.alertGreen, t) ?? alertGreen,
+      keyboardNumbers: Color.lerp(keyboardNumbers, other.keyboardNumbers, t) ??
+          keyboardNumbers,
       keyboardCalculate:
-          Color.lerp(keyboardCalculate, other.keyboardCalculate, t)!,
-      keyboardUnits: Color.lerp(keyboardUnits, other.keyboardUnits, t)!,
+          Color.lerp(keyboardCalculate, other.keyboardCalculate, t) ?? keyboardCalculate,
+      keyboardUnits:
+          Color.lerp(keyboardUnits, other.keyboardUnits, t) ?? keyboardUnits,
       keyboardFunctions:
-          Color.lerp(keyboardFunctions, other.keyboardFunctions, t)!,
-      keyboardActions: Color.lerp(keyboardActions, other.keyboardActions, t)!,
-      keyboardMain: Color.lerp(keyboardMain, other.keyboardMain, t)!,
-      transparent: Color.lerp(transparent, other.transparent, t)!,
+          Color.lerp(keyboardFunctions, other.keyboardFunctions, t) ?? keyboardFunctions,
+      keyboardActions: Color.lerp(keyboardActions, other.keyboardActions, t) ?? keyboardActions,
+      keyboardMain: Color.lerp(keyboardMain, other.keyboardMain, t) ?? keyboardMain,
+      transparent: Color.lerp(transparent, other.transparent, t) ?? transparent,
     );
   }
 }
