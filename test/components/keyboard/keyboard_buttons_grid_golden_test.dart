@@ -184,7 +184,6 @@ void main() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Normal States Section Header
               Text(
                 'Normal States',
                 style: CoreTypography.headlineMediumSemiBold(
@@ -194,7 +193,6 @@ void main() {
               const SizedBox(height: 16),
               buildButtonGrid(normalButtons),
               const SizedBox(height: 16),
-              // Pressed States Section Header
               Text(
                 'Pressed States',
                 style: CoreTypography.headlineMediumSemiBold(
@@ -217,9 +215,7 @@ void main() {
     for (final button in pressedButtons) {
       final finder = find.byKey((button.key as Key));
       if (finder.evaluate().isNotEmpty) {
-        // Create a gesture detector at the button's center
         await tester.startGesture(tester.getCenter(finder));
-        // Pump to show the animation starting
         await tester.pump(const Duration(milliseconds: 100));
       }
     }

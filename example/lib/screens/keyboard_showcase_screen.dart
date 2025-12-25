@@ -90,7 +90,6 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
   };
 
   Widget _buildKeyboard(BuildContext context) {
-    // final accentColors = _groupAccentColors();
     return CoreKeyboard(
       currentGroup: _currentGroup,
       allGroups: _groups,
@@ -130,14 +129,6 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(CoreSpacing.space4),
-            //   child: Text(
-            //     'Interact with the keyboard below or open it as a bottom sheet. '
-            //     'Each tap prints to the console for quick inspection.',
-            //     style: theme.bodyLarge,
-            //   ),
-            // ),
             ElevatedButton(
               onPressed: _openBottomSheet,
               child: const Text('Show keyboard sheet'),
