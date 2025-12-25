@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  flutter:
+    build: .
+    volumes:
+      - ./test:/app/test
+      - ./lib:/app/lib
+      - ~/.ssh:/home/flutter/.ssh:ro
+    stdin_open: true
+    tty: true
+    working_dir: /app
