@@ -108,7 +108,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      final operatorButton = find.text('+');
+      final operatorButton = find.byType(CoreOperatorButton).first;
       if (operatorButton.evaluate().isNotEmpty) {
         await tester.tap(operatorButton);
         await tester.pumpAndSettle();
@@ -180,7 +180,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Yards'), findsWidgets);
       expect(find.text('Feet'), findsWidgets);
-      expect(find.text('Inches'), findsWidgets);
+      expect(find.text('Inch'), findsWidgets);
     });
 
     testWidgets('displays correct unit buttons for metric system',

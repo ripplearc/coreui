@@ -21,8 +21,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.five,
               onDigitPressed: (digit) => pressedDigit = digit,
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -40,8 +40,8 @@ void main() {
             body: CoreDigitInput(
               digit: DigitType.three,
               onDigitPressed: (digit) => pressedDigit = digit,
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -63,8 +63,8 @@ void main() {
               digit: DigitType.zero,
               onDigitPressed: (_) {},
               isEmphasized: true,
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -133,7 +133,7 @@ void main() {
         ),
       );
 
-      expect(find.text('+'), findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsOneWidget);
     });
 
     testWidgets('calls onOperatorPressed when tapped', (tester) async {
@@ -178,7 +178,7 @@ void main() {
           ),
         );
 
-        expect(find.text(op.symbol), findsOneWidget);
+        expect(find.byType(CoreIconWidget), findsOneWidget);
       }
     });
   });
@@ -256,14 +256,14 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (_) {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
       );
 
-      expect(find.text('C'), findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsOneWidget);
     });
 
     testWidgets('calls onControlAction when tapped', (tester) async {
@@ -275,8 +275,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: (action) => pressedAction = action,
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -296,8 +296,8 @@ void main() {
             body: CoreControlButton(
               action: ControlAction.delete,
               onControlAction: (_) {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -318,8 +318,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: '='),
               onTap: () {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -336,8 +336,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Area'),
               onTap: () {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -355,8 +355,8 @@ void main() {
               resultType: const ResultType(label: 'Calculate'),
               customLabel: 'Calculate',
               onTap: () {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -374,8 +374,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () => wasTapped = true,
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -395,8 +395,8 @@ void main() {
             body: CoreResultButton(
               resultType: const ResultType(label: 'Volume'),
               onTap: () {},
-              height: 60.0,
-              width: 60.0,
+              height: 40.0,
+              width: 40.0,
             ),
           ),
         ),
@@ -599,7 +599,7 @@ void main() {
           theme: CoreTheme.light(),
           debugShowCheckedModeBanner: false,
           home: Scaffold(
-            backgroundColor: CoreTheme.light().scaffoldBackgroundColor,
+            backgroundColor: CoreBackgroundColors.pageBackground,
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -607,7 +607,7 @@ void main() {
                 children: [
                   Text(
                     'Keyboard Buttons Grid View',
-                    style: CoreTheme.light().textTheme.titleLarge,
+                    style: CoreTypography.titleLargeSemiBold(),
                   ),
                   const SizedBox(height: 16),
                   GridView.count(

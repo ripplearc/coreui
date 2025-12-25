@@ -5,58 +5,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import '../../await_images_extension.dart';
 import '../../load_fonts.dart';
 
-ThemeData _createThemeWithFonts() {
-  final baseTheme = CoreTheme.light();
-  final typography = baseTheme.extension<TypographyExtension>()!;
-
-  final testTypography = TypographyExtension(
-    headlineLargeRegular:
-        typography.headlineLargeRegular.copyWith(fontFamily: 'Roboto'),
-    headlineLargeSemiBold:
-        typography.headlineLargeSemiBold.copyWith(fontFamily: 'Roboto'),
-    headlineMediumRegular:
-        typography.headlineMediumRegular.copyWith(fontFamily: 'Roboto'),
-    headlineMediumSemiBold:
-        typography.headlineMediumSemiBold.copyWith(fontFamily: 'Roboto'),
-    titleLargeRegular:
-        typography.titleLargeRegular.copyWith(fontFamily: 'Roboto'),
-    titleLargeMedium:
-        typography.titleLargeMedium.copyWith(fontFamily: 'Roboto'),
-    titleLargeSemiBold:
-        typography.titleLargeSemiBold.copyWith(fontFamily: 'Roboto'),
-    titleMediumRegular:
-        typography.titleMediumRegular.copyWith(fontFamily: 'Roboto'),
-    titleMediumMedium:
-        typography.titleMediumMedium.copyWith(fontFamily: 'Roboto'),
-    titleMediumSemiBold:
-        typography.titleMediumSemiBold.copyWith(fontFamily: 'Roboto'),
-    bodyLargeRegular:
-        typography.bodyLargeRegular.copyWith(fontFamily: 'Roboto'),
-    bodyLargeMedium: typography.bodyLargeMedium.copyWith(fontFamily: 'Roboto'),
-    bodyLargeSemiBold:
-        typography.bodyLargeSemiBold.copyWith(fontFamily: 'Roboto'),
-    bodyMediumRegular:
-        typography.bodyMediumRegular.copyWith(fontFamily: 'Roboto'),
-    bodyMediumMedium:
-        typography.bodyMediumMedium.copyWith(fontFamily: 'Roboto'),
-    bodyMediumSemiBold:
-        typography.bodyMediumSemiBold.copyWith(fontFamily: 'Roboto'),
-    bodySmallRegular:
-        typography.bodySmallRegular.copyWith(fontFamily: 'Roboto'),
-    bodySmallMedium: typography.bodySmallMedium.copyWith(fontFamily: 'Roboto'),
-    bodySmallSemiBold:
-        typography.bodySmallSemiBold.copyWith(fontFamily: 'Roboto'),
-  );
-
-  return ThemeData(
-    fontFamily: 'Roboto',
-    extensions: [
-      baseTheme.extension<AppColorsExtension>()!,
-      testTypography,
-    ],
-  );
-}
-
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -84,15 +32,17 @@ void main() {
 
     final testAccentColors = {
       const GroupNameType(label: "Basic Geometry"):
-          CoreTheme.light().colorScheme.primary,
-      const GroupNameType(label: "Advanced"):
-          CoreTheme.light().colorScheme.secondary,
+          CoreKeyboardColors.functions,
+      const GroupNameType(label: "Advanced"): CoreKeyboardColors.actions,
     };
 
     final widget = MaterialApp(
-      theme: _createThemeWithFonts(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: CoreTheme.light().scaffoldBackgroundColor,
+        backgroundColor: CoreBackgroundColors.pageBackground,
         body: Center(
           child: CoreKeyboard(
             currentGroup: const GroupNameType(label: "Basic Geometry"),
@@ -113,8 +63,7 @@ void main() {
 
     await tester.binding.setSurfaceSize(const Size(500, 800));
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
     await tester.awaitImages();
 
     await expectLater(
