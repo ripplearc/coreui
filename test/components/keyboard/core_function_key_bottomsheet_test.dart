@@ -139,22 +139,15 @@ void main() {
         ),
       );
 
-      // Find and tap the toggle's parent area
-      // The GestureDetector wraps the toggle, so we can find any GestureDetector
-      // within the header region and tap it
-      final gestureDetectors = find.byType(GestureDetector);
-      // Tap the GestureDetector that's in the top area (should be the unit toggle)
-      if (gestureDetectors.evaluate().isNotEmpty) {
-        // Get the first few gesture detectors and find the one for the toggle
-        // The toggle GestureDetector should be after "Measurement System" text
-        final measurementText = find.text('Measurement System');
-        if (measurementText.evaluate().isNotEmpty) {
-          // Tap a point slightly to the right of the measurement text (where toggle is)
-          final textCenter = tester.getCenter(measurementText);
-          await tester.tapAt(Offset(textCenter.dx + 120, textCenter.dy));
-        }
-      }
+      final imperialText = find.text('Imperial');
+      expect(imperialText, findsOneWidget);
 
+      final toggleGesture = find.ancestor(
+        of: imperialText,
+        matching: find.byType(GestureDetector),
+      );
+
+      await tester.tap(toggleGesture.first);
       await tester.pumpAndSettle();
 
       expect(changedSystem, equals(UnitSystem.metric));

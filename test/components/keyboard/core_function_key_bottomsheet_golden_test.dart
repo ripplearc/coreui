@@ -25,6 +25,8 @@ void main() {
           KeyType(groupName: 'Trigonomety', label: 'sin', action: () {}),
           KeyType(groupName: 'Trigonomety', label: 'cos', action: () {}),
           KeyType(groupName: 'Trigonomety', label: 'tan', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'csc', action: () {}),
+          KeyType(groupName: 'Trigonomety', label: 'sec', action: () {}),
         ],
       ),
       FunctionGroup(
@@ -33,6 +35,8 @@ void main() {
           KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
           KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
           KeyType(groupName: 'Materials', label: 'Concrete', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Brick', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Glass', action: () {}),
         ],
       ),
     ];
@@ -63,13 +67,13 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(500, 800));
+    await tester.binding.setSurfaceSize(const Size(500, 500));
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
     await tester.awaitImages();
 
     await expectLater(
-      find.byType(CoreFunctionKeyBottomSheet),
+      find.byType(Scaffold),
       matchesGoldenFile('goldens/core_function_key_bottomsheet.png'),
     );
   });

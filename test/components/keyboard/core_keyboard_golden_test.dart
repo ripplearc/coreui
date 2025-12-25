@@ -11,21 +11,32 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('CoreKeyboard Full UI Golden Test', (tester) async {
+  testWidgets('CoreKeyboard Full UI Golden Test - Multiple Function Groups',
+      (tester) async {
     final testGroups = [
       FunctionGroup(
         name: const GroupNameType(label: "Basic Geometry"),
         keys: [
           KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
           KeyType(groupName: 'Basic Geometry', label: 'Volume', action: () {}),
+          KeyType(
+              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: "Advanced"),
+        name: const GroupNameType(label: "Materials"),
         keys: [
-          KeyType(groupName: 'Advanced', label: 'sin', action: () {}),
-          KeyType(groupName: 'Advanced', label: 'cos', action: () {}),
-          KeyType(groupName: 'Advanced', label: 'tan', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
+          KeyType(groupName: 'Materials', label: 'Concrete', action: () {}),
+        ],
+      ),
+      FunctionGroup(
+        name: const GroupNameType(label: "Trigonometry"),
+        keys: [
+          KeyType(groupName: 'Trigonometry', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonometry', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonometry', label: 'tan', action: () {}),
         ],
       ),
     ];
@@ -33,7 +44,8 @@ void main() {
     final testAccentColors = {
       const GroupNameType(label: "Basic Geometry"):
           CoreKeyboardColors.functions,
-      const GroupNameType(label: "Advanced"): CoreKeyboardColors.actions,
+      const GroupNameType(label: "Materials"): CoreKeyboardColors.actions,
+      const GroupNameType(label: "Trigonometry"): CoreKeyboardColors.functions,
     };
 
     final widget = MaterialApp(
@@ -43,7 +55,8 @@ void main() {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: CoreBackgroundColors.pageBackground,
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.all(12),
           child: CoreKeyboard(
             currentGroup: const GroupNameType(label: "Basic Geometry"),
             allGroups: testGroups,
@@ -61,7 +74,7 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(500, 800));
+    await tester.binding.setSurfaceSize(const Size(400, 530));
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
     await tester.awaitImages();
