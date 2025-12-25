@@ -119,43 +119,43 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
 
     return TypographyExtension(
       headlineLargeRegular:
-          TextStyle.lerp(headlineLargeRegular, other.headlineLargeRegular, t)!,
+          TextStyle.lerp(headlineLargeRegular, other.headlineLargeRegular, t) ?? headlineLargeRegular,
       headlineLargeSemiBold: TextStyle.lerp(
-          headlineLargeSemiBold, other.headlineLargeSemiBold, t)!,
+          headlineLargeSemiBold, other.headlineLargeSemiBold, t) ?? headlineLargeSemiBold,
       headlineMediumRegular: TextStyle.lerp(
-          headlineMediumRegular, other.headlineMediumRegular, t)!,
+          headlineMediumRegular, other.headlineMediumRegular, t) ?? headlineMediumRegular,
       headlineMediumSemiBold: TextStyle.lerp(
-          headlineMediumSemiBold, other.headlineMediumSemiBold, t)!,
+          headlineMediumSemiBold, other.headlineMediumSemiBold, t) ?? headlineMediumSemiBold,
       titleLargeRegular:
-          TextStyle.lerp(titleLargeRegular, other.titleLargeRegular, t)!,
+          TextStyle.lerp(titleLargeRegular, other.titleLargeRegular, t) ?? titleLargeRegular,
       titleLargeMedium:
-          TextStyle.lerp(titleLargeMedium, other.titleLargeMedium, t)!,
+          TextStyle.lerp(titleLargeMedium, other.titleLargeMedium, t) ?? titleLargeMedium,
       titleLargeSemiBold:
-          TextStyle.lerp(titleLargeSemiBold, other.titleLargeSemiBold, t)!,
+          TextStyle.lerp(titleLargeSemiBold, other.titleLargeSemiBold, t) ?? titleLargeSemiBold,
       titleMediumRegular:
-          TextStyle.lerp(titleMediumRegular, other.titleMediumRegular, t)!,
+          TextStyle.lerp(titleMediumRegular, other.titleMediumRegular, t) ?? titleMediumRegular,
       titleMediumMedium:
-          TextStyle.lerp(titleMediumMedium, other.titleMediumMedium, t)!,
+          TextStyle.lerp(titleMediumMedium, other.titleMediumMedium, t) ?? titleMediumMedium,
       titleMediumSemiBold:
-          TextStyle.lerp(titleMediumSemiBold, other.titleMediumSemiBold, t)!,
+          TextStyle.lerp(titleMediumSemiBold, other.titleMediumSemiBold, t) ?? titleMediumSemiBold,
       bodyLargeRegular:
-          TextStyle.lerp(bodyLargeRegular, other.bodyLargeRegular, t)!,
+          TextStyle.lerp(bodyLargeRegular, other.bodyLargeRegular, t) ?? bodyLargeRegular,
       bodyLargeMedium:
-          TextStyle.lerp(bodyLargeMedium, other.bodyLargeMedium, t)!,
+            TextStyle.lerp(bodyLargeMedium, other.bodyLargeMedium, t) ?? bodyLargeMedium,
       bodyLargeSemiBold:
-          TextStyle.lerp(bodyLargeSemiBold, other.bodyLargeSemiBold, t)!,
+          TextStyle.lerp(bodyLargeSemiBold, other.bodyLargeSemiBold, t) ?? bodyLargeSemiBold,
       bodyMediumRegular:
-          TextStyle.lerp(bodyMediumRegular, other.bodyMediumRegular, t)!,
+          TextStyle.lerp(bodyMediumRegular, other.bodyMediumRegular, t) ?? bodyMediumRegular,
       bodyMediumMedium:
-          TextStyle.lerp(bodyMediumMedium, other.bodyMediumMedium, t)!,
+          TextStyle.lerp(bodyMediumMedium, other.bodyMediumMedium, t) ?? bodyMediumMedium,
       bodyMediumSemiBold:
-          TextStyle.lerp(bodyMediumSemiBold, other.bodyMediumSemiBold, t)!,
+          TextStyle.lerp(bodyMediumSemiBold, other.bodyMediumSemiBold, t) ?? bodyMediumSemiBold,
       bodySmallRegular:
-          TextStyle.lerp(bodySmallRegular, other.bodySmallRegular, t)!,
+          TextStyle.lerp(bodySmallRegular, other.bodySmallRegular, t) ?? bodySmallRegular,
       bodySmallMedium:
-          TextStyle.lerp(bodySmallMedium, other.bodySmallMedium, t)!,
+          TextStyle.lerp(bodySmallMedium, other.bodySmallMedium, t) ?? bodySmallMedium,
       bodySmallSemiBold:
-          TextStyle.lerp(bodySmallSemiBold, other.bodySmallSemiBold, t)!,
+          TextStyle.lerp(bodySmallSemiBold, other.bodySmallSemiBold, t) ?? bodySmallSemiBold,
     );
   }
 
