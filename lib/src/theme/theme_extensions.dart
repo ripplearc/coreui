@@ -339,29 +339,20 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       lineLight: Color.lerp(lineLight, other.lineLight, t) ?? lineLight,
       lineMid: Color.lerp(lineMid, other.lineMid, t) ?? lineMid,
       lineDarkOutline: Color.lerp(lineDarkOutline, other.lineDarkOutline, t) ?? lineDarkOutline,
-      lineHighlight:
-          Color.lerp(lineHighlight, other.lineHighlight, t) ?? lineHighlight,
-      outlineHover:
-          Color.lerp(outlineHover, other.outlineHover, t) ?? outlineHover,
-      outlineFocus:
-          Color.lerp(outlineFocus, other.outlineFocus, t) ?? outlineFocus,
-      tabsHighlight:
-          Color.lerp(tabsHighlight, other.tabsHighlight, t) ?? tabsHighlight,
+      lineHighlight: Color.lerp(lineHighlight, other.lineHighlight, t) ?? lineHighlight,
+      outlineHover: Color.lerp(outlineHover, other.outlineHover, t) ?? outlineHover,
+      outlineFocus: Color.lerp(outlineFocus, other.outlineFocus, t) ?? outlineFocus,
+      tabsHighlight: Color.lerp(tabsHighlight, other.tabsHighlight, t) ?? tabsHighlight,
       statusError: Color.lerp(statusError, other.statusError, t) ?? statusError,
-      statusSuccess:
-          Color.lerp(statusSuccess, other.statusSuccess, t) ?? statusSuccess,
-      buttonSurface:
-          Color.lerp(buttonSurface, other.buttonSurface, t) ?? buttonSurface,
+      statusSuccess: Color.lerp(statusSuccess, other.statusSuccess, t) ?? statusSuccess,
+      buttonSurface: Color.lerp(buttonSurface, other.buttonSurface, t) ?? buttonSurface,
       buttonHover: Color.lerp(buttonHover, other.buttonHover, t) ?? buttonHover,
-      buttonDisable:
-          Color.lerp(buttonDisable, other.buttonDisable, t) ?? buttonDisable,
+      buttonDisable: Color.lerp(buttonDisable, other.buttonDisable, t) ?? buttonDisable,
       buttonPress: Color.lerp(buttonPress, other.buttonPress, t) ?? buttonPress,
       iconDark: Color.lerp(iconDark, other.iconDark, t) ?? iconDark,
-      iconGrayDark:
-          Color.lerp(iconGrayDark, other.iconGrayDark, t) ?? iconGrayDark,
+      iconGrayDark: Color.lerp(iconGrayDark, other.iconGrayDark, t) ?? iconGrayDark,
       iconGrayMid: Color.lerp(iconGrayMid, other.iconGrayMid, t) ?? iconGrayMid,
-      iconGrayLight:
-          Color.lerp(iconGrayLight, other.iconGrayLight, t) ?? iconGrayLight,
+      iconGrayLight: Color.lerp(iconGrayLight, other.iconGrayLight, t) ?? iconGrayLight,
       iconWhite: Color.lerp(iconWhite, other.iconWhite, t) ?? iconWhite,
       iconRed: Color.lerp(iconRed, other.iconRed, t) ?? iconRed,
       iconGreen: Color.lerp(iconGreen, other.iconGreen, t) ?? iconGreen,
