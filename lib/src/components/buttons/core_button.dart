@@ -169,6 +169,7 @@ class _CoreButtonState extends State<CoreButton> {
           color:
               _getContentColor(isEnabled: isEnabled, variant: widget.variant),
         ));
+    final icon = widget.icon;
     return Row(
       mainAxisAlignment: (widget.centerAlign && !widget.spaceOut)
           ? MainAxisAlignment.center
@@ -176,7 +177,7 @@ class _CoreButtonState extends State<CoreButton> {
               ? MainAxisAlignment.spaceBetween
               : MainAxisAlignment.start,
       children: [
-        if (!widget.trailing && widget.icon != null) widget.icon!,
+        if (!widget.trailing && icon != null) icon,
         if (!widget.trailing && widget.icon != null && !widget.spaceOut)
           const SizedBox(width: 8),
         if (widget.trailing && widget.spaceOut)
@@ -184,7 +185,7 @@ class _CoreButtonState extends State<CoreButton> {
         textWidget,
         if (widget.trailing && widget.icon != null && !widget.spaceOut)
           const SizedBox(width: 8),
-        if (widget.trailing && widget.icon != null) widget.icon!,
+        if (widget.trailing && icon != null) icon,
         if (!widget.trailing && widget.spaceOut)
           const SizedBox(width: 24, height: 24),
       ],
