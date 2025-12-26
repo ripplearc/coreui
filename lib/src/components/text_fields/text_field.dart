@@ -145,7 +145,7 @@ class CoreTextField extends StatelessWidget {
                   ),
                   const SizedBox(width: CoreSpacing.space1),
                   Text(
-                    helperText!,
+                    helperText ?? "",
                     style: typography.bodySmallRegular.copyWith(
                         color: isDisabled
                             ? CoreTextColors.disable
@@ -299,7 +299,9 @@ class CoreTextField extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: phonePrefixes?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final prefix = phonePrefixes![index];
+                    final prefixes = phonePrefixes;
+                    if (prefixes == null) return const SizedBox();
+                    final prefix = prefixes[index];
                     return ListTile(
                       title: Text(
                         prefix,
