@@ -7,9 +7,7 @@ analyzer:
 custom_lint:
   rules:
     - prefer_fake_over_mock
-
-    # TODO: Fix violations and enable. See ticket: https://ripplearc.youtrack.cloud/issue/CA-441/Todo-Resolve-forbidforcedunwrapping-violations-on-CoreUI
-    - forbid_forced_unwrapping: false
+    - forbid_forced_unwrapping
     - no_optional_operators_in_tests
     - no_direct_instantiation: false
     - document_fake_parameters
