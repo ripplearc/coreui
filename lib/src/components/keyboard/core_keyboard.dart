@@ -101,7 +101,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
           const horizontalPadding = CoreSpacing.space3;
           const verticalPadding = CoreSpacing.space3;
           const double maxButtonSize = 50.0;
-          const double minSpacing = 8.0;
+          const double minSpacing = 4.0;
 
           final availableWidth = constraints.maxWidth;
           final widthForContent = availableWidth - (horizontalPadding * 2);
@@ -112,7 +112,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
               (widthForContent - (minSpacing * (_keyboardColumnCount - 1))) /
                   _keyboardColumnCount;
           double finalButtonSize;
-          double finalSpacing = 8.0;
+          double finalSpacing = 4.0;
 
           if (responsiveButtonSize > maxButtonSize) {
             finalButtonSize = maxButtonSize;
@@ -123,7 +123,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                 (widthForContent - totalButtonsWidth) /
                     (_keyboardColumnCount - 1);
 
-            finalSpacing = calculatedSpacing.clamp(8.0, double.infinity);
+            finalSpacing = calculatedSpacing.clamp(4.0, double.infinity);
           } else {
             finalButtonSize = responsiveButtonSize;
             finalSpacing = minSpacing;
