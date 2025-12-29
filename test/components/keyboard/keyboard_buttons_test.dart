@@ -604,8 +604,8 @@ void main() {
                   Text(
                     'Keyboard Buttons Grid View',
                     style: CoreTheme.light()
-                        .extension<TypographyExtension>()
-                        ?.titleLargeSemiBold,
+                        .extension<TypographyExtension>()!
+                        .titleLargeSemiBold,
                   ),
                   const SizedBox(height: 16),
                   GridView.count(
