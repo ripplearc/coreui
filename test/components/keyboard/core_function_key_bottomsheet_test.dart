@@ -48,7 +48,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tappedKey, isNotNull);
-      expect(tappedKey?.groupName, equals('Trigonomety'));
+      expect(tappedKey!.groupName, equals('Trigonomety'));
     });
 
     testWidgets('calls onGroupSelected when group header is tapped',
