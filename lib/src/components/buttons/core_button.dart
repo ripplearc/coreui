@@ -97,77 +97,80 @@ class _CoreButtonState extends State<CoreButton> {
   Color _getBackgroundColor({
     required bool isEnabled,
     required CoreButtonVariant variant,
+    required AppColorsExtension colors,
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? Colors.transparent
-          : CoreButtonColors.disable;
+          ? colors.transparent
+          : colors.buttonDisable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
         return isPressed
-            ? CoreButtonColors.press
+            ? colors.buttonPress
             : isFocused
-                ? CoreButtonColors.hover
-                : CoreButtonColors.surface;
+                ? colors.buttonHover
+                : colors.buttonSurface;
       case CoreButtonVariant.secondary:
-        return Colors.transparent;
+        return colors.transparent;
       case CoreButtonVariant.social:
-        return CoreTextColors.inverse;
+        return colors.textInverse;
     }
   }
 
-  Color _getBorderColor(bool isEnabled, CoreButtonVariant variant) {
+  Color _getBorderColor(bool isEnabled, CoreButtonVariant variant, AppColorsExtension colors) {
     if (!isEnabled) {
-      return CoreButtonColors.disable;
+      return colors.buttonDisable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
         return isPressed
-            ? CoreButtonColors.press
+            ? colors.buttonPress
             : isFocused
-                ? CoreButtonColors.hover
-                : CoreButtonColors.surface;
+                ? colors.buttonHover
+                : colors.buttonSurface;
       case CoreButtonVariant.social:
         return isPressed
-            ? CoreBorderColors.outlineHover
+            ? colors.outlineHover
             : isFocused
-                ? CoreBorderColors.lineDarkOutline
-                : CoreBorderColors.lineMid;
+                ? colors.lineDarkOutline
+                : colors.lineMid;
     }
   }
 
   Color _getContentColor({
     required bool isEnabled,
     required CoreButtonVariant variant,
+    required AppColorsExtension colors,
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? CoreTextColors.disable
-          : CoreTextColors.body;
+          ? colors.textDisable
+          : colors.textBody;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
-        return CoreTextColors.inverse;
+        return colors.textInverse;
       case CoreButtonVariant.secondary:
         return isPressed
-            ? CoreButtonColors.press
+            ? colors.buttonPress
             : isFocused
-                ? CoreButtonColors.hover
-                : CoreButtonColors.surface;
+                ? colors.buttonHover
+                : colors.buttonSurface;
       case CoreButtonVariant.social:
-        return CoreTextColors.headline;
+        return colors.textHeadline;
     }
   }
 
   Widget _buildContentRow() {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
     final isEnabled = !widget.isDisabled && widget.onPressed != null;
     final textWidget = Text(widget.label,
         style: typography.bodyLargeSemiBold.copyWith(
           color:
-              _getContentColor(isEnabled: isEnabled, variant: widget.variant),
+              _getContentColor(isEnabled: isEnabled, variant: widget.variant, colors: colors),
         ));
     final icon = widget.icon;
     return Row(
@@ -217,6 +220,7 @@ class _CoreButtonState extends State<CoreButton> {
       throw ArgumentError('Social button variant must be large size');
     }
     final isEnabled = !widget.isDisabled && widget.onPressed != null;
+    final colors = Theme.of(context).coreColors;
 
     return Focus(
       focusNode: _focusNode,
@@ -235,9 +239,10 @@ class _CoreButtonState extends State<CoreButton> {
             color: _getBackgroundColor(
               isEnabled: isEnabled,
               variant: widget.variant,
+              colors: colors,
             ),
             border: Border.all(
-              color: _getBorderColor(isEnabled, widget.variant),
+              color: _getBorderColor(isEnabled, widget.variant, colors),
               width: widget.variant == CoreButtonVariant.primary
                   ? widget.variant == CoreButtonVariant.social
                       ? 1
