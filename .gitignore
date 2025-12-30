@@ -92,3 +92,6 @@ test/**/failures/
 example/**/flutter/generated_plugin_registrant.*
 example/**/flutter/generated_plugins.cmake
 example/**/Flutter/GeneratedPluginRegistrant.swift
+
+# PR Review files
+reviews/**

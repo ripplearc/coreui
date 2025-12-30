@@ -52,12 +52,13 @@ void main() {
 }
 
 Widget _buildScenario(String title, Widget child) {
+  final typography = TypographyExtension.create();
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(title, style: typography.bodyMediumSemiBold),
         const SizedBox(height: 4),
         child,
       ],
@@ -69,6 +70,7 @@ Widget _buildSuccessModalContent({
   String? message,
   String? buttonLabel,
 }) {
+  final typography = TypographyExtension.create();
   return Container(
     width: 400,
     padding: const EdgeInsets.all(24),
@@ -91,7 +93,7 @@ Widget _buildSuccessModalContent({
         Text(
           message ?? 'Operation Successful',
           textAlign: TextAlign.center,
-          style: CoreTypography.titleLargeMedium(),
+          style: typography.titleLargeMedium,
         ),
         const SizedBox(height: 24),
         CoreButton(
