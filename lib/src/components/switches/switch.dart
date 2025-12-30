@@ -134,8 +134,6 @@ class CoreSwitch extends StatelessWidget {
       (activeLabel?.isNotEmpty ?? false) ||
       (inactiveLabel?.isNotEmpty ?? false);
 
-  /// Gets the inactive color based on switch type or custom color.
-  /// Returns red for lock, green for imperial, grey for normal.
   Color _getInactiveBorderColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
@@ -145,8 +143,6 @@ class CoreSwitch extends StatelessWidget {
         });
   }
 
-  /// Gets the inactive text color based on switch type or custom color.
-  /// Returns red for lock, green for imperial, grey for normal.
   Color _getInactiveTextColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
@@ -156,8 +152,6 @@ class CoreSwitch extends StatelessWidget {
         });
   }
 
-  /// Gets the border color for inactive state based on switch type.
-  /// Returns red for lock, green for imperial, grey for normal.
   Color _getBorderColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
