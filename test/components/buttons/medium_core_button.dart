@@ -10,6 +10,7 @@ void main() {
   });
 
   final typography = TypographyExtension.create();
+  final colors = AppColorsExtension.create();
 
   testWidgets('CoreButton Medium - Narrow View - With Pressed State',
       (tester) async {
@@ -24,7 +25,7 @@ void main() {
           Text(
             title,
             style: typography.bodySmallRegular.copyWith(
-              color: Colors.black,
+              color: colors.textDark,
             ),
           ),
           const SizedBox(height: 4),
@@ -50,9 +51,9 @@ void main() {
           onPressed: () {},
           variant: CoreButtonVariant.primary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreTextColors.inverse,
+            color: colors.textInverse,
           ),
         ),
       ),
@@ -64,9 +65,9 @@ void main() {
           isDisabled: true,
           variant: CoreButtonVariant.primary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreTextColors.body,
+            color: colors.textBody,
           ),
         ),
       ),
@@ -78,9 +79,9 @@ void main() {
           variant: CoreButtonVariant.primary,
           size: CoreButtonSize.medium,
           autofocus: true,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreTextColors.inverse,
+            color: colors.textInverse,
           ),
         ),
       ),
@@ -92,9 +93,9 @@ void main() {
           onPressed: () {},
           variant: CoreButtonVariant.primary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreTextColors.inverse,
+            color: colors.textInverse,
           ),
         ),
       ),
@@ -114,9 +115,9 @@ void main() {
           onPressed: () {},
           variant: CoreButtonVariant.secondary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreButtonColors.surface,
+            color: colors.buttonSurface,
           ),
         ),
       ),
@@ -128,9 +129,9 @@ void main() {
           isDisabled: true,
           variant: CoreButtonVariant.secondary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreTextColors.disable,
+            color: colors.textDisable,
           ),
         ),
       ),
@@ -142,9 +143,9 @@ void main() {
           variant: CoreButtonVariant.secondary,
           size: CoreButtonSize.medium,
           autofocus: true,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreButtonColors.hover,
+            color: colors.buttonHover,
           ),
         ),
       ),
@@ -156,9 +157,9 @@ void main() {
           onPressed: () {},
           variant: CoreButtonVariant.secondary,
           size: CoreButtonSize.medium,
-          icon: const CoreIconWidget(
+          icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: CoreButtonColors.press,
+            color: colors.buttonPress,
           ),
         ),
       ),
@@ -167,10 +168,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(
-          extensions: [typography],
+          extensions: [typography, colors],
         ),
         home: Scaffold(
-          backgroundColor: CoreBackgroundColors.pageBackground,
+          backgroundColor: colors.pageBackground,
           body: Center(
             child: SizedBox(
               width: 500,

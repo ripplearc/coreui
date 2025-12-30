@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.2] - Code quality improvements
+
+### 🔧 Fixes
+
+- **Code Quality**
+  - Fixed `avoid_static_typography` linter violations
+  - Fixed `forbid_forced_unwrapping` linter violations
+  - Fixed `specific_exceptions_types` linter violations
+
 ## [0.3.1] - Add transparent utility color
 
 ### ✨ Features
