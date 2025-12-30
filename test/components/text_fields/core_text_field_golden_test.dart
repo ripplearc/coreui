@@ -9,6 +9,9 @@ void main() {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
+
+  final colors = AppColorsExtension.create();
+
   testWidgets('CoreTextField Golden Test', (WidgetTester tester) async {
     final scenarios = <Widget>[
       _buildScenario(
@@ -107,7 +110,7 @@ void main() {
 
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: scenarios,
