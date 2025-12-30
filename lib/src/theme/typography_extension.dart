@@ -59,6 +59,19 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
     required this.bodySmallMedium,
     required this.bodySmallSemiBold,
   });
+  
+    /// Static method to get the extension from the current theme
+  static TypographyExtension of(BuildContext context) {
+    final TypographyExtension? extension =
+        Theme.of(context).extension<TypographyExtension>();
+    if (extension == null) {
+      throw FlutterError(
+        'TypographyExtension not found in Theme. Did you wrap your widget tree '
+        'with a Theme that includes this extension?',
+      );
+    }
+    return extension;
+  }
 
   @override
   TypographyExtension copyWith({

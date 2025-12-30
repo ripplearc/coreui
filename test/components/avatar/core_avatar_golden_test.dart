@@ -12,7 +12,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  Widget _buildAvatarItem(Widget avatar, String label) {
+  Widget buildAvatarItem(Widget avatar, String label) {
     return SizedBox(
       width: 120,
       child: Column(
@@ -35,28 +35,28 @@ void main() {
 
   testWidgets('CoreAvatar Golden Test', (WidgetTester tester) async {
     final avatars = <Widget>[
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 20,
           backgroundColor: CoreIconColors.blue,
         ),
         'Small (r=20)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           backgroundColor: CoreIconColors.green,
         ),
         'Medium (r=30)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 40,
           backgroundColor: CoreIconColors.orange,
         ),
         'Large (r=40)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           backgroundColor: CoreIconColors.blue,
@@ -68,7 +68,7 @@ void main() {
         ),
         'With Icon',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           minRadius: 20,
           maxRadius: 30,
@@ -76,7 +76,7 @@ void main() {
         ),
         'Min/Max Radius',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           child: CoreLetterAvatar(name: 'John Doe'),
@@ -121,4 +121,3 @@ void main() {
     );
   });
 }
-

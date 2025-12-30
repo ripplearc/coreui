@@ -20,6 +20,10 @@ class CoreIcons {
   static const plusMinus = CoreIconData.svg(CoreSvgIcons.plusMinus);
   static const slash = CoreIconData.svg(CoreSvgIcons.slash);
   static const cChar = CoreIconData.svg(CoreSvgIcons.cChar);
+  static const addOperator = CoreIconData.svg(CoreSvgIcons.add);
+  static const subtractOperator = CoreIconData.svg(CoreSvgIcons.minus);
+  static const multiplyOperator = CoreIconData.svg(CoreSvgIcons.multiplication);
+  static const percentOperator = CoreIconData.svg(CoreSvgIcons.percentage);
 
   // Navigation (Material)
   static const backspaceLeft = CoreMaterialIcons.backspaceLeft;
