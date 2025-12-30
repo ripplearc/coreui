@@ -14,7 +14,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
-      theme: CoreTheme.light(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -50,7 +52,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
-      theme: CoreTheme.light(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -86,7 +90,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(500, 300));
 
     final widget = MaterialApp(
-      theme: CoreTheme.light(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -122,7 +128,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(500, 300));
 
     final widget = MaterialApp(
-      theme: CoreTheme.light(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -158,7 +166,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 300));
 
     final widget = MaterialApp(
-      theme: CoreTheme.light(),
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+      ),
       home: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
