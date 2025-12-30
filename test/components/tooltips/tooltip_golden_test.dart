@@ -21,10 +21,10 @@ void main() {
           child: CoreTooltip.top(
             message: 'Tooltip above with arrow pointing down',
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               decoration: BoxDecoration(
                 color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
               ),
               child: const Text('Top'),
             ),
@@ -57,10 +57,10 @@ void main() {
           child: CoreTooltip.bottom(
             message: 'Tooltip below',
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               decoration: BoxDecoration(
                 color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
               ),
               child: const Text('Bottom'),
             ),
@@ -93,10 +93,10 @@ void main() {
           child: CoreTooltip.left(
             message: 'Tooltip left',
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               decoration: BoxDecoration(
                 color: Colors.orange.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
               ),
               child: const Text('Left'),
             ),
@@ -129,10 +129,10 @@ void main() {
           child: CoreTooltip.right(
             message: 'Tooltip right',
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               decoration: BoxDecoration(
                 color: Colors.purple.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
               ),
               child: const Text('Right'),
             ),
@@ -165,10 +165,10 @@ void main() {
           child: CoreTooltip.none(
             message: 'Tooltip without arrow',
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               decoration: BoxDecoration(
                 color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
               ),
               child: const Text('No Arrow'),
             ),

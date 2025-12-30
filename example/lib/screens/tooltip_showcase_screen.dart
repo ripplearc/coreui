@@ -11,7 +11,7 @@ class TooltipShowcaseScreen extends StatelessWidget {
         title: const Text('Tooltip Components'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(CoreSpacing.space6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -19,7 +19,7 @@ class TooltipShowcaseScreen extends StatelessWidget {
               'Tooltip Variants',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: CoreSpacing.space6),
 
             // Default Tooltip
             _buildTooltipSection(
@@ -29,17 +29,17 @@ class TooltipShowcaseScreen extends StatelessWidget {
               child: CoreTooltip.none(
                 message: 'This is a default tooltip',
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(CoreSpacing.space3),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(CoreSpacing.space2),
                   ),
                   child: const Text('Hover or tap me'),
                 ),
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
 
             // Arrow Tooltip
             _buildTooltipSection(
@@ -49,22 +49,22 @@ class TooltipShowcaseScreen extends StatelessWidget {
               child: CoreTooltip.top(
                 message: 'This is a tooltip above the target',
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(CoreSpacing.space3),
                   decoration: BoxDecoration(
                     color: Colors.green.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(CoreSpacing.space2),
                   ),
                   child: const Text('Hover or tap me'),
                 ),
               ),
             ),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: CoreSpacing.space12),
             Text(
               'Tooltip Positions',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: CoreSpacing.space6),
 
             // Position examples grid
             Center(
@@ -82,7 +82,8 @@ class TooltipShowcaseScreen extends StatelessWidget {
                         height: 50,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(CoreSpacing.space2),
                         ),
                         child: const Center(child: Text('Target')),
                       ),
@@ -99,7 +100,8 @@ class TooltipShowcaseScreen extends StatelessWidget {
                           height: 30,
                           decoration: BoxDecoration(
                             color: Colors.blue.shade200,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius:
+                                BorderRadius.circular(CoreSpacing.space1),
                           ),
                           child: const Center(child: Text('Top')),
                         ),
@@ -117,7 +119,8 @@ class TooltipShowcaseScreen extends StatelessWidget {
                           height: 30,
                           decoration: BoxDecoration(
                             color: Colors.green.shade200,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius:
+                                BorderRadius.circular(CoreSpacing.space1),
                           ),
                           child: const Center(child: Text('Bottom')),
                         ),
@@ -133,17 +136,18 @@ class TooltipShowcaseScreen extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.orange.shade200,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius:
+                                BorderRadius.circular(CoreSpacing.space1),
                           ),
-                          child: Column(
+                          child: const Column(
                             children: [
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
-                              const Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
+                              Center(child: Text('Left')),
                             ],
                           ),
                         ),
@@ -161,7 +165,8 @@ class TooltipShowcaseScreen extends StatelessWidget {
                           height: 30,
                           decoration: BoxDecoration(
                             color: Colors.purple.shade200,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius:
+                                BorderRadius.circular(CoreSpacing.space1),
                           ),
                           child: const Center(child: Text('Right')),
                         ),
@@ -172,12 +177,12 @@ class TooltipShowcaseScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: CoreSpacing.space12),
             Text(
               'Icon Tooltips',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
 
             _buildTooltipSection(
               context,
@@ -200,12 +205,12 @@ class TooltipShowcaseScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: CoreSpacing.space12),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(CoreSpacing.space4),
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CoreSpacing.space2),
                 border: Border.all(color: Colors.blue.shade200),
               ),
               child: Column(
@@ -217,7 +222,7 @@ class TooltipShowcaseScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: CoreSpacing.space2),
                   const Text(
                       '• Use named constructors: .top(), .bottom(), .left(), .right(), .none()'),
                   const Text('• On desktop: Hover to show, move away to hide'),
@@ -249,14 +254,14 @@ class TooltipShowcaseScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: CoreSpacing.space2),
         Text(
           description,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.grey.shade600,
               ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: CoreSpacing.space4),
         Center(child: child),
       ],
     );
@@ -278,7 +283,7 @@ class _IconTooltip extends StatelessWidget {
   Widget build(BuildContext context) {
     return CoreTooltip.top(
       message: label,
-      child: Icon(icon, color: color, size: 32),
+      child: Icon(icon, color: color, size: CoreSpacing.space8),
     );
   }
 }

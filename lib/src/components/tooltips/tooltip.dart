@@ -1,13 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+/// An enum that defines the position of the tooltip arrow.
+///
+/// The arrow position indicates which direction the arrow points,
+/// which is opposite to where the tooltip appears relative to the child.
+///
+/// - [none]: No arrow is displayed, tooltip appears above the child
+/// - [top]: Arrow points up, tooltip appears below the child
+/// - [bottom]: Arrow points down, tooltip appears above the child
+/// - [left]: Arrow points left, tooltip appears to the right of the child
+/// - [right]: Arrow points right, tooltip appears to the left of the child
 enum TooltipArrowPosition { none, top, bottom, left, right }
 
+/// A tooltip widget that displays contextual information when users
+/// interact with the child widget.
+///
+/// The tooltip appears as an overlay with an optional arrow pointing
+/// toward the trigger widget. It supports tap-to-show/hide on mobile
+/// and hover interactions on desktop.
+///
+/// ## Example
+///
+/// ```dart
+/// CoreTooltip.top(
+///   message: 'This is helpful information',
+///   child: Icon(Icons.info),
+/// )
+/// ```
+///
+/// ## Named Constructors
+///
+/// Use named constructors for intuitive positioning:
+/// - [CoreTooltip.top]: Tooltip above the child with arrow pointing down
+/// - [CoreTooltip.bottom]: Tooltip below the child with arrow pointing up
+/// - [CoreTooltip.left]: Tooltip left of the child with arrow pointing right
+/// - [CoreTooltip.right]: Tooltip right of the child with arrow pointing left
+/// - [CoreTooltip.none]: Tooltip above the child without arrow
+///
+/// See also:
+/// * [TooltipArrowPosition], which controls the arrow direction
 class CoreTooltip extends StatefulWidget {
+  /// The widget that triggers the tooltip when interacted with.
   final Widget child;
+
+  /// The text message to display in the tooltip.
   final String message;
+
+  /// The position of the arrow on the tooltip.
+  ///
+  /// Defaults to [TooltipArrowPosition.none].
   final TooltipArrowPosition arrowPosition;
 
+  /// Creates a tooltip with customizable arrow position.
+  ///
+  /// For most use cases, prefer using the named constructors
+  /// like [CoreTooltip.top], [CoreTooltip.bottom], etc.
   const CoreTooltip({
     super.key,
     required this.child,
@@ -15,35 +63,35 @@ class CoreTooltip extends StatefulWidget {
     this.arrowPosition = TooltipArrowPosition.none,
   });
 
-  /// Tooltip positioned above the child with arrow pointing down
+  /// Creates a tooltip positioned above the child with arrow pointing down.
   const CoreTooltip.top({
     super.key,
     required this.child,
     required this.message,
   }) : arrowPosition = TooltipArrowPosition.bottom;
 
-  /// Tooltip positioned below the child with arrow pointing up
+  /// Creates a tooltip positioned below the child with arrow pointing up.
   const CoreTooltip.bottom({
     super.key,
     required this.child,
     required this.message,
   }) : arrowPosition = TooltipArrowPosition.top;
 
-  /// Tooltip positioned to the left of the child with arrow pointing right
+  /// Creates a tooltip positioned to the left of the child with arrow pointing right.
   const CoreTooltip.left({
     super.key,
     required this.child,
     required this.message,
   }) : arrowPosition = TooltipArrowPosition.right;
 
-  /// Tooltip positioned to the right of the child with arrow pointing left
+  /// Creates a tooltip positioned to the right of the child with arrow pointing left.
   const CoreTooltip.right({
     super.key,
     required this.child,
     required this.message,
   }) : arrowPosition = TooltipArrowPosition.left;
 
-  /// Tooltip without arrow, positioned above the child
+  /// Creates a tooltip without arrow, positioned above the child.
   const CoreTooltip.none({
     super.key,
     required this.child,
@@ -128,16 +176,28 @@ class _CoreTooltipState extends State<CoreTooltip>
   @override
   void dispose() {
     _controller.dispose();
-    _overlayEntry?.remove();
+    try {
+      _overlayEntry?.remove();
+    } catch (e) {
+      // Overlay entry might already be removed
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _isVisible ? _hideTooltip : _showTooltip,
-      onLongPress: _isVisible ? _hideTooltip : _showTooltip,
-      child: widget.child,
+    return Semantics(
+      label: 'Tooltip: ${widget.message}',
+      button: true,
+      child: MouseRegion(
+        onEnter: (_) => _showTooltip(),
+        onExit: (_) => _hideTooltip(),
+        child: GestureDetector(
+          onTap: _isVisible ? _hideTooltip : _showTooltip,
+          onLongPress: _isVisible ? _hideTooltip : _showTooltip,
+          child: widget.child,
+        ),
+      ),
     );
   }
 }
@@ -146,6 +206,9 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
   final Offset target;
   final Size targetSize;
   final TooltipArrowPosition arrowPosition;
+
+  /// Gap between the tooltip and the target widget
+  static const double _tooltipGap = CoreSpacing.space2 + 2; // 10px
 
   _TooltipPositionDelegate({
     required this.target,
@@ -162,27 +225,27 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
         // Arrow points UP - tooltip is BELOW the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
-          target.dy + targetSize.height + 10,
+          target.dy + targetSize.height + _tooltipGap,
         );
         break;
       case TooltipArrowPosition.bottom:
         // Arrow points DOWN - tooltip is ABOVE the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
-          target.dy - childSize.height - 10,
+          target.dy - childSize.height - _tooltipGap,
         );
         break;
       case TooltipArrowPosition.left:
         // Arrow points LEFT - tooltip is RIGHT of the target
         offset = Offset(
-          target.dx + targetSize.width + 10,
+          target.dx + targetSize.width + _tooltipGap,
           target.dy + targetSize.height / 2 - childSize.height / 2,
         );
         break;
       case TooltipArrowPosition.right:
         // Arrow points RIGHT - tooltip is LEFT of the target
         offset = Offset(
-          target.dx - childSize.width - 10,
+          target.dx - childSize.width - _tooltipGap,
           target.dy + targetSize.height / 2 - childSize.height / 2,
         );
         break;
@@ -190,7 +253,7 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
         // No arrow - tooltip is ABOVE the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
-          target.dy - childSize.height - 10,
+          target.dy - childSize.height - _tooltipGap,
         );
         break;
     }
@@ -209,6 +272,12 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
 class _TooltipBubble extends StatelessWidget {
   final String message;
   final TooltipArrowPosition arrowPosition;
+
+  /// Arrow width (12px = CoreSpacing.space3)
+  static const double _arrowWidth = CoreSpacing.space3;
+
+  /// Arrow height (6px = CoreSpacing.space3 / 2)
+  static const double _arrowHeight = CoreSpacing.space3 / 2;
 
   const _TooltipBubble({
     required this.message,
@@ -237,7 +306,7 @@ class _TooltipBubble extends StatelessWidget {
     );
 
     final arrow = CustomPaint(
-      size: const Size(12, 6),
+      size: const Size(_arrowWidth, _arrowHeight),
       painter: _TooltipArrowPainter(
         color: colors.backgroundDarkGray,
         position: arrowPosition,
