@@ -137,43 +137,34 @@ class CoreSwitch extends StatelessWidget {
   /// Gets the inactive color based on switch type or custom color.
   /// Returns red for lock, green for imperial, grey for normal.
   Color get _getInactiveBorderColor {
-    if (inactiveColor != null) return inactiveColor!;
-    switch (type) {
-      case CoreSwitchType.lock:
-        return CoreIconColors.red;
-      case CoreSwitchType.imperial:
-        return CoreIconColors.green;
-      case CoreSwitchType.normal:
-        return CoreBorderColors.lineDarkOutline;
-    }
+    return inactiveColor ??
+        (switch (type) {
+          CoreSwitchType.lock => CoreIconColors.red,
+          CoreSwitchType.imperial => CoreIconColors.green,
+          CoreSwitchType.normal => CoreBorderColors.lineDarkOutline,
+        });
   }
 
   /// Gets the inactive text color based on switch type or custom color.
   /// Returns red for lock, green for imperial, grey for normal.
   Color get _getInactiveTextColor {
-    if (inactiveColor != null) return inactiveColor!;
-    switch (type) {
-      case CoreSwitchType.lock:
-        return CoreTextColors.error;
-      case CoreSwitchType.imperial:
-        return CoreTextColors.success;
-      case CoreSwitchType.normal:
-        return CoreTextColors.body;
-    }
+    return inactiveColor ??
+        (switch (type) {
+          CoreSwitchType.lock => CoreTextColors.error,
+          CoreSwitchType.imperial => CoreTextColors.success,
+          CoreSwitchType.normal => CoreTextColors.body,
+        });
   }
 
   /// Gets the border color for inactive state based on switch type.
   /// Returns red for lock, green for imperial, grey for normal.
   Color get _getBorderColor {
-    if (inactiveColor != null) return inactiveColor!;
-    switch (type) {
-      case CoreSwitchType.lock:
-        return CoreIconColors.red;
-      case CoreSwitchType.imperial:
-        return CoreIconColors.green;
-      case CoreSwitchType.normal:
-        return CoreIconColors.grayMid;
-    }
+    return inactiveColor ??
+        (switch (type) {
+          CoreSwitchType.lock => CoreIconColors.red,
+          CoreSwitchType.imperial => CoreIconColors.green,
+          CoreSwitchType.normal => CoreIconColors.grayMid,
+        });
   }
 
   /// Gets the switch width based on type and label presence.
@@ -225,6 +216,8 @@ class CoreSwitch extends StatelessWidget {
         value ? effectiveActiveColor : CoreBackgroundColors.backgroundGrayLight;
     final borderColor = value ? effectiveActiveColor : _getBorderColor;
 
+    final typography = Theme.of(context).coreTypography;
+
     return GestureDetector(
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
@@ -248,7 +241,7 @@ class CoreSwitch extends StatelessWidget {
                   child: Center(
                     child: Text(
                       value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
-                      style: CoreTypography.bodySmallRegular(
+                      style: typography.bodySmallRegular.copyWith(
                         color: value
                             ? CoreTextColors.inverse
                             : effectiveInactiveTextColor,

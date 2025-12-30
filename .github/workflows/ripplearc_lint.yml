@@ -1,0 +1,76 @@
+name: Ripplearc Linter
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  lint:
+    name: Run ripplearc_linter on changed files
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Attempt Rebase (Check Mergeability)
+        id: rebase
+        run: |
+          BASE_REF="${{ github.base_ref || 'main' }}"
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git fetch origin "$BASE_REF"
+          echo "Attempting to rebase on origin/$BASE_REF..."
+          
+          if ! git rebase "origin/$BASE_REF"; then
+            echo "::error::Merge conflict detected! The PR cannot be rebased onto $BASE_REF."
+            echo "::error::Please resolve conflicts locally and push again."
+            git rebase --abort || true
+            exit 1
+          fi
+          
+          echo "Rebase successful! Code is now up-to-date with $BASE_REF."
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+
+      - name: Install dependencies
+        run: |
+          if ! flutter pub get; then
+            echo "::error::Failed to install Flutter dependencies. Please check your pubspec.yaml file for errors."
+            exit 1
+          fi
+
+      - name: Collect changed Dart files
+        id: changed
+        run: |
+          BASE_REF="${{ github.base_ref || 'main' }}"
+          CHANGED_DART_FILES=$(git diff --name-only --diff-filter=d "origin/$BASE_REF" HEAD -- '*.dart')
+
+          if [ -z "$CHANGED_DART_FILES" ]; then
+            echo "has_changed_files=false" >> "$GITHUB_OUTPUT"
+            echo "No Dart files changed; skipping ripplearc_linter."
+          else
+            DART_FILES_SPACE_SEPARATED=$(echo "$CHANGED_DART_FILES" | tr '\n' ' ')
+            echo "has_changed_files=true" >> "$GITHUB_OUTPUT"
+            echo "dart_files=$DART_FILES_SPACE_SEPARATED" >> "$GITHUB_OUTPUT"
+            
+            echo "Changed Dart files found:"
+            echo "$CHANGED_DART_FILES"
+          fi
+
+      - name: Run ripplearc_linter
+        if: steps.changed.outputs.has_changed_files == 'true'
+        run: |
+          RIPPLEARC_LINTER_RULES="prefer_fake_over_mock,no_optional_operators_in_tests,document_fake_parameters,document_interface,todo_with_story_links,no_internal_method_docs,avoid_test_timeouts,private_subject,sealed_over_dynamic"
+          dart run ripplearc_linter:standalone_checker --rules "$RIPPLEARC_LINTER_RULES" ${{ steps.changed.outputs.dart_files }}

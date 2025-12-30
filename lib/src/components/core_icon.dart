@@ -31,27 +31,31 @@ class CoreIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget iconWidget;
+    final iconColor = color;
 
     if (icon.isSvg) {
       iconWidget = SvgPicture.asset(
-        icon.svgPath!,
+        icon.svgPath ?? '',
         width: size,
         height: size,
         colorFilter:
-            color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+            iconColor != null
+            ? ColorFilter.mode(iconColor, BlendMode.srcIn)
+            : null,
         fit: BoxFit.contain,
       );
     } else {
       iconWidget = Icon(
         icon.materialIcon,
         size: size,
-        color: color,
+        color: iconColor,
         semanticLabel: semanticLabel,
       );
     }
 
-    if (padding != null) {
-      iconWidget = Padding(padding: padding!, child: iconWidget);
+    final iconPadding = padding;
+    if (iconPadding != null) {
+      iconWidget = Padding(padding: iconPadding, child: iconWidget);
     }
 
     if (onTap != null) {

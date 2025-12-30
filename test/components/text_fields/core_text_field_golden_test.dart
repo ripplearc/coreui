@@ -127,12 +127,13 @@ void main() {
 }
 
 Widget _buildScenario(String title, Widget child) {
+  final typography = TypographyExtension.create();
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(title, style: typography.bodyMediumSemiBold),
         const SizedBox(height: 4),
         child,
       ],

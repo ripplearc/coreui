@@ -325,6 +325,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   }
 
   Widget _buildTab(AppColorsExtension? colors, _NavLayout layout, int index) {
+    final typography = Theme.of(context).coreTypography;
+
     final isActive = index == widget.selectedIndex;
     final width = isActive ? layout.activeTabWidth : layout.inactiveTabWidth;
 
@@ -371,10 +373,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                         maxLines: 1,
                         overflow: TextOverflow.fade,
                         softWrap: false,
-                        style: TextStyle(
+                        style: typography.bodySmallMedium.copyWith(
                           fontSize: layout.labelFontSize,
                           color: colors?.textLink ?? CoreTextColors.link,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     )
