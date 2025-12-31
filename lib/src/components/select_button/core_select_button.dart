@@ -23,7 +23,7 @@ class CoreSelectButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoreSpacing.space12),
         boxShadow: CoreShadows.small,
       ),
-      padding: const EdgeInsets.all(CoreSpacing.space1),
+      padding: const EdgeInsets.all(CoreSpacing.space2),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -56,30 +56,35 @@ class CoreSelectButton extends StatelessWidget {
   }) {
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(CoreSpacing.space12),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(
-          horizontal: CoreSpacing.space5,
-          vertical: CoreSpacing.space2,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? colors.tabsHighlight : Colors.transparent,
-          borderRadius: BorderRadius.circular(CoreSpacing.space12),
-          boxShadow: selected ? CoreShadows.medium : [],
-        ),
-        child: Text(
-          label,
-          style: selected
-              ? CoreTypography.bodyMediumSemiBold(
-                  color: colors.textHeadline,
-                )
-              : CoreTypography.bodyMediumRegular(
-                  color: colors.textBody,
-                ),
+    return Semantics(
+      label: label,
+      selected: selected,
+      button: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(CoreSpacing.space12),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoreSpacing.space5,
+            vertical: CoreSpacing.space2,
+          ),
+          decoration: BoxDecoration(
+            color: selected ? colors.tabsHighlight : Colors.transparent,
+            borderRadius: BorderRadius.circular(CoreSpacing.space12),
+            boxShadow: selected ? CoreShadows.medium : null,
+          ),
+          child: Text(
+            label,
+            style: selected
+                ? CoreTypography.bodyMediumSemiBold(
+                    color: colors.textHeadline,
+                  )
+                : CoreTypography.bodyMediumRegular(
+                    color: colors.textBody,
+                  ),
+          ),
         ),
       ),
     );

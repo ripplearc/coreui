@@ -39,16 +39,16 @@ The component follows the Core UI design system with:
 
 - **Container**: Inverse background color with rounded corners (12px radius)
 - **Selected Tab**:
-    - Background color: `CoreBorderColors.tabsHighlight`
+    - Background color: `AppColorsExtension.tabsHighlight`
     - Shadow: `CoreShadows.medium`
     - Text style: `CoreTypography.bodyMediumSemiBold` with headline color
 - **Unselected Tab**:
     - Transparent background
     - Text style: `CoreTypography.bodyMediumRegular` with body color
 - **Padding**:
-    - Container: 1px all around
-    - Tab: 5px horizontal, 2px vertical
-    - Tab spacing: 2px between tabs
+    - Container: 8px all around (`CoreSpacing.space2`)
+    - Tab: 20px horizontal, 8px vertical
+    - Tab spacing: 8px between tabs
 
 ### Scrolling
 
@@ -114,7 +114,8 @@ The component provides:
 
 - Proper touch targets for each tab
 - Clear visual distinction between selected and unselected states
-- Semantic structure with InkWell for tap feedback
+- Semantic structure with `Semantics` widget wrapping each tab
+- Screen reader support with `label`, `selected`, and `button` semantic properties
 - Text labels for each tab option
 
 ## Testing
