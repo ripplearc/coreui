@@ -10,13 +10,14 @@ void main() {
   });
 
   testWidgets('SingleItemSelector - all variants', (tester) async {
+    final colors = AppColorsExtension.create();
     await tester.binding.setSurfaceSize(const Size(400, 600));
 
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: Container(
-            color: CoreBackgroundColors.pageBackground,
+            color: colors.pageBackground,
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
