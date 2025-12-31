@@ -16,7 +16,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 0,
             ),
           ),
@@ -34,7 +34,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 1,
             ),
           ),
@@ -62,7 +62,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 0,
               onChanged: (index) {
                 selectedIndex = index;
@@ -85,7 +85,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Only Tab'],
+              tabs: const ['Only Tab'],
               initialIndex: 0,
             ),
           ),
@@ -105,7 +105,7 @@ void main() {
             body: StatefulBuilder(
               builder: (context, setState) {
                 return CoreSelectButton(
-                  tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+                  tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
                   initialIndex: selectedIndex ?? 0,
                   onChanged: (index) {
                     setState(() {
@@ -141,7 +141,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Tab 1', 'Tab 2'],
+              tabs: const ['Tab 1', 'Tab 2'],
               initialIndex: 0,
             ),
           ),
@@ -162,7 +162,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreSelectButton(
-              tabs: ['Tab 1', 'Tab 2'],
+              tabs: const ['Tab 1', 'Tab 2'],
               initialIndex: 0,
               onChanged: null,
             ),
