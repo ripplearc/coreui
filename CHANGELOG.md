@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.2] - Code quality improvements
+
+### 🔧 Fixes
+
+- **Code Quality**
+  - Fixed `avoid_static_typography` linter violations
+  - Fixed `forbid_forced_unwrapping` linter violations
+  - Fixed `specific_exceptions_types` linter violations
+
+## [0.3.1] - Add transparent utility color
+
+### ✨ Features
+
+- **Design Tokens**
+  - Added **transparent utility color** to the core color palette and **AppColorsExtension** for consistent use across apps.
+
 ## [0.1.0] - Initial Release
 
 ### ✨ Features

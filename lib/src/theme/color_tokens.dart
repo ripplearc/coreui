@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-// Base color palette
+/// Base color palette containing all core color definitions.
 abstract class _CoreColorPalette {
   // Brand Colour
   static const Color brandOrient = Color(0xFF015B7C);
@@ -84,6 +84,9 @@ abstract class _CoreColorPalette {
   static const Color green700 = Color(0xFF106446);
   static const Color green800 = Color(0xFF02523B);
   static const Color green900 = Color(0xFF002E22);
+
+  // Utility
+  static const Color transparent = Color(0x00000000);
 }
 
 // Text-related color tokens
@@ -142,10 +145,11 @@ class CoreStatusColors {
 class CoreKeyboardColors {
   static const Color numbers = _CoreColorPalette.gray200;
   static const Color calculate = _CoreColorPalette.blue50;
-  static const Color units = _CoreColorPalette.blue500;
+  static const Color units = _CoreColorPalette.blue200;
   static const Color functions = _CoreColorPalette.blue600;
   static const Color actions = _CoreColorPalette.blue700;
   static const Color main = _CoreColorPalette.blue800;
+  static const Color transparent = _CoreColorPalette.transparent;
 }
 
 // Icon-related color tokens
@@ -208,4 +212,9 @@ class CoreShadowColors {
 
 class CoreBrandColors {
   static const Color orient = _CoreColorPalette.orient900;
+}
+
+// Utility-related color tokens
+class CoreUtilityColors {
+  static const Color transparent = _CoreColorPalette.transparent;
 }
