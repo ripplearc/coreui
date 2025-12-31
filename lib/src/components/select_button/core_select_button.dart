@@ -55,6 +55,7 @@ class CoreSelectButton extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final typography = Theme.of(context).extension<TypographyExtension>()!;
 
     return Semantics(
       label: label,
@@ -78,10 +79,10 @@ class CoreSelectButton extends StatelessWidget {
           child: Text(
             label,
             style: selected
-                ? CoreTypography.bodyMediumSemiBold(
+                ? typography.bodyMediumSemiBold.copyWith(
                     color: colors.textHeadline,
                   )
-                : CoreTypography.bodyMediumRegular(
+                : typography.bodyMediumRegular.copyWith(
                     color: colors.textBody,
                   ),
           ),
