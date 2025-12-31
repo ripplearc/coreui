@@ -87,6 +87,15 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   // Utility Colors
   final Color transparent;
 
+  // Shadow Colors
+  final Color shadowGrey3;
+  final Color shadowGrey5;
+  final Color shadowGrey6;
+  final Color shadowGrey7;
+  final Color shadowGrey8;
+  final Color shadowGrey10;
+  final Color shadowGrey18;
+
   const AppColorsExtension({
     required this.textHeadline,
     required this.textDark,
@@ -153,6 +162,13 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.keyboardActions,
     required this.keyboardMain,
     required this.transparent,
+    required this.shadowGrey3,
+    required this.shadowGrey5,
+    required this.shadowGrey6,
+    required this.shadowGrey7,
+    required this.shadowGrey8,
+    required this.shadowGrey10,
+    required this.shadowGrey18,
   });
 
   /// Static method to get the current AppColorsExtension from context.
@@ -235,6 +251,13 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? keyboardActions,
     Color? keyboardMain,
     Color? transparent,
+    Color? shadowGrey3,
+    Color? shadowGrey5,
+    Color? shadowGrey6,
+    Color? shadowGrey7,
+    Color? shadowGrey8,
+    Color? shadowGrey10,
+    Color? shadowGrey18,
   }) {
     return AppColorsExtension(
         textHeadline: textHeadline ?? this.textHeadline,
@@ -302,7 +325,15 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
         keyboardFunctions: keyboardFunctions ?? this.keyboardFunctions,
         keyboardActions: keyboardActions ?? this.keyboardActions,
         keyboardMain: keyboardMain ?? this.keyboardMain,
-        transparent: transparent ?? this.transparent);
+        transparent: transparent ?? this.transparent,
+        shadowGrey3: shadowGrey3 ?? this.shadowGrey3,
+        shadowGrey5: shadowGrey5 ?? this.shadowGrey5,
+        shadowGrey6: shadowGrey6 ?? this.shadowGrey6,
+        shadowGrey7: shadowGrey7 ?? this.shadowGrey7,
+        shadowGrey8: shadowGrey8 ?? this.shadowGrey8,
+        shadowGrey10: shadowGrey10 ?? this.shadowGrey10,
+        shadowGrey18: shadowGrey18 ?? this.shadowGrey18,
+    );
   }
 
   @override
@@ -421,12 +452,18 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       keyboardMain:
           Color.lerp(keyboardMain, other.keyboardMain, t) ?? keyboardMain,
       transparent: Color.lerp(transparent, other.transparent, t) ?? transparent,
+      shadowGrey3: Color.lerp(shadowGrey3, other.shadowGrey3, t) ?? shadowGrey3,
+      shadowGrey5: Color.lerp(shadowGrey5, other.shadowGrey5, t) ?? shadowGrey5,
+      shadowGrey6: Color.lerp(shadowGrey6, other.shadowGrey6, t) ?? shadowGrey6,
+      shadowGrey7: Color.lerp(shadowGrey7, other.shadowGrey7, t) ?? shadowGrey7,
+      shadowGrey8: Color.lerp(shadowGrey8, other.shadowGrey8, t) ?? shadowGrey8,
+      shadowGrey10: Color.lerp(shadowGrey10, other.shadowGrey10, t) ?? shadowGrey10,
+      shadowGrey18: Color.lerp(shadowGrey18, other.shadowGrey18, t) ?? shadowGrey18,
     );
   }
 
   static AppColorsExtension create() {
-    return const AppColorsExtension(
-      
+    return AppColorsExtension(
       // Text Colors
       textHeadline: CoreTextColors.headline,
       textDark: CoreTextColors.dark,
@@ -511,6 +548,15 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
       // Utility Colors
       transparent: CoreUtilityColors.transparent,
+
+      // Shadow Colors
+      shadowGrey3: CoreShadowColors.shadowGrey3,
+      shadowGrey5: CoreShadowColors.shadowGrey5,
+      shadowGrey6: CoreShadowColors.shadowGrey6,
+      shadowGrey7: CoreShadowColors.shadowGrey7,
+      shadowGrey8: CoreShadowColors.shadowGrey8,
+      shadowGrey10: CoreShadowColors.shadowGrey10,
+      shadowGrey18: CoreShadowColors.shadowGrey18,
     );
   }
 }
