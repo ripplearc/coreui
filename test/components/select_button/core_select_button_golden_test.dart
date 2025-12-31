@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../helper/core_test_theme_helper.dart';
 import '../../load_fonts.dart';
+
+ThemeData _createTestTheme() {
+  return coreTestTheme().copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
 
 void main() {
   setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
 
@@ -20,7 +28,9 @@ void main() {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 12,
+              fontFamily: 'Roboto',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
           ),
@@ -76,7 +86,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: CoreTheme.light(),
+        theme: _createTestTheme(),
         home: Scaffold(
           backgroundColor: CoreBackgroundColors.pageBackground,
           body: Center(
@@ -98,13 +108,15 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
+
     // Simulate pressed state
     final gesture =
         await tester.startGesture(tester.getCenter(find.byKey(pressedKey)));
     await tester.pumpAndSettle();
 
     await expectLater(
-      find.byType(Scaffold),
+      find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_select_button.png'),
     );
 
