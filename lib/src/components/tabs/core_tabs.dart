@@ -51,8 +51,7 @@ class CoreTabs extends StatefulWidget {
   State<CoreTabs> createState() => _CoreTabsState();
 }
 
-class _CoreTabsState extends State<CoreTabs>
-    with SingleTickerProviderStateMixin {
+class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
   late TabController _controller;
 
   @override
