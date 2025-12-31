@@ -167,7 +167,8 @@ void main() {
 
     testWidgets('switch respects custom inactive color',
         (WidgetTester tester) async {
-      const customColor = Colors.purple;
+      final colors = AppColorsExtension.create();
+      final customColor = colors.iconBlue;
 
       await tester.pumpWidget(
         MaterialApp(
