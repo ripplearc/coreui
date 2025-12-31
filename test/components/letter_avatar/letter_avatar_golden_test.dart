@@ -11,6 +11,8 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
+  final typography = TypographyExtension.create();
+
   Widget buildAvatarItem(String name, String letter) {
     return SizedBox(
       width: 100,
@@ -21,12 +23,14 @@ void main() {
           const SizedBox(height: CoreSpacing.space2),
           Text(
             letter,
-            style: CoreTypography.bodyMediumSemiBold(color: CoreTextColors.dark),
+            style: typography.bodyMediumSemiBold
+                .copyWith(color: CoreTextColors.dark),
             textAlign: TextAlign.center,
           ),
           Text(
             name,
-            style: CoreTypography.bodySmallRegular(color: CoreTextColors.body),
+            style: typography.bodySmallRegular
+                .copyWith(color: CoreTextColors.body),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -76,7 +80,8 @@ void main() {
             children: [
               Text(
                 'Letter Avatars (A-Z)',
-                style: CoreTypography.bodyLargeSemiBold(color: CoreTextColors.dark),
+                style: typography.bodyLargeSemiBold
+                    .copyWith(color: CoreTextColors.dark),
               ),
               const SizedBox(height: CoreSpacing.space6),
               Wrap(

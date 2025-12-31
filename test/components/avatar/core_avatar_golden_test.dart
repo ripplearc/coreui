@@ -6,12 +6,13 @@ import '../../await_images_extension.dart';
 import '../../load_fonts.dart';
 
 void main() {
+  final typography = TypographyExtension.create();
   setUpAll(() async {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  Widget _buildAvatarItem(Widget avatar, String label) {
+  Widget buildAvatarItem(Widget avatar, String label) {
     return SizedBox(
       width: 120,
       child: Column(
@@ -21,7 +22,8 @@ void main() {
           const SizedBox(height: CoreSpacing.space2),
           Text(
             label,
-            style: CoreTypography.bodySmallRegular(color: CoreTextColors.body),
+            style: typography.bodySmallRegular
+                .copyWith(color: CoreTextColors.body),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -33,28 +35,28 @@ void main() {
 
   testWidgets('CoreAvatar Golden Test', (WidgetTester tester) async {
     final avatars = <Widget>[
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 20,
           backgroundColor: CoreIconColors.blue,
         ),
         'Small (r=20)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           backgroundColor: CoreIconColors.green,
         ),
         'Medium (r=30)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 40,
           backgroundColor: CoreIconColors.orange,
         ),
         'Large (r=40)',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           backgroundColor: CoreIconColors.blue,
@@ -66,7 +68,7 @@ void main() {
         ),
         'With Icon',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           minRadius: 20,
           maxRadius: 30,
@@ -74,7 +76,7 @@ void main() {
         ),
         'Min/Max Radius',
       ),
-      _buildAvatarItem(
+      buildAvatarItem(
         const CoreAvatar(
           radius: 30,
           child: CoreLetterAvatar(name: 'John Doe'),
@@ -93,7 +95,8 @@ void main() {
             children: [
               Text(
                 'Core Avatar Variants',
-                style: CoreTypography.bodyLargeSemiBold(color: CoreTextColors.dark),
+                style: typography.bodyLargeSemiBold
+                    .copyWith(color: CoreTextColors.dark),
               ),
               const SizedBox(height: CoreSpacing.space6),
               Wrap(
@@ -118,4 +121,3 @@ void main() {
     );
   });
 }
-

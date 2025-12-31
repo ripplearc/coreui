@@ -14,6 +14,10 @@ class CoreSvgIcons {
   static const String plusMinus = '$_basePath/plus_minus.svg';
   static const String slash = '$_basePath/slash.svg';
   static const String cChar = '$_basePath/c.svg';
+  static const String add = '$_basePath/add.svg';
+  static const String minus = '$_basePath/minus.svg';
+  static const String multiplication = '$_basePath/multiplication.svg';
+  static const String percentage = '$_basePath/percentage.svg';
 
   /// User Interface Icons
   static const String placeholder = '$_basePath/placeholder.svg';

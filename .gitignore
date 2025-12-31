@@ -95,3 +95,5 @@ example/**/Flutter/GeneratedPluginRegistrant.swift
 
 # PR Review files
 reviews/**
+
+.fvm/
