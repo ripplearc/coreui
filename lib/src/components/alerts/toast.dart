@@ -6,26 +6,25 @@ import '../../theme/icons/core_icons.dart';
 import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
+import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
+
+enum _ToastType { error, warning, info, success }
 
 class Toast extends StatelessWidget {
   final String? title;
   final String description;
-  final CoreIconData icon;
-  final Color backgroundColor;
-  final Color iconColor;
   final VoidCallback? onClose;
   final String closeLabel;
+  final _ToastType _type;
 
   const Toast._({
     required this.description,
-    required this.icon,
-    required this.backgroundColor,
-    required this.iconColor,
     required this.closeLabel,
+    required _ToastType type,
     this.title,
     this.onClose,
-  });
+  }) : _type = type;
 
   factory Toast.error({
     required String description,
@@ -37,9 +36,7 @@ class Toast extends StatelessWidget {
       description: description,
       title: title,
       closeLabel: closeLabel,
-      icon: CoreIcons.error,
-      backgroundColor: CoreAlertColors.red,
-      iconColor: CoreIconColors.red,
+      type: _ToastType.error,
       onClose: onClose,
     );
   }
@@ -54,9 +51,7 @@ class Toast extends StatelessWidget {
       description: description,
       title: title,
       closeLabel: closeLabel,
-      icon: CoreIcons.warning,
-      backgroundColor: CoreAlertColors.orange,
-      iconColor: CoreIconColors.orange,
+      type: _ToastType.warning,
       onClose: onClose,
     );
   }
@@ -71,9 +66,7 @@ class Toast extends StatelessWidget {
       description: description,
       title: title,
       closeLabel: closeLabel,
-      icon: CoreIcons.info,
-      backgroundColor: CoreAlertColors.blue,
-      iconColor: CoreIconColors.blue,
+      type: _ToastType.info,
       onClose: onClose,
     );
   }
@@ -88,16 +81,56 @@ class Toast extends StatelessWidget {
       description: description,
       title: title,
       closeLabel: closeLabel,
-      icon: CoreIcons.success,
-      backgroundColor: CoreAlertColors.green,
-      iconColor: CoreIconColors.green,
+      type: _ToastType.success,
       onClose: onClose,
     );
+  }
+
+  CoreIconData get _icon {
+    switch (_type) {
+      case _ToastType.error:
+        return CoreIcons.error;
+      case _ToastType.warning:
+        return CoreIcons.warning;
+      case _ToastType.info:
+        return CoreIcons.info;
+      case _ToastType.success:
+        return CoreIcons.success;
+    }
+  }
+
+  Color _getBackgroundColor(AppColorsExtension colors) {
+    switch (_type) {
+      case _ToastType.error:
+        return colors.alertRed;
+      case _ToastType.warning:
+        return colors.alertOrange;
+      case _ToastType.info:
+        return colors.alertBlue;
+      case _ToastType.success:
+        return colors.alertGreen;
+    }
+  }
+
+  Color _getIconColor(AppColorsExtension colors) {
+    switch (_type) {
+      case _ToastType.error:
+        return colors.iconRed;
+      case _ToastType.warning:
+        return colors.iconOrange;
+      case _ToastType.info:
+        return colors.iconBlue;
+      case _ToastType.success:
+        return colors.iconGreen;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
+    final backgroundColor = _getBackgroundColor(colors);
+    final iconColor = _getIconColor(colors);
 
     return Semantics(
       container: true,
@@ -118,7 +151,11 @@ class Toast extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CoreIconWidget(icon: icon, size: 24, color: iconColor),
+            CoreIconWidget(
+              icon: _icon,
+              size: 24,
+              color: iconColor,
+            ),
             const SizedBox(width: CoreSpacing.space3),
             Expanded(
               child: Column(
@@ -128,7 +165,7 @@ class Toast extends StatelessWidget {
                   Text(
                     title ?? description,
                     style: typography.bodyLargeMedium.copyWith(
-                      color: CoreTextColors.dark,
+                      color: colors.textDark,
                     ),
                   ),
                   if (title != null)
@@ -137,7 +174,7 @@ class Toast extends StatelessWidget {
                       child: Text(
                         description,
                         style: typography.bodySmallRegular.copyWith(
-                          color: CoreTextColors.body,
+                          color: colors.textBody,
                         ),
                       ),
                     ),
@@ -157,14 +194,14 @@ class Toast extends StatelessWidget {
                     Text(
                       closeLabel,
                       style: typography.bodyMediumSemiBold.copyWith(
-                        color: CoreTextColors.link,
+                        color: colors.textLink,
                       ),
                     ),
                     const SizedBox(width: CoreSpacing.space2),
-                    const CoreIconWidget(
+                    CoreIconWidget(
                       icon: CoreIcons.close,
                       size: 24,
-                      color: CoreIconColors.dark,
+                      color: colors.iconDark,
                     ),
                   ],
                 ),
