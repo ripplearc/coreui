@@ -16,6 +16,7 @@ void main() {
       CoreToast.cleanup();
     });
 
+    final colors = AppColorsExtension.create();
     testWidgets('showSuccess displays success toast with default message', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -90,7 +91,7 @@ void main() {
                   context,
                   (ctx) => Container(
                     padding: const EdgeInsets.all(16),
-                    color: Colors.blue,
+                    color: colors.iconBlue,
                     child: const Text('Custom Toast'),
                   ),
                 ),

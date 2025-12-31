@@ -29,9 +29,10 @@ void main() {
       ),
     ];
 
+    final colors = AppColorsExtension.create();
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: scenarios,
@@ -71,15 +72,16 @@ Widget _buildSuccessModalContent({
   String? buttonLabel,
 }) {
   final typography = TypographyExtension.create();
+  final colors = AppColorsExtension.create();
   return Container(
     width: 400,
     padding: const EdgeInsets.all(24),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: colors.pageBackground,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.1),
+          color: colors.shadowGrey10,
           blurRadius: 10,
           offset: const Offset(0, -2),
         ),

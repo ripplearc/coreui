@@ -179,22 +179,22 @@ class CoreBottomNavBar extends StatefulWidget {
 class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   @override
   Widget build(BuildContext context) {
-    final appColors = Theme.of(context).extension<AppColorsExtension>();
+    final appColors = Theme.of(context).coreColors;
 
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: appColors?.pageBackground ?? CoreBackgroundColors.pageBackground,
+        color: appColors.pageBackground,
         borderRadius: BorderRadius.circular(48),
         boxShadow: [
           BoxShadow(
-            color: CoreShadowColors.shadowGrey6,
+            color: appColors.shadowGrey6,
             offset: const Offset(0, 2),
             blurRadius: 4,
             spreadRadius: -2,
           ),
           BoxShadow(
-            color: CoreShadowColors.shadowGrey10,
+            color: appColors.shadowGrey10,
             offset: const Offset(0, 4),
             blurRadius: 8,
             spreadRadius: -2,
@@ -275,13 +275,12 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     );
   }
 
-  Widget _buildNavTabRow(AppColorsExtension? colors, _NavLayout layout) {
+  Widget _buildNavTabRow(AppColorsExtension colors, _NavLayout layout) {
     return Container(
       width: layout.tabRowBarWidth,
       padding: EdgeInsets.symmetric(horizontal: layout.barHorizontalPad),
       decoration: BoxDecoration(
-        color: colors?.backgroundDarkGray ??
-            CoreBackgroundColors.backgroundDarkGray,
+        color: colors.backgroundDarkGray,
         borderRadius: BorderRadius.circular(60),
       ),
       clipBehavior: Clip.antiAlias,
@@ -295,7 +294,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     );
   }
 
-  Widget _buildSlidingPill(AppColorsExtension? colors, _NavLayout layout) {
+  Widget _buildSlidingPill(AppColorsExtension colors, _NavLayout layout) {
     return AnimatedPositioned(
       duration: widget.animationDuration,
       curve: Curves.easeOut,
@@ -304,16 +303,16 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       height: layout.pillHeight,
       child: Container(
         decoration: BoxDecoration(
-          color: colors?.pageBackground ?? CoreBackgroundColors.pageBackground,
+          color: colors.pageBackground,
           border: Border.all(
-              color: colors?.lineMid ?? CoreBorderColors.lineMid, width: 2),
+              color: colors.lineMid, width: 2),
           borderRadius: BorderRadius.circular(layout.pillRadius),
         ),
       ),
     );
   }
 
-  Widget _buildTabs(AppColorsExtension? colors, _NavLayout layout) {
+  Widget _buildTabs(AppColorsExtension colors, _NavLayout layout) {
     return Row(
       children: [
         for (var index = 0; index < widget.tabs.length; index++) ...[
@@ -324,7 +323,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     );
   }
 
-  Widget _buildTab(AppColorsExtension? colors, _NavLayout layout, int index) {
+  Widget _buildTab(AppColorsExtension colors, _NavLayout layout, int index) {
     final typography = Theme.of(context).coreTypography;
 
     final isActive = index == widget.selectedIndex;
@@ -347,8 +346,8 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
               icon: widget.tabs[index].icon,
               size: layout.iconSize,
               color: isActive
-                  ? colors?.iconDark ?? CoreIconColors.dark
-                  : colors?.iconGrayMid ?? CoreIconColors.grayMid,
+                  ? colors.iconDark
+                  : colors.iconGrayMid,
             ),
             AnimatedSwitcher(
               duration: widget.animationDuration,
@@ -375,7 +374,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                         softWrap: false,
                         style: typography.bodySmallMedium.copyWith(
                           fontSize: layout.labelFontSize,
-                          color: colors?.textLink ?? CoreTextColors.link,
+                          color: colors.textLink,
                         ),
                       ),
                     )
@@ -387,19 +386,18 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     );
   }
 
-  Widget _buildTrailingICon(AppColorsExtension? colors, _NavLayout layout) {
+  Widget _buildTrailingICon(AppColorsExtension colors, _NavLayout layout) {
     return Container(
       width: layout.actionButtonSize,
       height: layout.actionButtonSize,
       decoration: BoxDecoration(
-        color: colors?.backgroundDarkGray ??
-            CoreBackgroundColors.backgroundDarkGray,
+        color: colors.backgroundDarkGray,
         borderRadius: BorderRadius.circular(layout.actionButtonSize / 2),
       ),
       child: Center(
         child: CoreIconWidget(
           icon: CoreIcons.calculator,
-          color: colors?.iconWhite ?? CoreIconColors.white,
+          color: colors.iconWhite,
           size: layout.actionButtonSize *
               (_BaseBottomNavBarDimensions.baseIconSize /
                   _BaseBottomNavBarDimensions.baseActionButton),

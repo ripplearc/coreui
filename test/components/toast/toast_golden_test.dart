@@ -9,7 +9,7 @@ void main() {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
-
+  final colors = AppColorsExtension.create();
   testWidgets('Toast Component Visual Regression Test',
       (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1050, 550));
@@ -71,7 +71,7 @@ void main() {
 
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Wrap(
