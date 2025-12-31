@@ -6,7 +6,7 @@ import 'theme_extensions.dart';
 
 class CoreTheme {
   static AppColorsExtension _getAppColors() {
-    return const AppColorsExtension(
+    return AppColorsExtension(
       // Text Colors
       textHeadline: CoreTextColors.headline,
       textDark: CoreTextColors.dark,
@@ -89,6 +89,15 @@ class CoreTheme {
       keyboardMain: CoreKeyboardColors.main,
       tabsHighlight: CoreBorderColors.tabsHighlight,
       transparent: CoreUtilityColors.transparent,
+
+      // Shadow Colors
+      shadowGrey3: CoreShadowColors.shadowGrey3,
+      shadowGrey5: CoreShadowColors.shadowGrey5,
+      shadowGrey6: CoreShadowColors.shadowGrey6,
+      shadowGrey7: CoreShadowColors.shadowGrey7,
+      shadowGrey8: CoreShadowColors.shadowGrey8,
+      shadowGrey10: CoreShadowColors.shadowGrey10,
+      shadowGrey18: CoreShadowColors.shadowGrey18,
     );
   }
 
