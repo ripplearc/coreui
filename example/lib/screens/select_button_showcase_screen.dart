@@ -18,7 +18,7 @@ class _SelectButtonShowcaseScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CoreTextColors.inverse,
+      backgroundColor: CoreBackgroundColors.pageBackground,
       appBar: AppBar(
         title: const Text('Select Button Showcase'),
       ),

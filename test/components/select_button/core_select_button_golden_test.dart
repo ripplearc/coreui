@@ -34,7 +34,7 @@ void main() {
       scenario(
         'Default - Tab 1 Selected',
         CoreSelectButton(
-          tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+          tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
           initialIndex: 0,
           onChanged: (_) {},
         ),
@@ -42,7 +42,7 @@ void main() {
       scenario(
         'Tab 2 Selected',
         CoreSelectButton(
-          tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+          tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
           initialIndex: 1,
           onChanged: (_) {},
         ),
@@ -50,7 +50,7 @@ void main() {
       scenario(
         'Tab 3 Selected',
         CoreSelectButton(
-          tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+          tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
           initialIndex: 2,
           onChanged: (_) {},
         ),
@@ -59,7 +59,13 @@ void main() {
         'Many Tabs',
         CoreSelectButton(
           key: pressedKey,
-          tabs: ['Short', 'Medium Tab', 'Very Long Tab Name', 'Tab', 'Another'],
+          tabs: const [
+            'Short',
+            'Medium Tab',
+            'Very Long Tab Name',
+            'Tab',
+            'Another'
+          ],
           initialIndex: 0,
           onChanged: (_) {},
         ),
