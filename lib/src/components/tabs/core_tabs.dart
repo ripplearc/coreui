@@ -2,11 +2,44 @@ import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
+/// A horizontal tab bar component following the Core design system.
+///
+/// Displays a list of selectable tabs with an indicator highlighting the
+/// currently selected tab. Uses [TabController] internally to manage tab
+/// selection state.
+///
+/// The tabs are horizontally scrollable when they exceed the available width.
+///
+/// Example:
+/// ```dart
+/// CoreTabs(
+///   tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+///   initialIndex: 0,
+///   onChanged: (index) => print('Selected tab: $index'),
+/// )
+/// ```
+///
+/// See also:
+///  * [TabBar], the underlying Flutter widget used for tab display.
 class CoreTabs extends StatefulWidget {
+  /// The list of tab labels to display.
+  ///
+  /// Must contain at least one tab.
   final List<String> tabs;
+
+  /// The index of the initially selected tab.
+  ///
+  /// Defaults to 0 (the first tab).
   final int initialIndex;
+
+  /// Called when the user selects a different tab.
+  ///
+  /// The callback provides the index of the newly selected tab.
   final ValueChanged<int>? onChanged;
 
+  /// Creates a [CoreTabs] widget.
+  ///
+  /// The [tabs] parameter is required and must not be empty.
   const CoreTabs({
     super.key,
     required this.tabs,
@@ -75,10 +108,9 @@ class _CoreTabsState extends State<CoreTabs>
         indicatorWeight: CoreSpacing.space1,
         labelColor: colors.textHeadline,
         unselectedLabelColor: colors.textBody,
-        labelStyle:
-            CoreTypography.bodyMediumSemiBold(color: colors.textHeadline),
+        labelStyle: Theme.of(context).coreTypography.bodyMediumSemiBold,
         unselectedLabelStyle:
-            CoreTypography.bodyMediumRegular(color: colors.textBody),
+            Theme.of(context).coreTypography.bodyMediumRegular,
         tabs: [
           for (final label in widget.tabs)
             Padding(

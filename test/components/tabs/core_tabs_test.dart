@@ -116,6 +116,8 @@ void main() {
     });
 
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
+      List<String> tabs = ['Tab 1', 'Tab 2'];
+
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -125,11 +127,13 @@ void main() {
                 return Column(
                   children: [
                     CoreTabs(
-                      tabs: const ['Tab 1', 'Tab 2'],
+                      tabs: tabs,
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        setState(() {});
+                        setState(() {
+                          tabs = ['Tab A', 'Tab B', 'Tab C'];
+                        });
                       },
                       child: const Text('Update'),
                     ),
@@ -141,14 +145,21 @@ void main() {
         ),
       );
 
+      // Initial tabs
       expect(find.text('Tab 1'), findsOneWidget);
       expect(find.text('Tab 2'), findsOneWidget);
+      expect(find.text('Tab C'), findsNothing);
 
+      // Update tabs
       await tester.tap(find.text('Update'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Tab 1'), findsOneWidget);
-      expect(find.text('Tab 2'), findsOneWidget);
+      // New tabs should be displayed
+      expect(find.text('Tab A'), findsOneWidget);
+      expect(find.text('Tab B'), findsOneWidget);
+      expect(find.text('Tab C'), findsOneWidget);
+      expect(find.text('Tab 1'), findsNothing);
+      expect(find.text('Tab 2'), findsNothing);
     });
   });
 }
