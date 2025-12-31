@@ -9,12 +9,12 @@ export 'src/components/keyboard/keyboard_buttons.dart';
 export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
-export 'src/components/select_button/core_select_button.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
+export 'src/components/select_button/core_select_button.dart';
 // Theme exports
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';
