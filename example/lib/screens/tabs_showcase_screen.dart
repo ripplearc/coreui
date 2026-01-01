@@ -20,28 +20,21 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 2 Tabs
             _buildTabsSection(
               title: '2 Tabs',
               tabs: ['Tab 1', 'Tab 2'],
             ),
             const SizedBox(height: CoreSpacing.space8),
-
-            // 3 Tabs
             _buildTabsSection(
               title: '3 Tabs',
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
             ),
             const SizedBox(height: CoreSpacing.space8),
-
-            // 4 Tabs
             _buildTabsSection(
               title: '4 Tabs',
               tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
             ),
             const SizedBox(height: CoreSpacing.space8),
-
-            // 5 Tabs
             _buildTabsSection(
               title: '5 Tabs',
               tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
