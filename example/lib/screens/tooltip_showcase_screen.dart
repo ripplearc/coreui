@@ -10,280 +10,186 @@ class TooltipShowcaseScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tooltip Components'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(CoreSpacing.space6),
+      body: SizedBox(
+        width: double.infinity,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Tooltip Variants',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
             const SizedBox(height: CoreSpacing.space6),
 
-            // Default Tooltip
-            _buildTooltipSection(
-              context,
-              title: 'Default Tooltip',
-              description: 'Standard tooltip with no arrow',
-              child: CoreTooltip.none(
-                message: 'This is a default tooltip',
-                child: Container(
-                  padding: const EdgeInsets.all(CoreSpacing.space3),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(CoreSpacing.space2),
-                  ),
-                  child: const Text('Hover or tap me'),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: CoreSpacing.space8),
-
-            // Arrow Tooltip
-            _buildTooltipSection(
-              context,
-              title: 'Tooltip with Arrow',
-              description: 'Tooltip positioned above with arrow pointing down',
-              child: CoreTooltip.top(
-                message: 'This is a tooltip above the target',
-                child: Container(
-                  padding: const EdgeInsets.all(CoreSpacing.space3),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade100,
-                    borderRadius: BorderRadius.circular(CoreSpacing.space2),
-                  ),
-                  child: const Text('Hover or tap me'),
-                ),
-              ),
+            // First tooltip - arrow pointing down (tooltip above)
+            const _TooltipBubble(
+              arrowPosition: TooltipArrowPosition.bottom,
             ),
 
             const SizedBox(height: CoreSpacing.space12),
-            Text(
-              'Tooltip Positions',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: CoreSpacing.space6),
 
-            // Position examples grid
-            Center(
-              child: SizedBox(
-                width: 300,
-                height: 300,
-                child: Stack(
-                  children: [
-                    // Center Target
-                    Positioned(
-                      left: 125,
-                      top: 125,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius:
-                              BorderRadius.circular(CoreSpacing.space2),
-                        ),
-                        child: const Center(child: Text('Target')),
-                      ),
-                    ),
-
-                    // Top Tooltip (positioned above with arrow pointing down)
-                    Positioned(
-                      left: 125,
-                      top: 50,
-                      child: CoreTooltip.top(
-                        message: 'Tooltip above',
-                        child: Container(
-                          width: 50,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade200,
-                            borderRadius:
-                                BorderRadius.circular(CoreSpacing.space1),
-                          ),
-                          child: const Center(child: Text('Top')),
-                        ),
-                      ),
-                    ),
-
-                    // Bottom Tooltip (positioned below with arrow pointing up)
-                    Positioned(
-                      left: 125,
-                      top: 220,
-                      child: CoreTooltip.bottom(
-                        message: 'Tooltip below',
-                        child: Container(
-                          width: 50,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade200,
-                            borderRadius:
-                                BorderRadius.circular(CoreSpacing.space1),
-                          ),
-                          child: const Center(child: Text('Bottom')),
-                        ),
-                      ),
-                    ),
-
-                    // Left Tooltip (positioned left with arrow pointing right)
-                    Positioned(
-                      left: 50,
-                      top: 135,
-                      child: CoreTooltip.left(
-                        message: 'Tooltip left',
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade200,
-                            borderRadius:
-                                BorderRadius.circular(CoreSpacing.space1),
-                          ),
-                          child: const Column(
-                            children: [
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                              Center(child: Text('Left')),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Right Tooltip (positioned right with arrow pointing left)
-                    Positioned(
-                      left: 200,
-                      top: 135,
-                      child: CoreTooltip.right(
-                        message: 'Tooltip right',
-                        child: Container(
-                          width: 50,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.purple.shade200,
-                            borderRadius:
-                                BorderRadius.circular(CoreSpacing.space1),
-                          ),
-                          child: const Center(child: Text('Right')),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Second tooltip - arrow pointing up (tooltip below)
+            const _TooltipBubble(
+              arrowPosition: TooltipArrowPosition.top,
             ),
 
             const SizedBox(height: CoreSpacing.space12),
-            Text(
-              'Icon Tooltips',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: CoreSpacing.space4),
 
-            _buildTooltipSection(
-              context,
-              title: 'Common Use Case',
-              description: 'Tooltips used with icons for helpful hints',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  _IconTooltip(
-                      icon: Icons.info, color: Colors.blue, label: 'Info'),
-                  _IconTooltip(
-                      icon: Icons.help, color: Colors.green, label: 'Help'),
-                  _IconTooltip(
-                      icon: Icons.settings,
-                      color: Colors.orange,
-                      label: 'Settings'),
-                  _IconTooltip(
-                      icon: Icons.warning, color: Colors.red, label: 'Warning'),
-                ],
-              ),
+            // Third tooltip - arrow pointing down (tooltip above)
+            const _TooltipBubble(
+              arrowPosition: TooltipArrowPosition.bottom,
             ),
 
             const SizedBox(height: CoreSpacing.space12),
-            Container(
-              padding: const EdgeInsets.all(CoreSpacing.space4),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Usage Notes:',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: CoreSpacing.space2),
-                  const Text(
-                      '• Use named constructors: .top(), .bottom(), .left(), .right(), .none()'),
-                  const Text('• On desktop: Hover to show, move away to hide'),
-                  const Text('• On mobile: Tap to show/hide'),
-                  const Text(
-                      '• Tooltips automatically position near their trigger'),
-                  const Text('• Use sparingly for essential information only'),
-                ],
-              ),
+
+            // Fourth tooltip - arrow pointing right (tooltip left)
+            const _TooltipBubble(
+              arrowPosition: TooltipArrowPosition.right,
+            ),
+
+            const SizedBox(height: CoreSpacing.space12),
+
+            // Fifth tooltip - no arrow
+            const _TooltipBubble(
+              arrowPosition: TooltipArrowPosition.none,
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildTooltipSection(
-    BuildContext context, {
-    required String title,
-    required String description,
-    required Widget child,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: CoreSpacing.space2),
-        Text(
-          description,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
-              ),
-        ),
-        const SizedBox(height: CoreSpacing.space4),
-        Center(child: child),
-      ],
-    );
-  }
 }
 
-class _IconTooltip extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String label;
+class _TooltipBubble extends StatelessWidget {
+  final TooltipArrowPosition arrowPosition;
 
-  const _IconTooltip({
-    required this.icon,
-    required this.color,
-    required this.label,
+  const _TooltipBubble({
+    required this.arrowPosition,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CoreTooltip.top(
-      message: label,
-      child: Icon(icon, color: color, size: CoreSpacing.space8),
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+
+    const arrowWidth = 12.0;
+    const arrowHeight = 8.0;
+
+    final tooltipBody = Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: CoreSpacing.space2,
+        horizontal: CoreSpacing.space4,
+      ),
+      decoration: BoxDecoration(
+        color: colors.backgroundDarkGray,
+        borderRadius: BorderRadius.circular(CoreSpacing.space2),
+      ),
+      child: Text(
+        'My Tooltip',
+        style: CoreTypography.bodyMediumRegular(color: colors.textInverse),
+      ),
     );
+
+    final arrow = CustomPaint(
+      size: const Size(arrowWidth, arrowHeight),
+      painter: _ArrowPainter(
+        color: colors.backgroundDarkGray,
+        position: arrowPosition,
+      ),
+    );
+
+    if (arrowPosition == TooltipArrowPosition.none) {
+      return tooltipBody;
+    }
+
+    switch (arrowPosition) {
+      case TooltipArrowPosition.bottom:
+        // Arrow points down
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tooltipBody,
+            arrow,
+          ],
+        );
+      case TooltipArrowPosition.top:
+        // Arrow points up
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            arrow,
+            tooltipBody,
+          ],
+        );
+      case TooltipArrowPosition.right:
+        // Arrow points right
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tooltipBody,
+            arrow,
+          ],
+        );
+      case TooltipArrowPosition.left:
+        // Arrow points left
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            arrow,
+            tooltipBody,
+          ],
+        );
+      case TooltipArrowPosition.none:
+        return tooltipBody;
+    }
   }
+}
+
+class _ArrowPainter extends CustomPainter {
+  final Color color;
+  final TooltipArrowPosition position;
+
+  _ArrowPainter({
+    required this.color,
+    required this.position,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+
+    switch (position) {
+      case TooltipArrowPosition.bottom:
+        // Arrow points down
+        path.moveTo(0, 0);
+        path.lineTo(size.width / 2, size.height);
+        path.lineTo(size.width, 0);
+        break;
+      case TooltipArrowPosition.top:
+        // Arrow points up
+        path.moveTo(0, size.height);
+        path.lineTo(size.width / 2, 0);
+        path.lineTo(size.width, size.height);
+        break;
+      case TooltipArrowPosition.left:
+        // Arrow points left
+        path.moveTo(size.width, 0);
+        path.lineTo(0, size.height / 2);
+        path.lineTo(size.width, size.height);
+        break;
+      case TooltipArrowPosition.right:
+        // Arrow points right
+        path.moveTo(0, 0);
+        path.lineTo(size.width, size.height / 2);
+        path.lineTo(0, size.height);
+        break;
+      case TooltipArrowPosition.none:
+        break;
+    }
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_ArrowPainter oldDelegate) => false;
 }
