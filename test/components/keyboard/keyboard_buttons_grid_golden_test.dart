@@ -171,6 +171,7 @@ void main() {
   testWidgets('Keyboard Buttons Grid View Golden Test', (tester) async {
     final normalButtons = getButtons(keyPrefix: 'normal');
     final pressedButtons = getButtons(keyPrefix: 'pressed');
+    final colors = AppColorsExtension.create();
 
     final widget = MaterialApp(
       theme: CoreTheme.light().copyWith(
@@ -178,7 +179,7 @@ void main() {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: CoreBackgroundColors.pageBackground,
+        backgroundColor: colors.pageBackground,
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
