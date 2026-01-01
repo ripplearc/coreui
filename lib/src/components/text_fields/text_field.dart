@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/color_tokens.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/spacing.dart';
+import '../../theme/theme_extensions.dart';
 import '../../theme/typography_extension.dart';
 import '../core_icon.dart';
 
@@ -86,6 +86,7 @@ class CoreTextField extends StatelessWidget {
 
     final bool isDisabled = !enabled || readOnly;
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
 
     return TextFormField(
       controller: controller,
@@ -97,30 +98,30 @@ class CoreTextField extends StatelessWidget {
       onChanged: onChanged,
       validator: validator,
       cursorColor:
-          isDisabled ? Colors.transparent : CoreBorderColors.outlineFocus,
+          isDisabled ? colors.transparent : colors.outlineFocus,
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
       style: typography.bodyLargeRegular.copyWith(
-        color: isDisabled ? CoreTextColors.disable : CoreTextColors.dark,
+        color: isDisabled ? colors.textDisable : colors.textDark,
       ),
       decoration: InputDecoration(
         floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
           color: isDisabled
-              ? CoreTextColors.disable
-              : CoreBorderColors.outlineFocus,
+              ? colors.textDisable
+              : colors.outlineFocus,
         ),
         hoverColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
+            isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
         fillColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
+            isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
         filled: true,
         labelText: label,
         labelStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled ? CoreTextColors.disable : CoreTextColors.headline,
+          color: isDisabled ? colors.textDisable : colors.textHeadline,
         ),
         prefixIcon: prefixWidget,
         hintText: hintText,
         hintStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled ? CoreTextColors.disable : CoreTextColors.disable,
+          color: colors.textDisable,
         ),
         suffixIcon:
             (obscureText ? suffix ?? const Icon(Icons.visibility) : suffix),
@@ -139,17 +140,15 @@ class CoreTextField extends StatelessWidget {
                   CoreIconWidget(
                     icon: CoreIcons.info,
                     size: 16,
-                    color: isDisabled
-                        ? CoreIconColors.grayMid
-                        : CoreIconColors.grayMid,
+                    color: colors.iconGrayMid,
                   ),
                   const SizedBox(width: CoreSpacing.space1),
                   Text(
                     helperText ?? "",
                     style: typography.bodySmallRegular.copyWith(
                         color: isDisabled
-                            ? CoreTextColors.disable
-                            : CoreTextColors.headline),
+                            ? colors.textDisable
+                            : colors.textHeadline),
                   ),
                 ],
               ),
@@ -157,33 +156,33 @@ class CoreTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(
             color: isDisabled
-                ? CoreBorderColors.lineMid
-                : CoreBorderColors.lineDarkOutline,
+                ? colors.lineMid
+                : colors.lineDarkOutline,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(
             color: isDisabled
-                ? CoreBorderColors.lineMid
-                : CoreBorderColors.lineDarkOutline,
+                ? colors.lineMid
+                : colors.lineDarkOutline,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreTextColors.dark),
+          borderSide: BorderSide(color: colors.textDark),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreStatusColors.error),
+          borderSide: BorderSide(color: colors.statusError),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreStatusColors.error),
+          borderSide: BorderSide(color: colors.statusError),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.lineMid),
+          borderSide: BorderSide(color: colors.lineMid),
         ),
       ),
     );
@@ -212,14 +211,15 @@ class CoreTextField extends StatelessWidget {
 
   Widget _buildErrorWidget(BuildContext context, {String? errorText, Widget? errorWidget}) {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const CoreIconWidget(
+        CoreIconWidget(
           icon: CoreIcons.error,
           size: 16,
-          color: CoreIconColors.red,
+          color: colors.iconRed,
         ),
         const SizedBox(width: CoreSpacing.space1),
         if (errorWidget != null)
@@ -230,7 +230,7 @@ class CoreTextField extends StatelessWidget {
               errorText,
               style:
                    typography.bodySmallRegular
-                  .copyWith(color: CoreTextColors.error),
+                  .copyWith(color: colors.textError),
             ),
           ),
       ],
@@ -239,6 +239,7 @@ class CoreTextField extends StatelessWidget {
 
   Widget? _buildPhonePrefixButton(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
     
     return IntrinsicWidth(
       child: Padding(
@@ -254,13 +255,13 @@ class CoreTextField extends StatelessWidget {
                   Text(
                     phonePrefix ?? '+1',
                     style: typography.bodyLargeRegular.copyWith(
-                      color: CoreTextColors.headline,
+                      color: colors.textHeadline,
                     ),
                   ),
                   const SizedBox(width: CoreSpacing.space1),
-                  const CoreIconWidget(
+                  CoreIconWidget(
                     icon: CoreIcons.arrowDropDown,
-                    color: CoreTextColors.headline,
+                    color: colors.textHeadline,
                     size: 18,
                   ),
                 ],
@@ -270,7 +271,7 @@ class CoreTextField extends StatelessWidget {
             Container(
               height: 20,
               width: 1,
-              color: CoreBorderColors.lineMid,
+              color: colors.lineMid,
             ),
           ],
         ),
