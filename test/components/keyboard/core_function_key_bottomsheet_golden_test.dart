@@ -16,7 +16,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
-
+  final colors = AppColorsExtension.create();
   testWidgets('CoreFunctionKeyBottomSheet Golden Test', (tester) async {
     final testGroups = [
       FunctionGroup(
@@ -43,15 +43,15 @@ void main() {
 
     final testAccentColors = {
       const GroupNameType(label: 'Trigonomety'):
-          CoreBackgroundColors.backgroundDarkGray,
+          colors.backgroundDarkGray,
       const GroupNameType(label: 'Materials'):
-          CoreBackgroundColors.backgroundOrientMid,
+          colors.orientMid,
     };
 
     final widget = MaterialApp(
       theme: _createTestTheme(),
       home: Scaffold(
-        backgroundColor: CoreBackgroundColors.pageBackground,
+        backgroundColor: colors.pageBackground,
         body: Center(
           child: CoreFunctionKeyBottomSheet(
             groups: testGroups,
