@@ -27,12 +27,6 @@ void main() {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
           ),
           const SizedBox(height: 8),
           button,
@@ -82,17 +76,16 @@ void main() {
       ),
     ];
 
-    await tester.binding.setSurfaceSize(const Size(600, 800));
+    await tester.binding.setSurfaceSize(const Size(600, 450));
 
     await tester.pumpWidget(
       MaterialApp(
         theme: _createTestTheme(),
         home: Scaffold(
-          backgroundColor: CoreBackgroundColors.pageBackground,
           body: Center(
             child: SizedBox(
               width: 600,
-              height: 800,
+              height: 450,
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
