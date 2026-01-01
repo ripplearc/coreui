@@ -28,7 +28,7 @@ class CoreDigitInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final effectiveSize = size ?? CoreSpacing.space16;
     final effectiveWidth = width ?? effectiveSize;
     final effectiveHeight = height ?? effectiveSize;
@@ -127,7 +127,7 @@ class CoreUnitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final effectiveHeight = height;
     final backgroundColor = colors.keyboardUnits;
     final textColor = colors.textHeadline;
@@ -191,7 +191,7 @@ class CoreControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final backgroundColor = switch (action) {
       ControlAction.clearAll => colors.keyboardActions,
       ControlAction.delete => colors.keyboardMain,
@@ -278,7 +278,7 @@ class CoreResultButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final effectiveHeight = height;
     final backgroundColor = colors.keyboardMain;
     final textColor = colors.textInverse;

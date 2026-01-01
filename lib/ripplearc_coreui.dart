@@ -15,6 +15,7 @@ export 'src/components/text_fields/text_field.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
 // Theme exports
+export 'src/theme/app_typography_extension.dart';
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';
 export 'src/theme/icons/icon_data.dart';
@@ -26,4 +27,3 @@ export 'src/theme/spacing.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_extensions.dart';
 export 'src/theme/typography.dart';
-export 'src/theme/typography_extension.dart';

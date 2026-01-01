@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_coreui/src/theme/typography_extension.dart';
+import 'package:ripplearc_coreui/src/theme/app_typography_extension.dart';
 
 import 'color_tokens.dart';
 import 'theme_extensions.dart';
@@ -103,7 +103,7 @@ class CoreTheme {
       primaryColor: CoreBrandColors.orient,
       extensions: [
         _getAppColors(),
-        TypographyExtension.create(),
+        AppTypographyExtension.create(),
       ],
     );
   }

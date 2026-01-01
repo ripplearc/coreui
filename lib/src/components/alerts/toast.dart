@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_typography_extension.dart';
 import '../../theme/color_tokens.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
-import '../../theme/typography_extension.dart';
 import '../core_icon.dart';
 
 class Toast extends StatelessWidget {
@@ -106,7 +106,9 @@ class Toast extends StatelessWidget {
       hint: title != null ? description : null,
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space4, vertical: CoreSpacing.space3),
+          horizontal: CoreSpacing.space4,
+          vertical: CoreSpacing.space3,
+        ),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
@@ -116,11 +118,7 @@ class Toast extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CoreIconWidget(
-              icon: icon,
-              size: 24,
-              color: iconColor,
-            ),
+            CoreIconWidget(icon: icon, size: 24, color: iconColor),
             const SizedBox(width: CoreSpacing.space3),
             Expanded(
               child: Column(

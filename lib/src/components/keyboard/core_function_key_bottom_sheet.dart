@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_typography_extension.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/typography_extension.dart';
 import 'function_key_tile.dart';
 import 'keyboard_models.dart';
 
@@ -78,76 +78,77 @@ class _CoreFunctionKeyBottomSheetState
     final colors = AppColorsExtension.of(context);
     final screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
-        child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: screenHeight * _maxHeightRatio,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CoreSpacing.space6,
-          CoreSpacing.space4,
-          CoreSpacing.space6,
-          CoreSpacing.space8,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Center(
-              child: Container(
-                width: CoreSpacing.space10,
-                height: CoreSpacing.space1,
-                decoration: BoxDecoration(
-                  color: colors.lineMid,
-                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: screenHeight * _maxHeightRatio),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CoreSpacing.space6,
+            CoreSpacing.space4,
+            CoreSpacing.space6,
+            CoreSpacing.space8,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Center(
+                child: Container(
+                  width: CoreSpacing.space10,
+                  height: CoreSpacing.space1,
+                  decoration: BoxDecoration(
+                    color: colors.lineMid,
+                    borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: CoreSpacing.space3),
-            if (widget.showUnitToggle)
-              _Header(
-                unitSystem: widget.currentUnitSystem,
-                onUnitSystemChanged: widget.onUnitSystemChanged,
-              ),
-            if (widget.showUnitToggle)
               const SizedBox(height: CoreSpacing.space3),
-            Flexible(
-              child: ReorderableListView.builder(
-                buildDefaultDragHandles: false,
-                itemCount: _groups.length,
-                onReorder: _handleGroupReorder,
-                proxyDecorator:
-                    (Widget child, int index, Animation<double> animation) {
-                  return Material(
-                    color: colors.pageBackground,
-                    elevation: 6.0,
-                    child: child,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  final group = _groups[index];
-                  final accent = widget.groupAccentColors[group.name] ??
-                      colors.keyboardUnits;
-                  final isSelected = group.name == widget.selectedGroup;
-                  return Padding(
-                    key: ValueKey(group.name.label),
-                    padding: const EdgeInsets.only(bottom: CoreSpacing.space3),
-                    child: _FunctionGroupSection(
-                      index: index,
-                      group: group,
-                      accentColor: accent,
-                      isSelected: isSelected,
-                      onGroupSelected: widget.onGroupSelected,
-                      onKeyTapped: widget.onKeyTapped,
-                    ),
-                  );
-                },
+              if (widget.showUnitToggle)
+                _Header(
+                  unitSystem: widget.currentUnitSystem,
+                  onUnitSystemChanged: widget.onUnitSystemChanged,
+                ),
+              if (widget.showUnitToggle)
+                const SizedBox(height: CoreSpacing.space3),
+              Flexible(
+                child: ReorderableListView.builder(
+                  buildDefaultDragHandles: false,
+                  itemCount: _groups.length,
+                  onReorder: _handleGroupReorder,
+                  proxyDecorator:
+                      (Widget child, int index, Animation<double> animation) {
+                    return Material(
+                      color: colors.pageBackground,
+                      elevation: 6.0,
+                      child: child,
+                    );
+                  },
+                  itemBuilder: (context, index) {
+                    final group = _groups[index];
+                    final accent = widget.groupAccentColors[group.name] ??
+                        colors.keyboardUnits;
+                    final isSelected = group.name == widget.selectedGroup;
+                    return Padding(
+                      key: ValueKey(group.name.label),
+                      padding: const EdgeInsets.only(
+                        bottom: CoreSpacing.space3,
+                      ),
+                      child: _FunctionGroupSection(
+                        index: index,
+                        group: group,
+                        accentColor: accent,
+                        isSelected: isSelected,
+                        onGroupSelected: widget.onGroupSelected,
+                        onKeyTapped: widget.onKeyTapped,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }
 
@@ -207,15 +208,12 @@ class _Header extends StatelessWidget {
   final UnitSystem unitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
 
-  const _Header({
-    required this.unitSystem,
-    required this.onUnitSystemChanged,
-  });
+  const _Header({required this.unitSystem, required this.onUnitSystemChanged});
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,10 +235,7 @@ class _Header extends StatelessWidget {
             ),
             const Spacer(),
             if (onUnitSystemChanged case final callback?)
-              _UnitSystemToggle(
-                currentSystem: unitSystem,
-                onChanged: callback,
-              ),
+              _UnitSystemToggle(currentSystem: unitSystem, onChanged: callback),
           ],
         ),
       ],
@@ -266,7 +261,7 @@ class _GroupHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     return Semantics(
       label: 'Function group header for $name',
       button: true,
@@ -328,11 +323,13 @@ class _UnitSystemToggle extends StatefulWidget {
 class _UnitSystemToggleState extends State<_UnitSystemToggle> {
   late bool _isImperial;
 
-  static const Duration _containerAnimationDuration =
-      Duration(milliseconds: 300);
+  static const Duration _containerAnimationDuration = Duration(
+    milliseconds: 300,
+  );
 
-  static const Duration _indicatorAnimationDuration =
-      Duration(milliseconds: 200);
+  static const Duration _indicatorAnimationDuration = Duration(
+    milliseconds: 200,
+  );
 
   static const double _toggleWidth = 80.0;
   static const double _toggleHeight = 24;
@@ -381,7 +378,7 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
 
   Widget _buildImperialText(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     return AnimatedOpacity(
       duration: _containerAnimationDuration,
       opacity: isImperial ? 1.0 : 0.0,
@@ -402,7 +399,7 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
 
   Widget _buildMetricText(BuildContext context, bool isImperial) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     return AnimatedOpacity(
       duration: _indicatorAnimationDuration,
       opacity: !isImperial ? 1.0 : 0.0,

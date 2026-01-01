@@ -130,7 +130,7 @@ void main() {
 }
 
 Widget _buildScenario(String title, Widget child) {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
     child: Column(
