@@ -9,11 +9,13 @@ void main() {
     await loadFonts();
   });
 
+  final colors = AppColorsExtension.create();
+
   testWidgets('CoreSwitch Golden Test - All Variants',
       (WidgetTester tester) async {
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
