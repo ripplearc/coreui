@@ -6,7 +6,7 @@ import '../../await_images_extension.dart';
 import '../../load_fonts.dart';
 
 void main() {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   setUpAll(() async {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
