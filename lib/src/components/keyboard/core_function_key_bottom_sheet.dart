@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../theme/app_typography_extension.dart';
-import '../../theme/spacing.dart';
-import '../../theme/theme_extensions.dart';
 import 'function_key_tile.dart';
-import 'keyboard_models.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///
@@ -204,11 +201,38 @@ class _FunctionGroupSection extends StatelessWidget {
   }
 }
 
-class _Header extends StatelessWidget {
+class _Header extends StatefulWidget {
   final UnitSystem unitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
 
-  const _Header({required this.unitSystem, required this.onUnitSystemChanged});
+  const _Header({
+    required this.unitSystem,
+    this.onUnitSystemChanged,
+  });
+  @override
+  State<_Header> createState() => _HeaderState();
+}
+
+class _HeaderState extends State<_Header> {
+  ValueChanged<UnitSystem>? get onUnitSystemChanged =>
+      widget.onUnitSystemChanged;
+  late bool isMetric;
+
+  @override
+  void initState() {
+    super.initState();
+    isMetric = widget.unitSystem == UnitSystem.metric;
+  }
+
+  @override
+  void didUpdateWidget(covariant _Header oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.unitSystem != widget.unitSystem) {
+      setState(() {
+        isMetric = widget.unitSystem == UnitSystem.metric;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +259,23 @@ class _Header extends StatelessWidget {
             ),
             const Spacer(),
             if (onUnitSystemChanged case final callback?)
-              _UnitSystemToggle(currentSystem: unitSystem, onChanged: callback),
+              Semantics(
+                label: 'Unit system switch',
+                toggled: isMetric,
+                child: CoreSwitch(
+                  type: CoreSwitchType.imperial,
+                  value: isMetric,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      isMetric = newValue;
+                    });
+                    callback(
+                        newValue ? UnitSystem.metric : UnitSystem.imperial);
+                  },
+                  activeLabel: 'Metric',
+                  inactiveLabel: 'Imperial',
+                ),
+              ),
           ],
         ),
       ],
