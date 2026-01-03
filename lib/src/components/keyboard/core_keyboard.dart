@@ -100,13 +100,14 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
           final functionStripSpacing = CoreSpacing.space4;
           const horizontalPadding = CoreSpacing.space3;
           const verticalPadding = CoreSpacing.space3;
-          const double maxButtonSize = 50.0;
+          const double maxButtonSize = 60.0;
           const double minSpacing = 4.0;
 
           final availableWidth = constraints.maxWidth;
           final widthForContent = availableWidth - (horizontalPadding * 2);
 
-          final double maxHeightSpasing = 10.0;
+          final double maxHeightSpasing = 8.0;
+          final double widthForIphoneProMax = 430.0;
 
           final responsiveButtonSize =
               (widthForContent - (minSpacing * (_keyboardColumnCount - 1))) /
@@ -114,7 +115,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
           double finalButtonSize;
           double finalSpacing = 4.0;
 
-          if (responsiveButtonSize > maxButtonSize) {
+          if (constraints.maxWidth > widthForIphoneProMax) {
             finalButtonSize = maxButtonSize;
 
             final totalButtonsWidth = finalButtonSize * _keyboardColumnCount;

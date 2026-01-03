@@ -74,7 +74,7 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(350, 430));
+    await tester.binding.setSurfaceSize(const Size(350, 445));
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
@@ -82,7 +82,17 @@ void main() {
 
     await expectLater(
       find.byType(Scaffold),
-      matchesGoldenFile('goldens/core_keyboard_full_ui.png'),
+      matchesGoldenFile('goldens/core_keyboard_full_ui_small.png'),
+    );
+
+    await tester.binding.setSurfaceSize(const Size(800, 500));
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+    await tester.awaitImages();
+
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/core_keyboard_full_ui_large.png'),
     );
   });
 }
