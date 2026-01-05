@@ -9,36 +9,37 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('CoreTooltip Golden Test - Top Position',
-      (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 300));
+  final colors = AppColorsExtension.create();
 
-    final widget = MaterialApp(
-      theme: CoreTheme.light().copyWith(
-        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CoreTooltip.top(
-            message: 'Tooltip above with arrow pointing down',
-            child: Container(
-              padding: const EdgeInsets.all(CoreSpacing.space3),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
+  testWidgets('CoreTooltip Golden Test - Top', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(300, 200));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Center(
+            child: CoreTooltip.top(
+              message: 'Tooltip above',
+              child: Container(
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                decoration: BoxDecoration(
+                  color: colors.backgroundBlueLight,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                ),
+                child: const Text('Top'),
               ),
-              child: const Text('Top'),
             ),
           ),
         ),
       ),
     );
 
-    await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Top'), warnIfMissed: false);
+    await tester.tap(find.text('Top'));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -47,36 +48,35 @@ void main() {
     );
   });
 
-  testWidgets('CoreTooltip Golden Test - Bottom Position',
-      (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 300));
+  testWidgets('CoreTooltip Golden Test - Bottom', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(300, 200));
 
-    final widget = MaterialApp(
-      theme: CoreTheme.light().copyWith(
-        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CoreTooltip.bottom(
-            message: 'Tooltip below',
-            child: Container(
-              padding: const EdgeInsets.all(CoreSpacing.space3),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Center(
+            child: CoreTooltip.bottom(
+              message: 'Tooltip below',
+              child: Container(
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                decoration: BoxDecoration(
+                  color: colors.backgroundGreenLight,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                ),
+                child: const Text('Bottom'),
               ),
-              child: const Text('Bottom'),
             ),
           ),
         ),
       ),
     );
 
-    await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Bottom'), warnIfMissed: false);
+    await tester.tap(find.text('Bottom'));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -85,36 +85,35 @@ void main() {
     );
   });
 
-  testWidgets('CoreTooltip Golden Test - Left Position',
-      (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(500, 300));
+  testWidgets('CoreTooltip Golden Test - Left', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(300, 200));
 
-    final widget = MaterialApp(
-      theme: CoreTheme.light().copyWith(
-        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CoreTooltip.left(
-            message: 'Tooltip left',
-            child: Container(
-              padding: const EdgeInsets.all(CoreSpacing.space3),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade100,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Center(
+            child: CoreTooltip.left(
+              message: 'Tooltip left',
+              child: Container(
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                decoration: BoxDecoration(
+                  color: colors.backgroundOrangeLight,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                ),
+                child: const Text('Left'),
               ),
-              child: const Text('Left'),
             ),
           ),
         ),
       ),
     );
 
-    await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Left'), warnIfMissed: false);
+    await tester.tap(find.text('Left'));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -123,36 +122,35 @@ void main() {
     );
   });
 
-  testWidgets('CoreTooltip Golden Test - Right Position',
-      (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(500, 300));
+  testWidgets('CoreTooltip Golden Test - Right', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(300, 200));
 
-    final widget = MaterialApp(
-      theme: CoreTheme.light().copyWith(
-        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CoreTooltip.right(
-            message: 'Tooltip right',
-            child: Container(
-              padding: const EdgeInsets.all(CoreSpacing.space3),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade100,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Center(
+            child: CoreTooltip.right(
+              message: 'Tooltip right',
+              child: Container(
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                decoration: BoxDecoration(
+                  color: colors.backgroundRedLight,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                ),
+                child: const Text('Right'),
               ),
-              child: const Text('Right'),
             ),
           ),
         ),
       ),
     );
 
-    await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Right'), warnIfMissed: false);
+    await tester.tap(find.text('Right'));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -161,41 +159,40 @@ void main() {
     );
   });
 
-  testWidgets('CoreTooltip Golden Test - No Arrow Position',
-      (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 300));
+  testWidgets('CoreTooltip Golden Test - None', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(300, 200));
 
-    final widget = MaterialApp(
-      theme: CoreTheme.light().copyWith(
-        textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CoreTooltip.none(
-            message: 'Tooltip without arrow',
-            child: Container(
-              padding: const EdgeInsets.all(CoreSpacing.space3),
-              decoration: BoxDecoration(
-                color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(CoreSpacing.space2),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Center(
+            child: CoreTooltip.none(
+              message: 'Tooltip without arrow',
+              child: Container(
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                decoration: BoxDecoration(
+                  color: colors.backgroundGrayMid,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
+                ),
+                child: const Text('None'),
               ),
-              child: const Text('No Arrow'),
             ),
           ),
         ),
       ),
     );
 
-    await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('No Arrow'), warnIfMissed: false);
+    await tester.tap(find.text('None'));
     await tester.pumpAndSettle();
 
     await expectLater(
       find.byType(MaterialApp),
-      matchesGoldenFile('goldens/tooltip_no_arrow.png'),
+      matchesGoldenFile('goldens/tooltip_none.png'),
     );
   });
 }

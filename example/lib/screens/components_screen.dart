@@ -1,12 +1,12 @@
 import 'package:example/screens/bottom_navigation_showcase_screen.dart';
 import 'package:example/screens/button_showcase_screen.dart';
+import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
-import 'package:example/screens/keyboard_showcase_screen.dart';
-import 'package:example/screens/success_modal_showcase_screen.dart';
+import 'package:example/screens/tooltip_showcase_screen.dart';
 import 'package:flutter/material.dart';
 
 class ComponentsScreen extends StatelessWidget {

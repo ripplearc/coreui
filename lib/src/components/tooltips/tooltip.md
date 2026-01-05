@@ -152,8 +152,8 @@ The `TooltipArrowPosition` enum controls arrow direction (used with default cons
 
 The tooltip component follows the Core UI design system:
 
-- **Colors**: Uses `CoreTextColors.inverse` for text and `CoreBackgroundColors.backgroundDarkGray` for background
-- **Typography**: Uses `CoreTypography.bodySmallRegular()` for text
+- **Colors**: Uses theme extension colors (`colors.textInverse`, `colors.backgroundDarkGray`)
+- **Typography**: Uses theme extension typography (`typography.bodySmallRegular`)
 - **Spacing**: Uses `CoreSpacing` values for consistent padding and margins
 - **Border Radius**: Uses `CoreSpacing.space1` for rounded corners
 
@@ -163,20 +163,22 @@ The tooltip has a fixed dark gray background with white text and rounded corners
 painted triangle that matches the background color.
 
 ```dart
-// Tooltip styling (fixed)
+final colors = AppColorsExtension.of(context);
+final typography = AppTypographyExtension.of(context);
+
 Container(
   padding: EdgeInsets.symmetric(
     vertical: CoreSpacing.space1,
     horizontal: CoreSpacing.space2,
   ),
   decoration: BoxDecoration(
-    color: CoreBackgroundColors.backgroundDarkGray,
+    color: colors.backgroundDarkGray,
     borderRadius: BorderRadius.circular(CoreSpacing.space1),
   ),
   child: Text(
     message,
-    style: CoreTypography.bodySmallRegular(
-      color: CoreTextColors.inverse,
+    style: typography.bodySmallRegular.copyWith(
+      color: colors.textInverse,
     ),
   ),
 )

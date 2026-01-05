@@ -36,16 +36,12 @@ void main() {
         ),
       );
 
-      // Initially, tooltip should not be visible
       expect(find.text(testMessage), findsNothing);
 
-      // Tap the child widget
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
-      await tester
-          .pump(const Duration(milliseconds: 200)); // Wait for animation
+      await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should now be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -62,14 +58,12 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
       expect(find.text(testMessage), findsOneWidget);
 
-      // Hide tooltip by tapping again
       await tester.tap(find.byIcon(Icons.info), warnIfMissed: false);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
@@ -92,12 +86,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -117,12 +109,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -142,12 +132,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -167,12 +155,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -191,12 +177,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Tooltip should be visible
       expect(find.text(testMessage), findsOneWidget);
     });
 
@@ -215,12 +199,10 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Check that the custom message is displayed
       expect(find.text(customMessage), findsOneWidget);
     });
 
@@ -240,19 +222,15 @@ void main() {
         ),
       );
 
-      // Show tooltip
       await tester.tap(find.byIcon(Icons.info));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Verify tooltip is visible
       expect(find.text(testMessage), findsOneWidget);
 
-      // Get positions
       final childCenter = tester.getCenter(find.byIcon(Icons.info));
       final tooltipCenter = tester.getCenter(find.text(testMessage));
 
-      // Tooltip should be above the child (smaller y coordinate)
       expect(tooltipCenter.dy < childCenter.dy, isTrue);
     });
   });

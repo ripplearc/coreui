@@ -16,36 +16,22 @@ class TooltipShowcaseScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: CoreSpacing.space6),
-
-            // First tooltip - arrow pointing down (tooltip above)
             const _TooltipBubble(
               arrowPosition: TooltipArrowPosition.bottom,
             ),
-
             const SizedBox(height: CoreSpacing.space12),
-
-            // Second tooltip - arrow pointing up (tooltip below)
             const _TooltipBubble(
               arrowPosition: TooltipArrowPosition.top,
             ),
-
             const SizedBox(height: CoreSpacing.space12),
-
-            // Third tooltip - arrow pointing down (tooltip above)
             const _TooltipBubble(
               arrowPosition: TooltipArrowPosition.bottom,
             ),
-
             const SizedBox(height: CoreSpacing.space12),
-
-            // Fourth tooltip - arrow pointing right (tooltip left)
             const _TooltipBubble(
               arrowPosition: TooltipArrowPosition.right,
             ),
-
             const SizedBox(height: CoreSpacing.space12),
-
-            // Fifth tooltip - no arrow
             const _TooltipBubble(
               arrowPosition: TooltipArrowPosition.none,
             ),
@@ -65,7 +51,8 @@ class _TooltipBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     const arrowWidth = 12.0;
     const arrowHeight = 8.0;
@@ -81,7 +68,7 @@ class _TooltipBubble extends StatelessWidget {
       ),
       child: Text(
         'My Tooltip',
-        style: CoreTypography.bodyMediumRegular(color: colors.textInverse),
+        style: typography.bodyMediumRegular.copyWith(color: colors.textInverse),
       ),
     );
 
@@ -99,7 +86,6 @@ class _TooltipBubble extends StatelessWidget {
 
     switch (arrowPosition) {
       case TooltipArrowPosition.bottom:
-        // Arrow points down
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -108,7 +94,6 @@ class _TooltipBubble extends StatelessWidget {
           ],
         );
       case TooltipArrowPosition.top:
-        // Arrow points up
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -117,7 +102,6 @@ class _TooltipBubble extends StatelessWidget {
           ],
         );
       case TooltipArrowPosition.right:
-        // Arrow points right
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -126,7 +110,6 @@ class _TooltipBubble extends StatelessWidget {
           ],
         );
       case TooltipArrowPosition.left:
-        // Arrow points left
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -159,25 +142,21 @@ class _ArrowPainter extends CustomPainter {
 
     switch (position) {
       case TooltipArrowPosition.bottom:
-        // Arrow points down
         path.moveTo(0, 0);
         path.lineTo(size.width / 2, size.height);
         path.lineTo(size.width, 0);
         break;
       case TooltipArrowPosition.top:
-        // Arrow points up
         path.moveTo(0, size.height);
         path.lineTo(size.width / 2, 0);
         path.lineTo(size.width, size.height);
         break;
       case TooltipArrowPosition.left:
-        // Arrow points left
         path.moveTo(size.width, 0);
         path.lineTo(0, size.height / 2);
         path.lineTo(size.width, size.height);
         break;
       case TooltipArrowPosition.right:
-        // Arrow points right
         path.moveTo(0, 0);
         path.lineTo(size.width, size.height / 2);
         path.lineTo(0, size.height);

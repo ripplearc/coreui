@@ -222,35 +222,30 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
 
     switch (arrowPosition) {
       case TooltipArrowPosition.top:
-        // Arrow points UP - tooltip is BELOW the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
           target.dy + targetSize.height + _tooltipGap,
         );
         break;
       case TooltipArrowPosition.bottom:
-        // Arrow points DOWN - tooltip is ABOVE the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
           target.dy - childSize.height - _tooltipGap,
         );
         break;
       case TooltipArrowPosition.left:
-        // Arrow points LEFT - tooltip is RIGHT of the target
         offset = Offset(
           target.dx + targetSize.width + _tooltipGap,
           target.dy + targetSize.height / 2 - childSize.height / 2,
         );
         break;
       case TooltipArrowPosition.right:
-        // Arrow points RIGHT - tooltip is LEFT of the target
         offset = Offset(
           target.dx - childSize.width - _tooltipGap,
           target.dy + targetSize.height / 2 - childSize.height / 2,
         );
         break;
       case TooltipArrowPosition.none:
-        // No arrow - tooltip is ABOVE the target
         offset = Offset(
           target.dx + targetSize.width / 2 - childSize.width / 2,
           target.dy - childSize.height - _tooltipGap,
@@ -286,11 +281,12 @@ class _TooltipBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     final text = Text(
       message,
-      style: CoreTypography.bodySmallRegular(color: colors.textInverse),
+      style: typography.bodySmallRegular.copyWith(color: colors.textInverse),
     );
 
     final tooltipBody = Container(
@@ -356,25 +352,21 @@ class _TooltipArrowPainter extends CustomPainter {
 
     switch (position) {
       case TooltipArrowPosition.top:
-        // Arrow points UP (towards child above)
         path.moveTo(0, size.height);
         path.lineTo(size.width / 2, 0);
         path.lineTo(size.width, size.height);
         break;
       case TooltipArrowPosition.bottom:
-        // Arrow points DOWN (towards child below)
         path.moveTo(0, 0);
         path.lineTo(size.width / 2, size.height);
         path.lineTo(size.width, 0);
         break;
       case TooltipArrowPosition.left:
-        // Arrow points LEFT (towards child on left)
         path.moveTo(size.width, 0);
         path.lineTo(0, size.height / 2);
         path.lineTo(size.width, size.height);
         break;
       case TooltipArrowPosition.right:
-        // Arrow points RIGHT (towards child on right)
         path.moveTo(0, 0);
         path.lineTo(size.width, size.height / 2);
         path.lineTo(0, size.height);
