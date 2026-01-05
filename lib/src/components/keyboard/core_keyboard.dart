@@ -444,7 +444,7 @@ class _FunctionKeyStrip extends StatelessWidget {
     if (group.keys.isEmpty) {
       return const SizedBox.shrink();
     }
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final colors = AppColorsExtension.of(context);
 
     final double screenWidth = MediaQuery.of(context).size.width;

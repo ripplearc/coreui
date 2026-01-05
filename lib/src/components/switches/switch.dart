@@ -134,36 +134,30 @@ class CoreSwitch extends StatelessWidget {
       (activeLabel?.isNotEmpty ?? false) ||
       (inactiveLabel?.isNotEmpty ?? false);
 
-  /// Gets the inactive color based on switch type or custom color.
-  /// Returns red for lock, green for imperial, grey for normal.
-  Color get _getInactiveBorderColor {
+  Color _getInactiveBorderColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
-          CoreSwitchType.lock => CoreIconColors.red,
-          CoreSwitchType.imperial => CoreIconColors.green,
-          CoreSwitchType.normal => CoreBorderColors.lineDarkOutline,
+          CoreSwitchType.lock => colors.iconRed,
+          CoreSwitchType.imperial => colors.iconGreen,
+          CoreSwitchType.normal => colors.lineDarkOutline,
         });
   }
 
-  /// Gets the inactive text color based on switch type or custom color.
-  /// Returns red for lock, green for imperial, grey for normal.
-  Color get _getInactiveTextColor {
+  Color _getInactiveTextColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
-          CoreSwitchType.lock => CoreTextColors.error,
-          CoreSwitchType.imperial => CoreTextColors.success,
-          CoreSwitchType.normal => CoreTextColors.body,
+          CoreSwitchType.lock => colors.textError,
+          CoreSwitchType.imperial => colors.textSuccess,
+          CoreSwitchType.normal => colors.textBody,
         });
   }
 
-  /// Gets the border color for inactive state based on switch type.
-  /// Returns red for lock, green for imperial, grey for normal.
-  Color get _getBorderColor {
+  Color _getBorderColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
-          CoreSwitchType.lock => CoreIconColors.red,
-          CoreSwitchType.imperial => CoreIconColors.green,
-          CoreSwitchType.normal => CoreIconColors.grayMid,
+          CoreSwitchType.lock => colors.iconRed,
+          CoreSwitchType.imperial => colors.iconGreen,
+          CoreSwitchType.normal => colors.iconGrayMid,
         });
   }
 
@@ -207,16 +201,17 @@ class CoreSwitch extends StatelessWidget {
             ? _SwitchConstants.thumbPaddingSmallActive
             : _SwitchConstants.thumbPaddingSmallInactive;
 
-    final Color effectiveActiveColor = CoreIconColors.dark;
-    final Color effectiveInactiveBorderColor = _getInactiveBorderColor;
-    final Color effectiveInactiveTextColor = _getInactiveTextColor;
+    final colors = Theme.of(context).coreColors;
+
+    final Color effectiveActiveColor = colors.iconDark;
+    final Color effectiveInactiveBorderColor = _getInactiveBorderColor(colors);
+    final Color effectiveInactiveTextColor = _getInactiveTextColor(colors);
 
     // Background and border colors based on state
-    final backgroundColor =
-        value ? effectiveActiveColor : CoreBackgroundColors.backgroundGrayLight;
-    final borderColor = value ? effectiveActiveColor : _getBorderColor;
-
     final typography = Theme.of(context).coreTypography;
+    final backgroundColor =
+        value ? effectiveActiveColor : colors.backgroundGrayLight;
+    final borderColor = value ? effectiveActiveColor : _getBorderColor(colors);
 
     return GestureDetector(
       onTap: () => onChanged(!value),
@@ -243,7 +238,7 @@ class CoreSwitch extends StatelessWidget {
                       value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
                       style: typography.bodySmallRegular.copyWith(
                         color: value
-                            ? CoreTextColors.inverse
+                            ? colors.textInverse
                             : effectiveInactiveTextColor,
                       ),
                       textAlign: TextAlign.center,
@@ -262,7 +257,7 @@ class CoreSwitch extends StatelessWidget {
                 width: thumbSize,
                 decoration: BoxDecoration(
                   color: value
-                      ? CoreTextColors.inverse
+                      ? colors.textInverse
                       : effectiveInactiveBorderColor,
                   shape: BoxShape.circle,
                 ),
