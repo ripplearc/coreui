@@ -49,15 +49,16 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
     required String title,
     required List<String> tabs,
   }) {
+    final typography = AppTypographyExtension.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: typography.bodyLargeSemiBold,
         ),
         const SizedBox(height: CoreSpacing.space3),
-        // Show each tab as selected
         for (int i = 0; i < tabs.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: CoreSpacing.space4),
