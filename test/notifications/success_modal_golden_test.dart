@@ -52,7 +52,7 @@ void main() {
 }
 
 Widget _buildScenario(String title, Widget child) {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
     child: Column(
@@ -70,7 +70,7 @@ Widget _buildSuccessModalContent({
   String? message,
   String? buttonLabel,
 }) {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   return Container(
     width: 400,
     padding: const EdgeInsets.all(24),

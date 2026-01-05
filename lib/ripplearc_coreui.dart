@@ -16,6 +16,7 @@ export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
 export 'src/components/select_button/core_select_button.dart';
 // Theme exports
+export 'src/theme/app_typography_extension.dart';
 export 'src/theme/color_tokens.dart';
 export 'src/theme/icons/core_icons.dart';
 export 'src/theme/icons/icon_data.dart';
@@ -27,4 +28,3 @@ export 'src/theme/spacing.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_extensions.dart';
 export 'src/theme/typography.dart';
-export 'src/theme/typography_extension.dart';

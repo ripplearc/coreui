@@ -7,7 +7,7 @@ class TypographyShowcaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the typography extension
-    final typography = Theme.of(context).extension<TypographyExtension>()!;
+    final typography = Theme.of(context).extension<AppTypographyExtension>()!;
 
     return Scaffold(
       appBar: AppBar(

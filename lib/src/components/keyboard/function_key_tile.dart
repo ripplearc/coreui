@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_typography_extension.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/typography_extension.dart';
 import 'keyboard_models.dart';
 
 /// A tile widget for displaying a single function key.
@@ -42,10 +42,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
   @override
@@ -84,7 +81,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final typography = TypographyExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     final semanticHint = widget.customHint ??
         widget.keyType.semanticLabel ??
