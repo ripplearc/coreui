@@ -13,7 +13,7 @@ void main() {
 
   testWidgets('CoreTabs Golden Test - All Variants',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(800, 1200));
+    await tester.binding.setSurfaceSize(const Size(800, 1100));
 
     await tester.pumpWidget(
       MaterialApp(
