@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../helper/core_test_theme_helper.dart';
 import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadFonts(); // must load Roboto
+    await loadFonts();
   });
+
+  final colors = AppColorsExtension.create();
 
   testWidgets('CoreTabs Golden Test - All Variants',
       (WidgetTester tester) async {
@@ -16,10 +17,10 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: coreTestTheme(),
-        home: const Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: const SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(CoreSpacing.space4),
               child: Column(

@@ -94,7 +94,8 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -107,9 +108,8 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
         indicatorWeight: CoreSpacing.space1,
         labelColor: colors.textHeadline,
         unselectedLabelColor: colors.textBody,
-        labelStyle: Theme.of(context).coreTypography.bodyMediumSemiBold,
-        unselectedLabelStyle:
-            Theme.of(context).coreTypography.bodyMediumRegular,
+        labelStyle: typography.bodyMediumSemiBold,
+        unselectedLabelStyle: typography.bodyMediumRegular,
         tabs: [
           for (final label in widget.tabs)
             Padding(
