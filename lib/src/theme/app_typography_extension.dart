@@ -4,7 +4,7 @@ import 'typography.dart';
 
 /// Extension for the Typography system that provides all text styles
 /// with different weights (Regular, Medium, SemiBold)
-class TypographyExtension extends ThemeExtension<TypographyExtension> {
+class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   // Headline Large
   final TextStyle headlineLargeRegular;
   final TextStyle headlineLargeSemiBold;
@@ -38,7 +38,7 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
   final TextStyle bodySmallMedium;
   final TextStyle bodySmallSemiBold;
 
-  const TypographyExtension({
+  const AppTypographyExtension({
     required this.headlineLargeRegular,
     required this.headlineLargeSemiBold,
     required this.headlineMediumRegular,
@@ -60,8 +60,22 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
     required this.bodySmallSemiBold,
   });
 
+  /// Static method to get the extension from the current theme
+  static AppTypographyExtension of(BuildContext context) {
+    final AppTypographyExtension? extension = Theme.of(
+      context,
+    ).extension<AppTypographyExtension>();
+    if (extension == null) {
+      throw FlutterError(
+        'AppTypographyExtension not found in Theme. Did you wrap your widget tree '
+        'with a Theme that includes this extension?',
+      );
+    }
+    return extension;
+  }
+
   @override
-  TypographyExtension copyWith({
+  AppTypographyExtension copyWith({
     TextStyle? headlineLargeRegular,
     TextStyle? headlineLargeSemiBold,
     TextStyle? headlineMediumRegular,
@@ -82,7 +96,7 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
     TextStyle? bodySmallMedium,
     TextStyle? bodySmallSemiBold,
   }) {
-    return TypographyExtension(
+    return AppTypographyExtension(
       headlineLargeRegular: headlineLargeRegular ?? this.headlineLargeRegular,
       headlineLargeSemiBold:
           headlineLargeSemiBold ?? this.headlineLargeSemiBold,
@@ -109,59 +123,87 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
   }
 
   @override
-  ThemeExtension<TypographyExtension> lerp(
-    ThemeExtension<TypographyExtension>? other,
+  ThemeExtension<AppTypographyExtension> lerp(
+    ThemeExtension<AppTypographyExtension>? other,
     double t,
   ) {
-    if (other is! TypographyExtension) {
+    if (other is! AppTypographyExtension) {
       return this;
     }
 
-    return TypographyExtension(
+    return AppTypographyExtension(
       headlineLargeRegular:
-          TextStyle.lerp(headlineLargeRegular, other.headlineLargeRegular, t) ?? headlineLargeRegular,
+          TextStyle.lerp(headlineLargeRegular, other.headlineLargeRegular, t) ??
+              headlineLargeRegular,
       headlineLargeSemiBold: TextStyle.lerp(
-          headlineLargeSemiBold, other.headlineLargeSemiBold, t) ?? headlineLargeSemiBold,
+            headlineLargeSemiBold,
+            other.headlineLargeSemiBold,
+            t,
+          ) ??
+          headlineLargeSemiBold,
       headlineMediumRegular: TextStyle.lerp(
-          headlineMediumRegular, other.headlineMediumRegular, t) ?? headlineMediumRegular,
+            headlineMediumRegular,
+            other.headlineMediumRegular,
+            t,
+          ) ??
+          headlineMediumRegular,
       headlineMediumSemiBold: TextStyle.lerp(
-          headlineMediumSemiBold, other.headlineMediumSemiBold, t) ?? headlineMediumSemiBold,
+            headlineMediumSemiBold,
+            other.headlineMediumSemiBold,
+            t,
+          ) ??
+          headlineMediumSemiBold,
       titleLargeRegular:
-          TextStyle.lerp(titleLargeRegular, other.titleLargeRegular, t) ?? titleLargeRegular,
+          TextStyle.lerp(titleLargeRegular, other.titleLargeRegular, t) ??
+              titleLargeRegular,
       titleLargeMedium:
-          TextStyle.lerp(titleLargeMedium, other.titleLargeMedium, t) ?? titleLargeMedium,
+          TextStyle.lerp(titleLargeMedium, other.titleLargeMedium, t) ??
+              titleLargeMedium,
       titleLargeSemiBold:
-          TextStyle.lerp(titleLargeSemiBold, other.titleLargeSemiBold, t) ?? titleLargeSemiBold,
+          TextStyle.lerp(titleLargeSemiBold, other.titleLargeSemiBold, t) ??
+              titleLargeSemiBold,
       titleMediumRegular:
-          TextStyle.lerp(titleMediumRegular, other.titleMediumRegular, t) ?? titleMediumRegular,
+          TextStyle.lerp(titleMediumRegular, other.titleMediumRegular, t) ??
+              titleMediumRegular,
       titleMediumMedium:
-          TextStyle.lerp(titleMediumMedium, other.titleMediumMedium, t) ?? titleMediumMedium,
+          TextStyle.lerp(titleMediumMedium, other.titleMediumMedium, t) ??
+              titleMediumMedium,
       titleMediumSemiBold:
-          TextStyle.lerp(titleMediumSemiBold, other.titleMediumSemiBold, t) ?? titleMediumSemiBold,
+          TextStyle.lerp(titleMediumSemiBold, other.titleMediumSemiBold, t) ??
+              titleMediumSemiBold,
       bodyLargeRegular:
-          TextStyle.lerp(bodyLargeRegular, other.bodyLargeRegular, t) ?? bodyLargeRegular,
+          TextStyle.lerp(bodyLargeRegular, other.bodyLargeRegular, t) ??
+              bodyLargeRegular,
       bodyLargeMedium:
-            TextStyle.lerp(bodyLargeMedium, other.bodyLargeMedium, t) ?? bodyLargeMedium,
+          TextStyle.lerp(bodyLargeMedium, other.bodyLargeMedium, t) ??
+              bodyLargeMedium,
       bodyLargeSemiBold:
-          TextStyle.lerp(bodyLargeSemiBold, other.bodyLargeSemiBold, t) ?? bodyLargeSemiBold,
+          TextStyle.lerp(bodyLargeSemiBold, other.bodyLargeSemiBold, t) ??
+              bodyLargeSemiBold,
       bodyMediumRegular:
-          TextStyle.lerp(bodyMediumRegular, other.bodyMediumRegular, t) ?? bodyMediumRegular,
+          TextStyle.lerp(bodyMediumRegular, other.bodyMediumRegular, t) ??
+              bodyMediumRegular,
       bodyMediumMedium:
-          TextStyle.lerp(bodyMediumMedium, other.bodyMediumMedium, t) ?? bodyMediumMedium,
+          TextStyle.lerp(bodyMediumMedium, other.bodyMediumMedium, t) ??
+              bodyMediumMedium,
       bodyMediumSemiBold:
-          TextStyle.lerp(bodyMediumSemiBold, other.bodyMediumSemiBold, t) ?? bodyMediumSemiBold,
+          TextStyle.lerp(bodyMediumSemiBold, other.bodyMediumSemiBold, t) ??
+              bodyMediumSemiBold,
       bodySmallRegular:
-          TextStyle.lerp(bodySmallRegular, other.bodySmallRegular, t) ?? bodySmallRegular,
+          TextStyle.lerp(bodySmallRegular, other.bodySmallRegular, t) ??
+              bodySmallRegular,
       bodySmallMedium:
-          TextStyle.lerp(bodySmallMedium, other.bodySmallMedium, t) ?? bodySmallMedium,
+          TextStyle.lerp(bodySmallMedium, other.bodySmallMedium, t) ??
+              bodySmallMedium,
       bodySmallSemiBold:
-          TextStyle.lerp(bodySmallSemiBold, other.bodySmallSemiBold, t) ?? bodySmallSemiBold,
+          TextStyle.lerp(bodySmallSemiBold, other.bodySmallSemiBold, t) ??
+              bodySmallSemiBold,
     );
   }
 
   // Factory method to create the extension with all styles
-  static TypographyExtension create() {
-    return TypographyExtension(
+  static AppTypographyExtension create() {
+    return AppTypographyExtension(
       // Headline Large - 32/40
       headlineLargeRegular: CoreTypography.headlineLargeRegular(),
       headlineLargeSemiBold: CoreTypography.headlineLargeSemiBold(),
@@ -199,6 +241,6 @@ class TypographyExtension extends ThemeExtension<TypographyExtension> {
 }
 
 extension TypographyTheme on ThemeData {
-  TypographyExtension get coreTypography => 
-      extension<TypographyExtension>() ?? TypographyExtension.create();
+  AppTypographyExtension get coreTypography =>
+      extension<AppTypographyExtension>() ?? AppTypographyExtension.create();
 }

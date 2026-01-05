@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/color_tokens.dart';
+import '../../theme/app_typography_extension.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/spacing.dart';
-import '../../theme/typography_extension.dart';
+import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
 /// A custom text field widget with optional label, helper text, and error text
@@ -86,6 +86,7 @@ class CoreTextField extends StatelessWidget {
 
     final bool isDisabled = !enabled || readOnly;
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
 
     return TextFormField(
       controller: controller,
@@ -96,40 +97,45 @@ class CoreTextField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       validator: validator,
-      cursorColor:
-          isDisabled ? Colors.transparent : CoreBorderColors.outlineFocus,
+      cursorColor: isDisabled ? colors.transparent : colors.outlineFocus,
       keyboardType: isPhoneNumber ? TextInputType.phone : keyboardType,
       style: typography.bodyLargeRegular.copyWith(
-        color: isDisabled ? CoreTextColors.disable : CoreTextColors.dark,
+        color: isDisabled ? colors.textDisable : colors.textDark,
       ),
       decoration: InputDecoration(
         floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
-          color: isDisabled
-              ? CoreTextColors.disable
-              : CoreBorderColors.outlineFocus,
+          color: isDisabled ? colors.textDisable : colors.outlineFocus,
         ),
-        hoverColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
-        fillColor:
-            isDisabled ? CoreBackgroundColors.backgroundGrayMid : CoreBackgroundColors.pageBackground,
+        hoverColor: isDisabled
+            ? colors.backgroundGrayMid
+            : colors.pageBackground,
+        fillColor: isDisabled
+            ? colors.backgroundGrayMid
+            : colors.pageBackground,
         filled: true,
         labelText: label,
         labelStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled ? CoreTextColors.disable : CoreTextColors.headline,
+          color: isDisabled ? colors.textDisable : colors.textHeadline,
         ),
         prefixIcon: prefixWidget,
         hintText: hintText,
         hintStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled ? CoreTextColors.disable : CoreTextColors.disable,
+          color: colors.textDisable,
         ),
-        suffixIcon:
-            (obscureText ? suffix ?? const Icon(Icons.visibility) : suffix),
+        suffixIcon: (obscureText
+            ? suffix ?? const Icon(Icons.visibility)
+            : suffix),
         error: (errorTextList == null && errorWidgetList == null)
             ? null
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children:
-                    _buildErrorWidgetList(context, errorTextList, errorWidgetList) ?? [],
+                    _buildErrorWidgetList(
+                      context,
+                      errorTextList,
+                      errorWidgetList,
+                    ) ??
+                    [],
               ),
         helper: helperText == null
             ? null
@@ -139,63 +145,61 @@ class CoreTextField extends StatelessWidget {
                   CoreIconWidget(
                     icon: CoreIcons.info,
                     size: 16,
-                    color: isDisabled
-                        ? CoreIconColors.grayMid
-                        : CoreIconColors.grayMid,
+                    color: colors.iconGrayMid,
                   ),
                   const SizedBox(width: CoreSpacing.space1),
                   Text(
                     helperText ?? "",
                     style: typography.bodySmallRegular.copyWith(
-                        color: isDisabled
-                            ? CoreTextColors.disable
-                            : CoreTextColors.headline),
+                      color: isDisabled
+                          ? colors.textDisable
+                          : colors.textHeadline,
+                    ),
                   ),
                 ],
               ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(
-            color: isDisabled
-                ? CoreBorderColors.lineMid
-                : CoreBorderColors.lineDarkOutline,
+            color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(
-            color: isDisabled
-                ? CoreBorderColors.lineMid
-                : CoreBorderColors.lineDarkOutline,
+            color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreTextColors.dark),
+          borderSide: BorderSide(color: colors.textDark),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreStatusColors.error),
+          borderSide: BorderSide(color: colors.statusError),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreStatusColors.error),
+          borderSide: BorderSide(color: colors.statusError),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: CoreBorderColors.lineMid),
+          borderSide: BorderSide(color: colors.lineMid),
         ),
       ),
     );
   }
 
   List<Widget>? _buildErrorWidgetList(
-      BuildContext context,
-      List<String>? errorTextList, List<Widget>? errorWidgetList) {
+    BuildContext context,
+    List<String>? errorTextList,
+    List<Widget>? errorWidgetList,
+  ) {
     if (errorTextList == null && errorWidgetList == null) return null;
     if (errorTextList != null && errorWidgetList != null) {
       throw ArgumentError(
-          'errorTextList and errorWidgetList cannot be provided together');
+        'errorTextList and errorWidgetList cannot be provided together',
+      );
     }
     if (errorTextList != null) {
       return errorTextList
@@ -204,23 +208,27 @@ class CoreTextField extends StatelessWidget {
     }
     if (errorWidgetList != null) {
       return errorWidgetList
-          .map((errorWidget) => _buildErrorWidget(context, errorWidget: errorWidget))
+          .map(
+            (errorWidget) =>
+                _buildErrorWidget(context, errorWidget: errorWidget),
+          )
           .toList();
     }
     return null;
   }
 
-  Widget _buildErrorWidget(BuildContext context, {String? errorText, Widget? errorWidget}) {
+  Widget _buildErrorWidget(
+    BuildContext context, {
+    String? errorText,
+    Widget? errorWidget,
+  }) {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const CoreIconWidget(
-          icon: CoreIcons.error,
-          size: 16,
-          color: CoreIconColors.red,
-        ),
+        CoreIconWidget(icon: CoreIcons.error, size: 16, color: colors.iconRed),
         const SizedBox(width: CoreSpacing.space1),
         if (errorWidget != null)
           Expanded(child: errorWidget)
@@ -228,9 +236,9 @@ class CoreTextField extends StatelessWidget {
           Expanded(
             child: Text(
               errorText,
-              style:
-                   typography.bodySmallRegular
-                  .copyWith(color: CoreTextColors.error),
+              style: typography.bodySmallRegular.copyWith(
+                color: colors.textError,
+              ),
             ),
           ),
       ],
@@ -239,7 +247,8 @@ class CoreTextField extends StatelessWidget {
 
   Widget? _buildPhonePrefixButton(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
-    
+    final colors = Theme.of(context).coreColors;
+
     return IntrinsicWidth(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
@@ -254,24 +263,20 @@ class CoreTextField extends StatelessWidget {
                   Text(
                     phonePrefix ?? '+1',
                     style: typography.bodyLargeRegular.copyWith(
-                      color: CoreTextColors.headline,
+                      color: colors.textHeadline,
                     ),
                   ),
                   const SizedBox(width: CoreSpacing.space1),
-                  const CoreIconWidget(
+                  CoreIconWidget(
                     icon: CoreIcons.arrowDropDown,
-                    color: CoreTextColors.headline,
+                    color: colors.textHeadline,
                     size: 18,
                   ),
                 ],
               ),
             ),
             const SizedBox(width: CoreSpacing.space3),
-            Container(
-              height: 20,
-              width: 1,
-              color: CoreBorderColors.lineMid,
-            ),
+            Container(height: 20, width: 1, color: colors.lineMid),
           ],
         ),
       ),
@@ -303,10 +308,7 @@ class CoreTextField extends StatelessWidget {
                     if (prefixes == null) return const SizedBox();
                     final prefix = prefixes[index];
                     return ListTile(
-                      title: Text(
-                        prefix,
-                        style: typography.bodyLargeRegular,
-                      ),
+                      title: Text(prefix, style: typography.bodyLargeRegular),
                       onTap: () {
                         onPhonePrefixChanged?.call(prefix);
                         Navigator.pop(context);
