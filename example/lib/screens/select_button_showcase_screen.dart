@@ -17,8 +17,11 @@ class _SelectButtonShowcaseScreenState
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+
     return Scaffold(
-      backgroundColor: CoreBackgroundColors.pageBackground,
+      backgroundColor: colors.pageBackground,
       appBar: AppBar(
         title: const Text('Select Button Showcase'),
       ),
@@ -27,10 +30,9 @@ class _SelectButtonShowcaseScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Basic Example
             Text(
               'Basic Select Button',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: typography.titleMediumSemiBold,
             ),
             const SizedBox(height: 16),
             CoreSelectButton(
@@ -45,14 +47,12 @@ class _SelectButtonShowcaseScreenState
             const SizedBox(height: 8),
             Text(
               'Selected: Tab ${_selectedIndex + 1}',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: typography.bodyMediumRegular,
             ),
             const SizedBox(height: 32),
-
-            // Two Tabs Example
             Text(
               'Two Tabs',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: typography.titleMediumSemiBold,
             ),
             const SizedBox(height: 16),
             CoreSelectButton(
@@ -67,14 +67,12 @@ class _SelectButtonShowcaseScreenState
             const SizedBox(height: 8),
             Text(
               'Selected: ${_selectedIndex2 == 0 ? 'Active' : 'Inactive'}',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: typography.bodyMediumRegular,
             ),
             const SizedBox(height: 32),
-
-            // Multiple Tabs Example
             Text(
               'Multiple Tabs',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: typography.titleMediumSemiBold,
             ),
             const SizedBox(height: 16),
             CoreSelectButton(
@@ -99,14 +97,12 @@ class _SelectButtonShowcaseScreenState
                 'Settings',
                 'Advanced'
               ][_selectedIndex3]}',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: typography.bodyMediumRegular,
             ),
             const SizedBox(height: 32),
-
-            // Content Display Example
             Text(
               'Content Display',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: typography.titleMediumSemiBold,
             ),
             const SizedBox(height: 16),
             CoreSelectButton(
@@ -127,6 +123,9 @@ class _SelectButtonShowcaseScreenState
   }
 
   Widget _buildContentForTab(int index) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+
     final contents = [
       'Profile Content - View and edit your profile information',
       'Settings Content - Manage your application settings',
@@ -136,15 +135,15 @@ class _SelectButtonShowcaseScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: colors.pageBackground,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline,
+          color: colors.lineLight,
         ),
       ),
       child: Text(
         contents[index],
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: typography.bodyMediumRegular,
       ),
     );
   }

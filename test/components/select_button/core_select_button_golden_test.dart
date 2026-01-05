@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../helper/core_test_theme_helper.dart';
+import '../../golden_test_typography.dart';
 import '../../load_fonts.dart';
-
-ThemeData _createTestTheme() {
-  return coreTestTheme().copyWith(
-    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
-  );
-}
 
 void main() {
   setUpAll(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
-
+  final colors = AppColorsExtension.create();
+  final typography = createGoldenTestTypography();
   testWidgets('CoreSelectButton - Golden Test', (tester) async {
     const pressedKey = Key('pressed_tab');
 
@@ -80,7 +74,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: _createTestTheme(),
+        theme: ThemeData(
+          extensions: [colors, typography],
+        ),
         home: Scaffold(
           body: Center(
             child: SizedBox(
@@ -103,7 +99,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Simulate pressed state
     final gesture =
         await tester.startGesture(tester.getCenter(find.byKey(pressedKey)));
     await tester.pumpAndSettle();
