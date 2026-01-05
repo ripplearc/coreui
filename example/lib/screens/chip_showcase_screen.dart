@@ -40,6 +40,8 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final typography = AppTypographyExtension.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Core Chip Showcase')),
       body: SingleChildScrollView(
@@ -47,17 +49,9 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Chip Sizes',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text('Chip Sizes', style: typography.titleMediumSemiBold),
             const SizedBox(height: 20),
-
-            // Small Chips
-            Text(
-              'Small Chips',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Small Chips', style: typography.bodyMediumRegular),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -77,12 +71,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // Medium Chips
-            Text(
-              'Medium Chips',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Medium Chips', style: typography.bodyMediumRegular),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -102,12 +91,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // Large Chips
-            Text(
-              'Large Chips',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Large Chips', style: typography.bodyMediumRegular),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -127,21 +111,17 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // States
+            Text('States', style: typography.bodyMediumRegular),
+            const SizedBox(height: 12),
             Text(
-              'States',
-              style: Theme.of(context).textTheme.titleMedium,
+              'Click chips above to see default, hover, pressed, and selected states.',
+              style: typography.bodySmallRegular,
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Default: Click chips above to see default, hover, pressed, and selected states.',
-              style: TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 12),
-            const Text(
+            Text(
               'The chips use color tokens for consistent styling across states.',
-              style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+              style: typography.bodySmallRegular
+                  .copyWith(fontStyle: FontStyle.italic),
             ),
           ],
         ),
