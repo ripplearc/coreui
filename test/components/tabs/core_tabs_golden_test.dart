@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../golden_test_typography.dart';
 import '../../load_fonts.dart';
 
 void main() {
@@ -10,6 +11,7 @@ void main() {
   });
 
   final colors = AppColorsExtension.create();
+  final typography = createGoldenTestTypography();
 
   testWidgets('CoreTabs Golden Test - All Variants',
       (WidgetTester tester) async {
@@ -17,7 +19,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: CoreTheme.light(),
+        theme: ThemeData(
+          extensions: [colors, typography],
+        ),
         home: Scaffold(
           backgroundColor: colors.pageBackground,
           body: const SingleChildScrollView(
