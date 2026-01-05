@@ -110,7 +110,6 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Tab 2 should be selected initially
       final tabBar = find.byType(TabBar);
       expect(tabBar, findsOneWidget);
     });
@@ -145,16 +144,13 @@ void main() {
         ),
       );
 
-      // Initial tabs
       expect(find.text('Tab 1'), findsOneWidget);
       expect(find.text('Tab 2'), findsOneWidget);
       expect(find.text('Tab C'), findsNothing);
 
-      // Update tabs
       await tester.tap(find.text('Update'));
       await tester.pumpAndSettle();
 
-      // New tabs should be displayed
       expect(find.text('Tab A'), findsOneWidget);
       expect(find.text('Tab B'), findsOneWidget);
       expect(find.text('Tab C'), findsOneWidget);
