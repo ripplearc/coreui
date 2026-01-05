@@ -176,7 +176,6 @@ void main() {
         ),
       );
 
-      // The close icon should always be present
       expect(find.byType(CoreIconWidget), findsWidgets);
     });
 
@@ -200,7 +199,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(selected.value, isTrue);
 
-      // Trigger a rebuild
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),

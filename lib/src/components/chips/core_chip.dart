@@ -60,10 +60,6 @@ class CoreChip extends StatelessWidget {
     );
   }
 
-  // ----------------------------------------------------------------------
-  //                           BUILD CHIP
-  // ----------------------------------------------------------------------
-
   Widget _buildChip(
     BuildContext context,
     bool selected,
@@ -71,56 +67,42 @@ class CoreChip extends StatelessWidget {
     bool pressed,
   ) {
     final bool isLarge = size == CoreChipSize.large;
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
-    // ---------------- TEXT STYLE ----------------
-    final textStyle = isLarge
-        ? CoreTypography.bodySmallRegular()
-        : CoreTypography.bodyLargeRegular();
+    final textStyle = typography.bodyMediumRegular;
 
-    // ---- COLORS (Theme-aware) ----
-    final bgDefault = isLarge ? colors.buttonSurface : colors.chipGrey;
-    final bgHighlight = isLarge ? colors.buttonSurface : colors.chipGrey;
-    final bgPressed = colors.buttonPress;
-    final bgSelected = colors.buttonSurface;
+    final defaultBackground = isLarge ? colors.textInverse : colors.chipGrey;
 
-    final borderDefault = isLarge ? colors.lineMid : colors.chipGrey;
-    final borderHighlight = colors.lineHighlight;
-    final borderPressed = colors.lineDarkOutline;
-    final borderSelected = colors.outlineHover;
+    final defaultBorder = isLarge ? colors.lineMid : colors.chipGrey;
+    final highlightBorder = colors.lineHighlight;
+    final pressedBorder = colors.lineDarkOutline;
+    final selectedBorder = colors.outlineHover;
 
-    // ---------------- BACKGROUNDS ----------------
-    Color background = bgDefault;
-    Color borderColor = borderDefault;
+    Color background = defaultBackground;
+    Color borderColor = defaultBorder;
 
     if (pressed) {
-      background = bgPressed;
-      borderColor = borderPressed;
+      borderColor = pressedBorder;
     } else if (highlight) {
-      background = bgHighlight;
-      borderColor = borderHighlight;
+      borderColor = highlightBorder;
     }
 
     if (selected) {
-      background = bgSelected;
-      borderColor = borderSelected;
+      borderColor = selectedBorder;
     }
 
-    // ---------------- BORDER ----------------
     final border = BorderSide(color: borderColor, width: 1.3);
-
-    // ---------------- SHADOW (large only) ----------------
     final shadow = isLarge ? CoreShadows.medium : null;
 
-    // ---------------- PADDING (by size) ----------------
-    final padding = size == CoreChipSize.small
-        ? const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space2, vertical: 2)
-        : size == CoreChipSize.medium
-            ? const EdgeInsets.symmetric(
-                horizontal: CoreSpacing.space3, vertical: 6)
-            : const EdgeInsets.symmetric(
-                horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3);
+    final padding = switch (size) {
+      CoreChipSize.small =>
+        const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
+      CoreChipSize.medium =>
+        const EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: 6),
+      CoreChipSize.large => const EdgeInsets.symmetric(
+          horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3),
+    };
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 120),
