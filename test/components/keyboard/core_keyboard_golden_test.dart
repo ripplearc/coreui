@@ -56,7 +56,7 @@ void main() {
       home: Scaffold(
         backgroundColor: CoreBackgroundColors.pageBackground,
         body: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.only(top: 12),
           child: CoreKeyboard(
             currentGroup: const GroupNameType(label: "Basic Geometry"),
             allGroups: testGroups,
@@ -74,7 +74,7 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(350, 445));
+    await tester.binding.setSurfaceSize(const Size(350, 480));
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();

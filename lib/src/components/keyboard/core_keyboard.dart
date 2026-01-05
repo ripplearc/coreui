@@ -63,8 +63,6 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
   // Layout constants
   static const int _keyboardColumnCount = 5;
 
-  static const double _functionKeyTileAspectRatio = 2.8;
-
   static const double _dragIndicatorHeight = 6.0;
   static const double _dragIndicatorWidth = 32.0;
 
@@ -448,106 +446,112 @@ class _FunctionKeyStrip extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
     final colors = AppColorsExtension.of(context);
 
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeDevice = screenWidth > 600;
+    return LayoutBuilder(builder: (context, constraints) {
+      final double width = constraints.maxWidth;
+      const double widthForIphoneProMax = 430.0;
+      final bool isMediumScreen =
+          width > 375.0 && width <= widthForIphoneProMax;
 
-    double finalAspectRatio;
+      double finalAspectRatio;
 
-    if (isLargeDevice) {
-      const double targetKeyHeight = 44.0;
+      if (width > widthForIphoneProMax) {
+        const double targetKeyHeight = 44.0;
+        final double columnWidth = (width - (CoreSpacing.space1 * 3)) / 4;
+        finalAspectRatio = columnWidth / targetKeyHeight;
+      } else if (isMediumScreen) {
+        finalAspectRatio = 2.9;
+      } else {
+        const double targetKeyHeight = CoreSpacing.space10;
+        final double columnWidth = (width - (CoreSpacing.space1 * 3)) / 4;
+        finalAspectRatio = columnWidth / targetKeyHeight;
+      }
 
-      final double columnWidth = (screenWidth - (CoreSpacing.space1 * 3)) / 4;
-
-      finalAspectRatio = columnWidth / targetKeyHeight;
-    } else {
-      finalAspectRatio = _CoreKeyboardState._functionKeyTileAspectRatio;
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      '${group.name.label} group',
-                      style: typography.bodySmallMedium.copyWith(
-                        color: colors.textHeadline,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: CoreSpacing.space2),
-                  Container(
-                    width: CoreSpacing.space2,
-                    height: CoreSpacing.space2,
-                    decoration: BoxDecoration(
-                      color: accentColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Semantics(
-              label: 'View all function keys',
-              button: true,
-              hint: 'Opens a bottom sheet with all available function keys',
-              child: TextButton(
-                onPressed: onViewAll,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'View all',
-                      style: typography.bodySmallMedium
-                          .copyWith(color: colors.buttonSurface),
-                      overflow: TextOverflow.ellipsis,
+                    Flexible(
+                      child: Text(
+                        '${group.name.label} group',
+                        style: typography.bodySmallMedium.copyWith(
+                          color: colors.textHeadline,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(width: CoreSpacing.space1),
-                    Icon(
-                      Icons.chevron_right,
-                      size: CoreSpacing.space4,
-                      color: colors.buttonSurface,
+                    const SizedBox(width: CoreSpacing.space2),
+                    Container(
+                      width: CoreSpacing.space2,
+                      height: CoreSpacing.space2,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: CoreSpacing.space3),
-        GridView.count(
-          crossAxisCount: 4,
-          crossAxisSpacing: CoreSpacing.space1,
-          mainAxisSpacing: CoreSpacing.space1,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: finalAspectRatio,
-          children: group.keys.map((key) {
-            return FunctionKeyTile(
-              keyType: key,
-              onTap: () {
-                onKeyTapped(key);
-                key.action?.call();
-              },
-              hasPadding: true,
-            );
-          }).toList(),
-        ),
-      ],
-    );
+              Semantics(
+                label: 'View all function keys',
+                button: true,
+                hint: 'Opens a bottom sheet with all available function keys',
+                child: TextButton(
+                  onPressed: onViewAll,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View all',
+                        style: typography.bodySmallMedium
+                            .copyWith(color: colors.buttonSurface),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: CoreSpacing.space1),
+                      Icon(
+                        Icons.chevron_right,
+                        size: CoreSpacing.space4,
+                        color: colors.buttonSurface,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: CoreSpacing.space3),
+          GridView.count(
+            crossAxisCount: 4,
+            crossAxisSpacing: CoreSpacing.space1,
+            mainAxisSpacing: CoreSpacing.space1,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: finalAspectRatio,
+            children: group.keys.map((key) {
+              return FunctionKeyTile(
+                keyType: key,
+                onTap: () {
+                  onKeyTapped(key);
+                  key.action?.call();
+                },
+                hasPadding: true,
+              );
+            }).toList(),
+          ),
+        ],
+      );
+    });
   }
 }
 
