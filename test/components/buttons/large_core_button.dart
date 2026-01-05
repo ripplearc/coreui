@@ -8,7 +8,7 @@ void main() {
     await loadFonts();
   });
 
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   final colors = AppColorsExtension.create();
 
   testWidgets('CoreButton Large - Narrow View - With Pressed State',

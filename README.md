@@ -100,7 +100,7 @@ Container(
 ```dart
 // Adapts to Light/Dark mode automatically
 final colors = Theme.of(context).extension<AppColorsExtension>()!;
-final typography = Theme.of(context).extension<TypographyExtension>()!;
+final typography = Theme.of(context).extension<AppTypographyExtension>()!;
 
 Container(
   color: colors.pageBackground,

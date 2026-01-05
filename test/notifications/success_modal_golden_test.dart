@@ -52,7 +52,7 @@ void main() {
 }
 
 Widget _buildScenario(String title, Widget child) {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
     child: Column(
@@ -70,7 +70,7 @@ Widget _buildSuccessModalContent({
   String? message,
   String? buttonLabel,
 }) {
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
   return Container(
     width: 400,
     padding: const EdgeInsets.all(24),
@@ -79,7 +79,7 @@ Widget _buildSuccessModalContent({
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 10,
           offset: const Offset(0, -2),
         ),
@@ -104,4 +104,4 @@ Widget _buildSuccessModalContent({
       ],
     ),
   );
-} 
+}

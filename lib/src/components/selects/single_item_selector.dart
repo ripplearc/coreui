@@ -25,8 +25,8 @@ class SingleItemSelector<T> extends StatelessWidget {
   final ValueChanged<T?> onItemSelected;
   final String Function(T?)? itemToString;
   final Widget? suffixIcon;
-  final Color selectedColor;
-  final Color selectedBackgroundColor;
+  final Color? selectedColor;
+  final Color? selectedBackgroundColor;
   final bool isDisabled;
   final VoidCallback? onOpen;
 
@@ -40,8 +40,8 @@ class SingleItemSelector<T> extends StatelessWidget {
     required this.onItemSelected,
     this.itemToString,
     this.suffixIcon,
-    this.selectedColor = CoreTextColors.success,
-    this.selectedBackgroundColor = CoreBackgroundColors.backgroundBlueLight,
+    this.selectedColor,
+    this.selectedBackgroundColor,
     this.isDisabled = false,
     this.onOpen,
   });
@@ -49,6 +49,7 @@ class SingleItemSelector<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
+    final colors = Theme.of(context).coreColors;
     return InkWell(
       onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
       child: InputDecorator(
@@ -58,18 +59,18 @@ class SingleItemSelector<T> extends StatelessWidget {
           enabled: !isDisabled,
           labelStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
-                ? CoreTextColors.disable
-                : CoreBorderColors.outlineFocus,
+                ? colors.textDisable
+                : colors.outlineFocus,
           ),
           hintStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
-                ? CoreTextColors.disable
-                : CoreBorderColors.outlineFocus,
+                ? colors.textDisable
+                : colors.outlineFocus,
           ),
           floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
             color: isDisabled
-                ? CoreTextColors.disable
-                : CoreBorderColors.outlineFocus,
+                ? colors.textDisable
+                : colors.outlineFocus,
           ),
           border: const OutlineInputBorder(),
           suffixIcon: suffixIcon ?? const Icon(Icons.arrow_drop_down),
@@ -102,6 +103,11 @@ class SingleItemSelector<T> extends StatelessWidget {
   }
 
   void _showSelectionBottomSheet(BuildContext context) {
+    final colors = Theme.of(context).coreColors;
+    final effectiveSelectedColor = selectedColor ?? colors.textSuccess;
+    final effectiveSelectedBackgroundColor =
+        selectedBackgroundColor ?? colors.backgroundBlueLight;
+
     final onOpenCallback = onOpen;
     if (onOpenCallback != null) {
       onOpenCallback();
@@ -110,7 +116,7 @@ class SingleItemSelector<T> extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: CoreBackgroundColors.pageBackground,
+      backgroundColor: colors.pageBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
@@ -147,7 +153,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: isSelected ? selectedBackgroundColor : null,
+                        color: isSelected ? effectiveSelectedBackgroundColor : null,
                         borderRadius: BorderRadius.circular(
                           CoreSpacing.space12,
                         ),
@@ -166,7 +172,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                             if (isSelected)
                               CoreIconWidget(
                                 icon: CoreIcons.checkMark,
-                                color: selectedColor,
+                                color: effectiveSelectedColor,
                               ),
                           ],
                         ),

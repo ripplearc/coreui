@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3] - Theme extension naming consistency
+
+### ⚠️ Breaking Changes
+
+- **TypographyExtension** has been renamed to **AppTypographyExtension** for consistency with other theme extensions
+- Update your code: `Theme.of(context).extension<TypographyExtension>()` → `Theme.of(context).extension<AppTypographyExtension>()`
+
 ## [0.3.2] - Code quality improvements
 
 ### 🔧 Fixes

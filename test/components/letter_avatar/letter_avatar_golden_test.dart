@@ -11,7 +11,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  final typography = TypographyExtension.create();
+  final typography = AppTypographyExtension.create();
 
   Widget buildAvatarItem(String name, String letter) {
     return SizedBox(
@@ -106,4 +106,3 @@ void main() {
     );
   });
 }
-
