@@ -64,7 +64,7 @@ class CoreSelectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -80,15 +80,14 @@ class CoreSelectButton extends StatelessWidget {
             tabs.length * 2 - 1,
             (index) {
               if (index.isOdd) {
-                // Add spacing between tabs
                 return const SizedBox(width: CoreSpacing.space2);
               }
-              final i = index ~/ 2;
+              final tabIndex = index ~/ 2;
               return _buildTab(
                 context,
-                label: tabs[i],
-                selected: i == initialIndex,
-                onTap: () => onChanged?.call(i),
+                label: tabs[tabIndex],
+                selected: tabIndex == initialIndex,
+                onTap: () => onChanged?.call(tabIndex),
               );
             },
           ),
@@ -111,8 +110,8 @@ class CoreSelectButton extends StatelessWidget {
     required bool selected,
     required VoidCallback onTap,
   }) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
-    final typography = Theme.of(context).extension<TypographyExtension>()!;
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     return Semantics(
       label: label,

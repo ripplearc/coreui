@@ -41,14 +41,12 @@ void main() {
         ),
       );
 
-      // Find the text widgets
       final tab1Finder = find.text('Tab 1');
       final tab2Finder = find.text('Tab 2');
 
       expect(tab1Finder, findsOneWidget);
       expect(tab2Finder, findsOneWidget);
 
-      // Tab 2 should be selected (initialIndex: 1)
       final tab2Widget = tester.widget<Text>(tab2Finder);
       expect(tab2Widget.style?.fontWeight, equals(FontWeight.w600));
     });
@@ -72,7 +70,6 @@ void main() {
         ),
       );
 
-      // Tap on Tab 2
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
 
@@ -119,17 +116,14 @@ void main() {
         ),
       );
 
-      // Select Tab 2
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
       expect(selectedIndex, equals(1));
 
-      // Select Tab 3
       await tester.tap(find.text('Tab 3'));
       await tester.pumpAndSettle();
       expect(selectedIndex, equals(2));
 
-      // Select Tab 1
       await tester.tap(find.text('Tab 1'));
       await tester.pumpAndSettle();
       expect(selectedIndex, equals(0));
@@ -148,11 +142,9 @@ void main() {
         ),
       );
 
-      // Find the container with the styling
       final containerFinder = find.byType(Container);
       expect(containerFinder, findsWidgets);
 
-      // Verify the component renders without errors
       expect(find.byType(CoreSelectButton), findsOneWidget);
     });
 
@@ -170,7 +162,6 @@ void main() {
         ),
       );
 
-      // Should not throw error when tapping
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
 
@@ -193,7 +184,6 @@ void main() {
         ),
       );
 
-      // All tabs should be findable (even if not visible)
       for (int i = 0; i < tabs.length; i++) {
         expect(find.text(tabs[i]), findsOneWidget);
       }
