@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
-import '../../theme/color_tokens.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
@@ -9,8 +8,59 @@ import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
+/// Defines the type of toast notification and its visual styling.
+/// - [error]: Error toast with red background and icon for critical issues.
+/// - [warning]: Warning toast with orange background and icon for cautionary messages.
+/// - [info]: Information toast with blue background and icon for general notifications.
+/// - [success]: Success toast with green background and icon for positive confirmations.
 enum _ToastType { error, warning, info, success }
 
+/// A notification widget that displays temporary messages to users with different visual styles.
+///
+/// The Toast component supports four distinct types:
+/// - Error: Red styling for critical issues
+/// - Warning: Orange styling for cautionary messages
+/// - Info: Blue styling for general notifications
+/// - Success: Green styling for positive confirmations
+///
+/// ## Basic Usage
+///
+/// ```dart
+/// // Error toast
+/// Toast.error(
+///   description: 'An error occurred',
+///   closeLabel: 'Close',
+/// )
+/// ```
+///
+/// ## Toast with Title
+///
+/// ```dart
+/// // Success toast with title
+/// Toast.success(
+///   title: 'Operation Complete',
+///   description: 'Your changes have been saved successfully.',
+///   closeLabel: 'Dismiss',
+/// )
+/// ```
+///
+/// ## Toast with Close Callback
+///
+/// ```dart
+/// // Warning toast with custom close handler
+/// Toast.warning(
+///   description: 'Please review your settings',
+///   closeLabel: 'Close',
+///   onClose: () {
+///     // Handle close action
+///   },
+/// )
+/// ```
+///
+/// [title] is the optional title text displayed above the description.
+/// [description] is the main message to be displayed in the toast.
+/// [closeLabel] is the text label for the close button.
+/// [onClose] is the optional callback function triggered when the close button is pressed.
 class Toast extends StatelessWidget {
   final String? title;
   final String description;
