@@ -20,9 +20,10 @@ class _Harness extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsExtension.create();
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: const SizedBox.shrink(),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16),

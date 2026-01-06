@@ -12,6 +12,7 @@ void main() {
   });
 
   final typography = AppTypographyExtension.create();
+  final colors = AppColorsExtension.create();
 
   Widget buildAvatarItem(String name, String letter) {
     return SizedBox(
@@ -24,13 +25,13 @@ void main() {
           Text(
             letter,
             style: typography.bodyMediumSemiBold
-                .copyWith(color: CoreTextColors.dark),
+                .copyWith(color: colors.textDark),
             textAlign: TextAlign.center,
           ),
           Text(
             name,
             style: typography.bodySmallRegular
-                .copyWith(color: CoreTextColors.body),
+                .copyWith(color: colors.textBody),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -72,7 +73,7 @@ void main() {
 
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.pageBackground,
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(CoreSpacing.space8),
           child: Column(
@@ -81,7 +82,7 @@ void main() {
               Text(
                 'Letter Avatars (A-Z)',
                 style: typography.bodyLargeSemiBold
-                    .copyWith(color: CoreTextColors.dark),
+                    .copyWith(color: colors.textDark),
               ),
               const SizedBox(height: CoreSpacing.space6),
               Wrap(
