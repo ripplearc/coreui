@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.4] - Code quality improvements
+
+### 🔧 Fixes
+
+- **Code Quality**
+  - Fixed `avoid_static_colors` linter violations
+  - Integrated shadow colors into theme system for consistent design token usage
+
 ## [0.3.3] - Theme extension naming consistency
 
 ### ⚠️ Breaking Changes

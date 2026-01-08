@@ -20,11 +20,12 @@ void main() {
       ),
     ];
 
+    final colors = AppColorsExtension.create();
     final testAccentColors = {
       const GroupNameType(label: 'Trigonomety'):
-          CoreBackgroundColors.backgroundDarkGray,
+          colors.backgroundDarkGray,
       const GroupNameType(label: 'Materials'):
-          CoreBackgroundColors.backgroundOrientMid,
+          colors.orientMid,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {
