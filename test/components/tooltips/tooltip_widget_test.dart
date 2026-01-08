@@ -39,8 +39,7 @@ void main() {
       expect(find.text(testMessage), findsNothing);
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -59,14 +58,12 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.info), warnIfMissed: false);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsNothing);
     });
@@ -87,8 +84,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -110,8 +106,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -133,8 +128,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -156,8 +150,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -178,8 +171,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
     });
@@ -200,8 +192,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(customMessage), findsOneWidget);
     });
@@ -223,8 +214,7 @@ void main() {
       );
 
       await tester.tap(find.byIcon(Icons.info));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
 
       expect(find.text(testMessage), findsOneWidget);
 

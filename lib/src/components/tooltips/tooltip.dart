@@ -208,7 +208,7 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
   final TooltipArrowPosition arrowPosition;
 
   /// Gap between the tooltip and the target widget
-  static const double _tooltipGap = CoreSpacing.space2 + 2; // 10px
+  static const double _tooltipGap = CoreSpacing.space2 + 2;
 
   _TooltipPositionDelegate({
     required this.target,
@@ -268,10 +268,8 @@ class _TooltipBubble extends StatelessWidget {
   final String message;
   final TooltipArrowPosition arrowPosition;
 
-  /// Arrow width (12px = CoreSpacing.space3)
   static const double _arrowWidth = CoreSpacing.space3;
 
-  /// Arrow height (6px = CoreSpacing.space3 / 2)
   static const double _arrowHeight = CoreSpacing.space3 / 2;
 
   const _TooltipBubble({

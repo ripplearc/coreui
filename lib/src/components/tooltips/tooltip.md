@@ -159,7 +159,7 @@ The tooltip component follows the Core UI design system:
 
 ## Styling
 
-The tooltip has a fixed dark gray background with white text and rounded corners. The arrow is rendered as a custom
+The tooltip has a fixed dark gray background with white text and rounded corners. The arrow is rendered as a custom in the light theme.
 painted triangle that matches the background color.
 
 ```dart
