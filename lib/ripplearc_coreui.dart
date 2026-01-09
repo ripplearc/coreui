@@ -11,6 +11,8 @@ export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
+// Component exports
+export 'src/components/tabs/core_tabs.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/components/tooltips/tooltip.dart';
 export 'src/notifications/success_modal.dart';
