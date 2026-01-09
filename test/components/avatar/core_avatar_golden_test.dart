@@ -7,6 +7,7 @@ import '../../load_fonts.dart';
 
 void main() {
   final typography = AppTypographyExtension.create();
+  final colors = AppColorsExtension.create();
   setUpAll(() async {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ void main() {
           Text(
             label,
             style: typography.bodySmallRegular
-                .copyWith(color: CoreTextColors.body),
+                .copyWith(color: colors.textBody),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -36,43 +37,43 @@ void main() {
   testWidgets('CoreAvatar Golden Test', (WidgetTester tester) async {
     final avatars = <Widget>[
       buildAvatarItem(
-        const CoreAvatar(
+        CoreAvatar(
           radius: 20,
-          backgroundColor: CoreIconColors.blue,
+          backgroundColor: colors.iconBlue,
         ),
         'Small (r=20)',
       ),
       buildAvatarItem(
-        const CoreAvatar(
+        CoreAvatar(
           radius: 30,
-          backgroundColor: CoreIconColors.green,
+          backgroundColor: colors.iconGreen,
         ),
         'Medium (r=30)',
       ),
       buildAvatarItem(
-        const CoreAvatar(
+        CoreAvatar(
           radius: 40,
-          backgroundColor: CoreIconColors.orange,
+          backgroundColor: colors.iconOrange,
         ),
         'Large (r=40)',
       ),
       buildAvatarItem(
-        const CoreAvatar(
+        CoreAvatar(
           radius: 30,
-          backgroundColor: CoreIconColors.blue,
+          backgroundColor: colors.iconBlue,
           child: CoreIconWidget(
             icon: CoreIcons.person,
-            color: CoreIconColors.white,
+            color: colors.iconWhite,
             size: 24,
           ),
         ),
         'With Icon',
       ),
       buildAvatarItem(
-        const CoreAvatar(
+        CoreAvatar(
           minRadius: 20,
           maxRadius: 30,
-          backgroundColor: CoreIconColors.red,
+          backgroundColor: colors.iconRed,
         ),
         'Min/Max Radius',
       ),
@@ -87,7 +88,7 @@ void main() {
 
     final widget = MaterialApp(
       home: Scaffold(
-        backgroundColor: CoreBackgroundColors.pageBackground,
+        backgroundColor: colors.pageBackground,
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(CoreSpacing.space8),
           child: Column(
@@ -96,7 +97,7 @@ void main() {
               Text(
                 'Core Avatar Variants',
                 style: typography.bodyLargeSemiBold
-                    .copyWith(color: CoreTextColors.dark),
+                    .copyWith(color: colors.textDark),
               ),
               const SizedBox(height: CoreSpacing.space6),
               Wrap(

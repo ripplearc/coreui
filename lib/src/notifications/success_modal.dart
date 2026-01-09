@@ -29,13 +29,14 @@ class SuccessModal {
     required VoidCallback onPressed,
     required String buttonLabel,
   }) {
+    final colors = Theme.of(context).coreColors;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
       enableDrag: enableDrag,
       isDismissible: isDismissible,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.pageBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

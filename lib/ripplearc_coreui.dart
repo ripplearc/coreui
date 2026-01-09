@@ -14,6 +14,7 @@ export 'src/components/switches/switch.dart';
 // Component exports
 export 'src/components/tabs/core_tabs.dart';
 export 'src/components/text_fields/text_field.dart';
+export 'src/components/tooltips/tooltip.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
 // Theme exports
