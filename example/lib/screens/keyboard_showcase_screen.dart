@@ -21,6 +21,9 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
         KeyType(groupName: 'Basic Geometry', label: 'Height'),
         KeyType(groupName: 'Basic Geometry', label: 'Pitch'),
         KeyType(groupName: 'Basic Geometry', label: 'Circle'),
+        KeyType(groupName: 'Basic Geometry', label: 'Rise'),
+        KeyType(groupName: 'Basic Geometry', label: 'Run'),
+        KeyType(groupName: 'Basic Geometry', label: 'Radius'),
       ],
     ),
     FunctionGroup(

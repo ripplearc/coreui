@@ -158,10 +158,12 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                   onViewAll: () => _showFunctionsSheet(context),
                 ),
                 SizedBox(height: functionStripSpacing),
-                _buildColumnLayout(context,
-                    buttonSize: finalButtonSize,
-                    buttonSpacing: (finalSpacing),
-                    heightSpasing: min(finalSpacing, maxHeightSpasing)),
+                _buildColumnLayout(
+                  context,
+                  buttonSize: finalButtonSize,
+                  buttonSpacing: finalSpacing,
+                  heightSpasing: min(finalSpacing, maxHeightSpasing),
+                ),
               ],
             ),
           );
@@ -447,28 +449,42 @@ class _FunctionKeyStrip extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
 
     return LayoutBuilder(builder: (context, constraints) {
-      final double width = constraints.maxWidth;
-      const double widthForIphoneProMax = 430.0;
-      final bool isMediumScreen =
-          width > 375.0 && width <= widthForIphoneProMax;
+      const int columnCount = 5;
+      const double maxButtonSize = 60.0;
+      const double minButtonSize = 40.0;
+      const double minSpacing = 4.0;
+      const double horizontalPadding = CoreSpacing.space3;
 
-      double finalAspectRatio;
+      final availableWidth = constraints.maxWidth;
+      final widthForContent = availableWidth - (horizontalPadding * 2);
 
-      if (width > widthForIphoneProMax) {
-        const double targetKeyHeight = 44.0;
-        final double columnWidth = (width - (CoreSpacing.space1 * 3)) / 4;
-        finalAspectRatio = columnWidth / targetKeyHeight;
-      } else if (isMediumScreen) {
-        finalAspectRatio = 2.9;
+      const double targetKeyHeight = 48.0;
+      const double spacing = CoreSpacing.space1;
+      final double columnWidth = (availableWidth - (spacing * (3))) / 4;
+      final double finalAspectRatio = columnWidth / targetKeyHeight;
+
+      final double idealTotalWidth =
+          (maxButtonSize * columnCount) + (minSpacing * (columnCount - 1));
+
+      double finalButtonSize;
+      double finalSpacing;
+
+      if (widthForContent > idealTotalWidth) {
+        finalButtonSize = maxButtonSize;
+        finalSpacing = (widthForContent - (finalButtonSize * columnCount)) /
+            (columnCount - 1);
       } else {
-        const double targetKeyHeight = CoreSpacing.space10;
-        final double columnWidth = (width - (CoreSpacing.space1 * 3)) / 4;
-        finalAspectRatio = columnWidth / targetKeyHeight;
-      }
+        finalSpacing = minSpacing;
+        finalButtonSize =
+            (widthForContent - (finalSpacing * (columnCount - 1))) /
+                columnCount;
 
+        if (finalButtonSize < minButtonSize) {
+          finalButtonSize = minButtonSize;
+        }
+      }
       return Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

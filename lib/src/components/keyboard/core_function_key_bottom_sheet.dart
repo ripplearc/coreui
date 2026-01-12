@@ -185,7 +185,7 @@ class _FunctionGroupSection extends StatelessWidget {
           mainAxisSpacing: CoreSpacing.space1,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.4,
+          childAspectRatio: 2,
           children: group.keys.map((key) {
             return FunctionKeyTile(
               keyType: key,
