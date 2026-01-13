@@ -94,13 +94,13 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     });
   }
 
-  final Map<GroupNameType, Color> _groupAccentColors = {
-    GroupNameType(label: "Basic Geometry"): CoreKeyboardColors.functions,
-    GroupNameType(label: "Materials"): CoreKeyboardColors.units,
-    GroupNameType(label: "Trigonometry"): CoreTextColors.success,
-  };
-
   Widget _buildKeyboard(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final Map<GroupNameType, Color> groupAccentColors = {
+      GroupNameType(label: "Basic Geometry"): colors.keyboardFunctions,
+      GroupNameType(label: "Materials"): colors.keyboardUnits,
+      GroupNameType(label: "Trigonometry"): colors.textSuccess,
+    };
     return CoreKeyboard(
       currentGroup: _currentGroup,
       allGroups: _groups,
@@ -114,7 +114,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       result: ResultType(label: "="),
       currentUnitSystem: _currentUnitSystem,
       onUnitSystemChanged: _onUnitSystemChanged,
-      groupAccentColors: _groupAccentColors,
+      groupAccentColors: groupAccentColors,
     );
   }
 
@@ -122,7 +122,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColorsExtension.of(context).transparent,
       builder: (_) => Padding(
         padding: const EdgeInsets.only(top: CoreSpacing.space8),
         child: _buildKeyboard(context),
@@ -147,13 +147,6 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                 child: const Text('Show keyboard sheet'),
               ),
             ),
-            const SizedBox(height: CoreSpacing.space4),
-            // Expanded(
-            //   child: Align(
-            //     alignment: Alignment.bottomCenter,
-            //     child: _buildKeyboard(context),
-            //   ),
-            // ),
           ],
         ),
       ),
