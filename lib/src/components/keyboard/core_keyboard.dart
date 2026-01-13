@@ -525,7 +525,7 @@ class _FunctionKeyStrip extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: CoreSpacing.space3),
+          const SizedBox(height: CoreSpacing.space4),
           GridView.count(
             padding: EdgeInsets.zero,
             crossAxisCount: 4,
