@@ -185,157 +185,159 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
         ? imperialUnitsOrder
         : metricUnitsOrder;
 
-    return Column(
-      children: [
-        _buildGridRow(
-          children: [
-            CoreControlButton(
-              action: ControlAction.clearAll,
-              onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreUnitButton(
-              unit: UnitType.divideSymbol,
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.percent,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.divide,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreControlButton(
-              action: ControlAction.delete,
-              onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[0],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.seven,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.eight,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.nine,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.multiply,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[1],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.four,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.five,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.six,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.subtract,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[2],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.one,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.two,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.three,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.add,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildBottomRow(
-          buttonSize: buttonSize,
-          buttonSpacing: buttonSpacing,
-        ),
-      ],
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildGridRow(
+            children: [
+              CoreControlButton(
+                action: ControlAction.clearAll,
+                onControlAction: widget.onControlAction,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreUnitButton(
+                unit: UnitType.divideSymbol,
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.percent,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.divide,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreControlButton(
+                action: ControlAction.delete,
+                onControlAction: widget.onControlAction,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[0],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.seven,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.eight,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.nine,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.multiply,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[1],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.four,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.five,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.six,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.subtract,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[2],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.one,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.two,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.three,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.add,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildBottomRow(
+            buttonSize: buttonSize,
+            buttonSpacing: buttonSpacing,
+          ),
+        ],
+      ),
     );
   }
 
