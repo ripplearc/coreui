@@ -449,10 +449,7 @@ class _FunctionKeyStrip extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
 
     return LayoutBuilder(builder: (context, constraints) {
-      const int columnCount = 5;
-      const double maxButtonSize = 60.0;
-      const double minButtonSize = 40.0;
-      const double minSpacing = 4.0;
+      const int columnCount = 4;
       const double horizontalPadding = CoreSpacing.space3;
 
       final availableWidth = constraints.maxWidth;
@@ -460,29 +457,11 @@ class _FunctionKeyStrip extends StatelessWidget {
 
       const double targetKeyHeight = 48.0;
       const double spacing = CoreSpacing.space1;
-      final double columnWidth = (availableWidth - (spacing * (3))) / 4;
+
+      final double columnWidth =
+          (widthForContent - (spacing * (columnCount - 1))) / columnCount;
       final double finalAspectRatio = columnWidth / targetKeyHeight;
 
-      final double idealTotalWidth =
-          (maxButtonSize * columnCount) + (minSpacing * (columnCount - 1));
-
-      double finalButtonSize;
-      double finalSpacing;
-
-      if (widthForContent > idealTotalWidth) {
-        finalButtonSize = maxButtonSize;
-        finalSpacing = (widthForContent - (finalButtonSize * columnCount)) /
-            (columnCount - 1);
-      } else {
-        finalSpacing = minSpacing;
-        finalButtonSize =
-            (widthForContent - (finalSpacing * (columnCount - 1))) /
-                columnCount;
-
-        if (finalButtonSize < minButtonSize) {
-          finalButtonSize = minButtonSize;
-        }
-      }
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -548,6 +527,7 @@ class _FunctionKeyStrip extends StatelessWidget {
           ),
           const SizedBox(height: CoreSpacing.space3),
           GridView.count(
+            padding: EdgeInsets.zero,
             crossAxisCount: 4,
             crossAxisSpacing: CoreSpacing.space1,
             mainAxisSpacing: CoreSpacing.space1,
