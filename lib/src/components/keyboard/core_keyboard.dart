@@ -60,11 +60,6 @@ class CoreKeyboard extends StatefulWidget {
 }
 
 class _CoreKeyboardState extends State<CoreKeyboard> {
-  // Layout constants
-  static const int _keyboardColumnCount = 5;
-
-  static const double _functionKeyTileAspectRatio = 2.8;
-
   static const double _dragIndicatorHeight = 6.0;
   static const double _dragIndicatorWidth = 32.0;
 
@@ -98,35 +93,36 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
         builder: (context, constraints) {
           final headerSpacing = CoreSpacing.space3;
           final functionStripSpacing = CoreSpacing.space4;
-          const horizontalPadding = CoreSpacing.space3;
-          const verticalPadding = CoreSpacing.space3;
-          const double maxButtonSize = 50.0;
-          const double minSpacing = 4.0;
+          const double horizontalPadding = CoreSpacing.space3;
+          const double verticalPadding = CoreSpacing.space3;
+          final double maxHeightSpasing = 8.0;
+          const int columnCount = 5;
+          const double maxButtonSize = 80.0;
+          const double minButtonSize = 48.0;
+          const double minSpacing = CoreSpacing.space1;
 
           final availableWidth = constraints.maxWidth;
           final widthForContent = availableWidth - (horizontalPadding * 2);
 
-          final double maxHeightSpasing = 10.0;
+          final double idealTotalWidth =
+              (maxButtonSize * columnCount) + (minSpacing * (columnCount - 1));
 
-          final responsiveButtonSize =
-              (widthForContent - (minSpacing * (_keyboardColumnCount - 1))) /
-                  _keyboardColumnCount;
           double finalButtonSize;
-          double finalSpacing = 4.0;
+          double finalSpacing;
 
-          if (responsiveButtonSize > maxButtonSize) {
+          if (widthForContent > idealTotalWidth) {
             finalButtonSize = maxButtonSize;
-
-            final totalButtonsWidth = finalButtonSize * _keyboardColumnCount;
-
-            final double calculatedSpacing =
-                (widthForContent - totalButtonsWidth) /
-                    (_keyboardColumnCount - 1);
-
-            finalSpacing = calculatedSpacing.clamp(4.0, double.infinity);
+            finalSpacing = (widthForContent - (finalButtonSize * columnCount)) /
+                (columnCount - 1);
           } else {
-            finalButtonSize = responsiveButtonSize;
             finalSpacing = minSpacing;
+            finalButtonSize =
+                (widthForContent - (finalSpacing * (columnCount - 1))) /
+                    columnCount;
+
+            if (finalButtonSize < minButtonSize) {
+              finalButtonSize = minButtonSize;
+            }
           }
 
           return Container(
@@ -159,10 +155,12 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                   onViewAll: () => _showFunctionsSheet(context),
                 ),
                 SizedBox(height: functionStripSpacing),
-                _buildColumnLayout(context,
-                    buttonSize: finalButtonSize,
-                    buttonSpacing: (finalSpacing),
-                    heightSpasing: min(finalSpacing, maxHeightSpasing)),
+                _buildColumnLayout(
+                  context,
+                  buttonSize: finalButtonSize,
+                  buttonSpacing: finalSpacing,
+                  heightSpasing: min(finalSpacing, maxHeightSpasing),
+                ),
               ],
             ),
           );
@@ -187,157 +185,159 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
         ? imperialUnitsOrder
         : metricUnitsOrder;
 
-    return Column(
-      children: [
-        _buildGridRow(
-          children: [
-            CoreControlButton(
-              action: ControlAction.clearAll,
-              onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreUnitButton(
-              unit: UnitType.divideSymbol,
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.percent,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.divide,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreControlButton(
-              action: ControlAction.delete,
-              onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[0],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.seven,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.eight,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.nine,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.multiply,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[1],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.four,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.five,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.six,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.subtract,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildGridRow(
-          children: [
-            CoreUnitButton(
-              unit: activeUnits[2],
-              onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.one,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.two,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreDigitInput(
-              digit: DigitType.three,
-              onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-            CoreOperatorButton(
-              operatorType: OperatorType.add,
-              onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
-            ),
-          ],
-          spacing: buttonSpacing,
-        ),
-        SizedBox(height: heightSpasing),
-        _buildBottomRow(
-          buttonSize: buttonSize,
-          buttonSpacing: buttonSpacing,
-        ),
-      ],
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildGridRow(
+            children: [
+              CoreControlButton(
+                action: ControlAction.clearAll,
+                onControlAction: widget.onControlAction,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreUnitButton(
+                unit: UnitType.divideSymbol,
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.percent,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.divide,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreControlButton(
+                action: ControlAction.delete,
+                onControlAction: widget.onControlAction,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[0],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.seven,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.eight,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.nine,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.multiply,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[1],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.four,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.five,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.six,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.subtract,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildGridRow(
+            children: [
+              CoreUnitButton(
+                unit: activeUnits[2],
+                onUnitSelected: widget.onUnitSelected,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.one,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.two,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreDigitInput(
+                digit: DigitType.three,
+                onDigitPressed: widget.onDigitPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+              CoreOperatorButton(
+                operatorType: OperatorType.add,
+                onOperatorPressed: widget.onOperatorPressed,
+                width: buttonSize,
+                height: buttonSize,
+              ),
+            ],
+            spacing: buttonSpacing,
+          ),
+          SizedBox(height: heightSpasing),
+          _buildBottomRow(
+            buttonSize: buttonSize,
+            buttonSpacing: buttonSpacing,
+          ),
+        ],
+      ),
     );
   }
 
@@ -447,106 +447,106 @@ class _FunctionKeyStrip extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
     final colors = AppColorsExtension.of(context);
 
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeDevice = screenWidth > 600;
+    return LayoutBuilder(builder: (context, constraints) {
+      const int columnCount = 4;
+      const double horizontalPadding = CoreSpacing.space3;
 
-    double finalAspectRatio;
+      final availableWidth = constraints.maxWidth;
+      final widthForContent = availableWidth - (horizontalPadding * 2);
 
-    if (isLargeDevice) {
-      const double targetKeyHeight = 44.0;
+      const double targetKeyHeight = 48.0;
+      const double spacing = CoreSpacing.space1;
 
-      final double columnWidth = (screenWidth - (CoreSpacing.space1 * 3)) / 4;
+      final double columnWidth =
+          (widthForContent - (spacing * (columnCount - 1))) / columnCount;
+      final double finalAspectRatio = columnWidth / targetKeyHeight;
 
-      finalAspectRatio = columnWidth / targetKeyHeight;
-    } else {
-      finalAspectRatio = _CoreKeyboardState._functionKeyTileAspectRatio;
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      '${group.name.label} group',
-                      style: typography.bodySmallMedium.copyWith(
-                        color: colors.textHeadline,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: CoreSpacing.space2),
-                  Container(
-                    width: CoreSpacing.space2,
-                    height: CoreSpacing.space2,
-                    decoration: BoxDecoration(
-                      color: accentColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Semantics(
-              label: 'View all function keys',
-              button: true,
-              hint: 'Opens a bottom sheet with all available function keys',
-              child: TextButton(
-                onPressed: onViewAll,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'View all',
-                      style: typography.bodySmallMedium
-                          .copyWith(color: colors.buttonSurface),
-                      overflow: TextOverflow.ellipsis,
+                    Flexible(
+                      child: Text(
+                        '${group.name.label} group',
+                        style: typography.bodySmallMedium.copyWith(
+                          color: colors.textHeadline,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(width: CoreSpacing.space1),
-                    Icon(
-                      Icons.chevron_right,
-                      size: CoreSpacing.space4,
-                      color: colors.buttonSurface,
+                    const SizedBox(width: CoreSpacing.space2),
+                    Container(
+                      width: CoreSpacing.space2,
+                      height: CoreSpacing.space2,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: CoreSpacing.space3),
-        GridView.count(
-          crossAxisCount: 4,
-          crossAxisSpacing: CoreSpacing.space1,
-          mainAxisSpacing: CoreSpacing.space1,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: finalAspectRatio,
-          children: group.keys.map((key) {
-            return FunctionKeyTile(
-              keyType: key,
-              onTap: () {
-                onKeyTapped(key);
-                key.action?.call();
-              },
-              hasPadding: true,
-            );
-          }).toList(),
-        ),
-      ],
-    );
+              Semantics(
+                label: 'View all function keys',
+                button: true,
+                hint: 'Opens a bottom sheet with all available function keys',
+                child: TextButton(
+                  onPressed: onViewAll,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View all',
+                        style: typography.bodySmallMedium
+                            .copyWith(color: colors.buttonSurface),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: CoreSpacing.space1),
+                      Icon(
+                        Icons.chevron_right,
+                        size: CoreSpacing.space4,
+                        color: colors.buttonSurface,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: CoreSpacing.space4),
+          GridView.count(
+            padding: EdgeInsets.zero,
+            crossAxisCount: 4,
+            crossAxisSpacing: CoreSpacing.space1,
+            mainAxisSpacing: CoreSpacing.space1,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: finalAspectRatio,
+            children: group.keys.map((key) {
+              return FunctionKeyTile(
+                keyType: key,
+                onTap: () {
+                  onKeyTapped(key);
+                  key.action?.call();
+                },
+                hasPadding: true,
+              );
+            }).toList(),
+          ),
+        ],
+      );
+    });
   }
 }
 
