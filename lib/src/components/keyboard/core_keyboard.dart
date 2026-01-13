@@ -60,9 +60,6 @@ class CoreKeyboard extends StatefulWidget {
 }
 
 class _CoreKeyboardState extends State<CoreKeyboard> {
-  // Layout constants
-  static const int _keyboardColumnCount = 5;
-
   static const double _dragIndicatorHeight = 6.0;
   static const double _dragIndicatorWidth = 32.0;
 
@@ -96,36 +93,36 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
         builder: (context, constraints) {
           final headerSpacing = CoreSpacing.space3;
           final functionStripSpacing = CoreSpacing.space4;
-          const horizontalPadding = CoreSpacing.space3;
-          const verticalPadding = CoreSpacing.space3;
-          const double maxButtonSize = 60.0;
-          const double minSpacing = 4.0;
+          const double horizontalPadding = CoreSpacing.space3;
+          const double verticalPadding = CoreSpacing.space3;
+          final double maxHeightSpasing = 8.0;
+          const int columnCount = 5;
+          const double maxButtonSize = 80.0;
+          const double minButtonSize = 48.0;
+          const double minSpacing = CoreSpacing.space1;
 
           final availableWidth = constraints.maxWidth;
           final widthForContent = availableWidth - (horizontalPadding * 2);
 
-          final double maxHeightSpasing = 8.0;
-          final double widthForIphoneProMax = 430.0;
+          final double idealTotalWidth =
+              (maxButtonSize * columnCount) + (minSpacing * (columnCount - 1));
 
-          final responsiveButtonSize =
-              (widthForContent - (minSpacing * (_keyboardColumnCount - 1))) /
-                  _keyboardColumnCount;
           double finalButtonSize;
-          double finalSpacing = 4.0;
+          double finalSpacing;
 
-          if (constraints.maxWidth > widthForIphoneProMax) {
+          if (widthForContent > idealTotalWidth) {
             finalButtonSize = maxButtonSize;
-
-            final totalButtonsWidth = finalButtonSize * _keyboardColumnCount;
-
-            final double calculatedSpacing =
-                (widthForContent - totalButtonsWidth) /
-                    (_keyboardColumnCount - 1);
-
-            finalSpacing = calculatedSpacing.clamp(4.0, double.infinity);
+            finalSpacing = (widthForContent - (finalButtonSize * columnCount)) /
+                (columnCount - 1);
           } else {
-            finalButtonSize = responsiveButtonSize;
             finalSpacing = minSpacing;
+            finalButtonSize =
+                (widthForContent - (finalSpacing * (columnCount - 1))) /
+                    columnCount;
+
+            if (finalButtonSize < minButtonSize) {
+              finalButtonSize = minButtonSize;
+            }
           }
 
           return Container(
