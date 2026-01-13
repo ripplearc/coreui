@@ -9,6 +9,14 @@ class KeyboardShowcaseScreen extends StatefulWidget {
 }
 
 class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openBottomSheet();
+    });
+  }
+
   GroupNameType _currentGroup = GroupNameType(label: "Basic Geometry");
   UnitSystem _currentUnitSystem = UnitSystem.imperial;
 
@@ -131,18 +139,21 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       ),
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: _openBottomSheet,
-              child: const Text('Show keyboard sheet'),
-            ),
-            const SizedBox(height: CoreSpacing.space4),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: _buildKeyboard(context),
+            Center(
+              child: ElevatedButton(
+                onPressed: _openBottomSheet,
+                child: const Text('Show keyboard sheet'),
               ),
             ),
+            const SizedBox(height: CoreSpacing.space4),
+            // Expanded(
+            //   child: Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: _buildKeyboard(context),
+            //   ),
+            // ),
           ],
         ),
       ),
