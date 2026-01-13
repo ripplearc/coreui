@@ -20,7 +20,7 @@ void main() {
     testWidgets('renders keyboard with all required components',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light().copyWith(
@@ -49,7 +49,7 @@ void main() {
     testWidgets('calls onDigitPressed when digit button is tapped',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       DigitType? pressedDigit;
       await tester.pumpWidget(
@@ -84,7 +84,7 @@ void main() {
     testWidgets('calls onOperatorPressed when operator button is tapped',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       OperatorType? pressedOperator;
       await tester.pumpWidget(
@@ -119,7 +119,7 @@ void main() {
     testWidgets('calls onResultTapped when result button is tapped',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       bool resultTapped = false;
       await tester.pumpWidget(
@@ -154,7 +154,7 @@ void main() {
     testWidgets('displays correct unit buttons for imperial system',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -186,7 +186,7 @@ void main() {
     testWidgets('displays correct unit buttons for metric system',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -217,7 +217,7 @@ void main() {
 
     testWidgets('handles empty function groups gracefully', (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(800, 1200);
+      tester.view.physicalSize = const ui.Size(1100, 1600);
 
       final emptyGroups = [
         const FunctionGroup(
