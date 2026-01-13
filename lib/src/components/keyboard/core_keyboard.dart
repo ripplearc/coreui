@@ -72,9 +72,9 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
           : const FunctionGroup(
               name: GroupNameType(label: "Basic Geometry"), keys: []),
     );
-    final colors = AppColorsExtension.of(context);
+    final colors = Theme.of(context).coreColors;
     final accent = widget.groupAccentColors[widget.currentGroup] ??
-        CoreKeyboardColors.functions;
+        colors.keyboardFunctions;
 
     return Container(
       decoration: BoxDecoration(
@@ -83,7 +83,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             top: Radius.circular(CoreSpacing.space8)),
         boxShadow: [
           BoxShadow(
-            color: CoreShadowColors.shadowGrey6,
+            color: colors.shadowGrey6,
             offset: const Offset(0, -2),
             blurRadius: 12,
           ),

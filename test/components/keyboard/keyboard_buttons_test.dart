@@ -595,7 +595,7 @@ void main() {
           theme: CoreTheme.light(),
           debugShowCheckedModeBanner: false,
           home: Scaffold(
-            backgroundColor: CoreBackgroundColors.pageBackground,
+            backgroundColor: AppColorsExtension.create().pageBackground,
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

@@ -10,7 +10,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
-
+  final colors = AppColorsExtension.create();
   testWidgets('CoreKeyboard Full UI Golden Test - Multiple Function Groups',
       (tester) async {
     final testGroups = [
@@ -43,9 +43,9 @@ void main() {
 
     final testAccentColors = {
       const GroupNameType(label: "Basic Geometry"):
-          CoreKeyboardColors.functions,
-      const GroupNameType(label: "Materials"): CoreKeyboardColors.actions,
-      const GroupNameType(label: "Trigonometry"): CoreKeyboardColors.functions,
+          colors.keyboardFunctions,
+      const GroupNameType(label: "Materials"): colors.keyboardActions,
+      const GroupNameType(label: "Trigonometry"): colors.keyboardFunctions,
     };
 
     final widget = MaterialApp(
@@ -54,7 +54,7 @@ void main() {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: CoreBackgroundColors.pageBackground,
+        backgroundColor: colors.pageBackground,
         body: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: CoreKeyboard(
