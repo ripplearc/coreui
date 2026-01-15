@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.5] - Code quality improvements
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreLoadingIndicator**: Added Lottie-based loading indicator component with customizable size and fit options
+
+- **Dependencies**
+  - Added **lottie** (^3.2.0) for animation support
+
+- **Assets**
+  - Added loading animation asset (`assets/animations/loading.json`)
+
 ## [0.3.4] - Code quality improvements
 
 ### 🔧 Fixes
