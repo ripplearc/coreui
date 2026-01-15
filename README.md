@@ -78,6 +78,28 @@ PrimaryButton(
   onPressed: () {},
 );
 ```
+
+### Loading Animations
+
+The package includes a Lottie-based loading indicator for showing progress or loading states.
+
+
+```dart
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+// Default size (80px)
+CoreLoadingIndicator()
+
+// Custom size
+CoreLoadingIndicator(size: 100)
+
+// Custom BoxFit
+CoreLoadingIndicator(
+  size: 80,
+  fit: BoxFit.cover,
+)
+```
+
 ### Colors & Typography Usage
 
 **Strict Rule:** Do not use static constants (e.g., `CoreAlertColors.red` or `CoreTypography.body`). Static access breaks Dark Mode support.

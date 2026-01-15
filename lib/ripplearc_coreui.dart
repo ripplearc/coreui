@@ -8,6 +8,7 @@ export 'src/components/keyboard/core_keyboard.dart';
 export 'src/components/keyboard/keyboard_buttons.dart';
 export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
+export 'src/components/loading/core_loading_indicator.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';

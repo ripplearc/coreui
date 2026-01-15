@@ -1,20 +1,21 @@
 name: ripplearc_coreui
 description: A Flutter design system package with design tokens and basic components.
-version: 0.3.4
+version: 0.3.5
 homepage: https://github.com/ripplearc/coreui
 repository: https://github.com/ripplearc/coreui.git
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
   flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^2.1.0  # For SVG support
+  flutter_svg: ^2.2.2
+  lottie: ^3.3.1
   ripplearc_linter: ^0.2.1
 
-dev_dependencies: 
+dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -24,6 +25,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/letter_avatars/
+    - assets/animations/
 
   fonts:
     - family: Roboto
