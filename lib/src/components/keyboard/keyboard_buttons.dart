@@ -356,6 +356,11 @@ class _KeyboardButton extends StatefulWidget {
 }
 
 class _KeyboardButtonState extends State<_KeyboardButton> {
+  static const double _tweenBegin = 0.0;
+  static const double _tweenEndPressed = 1.0;
+  static const double _tweenEndUnpressed = 0.0;
+  static const Duration _tweenDuration = Duration(milliseconds: 200);
+
   bool _isPressed = false;
 
   void _handleTapDown(TapDownDetails details) {
@@ -385,15 +390,8 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
 
   @override
   Widget build(BuildContext context) {
-    const double defaultSize = _KeyboardButton._defaultSize;
-    const double defaultBorderWidth = _KeyboardButton._defaultBorderWidth;
-    const double tweenBegin = 0.0;
-    const double tweenEndPressed = 1.0;
-    const double tweenEndUnpressed = 0.0;
-    const Duration tweenDuration = Duration(milliseconds: 200);
-
     final colors = AppColorsExtension.of(context);
-    final effectiveWidth = widget.width ?? defaultSize;
+    final effectiveWidth = widget.width ?? _KeyboardButton._defaultSize;
     final effectiveHeight = widget.height;
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colors.transparent;
@@ -410,10 +408,10 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(
-        begin: tweenBegin,
-        end: _isPressed ? tweenEndPressed : tweenEndUnpressed,
+        begin: _tweenBegin,
+        end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed,
       ),
-      duration: tweenDuration,
+      duration: _tweenDuration,
       curve: Curves.easeInOut,
       builder: (context, animationValue, child) {
         final currentBorderRadius = BorderRadius.lerp(
@@ -434,7 +432,7 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: effectiveBorderColor,
-                width: defaultBorderWidth,
+                width: _KeyboardButton._defaultBorderWidth,
               ),
               borderRadius: currentBorderRadius,
               color: effectiveBackgroundColor,
