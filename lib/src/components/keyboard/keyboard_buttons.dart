@@ -355,55 +355,20 @@ class _KeyboardButton extends StatefulWidget {
   State<_KeyboardButton> createState() => _KeyboardButtonState();
 }
 
-class _KeyboardButtonState extends State<_KeyboardButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _KeyboardButtonState extends State<_KeyboardButton> {
   bool _isPressed = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+  void _handleTapDown(TapDownDetails details) {
+    setState(() => _isPressed = true);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _handleTapUp(TapUpDetails details) {
+    setState(() => _isPressed = false);
   }
 
-  void _startPressAnimation(TapDownDetails details) {
-    if (!_isPressed) {
-      setState(() => _isPressed = true);
-      _controller.forward();
-    }
+  void _handleTapCancel() {
+    setState(() => _isPressed = false);
   }
-
-  void _endPressAnimation(TapUpDetails details) {
-    if (_isPressed) {
-      setState(() => _isPressed = false);
-      _controller.reverse();
-    }
-  }
-
-  void _cancelPressAnimation() {
-    if (_isPressed) {
-      setState(() => _isPressed = false);
-      _controller.reverse();
-    }
-  }
-
-  void _handleTapDown(TapDownDetails details) => _startPressAnimation(details);
-  void _handleTapUp(TapUpDetails details) => _endPressAnimation(details);
-  void _handleTapCancel() => _cancelPressAnimation();
 
   Widget _buildIconContent(AppColorsExtension colors, double? effectiveHeight) {
     final icon = widget.icon;
@@ -420,60 +385,70 @@ class _KeyboardButtonState extends State<_KeyboardButton>
 
   @override
   Widget build(BuildContext context) {
+    const double defaultSize = _KeyboardButton._defaultSize;
+    const double defaultBorderWidth = _KeyboardButton._defaultBorderWidth;
+    const double tweenBegin = 0.0;
+    const double tweenEndPressed = 1.0;
+    const double tweenEndUnpressed = 0.0;
+    const Duration tweenDuration = Duration(milliseconds: 200);
+
     final colors = AppColorsExtension.of(context);
-    final effectiveWidth = widget.width ?? _KeyboardButton._defaultSize;
+    final effectiveWidth = widget.width ?? defaultSize;
     final effectiveHeight = widget.height;
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colors.transparent;
     final effectiveBorderColor = widget.borderColor ?? effectiveBackgroundColor;
 
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
+    final staticChild = Center(
+      child: widget.islabel
+          ? Text(
+              widget.label ?? '',
+              style: widget.textStyle,
+            )
+          : _buildIconContent(colors, effectiveHeight),
+    );
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(
+        begin: tweenBegin,
+        end: _isPressed ? tweenEndPressed : tweenEndUnpressed,
+      ),
+      duration: tweenDuration,
+      curve: Curves.easeInOut,
+      builder: (context, animationValue, child) {
         final currentBorderRadius = BorderRadius.lerp(
               widget.borderRadius,
               widget.pressedBorderRadius ?? widget.borderRadius,
-              _animation.value,
+              animationValue,
             ) ??
             widget.borderRadius;
 
-        return Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: effectiveBorderColor,
-              width: _KeyboardButton._defaultBorderWidth,
-            ),
-            borderRadius: currentBorderRadius,
-            color: effectiveBackgroundColor,
-          ),
-          width: effectiveWidth,
-          height: effectiveHeight,
-          child: Material(
-            color: colors.transparent,
-            borderRadius: currentBorderRadius,
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              borderRadius: currentBorderRadius,
-              splashColor: colors.transparent,
-              highlightColor: colors.transparent,
-              hoverColor: colors.transparent,
-              focusColor: colors.transparent,
-              onTap: widget.onPressed,
-              onTapDown: _handleTapDown,
-              onTapUp: _handleTapUp,
-              onTapCancel: _handleTapCancel,
-              child: Center(
-                child: widget.islabel
-                    ? Text(
-                        widget.label ?? '',
-                        style: widget.textStyle,
-                      )
-                    : _buildIconContent(colors, effectiveHeight),
+        return GestureDetector(
+          onTapDown: _handleTapDown,
+          onTapUp: (details) {
+            _handleTapUp(details);
+            widget.onPressed();
+          },
+          onTapCancel: _handleTapCancel,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: effectiveBorderColor,
+                width: defaultBorderWidth,
               ),
+              borderRadius: currentBorderRadius,
+              color: effectiveBackgroundColor,
+            ),
+            width: effectiveWidth,
+            height: effectiveHeight,
+            child: ClipRRect(
+              borderRadius: currentBorderRadius,
+              child: child,
             ),
           ),
         );
       },
+      child: staticChild,
     );
   }
 }
