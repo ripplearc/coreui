@@ -29,54 +29,24 @@ class FunctionKeyTile extends StatefulWidget {
   State<FunctionKeyTile> createState() => _FunctionKeyTileState();
 }
 
-class _FunctionKeyTileState extends State<FunctionKeyTile>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _FunctionKeyTileState extends State<FunctionKeyTile> {
   bool _isPressed = false;
+  static const double _tweenBegin = 0.0;
+  static const double _tweenEndPressed = 1.0;
+  static const double _tweenEndUnpressed = 0.0;
+  static const Duration _tweenDuration = Duration(milliseconds: 200);
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  void _handleTapDown(TapDownDetails details) {
+    setState(() => _isPressed = true);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _handleTapUp(TapUpDetails details) {
+    setState(() => _isPressed = false);
   }
 
-  void _startPressFeedback(TapDownDetails details) {
-    if (!_isPressed) {
-      setState(() => _isPressed = true);
-      _controller.forward();
-    }
+  void _handleTapCancel() {
+    setState(() => _isPressed = false);
   }
-
-  void _handleTapDown(TapDownDetails details) => _startPressFeedback(details);
-
-  void _endPressFeedback(TapUpDetails details) {
-    if (_isPressed) {
-      setState(() => _isPressed = false);
-      _controller.reverse();
-    }
-  }
-
-  void _handleTapUp(TapUpDetails details) => _endPressFeedback(details);
-
-  void _cancelPressFeedback() {
-    if (_isPressed) {
-      setState(() => _isPressed = false);
-      _controller.reverse();
-    }
-  }
-
-  void _handleTapCancel() => _cancelPressFeedback();
 
   @override
   Widget build(BuildContext context) {
@@ -91,17 +61,47 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
         ? '${widget.keyType.label} function key'
         : 'Function key ${widget.keyType.label}';
 
+    final staticChild = Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.keyType.icon != null) ...[
+            Icon(
+              widget.keyType.icon,
+              color: colors.textHeadline,
+              size: CoreSpacing.space4,
+            ),
+            const SizedBox(width: CoreSpacing.space1),
+          ],
+          Flexible(
+            child: Text(
+              widget.keyType.label,
+              style: typography.bodyMediumRegular.copyWith(
+                color: colors.textHeadline,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      ),
+    );
+
     return Semantics(
       label: semanticLabel,
       button: true,
       hint: semanticHint,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(
+            begin: _tweenBegin,
+            end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed),
+        duration: _tweenDuration,
+        curve: Curves.easeInOut,
+        builder: (context, animationValue, child) {
           final currentBorderRadius = BorderRadius.lerp(
                 BorderRadius.circular(CoreSpacing.space2),
                 BorderRadius.circular(100.0),
-                _animation.value,
+                animationValue,
               ) ??
               BorderRadius.circular(CoreSpacing.space2);
 
@@ -115,34 +115,11 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
                 color: colors.backgroundGrayMid,
                 borderRadius: currentBorderRadius,
               ),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (widget.keyType.icon != null) ...[
-                      Icon(
-                        widget.keyType.icon,
-                        color: colors.textHeadline,
-                        size: CoreSpacing.space4,
-                      ),
-                      const SizedBox(width: CoreSpacing.space1),
-                    ],
-                    Flexible(
-                      child: Text(
-                        widget.keyType.label,
-                        style: typography.bodyMediumRegular.copyWith(
-                          color: colors.textHeadline,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: child,
             ),
           );
         },
+        child: staticChild,
       ),
     );
   }
