@@ -431,7 +431,8 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     final effectiveHeight = widget.height;
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colors.transparent;
-    final effectiveBorderColor = widget.borderColor ?? effectiveBackgroundColor;
+    final effectiveBorderColor = widget.borderColor;
+    final opacityConstant = 0.4;
 
     final staticChild = Center(
       child: widget.islabel
@@ -458,11 +459,14 @@ class _KeyboardButtonState extends State<_KeyboardButton>
           onTapCancel: _handleTapCancel,
           onTap: _handleTap,
           child: Container(
+            padding: EdgeInsets.zero,
             decoration: BoxDecoration(
-              border: Border.all(
-                color: effectiveBorderColor,
-                width: _KeyboardButton._defaultBorderWidth,
-              ),
+              border: effectiveBorderColor != null
+                  ? Border.all(
+                      color: effectiveBorderColor,
+                      width: _KeyboardButton._defaultBorderWidth,
+                    )
+                  : null,
               borderRadius: currentBorderRadius,
               color: effectiveBackgroundColor,
             ),
@@ -470,7 +474,23 @@ class _KeyboardButtonState extends State<_KeyboardButton>
             height: effectiveHeight,
             child: ClipRRect(
               borderRadius: currentBorderRadius,
-              child: child,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  child ?? const SizedBox.shrink(),
+                  Opacity(
+                    opacity: _animation.value * opacityConstant,
+                    child: Container(
+                      padding: EdgeInsets.zero,
+                      margin: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        color: colors.iconGrayLight,
+                        borderRadius: currentBorderRadius,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
