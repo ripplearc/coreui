@@ -355,24 +355,60 @@ class _KeyboardButton extends StatefulWidget {
   State<_KeyboardButton> createState() => _KeyboardButtonState();
 }
 
-class _KeyboardButtonState extends State<_KeyboardButton> {
-  static const double _tweenBegin = 0.0;
-  static const double _tweenEndPressed = 1.0;
-  static const double _tweenEndUnpressed = 0.0;
-  static const Duration _tweenDuration = Duration(milliseconds: 200);
+class _KeyboardButtonState extends State<_KeyboardButton>
+    with SingleTickerProviderStateMixin {
+  static const Duration _animationDuration = Duration(milliseconds: 150);
 
+  late final AnimationController _animationController;
+  late final Animation<double> _animation;
   bool _isPressed = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _animationDuration,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.ease,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   void _handleTapDown(TapDownDetails details) {
-    setState(() => _isPressed = true);
+    _isPressed = true;
+    _animationController.forward();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+      widget.onPressed();
+    }
   }
 
   void _handleTapCancel() {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+    }
+  }
+
+  void _handleTap() {
+    if (!_isPressed) {
+      _animationController.forward().then((_) {
+        _animationController.reverse();
+      });
+      widget.onPressed();
+    }
   }
 
   Widget _buildIconContent(AppColorsExtension colors, double? effectiveHeight) {
@@ -406,28 +442,21 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
           : _buildIconContent(colors, effectiveHeight),
     );
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(
-        begin: _tweenBegin,
-        end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed,
-      ),
-      duration: _tweenDuration,
-      curve: Curves.easeInOut,
-      builder: (context, animationValue, child) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
         final currentBorderRadius = BorderRadius.lerp(
               widget.borderRadius,
               widget.pressedBorderRadius ?? widget.borderRadius,
-              animationValue,
+              _animation.value,
             ) ??
             widget.borderRadius;
 
         return GestureDetector(
           onTapDown: _handleTapDown,
-          onTapUp: (details) {
-            _handleTapUp(details);
-            widget.onPressed();
-          },
+          onTapUp: _handleTapUp,
           onTapCancel: _handleTapCancel,
+          onTap: _handleTap,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
