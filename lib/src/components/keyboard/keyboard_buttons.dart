@@ -40,7 +40,7 @@ class CoreDigitInput extends StatelessWidget {
       label: '${digit.label} button',
       button: true,
       child: _KeyboardButton(
-        islabel: true,
+        isLabel: true,
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
@@ -90,7 +90,7 @@ class CoreOperatorButton extends StatelessWidget {
       label: '${operatorType.symbol} operator button',
       button: true,
       child: _KeyboardButton(
-        islabel: false,
+        isLabel: false,
         icon: operatorType.icon,
         backgroundColor: backgroundColor,
         onPressed: () => onOperatorPressed(operatorType),
@@ -144,7 +144,7 @@ class CoreUnitButton extends StatelessWidget {
       child: _KeyboardButton(
         label: unit == UnitType.divideSymbol ? null : unit.label,
         icon: unit == UnitType.divideSymbol ? CoreIcons.slash : null,
-        islabel: unit != UnitType.divideSymbol,
+        isLabel: unit != UnitType.divideSymbol,
         backgroundColor: backgroundColor,
         onPressed: () => onUnitSelected(unit),
         width: width,
@@ -213,7 +213,7 @@ class CoreControlButton extends StatelessWidget {
       button: true,
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
-        islabel: false,
+        isLabel: false,
         icon: action.icon,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
@@ -293,7 +293,7 @@ class CoreResultButton extends StatelessWidget {
       hint: 'Calculates and displays the result',
       child: _KeyboardButton(
         label: label,
-        islabel: true,
+        isLabel: true,
         backgroundColor: backgroundColor,
         onPressed: onTap,
         height: effectiveHeight,
@@ -325,7 +325,7 @@ class _KeyboardButton extends StatefulWidget {
   final double? height;
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
-  final bool islabel;
+  final bool isLabel;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
@@ -347,7 +347,7 @@ class _KeyboardButton extends StatefulWidget {
       this.height,
       BorderRadius? borderRadius,
       this.pressedBorderRadius,
-      required this.islabel})
+      required this.isLabel})
       : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
@@ -435,7 +435,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     final opacityConstant = 0.4;
 
     final staticChild = Center(
-      child: widget.islabel
+      child: widget.isLabel
           ? Text(
               widget.label ?? '',
               style: widget.textStyle,
