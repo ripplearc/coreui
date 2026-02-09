@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+
 void main() {
   group('CoreTextField', () {
     testWidgets('displays label and helper text', (WidgetTester tester) async {
@@ -98,6 +100,26 @@ void main() {
       final textField =
           tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.enabled, false);
+    });
+  });
+
+  group('CoreTextField – accessibility tests', () {
+    testWidgets('CoreTextField meets tap target and label guidelines',
+        (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (_) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: CoreTextField(
+            label: 'Email address',
+            helperText: 'We will never share your email.',
+            controller: TextEditingController(),
+          ),
+        ),
+        find.byType(CoreTextField),
+      );
     });
   });
 }
