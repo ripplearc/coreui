@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import '../../load_fonts.dart';
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
 
 void main() {
   setUpAll(() async {
@@ -93,6 +95,21 @@ void main() {
       final lottieWidget = tester.widget<Lottie>(find.byType(Lottie));
 
       expect(lottieWidget.fit, BoxFit.fill);
+    });
+  });
+
+  group('CoreLoadingIndicator – accessibility', () {
+    testWidgets('exposes a loading semantic label', (tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          const CoreLoadingIndicator(),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreLoadingIndicator));
+      expect(semantics.label, 'Loading');
     });
   });
 }
