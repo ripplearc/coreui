@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+import '../../utils/a11y_guidelines.dart';
 
 const _tabs = <BottomNavTab>[
   BottomNavTab(icon: CoreIcons.home, label: 'Home'),
@@ -108,6 +109,24 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(fired, isTrue);
+    });
+  });
+
+  group('CoreBottomNavBar – accessibility', () {
+    testWidgets('tabs expose accessible labels', (tester) async {
+      await setupA11yTest(tester);
+      await _mount(tester, selectedIndex: 0);
+
+      final semanticsHandle = tester.ensureSemantics();
+      try {
+        // Ensure tappable widgets in the nav bar have semantic labels.
+        await expectLater(
+          tester,
+          meetsGuideline(labeledTapTargetGuideline),
+        );
+      } finally {
+        semanticsHandle.dispose();
+      }
     });
   });
 }
