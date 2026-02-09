@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -10,9 +9,10 @@ void main() {
     testWidgets('exposes semantic label', (tester) async {
       await setupA11yTest(tester);
 
-      const avatar = CoreAvatar(
+      final colors = AppColorsExtension.create();
+      final avatar = CoreAvatar(
         radius: 24,
-        backgroundColor: Colors.blue,
+        backgroundColor: colors.iconBlue,
         semanticLabel: 'Avatar for John Doe',
       );
 
