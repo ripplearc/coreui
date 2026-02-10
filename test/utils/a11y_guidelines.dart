@@ -22,29 +22,43 @@ Future<void> setupA11yTest(
 }
 
 /// Asserts that the widget found by [target] meets accessibility guidelines
-/// for tap target size (Android and iOS) and, unless [excludeLabelCheck] is true,
-/// has an accessible label.
+/// based on the enabled checks.
 ///
-/// Optionally checks text contrast when [includeTextContrast] is true.
+/// These flags exist so individual tests can opt out of specific checks in
+/// well-understood, temporary situations, but **by default all checks are
+/// enabled** because our a11y test suite expects them to run.
+/// Typical examples:
+/// - [checkTapTargetSize]: verifies Android and iOS tap target size guidelines.
+///   This can be turned off for widgets that are not meant to be interactive
+///   (but are still using this helper for convenience).
+/// - [checkLabeledTapTarget]: verifies that tap targets have an accessible
+///   label. This can be turned off for purely decorative widgets that are
+///   intentionally excluded from the semantics tree.
+/// - [checkTextContrast]: verifies that text meets the minimum contrast ratio.
+///   This can be turned off when the component under test does not render any
+///   text, or when a known contrast issue is being worked on separately.
 /// Fails if [target] does not match exactly one widget or any guideline fails.
 Future<void> expectMeetsTapTargetAndLabelGuidelines(
   WidgetTester tester,
   Finder target, {
-  bool includeTextContrast = false,
-  bool excludeLabelCheck = false,
+  bool checkTapTargetSize = true,
+  bool checkLabeledTapTarget = true,
+  bool checkTextContrast = true,
 }) async {
   final semanticsHandle = tester.ensureSemantics();
   try {
     expect(target, findsOneWidget);
 
-    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+    if (checkTapTargetSize) {
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+    }
 
-    if (!excludeLabelCheck) {
+    if (checkLabeledTapTarget) {
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     }
 
-    if (includeTextContrast) {
+    if (checkTextContrast) {
       await expectLater(tester, meetsGuideline(textContrastGuideline));
     }
   } finally {
