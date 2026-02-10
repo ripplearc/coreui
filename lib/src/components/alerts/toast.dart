@@ -240,8 +240,8 @@ class Toast extends StatelessWidget {
                 label: closeLabel,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                    minWidth: 48,
-                    minHeight: 48,
+                    minWidth: CoreSpacing.space12,
+                    minHeight: CoreSpacing.space12,
                   ),
                   child: Center(
                     child: Row(
