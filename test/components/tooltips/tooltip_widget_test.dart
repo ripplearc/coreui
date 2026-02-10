@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
+
 void main() {
   group('CoreTooltip Widget Tests', () {
     const testMessage = 'Test tooltip message';
     const testChild = Icon(Icons.info);
+    const testChildA11y = SizedBox(
+      width: 48,
+      height: 48,
+      child: Icon(Icons.info_outline),
+    );
 
     testWidgets('renders child widget correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
@@ -222,6 +230,29 @@ void main() {
       final tooltipCenter = tester.getCenter(find.text(testMessage));
 
       expect(tooltipCenter.dy < childCenter.dy, isTrue);
+    });
+
+    testWidgets('meets accessibility guidelines', (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          const CoreTooltip(
+            message: testMessage,
+            child: testChildA11y,
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreTooltip));
+      expect(semantics.label, 'Tooltip: $testMessage');
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreTooltip),
+        checkTextContrast: false,
+      );
     });
   });
 }
