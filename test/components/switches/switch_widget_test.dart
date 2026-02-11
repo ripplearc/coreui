@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
+
 void main() {
   group('CoreSwitch Widget Tests', () {
     testWidgets('renders normal switch correctly', (WidgetTester tester) async {
@@ -188,5 +191,39 @@ void main() {
 
       await tester.pumpAndSettle();
     });
+
+    testWidgets('meets a11y guidelines (label, contrast; tap size skipped)',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreSwitch(
+            type: CoreSwitchType.normal,
+            value: false,
+            onChanged: (_) {},
+            activeLabel: 'On',
+            inactiveLabel: 'Off',
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreSwitch),
+      );
+
+      await tester.tap(find.byType(CoreSwitch));
+      await tester.pumpAndSettle();
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreSwitch),
+      );
+    });
   });
 }
+
