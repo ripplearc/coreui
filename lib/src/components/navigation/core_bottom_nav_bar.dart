@@ -379,7 +379,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                           softWrap: false,
                           style: typography.bodySmallMedium.copyWith(
                             fontSize: layout.labelFontSize,
-                            color: colors.textLink,
+                            color: colors.iconDark,
                           ),
                         ),
                       )
