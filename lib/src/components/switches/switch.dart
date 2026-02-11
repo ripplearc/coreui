@@ -213,57 +213,67 @@ class CoreSwitch extends StatelessWidget {
         value ? effectiveActiveColor : colors.backgroundGrayLight;
     final borderColor = value ? effectiveActiveColor : _getBorderColor(colors);
 
+    final double effectiveWidth = switchWidth < 48.0 ? 48.0 : switchWidth;
+    final double effectiveHeight = switchHeight < 48.0 ? 48.0 : switchHeight;
+
     return GestureDetector(
       onTap: () => onChanged(!value),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        height: switchHeight,
-        width: switchWidth,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          border: value ? null : Border.all(color: borderColor, width: 1),
-          borderRadius: BorderRadius.circular(CoreSpacing.space6),
-        ),
-        child: Stack(
-          children: [
-            // Label text (if present)
-            if (_hasLabels)
-              Positioned(
-                  right: value ? thumbSize + thumbPadding * 1.4 : thumbPadding,
-                  left: value ? thumbPadding : thumbSize + thumbPadding * 1.4,
-                  top: 0,
-                  bottom: 0,
-                  child: Center(
-                    child: Text(
-                      value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
-                      style: typography.bodySmallRegular.copyWith(
-                        color: value
-                            ? colors.textInverse
-                            : effectiveInactiveTextColor,
+      behavior: HitTestBehavior.translucent,
+      child: Container(
+        width: effectiveWidth,
+        height: effectiveHeight,
+        alignment: Alignment.centerLeft,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: switchHeight,
+          width: switchWidth,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            border: value ? null : Border.all(color: borderColor, width: 1),
+            borderRadius: BorderRadius.circular(CoreSpacing.space6),
+          ),
+          child: Stack(
+            children: [
+              if (_hasLabels)
+                Positioned(
+                    right:
+                        value ? thumbSize + thumbPadding * 1.4 : thumbPadding,
+                    left: value ? thumbPadding : thumbSize + thumbPadding * 1.4,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: Text(
+                        value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
+                        style: typography.bodySmallRegular.copyWith(
+                          color: value
+                              ? colors.textInverse
+                              : effectiveInactiveTextColor,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  )),
+                    )),
 
-            // Animated thumb
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              left:
-                  value ? switchWidth - thumbSize - thumbPadding : thumbPadding,
-              top: 0,
-              bottom: 0,
-              child: Container(
-                width: thumbSize,
-                decoration: BoxDecoration(
-                  color: value
-                      ? colors.textInverse
-                      : effectiveInactiveBorderColor,
-                  shape: BoxShape.circle,
+              // Animated thumb
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                left: value
+                    ? switchWidth - thumbSize - thumbPadding
+                    : thumbPadding,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: thumbSize,
+                  decoration: BoxDecoration(
+                    color: value
+                        ? colors.textInverse
+                        : effectiveInactiveBorderColor,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
