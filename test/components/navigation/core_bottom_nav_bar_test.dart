@@ -113,20 +113,17 @@ void main() {
   });
 
   group('CoreBottomNavBar – accessibility', () {
-    testWidgets('tabs expose accessible labels', (tester) async {
+    testWidgets(
+        'meets tap target, label and contrast guidelines for tabs and action button', (tester) async {
       await setupA11yTest(tester);
       await _mount(tester, selectedIndex: 0);
 
-      final semanticsHandle = tester.ensureSemantics();
-      try {
-        // Ensure tappable widgets in the nav bar have semantic labels.
-        await expectLater(
-          tester,
-          meetsGuideline(labeledTapTargetGuideline),
-        );
-      } finally {
-        semanticsHandle.dispose();
-      }
+      await tester.pumpAndSettle();
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreBottomNavBar),
+      );
     });
   });
 }
