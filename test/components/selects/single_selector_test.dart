@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
+
 void main() {
   group('SingleItemSelector', () {
     testWidgets('renders label and hint', (tester) async {
@@ -134,6 +137,41 @@ void main() {
 
       // Modal should not open
       expect(find.text('Select Role'), findsNothing);
+    });
+
+    testWidgets('meets a11y guidelines for closed field and option list', (tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            hintText: 'Select your role',
+            modalTitle: 'Select Role',
+            items: <String>['Engineer', 'Designer'],
+            selectedItem: null,
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(SingleItemSelector<String>),
+      );
+
+      await tester.tap(find.byType(SingleItemSelector<String>));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('professional_role_list')), findsOneWidget);
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byKey(const Key('professional_role_list')),
+      );
     });
   });
 }
