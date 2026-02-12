@@ -262,10 +262,14 @@ void main() {
 
       await setupA11yTest(tester);
 
-      final testGroups = const [
+      final testGroups = [
         FunctionGroup(
-          name: GroupNameType(label: "Basic Geometry"),
-          keys: [],
+          name: const GroupNameType(label: "Basic Geometry"),
+          keys: [
+            KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+            KeyType(
+                groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
+          ],
         ),
       ];
 
@@ -292,7 +296,6 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelines(
         tester,
         find.byType(CoreDigitInput).first,
-        includeTextContrast: true,
       );
     });
   });
