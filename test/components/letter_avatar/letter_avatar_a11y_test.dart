@@ -19,6 +19,13 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(CoreLetterAvatar));
       expect(semantics.label, 'Letter avatar for $name');
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreLetterAvatar),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+      );
     });
   });
 }

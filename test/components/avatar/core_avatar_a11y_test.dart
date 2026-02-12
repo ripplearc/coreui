@@ -22,6 +22,13 @@ void main() {
 
       final semantics = tester.getSemantics(find.byType(CoreAvatar));
       expect(semantics.label, 'Avatar for John Doe');
+
+      await expectMeetsTapTargetAndLabelGuidelines(
+        tester,
+        find.byType(CoreAvatar),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+      );
     });
   });
 }
