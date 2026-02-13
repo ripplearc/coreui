@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
+
 void main() {
   group('Toast Widget Tests', () {
     final closeButtonFinder = find.byKey(const Key('toast_close_button'));
@@ -125,6 +128,83 @@ void main() {
 
       // Verify that the callback was triggered
       expect(wasClosed, isTrue);
+    });
+
+    group('accessibility guidelines', () {
+      testWidgets('error toast meets accessibility guidelines',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Toast.error(
+            description: 'Something went wrong',
+            closeLabel: 'Close',
+          ),
+          find.byKey(const Key('toast_close_button')),
+        );
+
+        await tester.pumpAndSettle();
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(semantics.label, contains('Something went wrong'));
+      });
+
+      testWidgets('warning toast meets accessibility guidelines',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Toast.warning(
+            description: 'Please review your settings',
+            closeLabel: 'Close',
+          ),
+          find.byKey(const Key('toast_close_button')),
+        );
+
+        await tester.pumpAndSettle();
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(semantics.label, contains('Please review your settings'));
+      });
+
+      testWidgets('info toast meets accessibility guidelines',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Toast.info(
+            description: 'New updates are available',
+            closeLabel: 'Dismiss',
+          ),
+          find.byKey(const Key('toast_close_button')),
+        );
+
+        await tester.pumpAndSettle();
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(semantics.label, contains('New updates are available'));
+      });
+
+      testWidgets('toast with title exposes title as label and description as hint',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Toast.success(
+            title: 'Saved',
+            description: 'Your changes have been saved.',
+            closeLabel: 'Dismiss',
+          ),
+          find.byKey(const Key('toast_close_button')),
+        );
+
+        await tester.pumpAndSettle();
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(semantics.label, contains('Saved'));
+        expect(semantics.label, contains('Your changes have been saved.'));
+        expect(semantics.hint, contains('Your changes have been saved.'));
+      });
     });
   });
 }
