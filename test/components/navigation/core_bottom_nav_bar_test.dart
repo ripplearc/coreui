@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+import '../../utils/a11y_guidelines.dart';
 
 const _tabs = <BottomNavTab>[
   BottomNavTab(icon: CoreIcons.home, label: 'Home'),
@@ -108,6 +109,25 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(fired, isTrue);
+    });
+  });
+
+  group('CoreBottomNavBar – accessibility', () {
+    testWidgets(
+        'meets tap target, label and contrast guidelines for tabs and action button', (tester) async {
+      await setupA11yTest(tester);
+      await _mount(tester, selectedIndex: 0);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreBottomNavBar(
+          tabs: _tabs,
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+          onActionButtonPressed: null,
+        ),
+        find.byType(CoreBottomNavBar),
+      );
     });
   });
 }
