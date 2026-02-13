@@ -204,31 +204,36 @@ void main() {
           (tester) async {
         await setupA11yTest(tester);
 
-        await tester.pumpWidget(
-          buildTestApp(
-            Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(
-                  context,
-                  'Request successful',
-                  'Close',
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(
+            buildTestApp(
+              Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => CoreToast.showSuccess(
+                    context,
+                    'Request successful',
+                    'Close',
+                  ),
+                  child: const Text('Show Toast'),
                 ),
-                child: const Text('Show Toast'),
               ),
+              theme: theme,
             ),
-            theme: CoreTheme.light(),
-          ),
-        );
+          );
 
-        await tester.tap(find.text('Show Toast'));
-        await tester.pumpAndSettle();
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
 
-        expect(find.byType(Toast), findsOneWidget);
+          expect(find.byType(Toast), findsOneWidget);
 
-        await expectMeetsTapTargetAndLabelGuidelines(
-          tester,
-          find.byKey(const Key('toast_close_button')),
-        );
+          await expectMeetsTapTargetAndLabelGuidelines(
+            tester,
+            find.byKey(const Key('toast_close_button')),
+          );
+
+          CoreToast.cleanup();
+          await tester.pumpAndSettle();
+        }
       });
     });
   });
