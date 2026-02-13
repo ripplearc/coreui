@@ -196,33 +196,35 @@ void main() {
         (WidgetTester tester) async {
       await setupA11yTest(tester);
 
-      await tester.pumpWidget(
-        buildTestApp(
-          CoreSwitch(
-            type: CoreSwitchType.normal,
-            value: false,
-            onChanged: (_) {},
-            activeLabel: 'On',
-            inactiveLabel: 'Off',
+      for (final theme in kA11yTestThemes) {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreSwitch(
+              type: CoreSwitchType.normal,
+              value: false,
+              onChanged: (_) {},
+              activeLabel: 'On',
+              inactiveLabel: 'Off',
+            ),
+            theme: theme,
           ),
-          theme: CoreTheme.light(),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      await expectMeetsTapTargetAndLabelGuidelines(
-        tester,
-        find.byType(CoreSwitch),
-      );
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byType(CoreSwitch),
+        );
 
-      await tester.tap(find.byType(CoreSwitch));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byType(CoreSwitch));
+        await tester.pumpAndSettle();
 
-      await expectMeetsTapTargetAndLabelGuidelines(
-        tester,
-        find.byType(CoreSwitch),
-      );
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byType(CoreSwitch),
+        );
+      }
     });
   });
 }

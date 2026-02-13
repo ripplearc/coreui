@@ -142,36 +142,32 @@ void main() {
     testWidgets('meets a11y guidelines for closed field and option list', (tester) async {
       await setupA11yTest(tester);
 
-      await tester.pumpWidget(
-        buildTestApp(
-          SingleItemSelector<String>(
-            labelText: 'Role',
-            hintText: 'Select your role',
-            modalTitle: 'Select Role',
-            items: <String>['Engineer', 'Designer'],
-            selectedItem: null,
-            onItemSelected: (_) {},
-          ),
-          theme: CoreTheme.light(),
-        ),
+      final selector = SingleItemSelector<String>(
+        labelText: 'Role',
+        hintText: 'Select your role',
+        modalTitle: 'Select Role',
+        items: <String>['Engineer', 'Designer'],
+        selectedItem: null,
+        onItemSelected: (_) {},
       );
 
-      await tester.pumpAndSettle();
-
-      await expectMeetsTapTargetAndLabelGuidelines(
-        tester,
-        find.byType(SingleItemSelector<String>),
-      );
-
-      await tester.tap(find.byType(SingleItemSelector<String>));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('professional_role_list')), findsOneWidget);
-
-      await expectMeetsTapTargetAndLabelGuidelines(
-        tester,
-        find.byKey(const Key('professional_role_list')),
-      );
+      for (final theme in kA11yTestThemes) {
+        await tester.pumpWidget(buildTestApp(selector, theme: theme));
+        await tester.pumpAndSettle();
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byType(SingleItemSelector<String>),
+        );
+        await tester.tap(find.byType(SingleItemSelector<String>));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('professional_role_list')), findsOneWidget);
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byKey(const Key('professional_role_list')),
+        );
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
+      }
     });
   });
 }
