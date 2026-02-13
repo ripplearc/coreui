@@ -12,16 +12,15 @@ void main() {
       const name = 'Alice';
 
       await tester.pumpWidget(
-        buildTestApp(
-          const CoreLetterAvatar(name: name),
-        ),
+        buildTestApp(const CoreLetterAvatar(name: name), theme: CoreTheme.light()),
       );
 
       final semantics = tester.getSemantics(find.byType(CoreLetterAvatar));
       expect(semantics.label, 'Letter avatar for $name');
 
-      await expectMeetsTapTargetAndLabelGuidelines(
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
+        (_) => const CoreLetterAvatar(name: name),
         find.byType(CoreLetterAvatar),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,

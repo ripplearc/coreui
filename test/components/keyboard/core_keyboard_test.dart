@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
-import '../../utils/test_harness.dart';
 
 void main() {
   group('CoreKeyboard', () {
@@ -273,28 +272,20 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        buildTestApp(
-          CoreKeyboard(
-            currentGroup: const GroupNameType(label: "Basic Geometry"),
-            allGroups: testGroups,
-            onDigitPressed: (_) {},
-            onUnitSelected: (_) {},
-            onOperatorPressed: (_) {},
-            onControlAction: (_) {},
-            onResultTapped: () {},
-            onGroupSelected: (_) {},
-            onKeyTapped: (_) {},
-            onUnitSystemChanged: (_) {},
-          ),
-          theme: CoreTheme.light(),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      await expectMeetsTapTargetAndLabelGuidelines(
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
+        (_) => CoreKeyboard(
+          currentGroup: const GroupNameType(label: "Basic Geometry"),
+          allGroups: testGroups,
+          onDigitPressed: (_) {},
+          onUnitSelected: (_) {},
+          onOperatorPressed: (_) {},
+          onControlAction: (_) {},
+          onResultTapped: () {},
+          onGroupSelected: (_) {},
+          onKeyTapped: (_) {},
+          onUnitSystemChanged: (_) {},
+        ),
         find.byType(CoreDigitInput).first,
       );
     });

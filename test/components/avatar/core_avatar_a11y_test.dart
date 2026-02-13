@@ -9,22 +9,27 @@ void main() {
     testWidgets('exposes semantic label', (tester) async {
       await setupA11yTest(tester);
 
-      final colors = AppColorsExtension.create();
-      final avatar = CoreAvatar(
-        radius: 24,
-        backgroundColor: colors.iconBlue,
-        semanticLabel: 'Avatar for John Doe',
-      );
-
       await tester.pumpWidget(
-        buildTestApp(avatar),
+        buildTestApp(
+          CoreAvatar(
+            radius: 24,
+            backgroundColor: CoreTheme.light().coreColors.iconBlue,
+            semanticLabel: 'Avatar for John Doe',
+          ),
+          theme: CoreTheme.light(),
+        ),
       );
 
       final semantics = tester.getSemantics(find.byType(CoreAvatar));
       expect(semantics.label, 'Avatar for John Doe');
 
-      await expectMeetsTapTargetAndLabelGuidelines(
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
+        (theme) => CoreAvatar(
+          radius: 24,
+          backgroundColor: theme.coreColors.iconBlue,
+          semanticLabel: 'Avatar for John Doe',
+        ),
         find.byType(CoreAvatar),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
