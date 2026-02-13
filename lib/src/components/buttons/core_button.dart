@@ -171,7 +171,10 @@ class _CoreButtonState extends State<CoreButton> {
         style: typography.bodyLargeSemiBold.copyWith(
           color:
               _getContentColor(isEnabled: isEnabled, variant: widget.variant, colors: colors),
-        ));
+        ),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+    );
     final icon = widget.icon;
     return Row(
       mainAxisAlignment: (widget.centerAlign && !widget.spaceOut)
@@ -185,7 +188,13 @@ class _CoreButtonState extends State<CoreButton> {
           const SizedBox(width: 8),
         if (widget.trailing && widget.spaceOut)
           const SizedBox(width: 24, height: 24),
-        textWidget,
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: textWidget,
+          ),
+        ),
         if (widget.trailing && widget.icon != null && !widget.spaceOut)
           const SizedBox(width: 8),
         if (widget.trailing && icon != null) icon,
