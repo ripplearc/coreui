@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+import '../../utils/a11y_guidelines.dart';
 
 void main() {
   setUpAll(() async {
@@ -207,4 +208,22 @@ void main() {
       await secondaryGesture.up();
     },
   );
+
+  testWidgets('meets a11y tap target and label guidelines', (tester) async {
+    await setupA11yTest(tester);
+
+    await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+      tester,
+      (_) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: CoreButton(
+          label: 'Primary',
+          onPressed: () {},
+          variant: CoreButtonVariant.primary,
+          size: CoreButtonSize.small,
+        ),
+      ),
+      find.byType(CoreButton),
+    );
+  });
 }

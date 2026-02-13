@@ -500,8 +500,8 @@ class _FunctionKeyStrip extends StatelessWidget {
                   onPressed: onViewAll,
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    minimumSize: const Size(48, 48),
+                    tapTargetSize: MaterialTapTargetSize.padded,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

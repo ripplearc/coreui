@@ -238,22 +238,30 @@ class Toast extends StatelessWidget {
               child: Semantics(
                 button: true,
                 label: closeLabel,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      closeLabel,
-                      style: typography.bodyMediumSemiBold.copyWith(
-                        color: colors.textLink,
-                      ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: CoreSpacing.space12,
+                    minHeight: CoreSpacing.space12,
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          closeLabel,
+                          style: typography.bodyMediumSemiBold.copyWith(
+                            color: colors.textLink,
+                          ),
+                        ),
+                        const SizedBox(width: CoreSpacing.space2),
+                        CoreIconWidget(
+                          icon: CoreIcons.close,
+                          size: 24,
+                          color: colors.iconDark,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: CoreSpacing.space2),
-                    CoreIconWidget(
-                      icon: CoreIcons.close,
-                      size: 24,
-                      color: colors.iconDark,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -74,7 +74,7 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(350, 500));
+    await tester.binding.setSurfaceSize(const Size(350, 550));
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
@@ -85,7 +85,7 @@ void main() {
       matchesGoldenFile('goldens/core_keyboard_full_ui_small.png'),
     );
 
-    await tester.binding.setSurfaceSize(const Size(800, 600));
+    await tester.binding.setSurfaceSize(const Size(800, 650));
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
     await tester.awaitImages();
