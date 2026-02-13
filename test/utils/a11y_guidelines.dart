@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+import 'test_harness.dart';
 
 const Size kDefaultA11yScreenSize = Size(375, 667);
+
+/// Themes used for accessibility tests. Includes both light and dark so color
+/// contrast and tap target guidelines are verified in both modes.
+///
+/// [CoreTheme.dark] is a placeholder until fully implemented; adding it now
+/// makes it easy to swap in the real dark theme later and verify compliance.
+final List<ThemeData> kA11yTestThemes = [
+  CoreTheme.light(),
+  CoreTheme.dark(),
+];
 
 /// Configures the test surface size for accessibility tests and registers
 /// tear-down to restore the original surface size after the test.
@@ -63,5 +75,43 @@ Future<void> expectMeetsTapTargetAndLabelGuidelines(
     }
   } finally {
     semanticsHandle.dispose();
+  }
+}
+
+/// Asserts that the widget meets accessibility guidelines in both light and
+/// dark themes.
+///
+/// Use this when testing components that render text or have theme-dependent
+/// colors, so contrast and tap target guidelines are verified in both modes.
+/// [buildWidget] is called with each theme to build the widget under test.
+/// Call [setupA11yTest] before this helper.
+///
+/// Example:
+/// ```dart
+/// await setupA11yTest(tester);
+/// await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+///   tester,
+///   (theme) => Toast.error(description: 'Error', closeLabel: 'Close'),
+///   find.byKey(const Key('toast_close_button')),
+/// );
+/// ```
+Future<void> expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+  WidgetTester tester,
+  Widget Function(ThemeData theme) buildWidget,
+  Finder targetFinder, {
+  bool checkTapTargetSize = true,
+  bool checkLabeledTapTarget = true,
+  bool checkTextContrast = true,
+}) async {
+  for (final theme in kA11yTestThemes) {
+    await tester.pumpWidget(buildTestApp(buildWidget(theme), theme: theme));
+    await tester.pumpAndSettle();
+    await expectMeetsTapTargetAndLabelGuidelines(
+      tester,
+      targetFinder,
+      checkTapTargetSize: checkTapTargetSize,
+      checkLabeledTapTarget: checkLabeledTapTarget,
+      checkTextContrast: checkTextContrast,
+    );
   }
 }

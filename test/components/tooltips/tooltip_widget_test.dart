@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
-import '../../utils/test_harness.dart';
 
 void main() {
   group('CoreTooltip Widget Tests', () {
@@ -235,24 +234,16 @@ void main() {
     testWidgets('meets accessibility guidelines', (WidgetTester tester) async {
       await setupA11yTest(tester);
 
-      await tester.pumpWidget(
-        buildTestApp(
-          const CoreTooltip(
-            message: testMessage,
-            child: testChildA11y,
-          ),
-          theme: CoreTheme.light(),
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreTooltip(
+          message: testMessage,
+          child: testChildA11y,
         ),
+        find.byType(CoreTooltip),
       );
-
       final semantics = tester.getSemantics(find.byType(CoreTooltip));
       expect(semantics.label, 'Tooltip: $testMessage');
-
-      await expectMeetsTapTargetAndLabelGuidelines(
-        tester,
-        find.byType(CoreTooltip),
-        checkTextContrast: false,
-      );
     });
   });
 }
