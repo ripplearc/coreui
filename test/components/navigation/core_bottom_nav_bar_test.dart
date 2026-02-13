@@ -118,10 +118,14 @@ void main() {
       await setupA11yTest(tester);
       await _mount(tester, selectedIndex: 0);
 
-      await tester.pumpAndSettle();
-
-      await expectMeetsTapTargetAndLabelGuidelines(
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
+        (theme) => CoreBottomNavBar(
+          tabs: _tabs,
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+          onActionButtonPressed: null,
+        ),
         find.byType(CoreBottomNavBar),
       );
     });

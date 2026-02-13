@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
-import '../../utils/test_harness.dart';
 
 void main() {
   group('Toast Widget Tests', () {

@@ -354,36 +354,38 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                     ? colors.iconDark
                     : colors.iconGrayMid,
               ),
-              AnimatedSwitcher(
-                duration: widget.animationDuration,
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeOut,
-                layoutBuilder: (currentChild, previousChildren) => Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    for (final prev in previousChildren)
-                      Opacity(opacity: 0.2, child: prev),
-                    if (currentChild != null) currentChild,
-                  ],
-                ),
-                transitionBuilder: (child, anim) =>
-                    FadeTransition(opacity: anim, child: child),
-                child: isActive
-                    ? Padding(
-                        key: ValueKey('active-$index'),
-                        padding: EdgeInsets.only(left: layout.iconLabelGap),
-                        child: Text(
-                          widget.tabs[index].label,
-                          maxLines: 1,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          style: typography.bodySmallMedium.copyWith(
-                            fontSize: layout.labelFontSize,
-                            color: colors.iconDark,
+              Flexible(
+                child: AnimatedSwitcher(
+                  duration: widget.animationDuration,
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeOut,
+                  layoutBuilder: (currentChild, previousChildren) => Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      for (final prev in previousChildren)
+                        Opacity(opacity: 0.2, child: prev),
+                      if (currentChild != null) currentChild,
+                    ],
+                  ),
+                  transitionBuilder: (child, anim) =>
+                      FadeTransition(opacity: anim, child: child),
+                  child: isActive
+                      ? Padding(
+                          key: ValueKey('active-$index'),
+                          padding: EdgeInsets.only(left: layout.iconLabelGap),
+                          child: Text(
+                            widget.tabs[index].label,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: typography.bodySmallMedium.copyWith(
+                              fontSize: layout.labelFontSize,
+                              color: colors.iconDark,
+                            ),
                           ),
-                        ),
-                      )
-                    : const SizedBox.shrink(key: ValueKey('inactive')),
+                        )
+                      : const SizedBox.shrink(key: ValueKey('inactive')),
+                ),
               ),
             ],
           ),
