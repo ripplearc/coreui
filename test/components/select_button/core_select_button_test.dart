@@ -95,7 +95,7 @@ void main() {
     });
 
     testWidgets('handles multiple tab selections', (WidgetTester tester) async {
-      int? selectedIndex;
+      int selectedIndex = 0;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -105,7 +105,7 @@ void main() {
               builder: (context, setState) {
                 return CoreSelectButton(
                   tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-                  initialIndex: selectedIndex ?? 0,
+                  initialIndex: selectedIndex,
                   onChanged: (index) {
                     setState(() {
                       selectedIndex = index;
