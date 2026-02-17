@@ -33,28 +33,10 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// * [AppColorsExtension.tabsHighlight], which defines the selected tab color
 /// * [CoreShadows], which provides the shadow styling
 class CoreSelectButton extends StatelessWidget {
-  /// List of tab labels to display.
-  ///
-  /// Each string in the list represents a tab that users can select.
-  /// The order of strings determines the order of tabs from left to right.
   final List<String> tabs;
-
-  /// The index of the initially selected tab (0-based).
-  ///
-  /// Must be a valid index within the [tabs] list (0 to tabs.length - 1).
   final int initialIndex;
-
-  /// Callback function triggered when a tab is selected.
-  ///
-  /// The callback receives the index of the newly selected tab.
-  /// If null, taps on tabs will still show visual feedback but
-  /// won't trigger any action.
   final ValueChanged<int>? onChanged;
 
-  /// Creates a CoreSelectButton widget.
-  ///
-  /// The [tabs] list must not be empty, and [initialIndex] must be
-  /// a valid index within the [tabs] list.
   const CoreSelectButton({
     super.key,
     required this.tabs,
@@ -78,7 +60,7 @@ class CoreSelectButton extends StatelessWidget {
         child: Row(
           children: List.generate(
             tabs.length * 2 - 1,
-            (index) {
+                (index) {
               if (index.isOdd) {
                 return const SizedBox(width: CoreSpacing.space2);
               }
@@ -96,20 +78,13 @@ class CoreSelectButton extends StatelessWidget {
     );
   }
 
-  /// Builds an individual tab widget with proper styling and interaction.
-  ///
-  /// The tab displays the [label] text and applies different styling
-  /// based on the [selected] state:
-  /// - Selected: highlighted background with shadow and bold text
-  /// - Unselected: transparent background with regular text
-  ///
-  /// The [onTap] callback is triggered when the tab is pressed.
+  // Builds an individual tab widget with proper styling and interaction.
   Widget _buildTab(
-    BuildContext context, {
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
+      BuildContext context, {
+        required String label,
+        required bool selected,
+        required VoidCallback onTap,
+      }) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
@@ -130,7 +105,7 @@ class CoreSelectButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected
                 ? colors.tabsHighlight
-                : AppColorsExtension.of(context).transparent,
+                : colors.transparent,
             borderRadius: BorderRadius.circular(CoreSpacing.space12),
             boxShadow: selected ? CoreShadows.medium : null,
           ),
@@ -138,11 +113,11 @@ class CoreSelectButton extends StatelessWidget {
             label,
             style: selected
                 ? typography.bodyMediumSemiBold.copyWith(
-                    color: colors.textHeadline,
-                  )
+              color: colors.textHeadline,
+            )
                 : typography.bodyMediumRegular.copyWith(
-                    color: colors.textBody,
-                  ),
+              color: colors.textBody,
+            ),
           ),
         ),
       ),
