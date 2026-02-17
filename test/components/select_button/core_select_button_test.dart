@@ -50,12 +50,12 @@ void main() {
       expect(tab2Finder, findsOneWidget);
 
       final tab2Widget = tester.widget<Text>(tab2Finder);
-      expect(tab2Widget.style?.fontWeight, equals(FontWeight.w600));
+      expect(tab2Widget.style!.fontWeight, equals(FontWeight.w600));
     });
 
     testWidgets('calls onChanged when tab is tapped',
         (WidgetTester tester) async {
-      int? selectedIndex;
+      int selectedIndex = 0;
 
       await tester.pumpWidget(
         MaterialApp(
