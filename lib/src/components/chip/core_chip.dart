@@ -97,7 +97,7 @@ class CoreChip extends StatelessWidget {
 
     final border = BorderSide(color: borderColor, width: 1.3);
     final shadow = isLarge ? CoreShadows.medium : null;
-
+    final CoreIconData? chipIcon = icon;
     final padding = switch (size) {
       CoreChipSize.small =>
         const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
@@ -122,9 +122,9 @@ class CoreChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[
+            if (chipIcon != null) ...[
               CoreIconWidget(
-                icon: icon!,
+                icon: chipIcon, // now non-nullable
                 size: CoreSpacing.space5,
                 color: colors.outlineFocus,
               ),

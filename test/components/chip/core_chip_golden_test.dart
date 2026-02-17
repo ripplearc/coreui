@@ -35,8 +35,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Small - Default',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Small - Default', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Small Chip',
@@ -49,8 +48,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Small - With Icon',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Small - With Icon', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Small Icon',
@@ -64,8 +62,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Medium - Default',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Medium - Default', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Medium Chip',
@@ -78,8 +75,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Medium - With Icon',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Medium - With Icon', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Medium Icon',
@@ -93,8 +89,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Medium - Selected',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Medium - Selected', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Selected',
@@ -107,8 +102,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Large - Default',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Large - Default', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Large Chip',
@@ -121,8 +115,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Large - With Icon',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Large - With Icon', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Large Icon',
@@ -136,8 +129,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Large - Selected',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text('Large - Selected', style: typography.bodySmallRegular),
           const SizedBox(height: 8),
           CoreChip(
             label: 'Selected',
