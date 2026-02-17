@@ -128,7 +128,9 @@ class CoreSelectButton extends StatelessWidget {
             vertical: CoreSpacing.space2,
           ),
           decoration: BoxDecoration(
-            color: selected ? colors.tabsHighlight : Colors.transparent,
+            color: selected
+                ? colors.tabsHighlight
+                : AppColorsExtension.of(context).transparent,
             borderRadius: BorderRadius.circular(CoreSpacing.space12),
             boxShadow: selected ? CoreShadows.medium : null,
           ),
