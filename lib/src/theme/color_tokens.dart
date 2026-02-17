@@ -98,7 +98,7 @@ class CoreTextColors {
   static const Color body = _CoreColorPalette.gray600;
   static const Color disable = _CoreColorPalette.gray400;
   static const Color inverse = _CoreColorPalette.gray25;
-  static const Color link = _CoreColorPalette.orient600;
+  static const Color link = _CoreColorPalette.orient800;
   static const Color info = _CoreColorPalette.blue600;
   static const Color warning = _CoreColorPalette.orange600;
   static const Color error = _CoreColorPalette.red600;

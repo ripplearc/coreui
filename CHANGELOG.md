@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.6] - Accessibility improvements
+
+### ✨ Features
+
+- **Accessibility**
+  - Added accessibility tests for all interactive components (CoreAvatar, CoreLetterAvatar, CoreKeyboard, CoreButton, CoreBottomNavBar, CoreLoadingIndicator)
+  - Tests verify tap target size, semantic labels, and text contrast guidelines
+
+### 🔧 Fixes
+
+- **Design Tokens**
+  - Updated text link color from orient600 to orient800 to match UI design specification
+
+- **Accessibility**
+  - Fixed CoreButton text overflow with ellipsis and FittedBox scaling for long labels
+  - Fixed accessibility-related contrast and layout issues across components
+
 ## [0.3.5] - Code quality improvements
 
 ### ✨ Features
