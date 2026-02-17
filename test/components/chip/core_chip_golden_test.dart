@@ -145,7 +145,7 @@ void main() {
         extensions: [colors, typography],
       ),
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.backgroundBlueLight,
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Wrap(
