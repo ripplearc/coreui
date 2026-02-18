@@ -146,17 +146,20 @@ void main() {
         ),
       );
 
-      // The outermost Container should have a BoxDecoration with the expected
-      // border radius from the design token (CoreSpacing.space12 = 12px).
       final outerContainer = tester.widget<Container>(
         find.descendant(
           of: find.byType(CoreSelectButton),
           matching: find.byType(Container).first,
         ),
       );
-      final decoration = outerContainer.decoration as BoxDecoration?;
+
+      // Ensure decoration exists and is correct type
+      expect(outerContainer.decoration, isA<BoxDecoration>());
+
+      final decoration = outerContainer.decoration as BoxDecoration;
+
       expect(
-        decoration?.borderRadius,
+        decoration.borderRadius,
         equals(BorderRadius.circular(CoreSpacing.space12)),
       );
     });
@@ -208,7 +211,9 @@ void main() {
         find.descendant(
           of: find.byType(CoreSelectButton),
           matching: find.byWidgetPredicate(
-            (w) => w is SingleChildScrollView && w.scrollDirection == Axis.horizontal,
+            (w) =>
+                w is SingleChildScrollView &&
+                w.scrollDirection == Axis.horizontal,
           ),
         ),
         findsOneWidget,
