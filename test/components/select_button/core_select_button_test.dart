@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
 
 void main() {
   setUpAll(() async {
@@ -14,9 +16,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreSelectButton(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 0,
             ),
           ),
@@ -32,9 +34,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreSelectButton(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 1,
             ),
           ),
@@ -48,12 +50,12 @@ void main() {
       expect(tab2Finder, findsOneWidget);
 
       final tab2Widget = tester.widget<Text>(tab2Finder);
-      expect(tab2Widget.style?.fontWeight, equals(FontWeight.w600));
+      expect(tab2Widget.style!.fontWeight, equals(FontWeight.w600));
     });
 
     testWidgets('calls onChanged when tab is tapped',
         (WidgetTester tester) async {
-      int? selectedIndex;
+      int selectedIndex = 0;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -80,9 +82,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreSelectButton(
-              tabs: const ['Only Tab'],
+              tabs: ['Only Tab'],
               initialIndex: 0,
             ),
           ),
@@ -93,7 +95,7 @@ void main() {
     });
 
     testWidgets('handles multiple tab selections', (WidgetTester tester) async {
-      int? selectedIndex;
+      int selectedIndex = 0;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -103,7 +105,7 @@ void main() {
               builder: (context, setState) {
                 return CoreSelectButton(
                   tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-                  initialIndex: selectedIndex ?? 0,
+                  initialIndex: selectedIndex,
                   onChanged: (index) {
                     setState(() {
                       selectedIndex = index;
@@ -133,9 +135,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreSelectButton(
-              tabs: const ['Tab 1', 'Tab 2'],
+              tabs: ['Tab 1', 'Tab 2'],
               initialIndex: 0,
             ),
           ),
@@ -152,9 +154,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreSelectButton(
-              tabs: const ['Tab 1', 'Tab 2'],
+              tabs: ['Tab 1', 'Tab 2'],
               initialIndex: 0,
               onChanged: null,
             ),
@@ -187,6 +189,35 @@ void main() {
       for (int i = 0; i < tabs.length; i++) {
         expect(find.text(tabs[i]), findsOneWidget);
       }
+    });
+  });
+
+  group('CoreSelectButton – accessibility', () {
+    const tabs = ['Tab 1', 'Tab 2', 'Tab 3'];
+
+    testWidgets('exposes semantic label', (tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          const CoreSelectButton(
+            tabs: tabs,
+            initialIndex: 0,
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+      final semantics = tester.getSemantics(find.text('Tab 1'));
+      expect(semantics.label, contains('Tab 1'));
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreSelectButton(
+          tabs: tabs,
+          initialIndex: 0,
+        ),
+        find.text('Tab 1'),
+      );
     });
   });
 }
