@@ -60,12 +60,10 @@ class CoreChip extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(
-    BuildContext context,
-    bool selected,
-    bool highlight,
-    bool pressed,
-  ) {
+  Widget _buildChip(BuildContext context,
+      bool selected,
+      bool highlight,
+      bool pressed,) {
     final bool isLarge = size == CoreChipSize.large;
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
@@ -97,10 +95,11 @@ class CoreChip extends StatelessWidget {
 
     final padding = switch (size) {
       CoreChipSize.small =>
-        const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
+      const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
       CoreChipSize.medium =>
-        const EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: 6),
-      CoreChipSize.large => const EdgeInsets.symmetric(
+      const EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: 6),
+      CoreChipSize.large =>
+      const EdgeInsets.symmetric(
           horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3),
     };
 
@@ -116,9 +115,9 @@ class CoreChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
+          if (icon case final resolvedIcon?) ...[
             CoreIconWidget(
-              icon: icon!,
+              icon: resolvedIcon,
               size: CoreSpacing.space5,
               color: colors.outlineFocus,
             ),
