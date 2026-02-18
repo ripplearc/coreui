@@ -66,7 +66,7 @@ void main() {
 
     testWidgets('calls onChanged callback when tab is tapped',
         (WidgetTester tester) async {
-      int? selectedIndex;
+      int selectedIndex = 0;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -108,12 +108,21 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final tabBar = tester.widget<TabBar>(find.byType(TabBar));
-      final controller = tabBar.controller ?? DefaultTabController.of(
-        tester.element(find.byType(TabBar)),
-      );
+      final tabBarFinder = find.byType(TabBar);
+      expect(tabBarFinder, findsOneWidget);
 
-      expect(controller.index, 1);
+      final tabBar = tester.widget<TabBar>(tabBarFinder);
+
+      TabController? controller = tabBar.controller;
+
+      if (controller == null) {
+        controller = DefaultTabController.of(
+          tester.element(tabBarFinder),
+        );
+      }
+
+      expect(controller, isNotNull);
+      expect(controller!.index, equals(1));
     });
 
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
