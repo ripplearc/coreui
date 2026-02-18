@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -19,7 +21,7 @@ void main() {
           home: const Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
@@ -30,27 +32,26 @@ void main() {
       expect(find.text('Tab 3'), findsOneWidget);
     });
 
-    testWidgets('highlights initial selected tab', (WidgetTester tester) async {
+    testWidgets('highlights selected tab via semantics',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 1,
+              selectedIndex: 1,
             ),
           ),
         ),
       );
 
-      final tab1Finder = find.text('Tab 1');
-      final tab2Finder = find.text('Tab 2');
+      // Verify selection state via Semantics rather than internal style details.
+      final tab1Semantics = tester.getSemantics(find.text('Tab 1'));
+      final tab2Semantics = tester.getSemantics(find.text('Tab 2'));
 
-      expect(tab1Finder, findsOneWidget);
-      expect(tab2Finder, findsOneWidget);
-
-      final tab2Widget = tester.widget<Text>(tab2Finder);
-      expect(tab2Widget.style!.fontWeight, equals(FontWeight.w600));
+      expect(tab1Semantics.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(tab2Semantics.hasFlag(SemanticsFlag.isSelected), isTrue);
     });
 
     testWidgets('calls onChanged when tab is tapped',
@@ -63,7 +64,7 @@ void main() {
           home: Scaffold(
             body: CoreSelectButton(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 0,
+              selectedIndex: 0,
               onChanged: (index) {
                 selectedIndex = index;
               },
@@ -85,7 +86,7 @@ void main() {
           home: const Scaffold(
             body: CoreSelectButton(
               tabs: ['Only Tab'],
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
@@ -105,7 +106,7 @@ void main() {
               builder: (context, setState) {
                 return CoreSelectButton(
                   tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-                  initialIndex: selectedIndex,
+                  selectedIndex: selectedIndex,
                   onChanged: (index) {
                     setState(() {
                       selectedIndex = index;
@@ -131,23 +132,33 @@ void main() {
       expect(selectedIndex, equals(0));
     });
 
-    testWidgets('renders with correct styling', (WidgetTester tester) async {
+    testWidgets('outer container uses design tokens for decoration',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
       );
 
-      final containerFinder = find.byType(Container);
-      expect(containerFinder, findsWidgets);
-
-      expect(find.byType(CoreSelectButton), findsOneWidget);
+      // The outermost Container should have a BoxDecoration with the expected
+      // border radius from the design token (CoreSpacing.space12 = 12px).
+      final outerContainer = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(CoreSelectButton),
+          matching: find.byType(Container).first,
+        ),
+      );
+      final decoration = outerContainer.decoration as BoxDecoration?;
+      expect(
+        decoration?.borderRadius,
+        equals(BorderRadius.circular(CoreSpacing.space12)),
+      );
     });
 
     testWidgets('handles null onChanged callback', (WidgetTester tester) async {
@@ -157,20 +168,21 @@ void main() {
           home: const Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
-              initialIndex: 0,
+              selectedIndex: 0,
               onChanged: null,
             ),
           ),
         ),
       );
 
+      // Tapping should not throw even without a callback.
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
 
       expect(find.byType(CoreSelectButton), findsOneWidget);
     });
 
-    testWidgets('scrolls horizontally with many tabs',
+    testWidgets('renders all tabs when many tabs provided',
         (WidgetTester tester) async {
       final tabs = List.generate(10, (index) => 'Tab ${index + 1}');
 
@@ -180,15 +192,27 @@ void main() {
           home: Scaffold(
             body: CoreSelectButton(
               tabs: tabs,
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
       );
 
+      // All tabs should be present in the widget tree (inside SingleChildScrollView).
       for (int i = 0; i < tabs.length; i++) {
         expect(find.text(tabs[i]), findsOneWidget);
       }
+
+      // Verify the horizontal scroll view is present.
+      expect(
+        find.descendant(
+          of: find.byType(CoreSelectButton),
+          matching: find.byWidgetPredicate(
+            (w) => w is SingleChildScrollView && w.scrollDirection == Axis.horizontal,
+          ),
+        ),
+        findsOneWidget,
+      );
     });
   });
 
@@ -202,7 +226,7 @@ void main() {
         buildTestApp(
           const CoreSelectButton(
             tabs: tabs,
-            initialIndex: 0,
+            selectedIndex: 0,
           ),
           theme: CoreTheme.light(),
         ),
@@ -214,7 +238,7 @@ void main() {
         tester,
         (theme) => const CoreSelectButton(
           tabs: tabs,
-          initialIndex: 0,
+          selectedIndex: 0,
         ),
         find.text('Tab 1'),
       );

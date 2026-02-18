@@ -3,26 +3,30 @@
 A customizable tab selection component that displays multiple options in a horizontal layout with smooth animations. The
 selected tab is highlighted with a distinct background color and shadow effect.
 
+This is a **controlled** widget — the parent is responsible for tracking the selected index and passing it via
+`selectedIndex`. When the user taps a tab, `onChanged` is called with the new index, and the parent should update
+`selectedIndex` accordingly.
+
 ## Usage
 
 ```dart
 CoreSelectButton(
   tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-  initialIndex: 0,
+  selectedIndex: 0,
   onChanged: (index) {
-    print('Selected tab: $index');
+    setState(() => selectedIndex = index);
   },
 )
 ```
 
 ## Properties
 
-| Property       | Type                 | Required | Description                                        |
-|----------------|----------------------|----------|----------------------------------------------------|
-| `tabs`         | `List<String>`       | Yes      | List of tab labels to display                      |
-| `initialIndex` | `int`                | Yes      | The index of the initially selected tab (0-based)  |
-| `onChanged`    | `ValueChanged<int>?` | No       | Callback function triggered when a tab is selected |
-| `key`          | `Key?`               | No       | Optional widget key for testing and identification |
+| Property        | Type                 | Required | Description                                                              |
+|-----------------|----------------------|----------|--------------------------------------------------------------------------|
+| `tabs`          | `List<String>`       | Yes      | List of tab labels to display                                            |
+| `selectedIndex` | `int`                | Yes      | The index of the currently selected tab (0-based). Must be updated by the parent in response to `onChanged`. |
+| `onChanged`     | `ValueChanged<int>?` | No       | Callback function triggered when a tab is tapped                         |
+| `key`           | `Key?`               | No       | Optional widget key for testing and identification                       |
 
 ## Features
 
@@ -62,7 +66,7 @@ capability through `SingleChildScrollView`.
 ```dart
 CoreSelectButton(
   tabs: ['All', 'Active', 'Archived'],
-  initialIndex: 0,
+  selectedIndex: 0,
   onChanged: (index) {
     setState(() {
       selectedIndex = index;
@@ -83,7 +87,7 @@ CoreSelectButton(
     'Analytics',
     'Reports',
   ],
-  initialIndex: 0,
+  selectedIndex: 0,
   onChanged: (index) {
     // Handle tab change
   },
@@ -95,14 +99,14 @@ CoreSelectButton(
 ```dart
 CoreSelectButton(
   tabs: ['Option 1', 'Option 2'],
-  initialIndex: 1,
+  selectedIndex: 1,
   // onChanged is optional
 )
 ```
 
 ## Behavior
 
-- **Initial State**: The tab at `initialIndex` is displayed with highlight styling
+- **Selected State**: The tab at `selectedIndex` is displayed with highlight styling
 - **Tab Tap**: When a tab is tapped, the `onChanged` callback is triggered with the tab's index
 - **Animation**: Tab selection changes are animated smoothly over 200ms
 - **Horizontal Scroll**: If tabs exceed the available width, the component scrolls horizontally

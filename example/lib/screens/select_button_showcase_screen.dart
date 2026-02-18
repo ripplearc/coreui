@@ -14,6 +14,7 @@ class _SelectButtonShowcaseScreenState
   int _selectedIndex = 0;
   int _selectedIndex2 = 1;
   int _selectedIndex3 = 0;
+  int _selectedIndex4 = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _SelectButtonShowcaseScreenState
             const SizedBox(height: 16),
             CoreSelectButton(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: _selectedIndex,
+              selectedIndex: _selectedIndex,
               onChanged: (index) {
                 setState(() {
                   _selectedIndex = index;
@@ -57,7 +58,7 @@ class _SelectButtonShowcaseScreenState
             const SizedBox(height: 16),
             CoreSelectButton(
               tabs: const ['Active', 'Inactive'],
-              initialIndex: _selectedIndex2,
+              selectedIndex: _selectedIndex2,
               onChanged: (index) {
                 setState(() {
                   _selectedIndex2 = index;
@@ -82,7 +83,7 @@ class _SelectButtonShowcaseScreenState
                 'Settings',
                 'Advanced',
               ],
-              initialIndex: _selectedIndex3,
+              selectedIndex: _selectedIndex3,
               onChanged: (index) {
                 setState(() {
                   _selectedIndex3 = index;
@@ -107,15 +108,15 @@ class _SelectButtonShowcaseScreenState
             const SizedBox(height: 16),
             CoreSelectButton(
               tabs: const ['Profile', 'Settings', 'Notifications'],
-              initialIndex: _selectedIndex,
+              selectedIndex: _selectedIndex4,
               onChanged: (index) {
                 setState(() {
-                  _selectedIndex = index;
+                  _selectedIndex4 = index;
                 });
               },
             ),
             const SizedBox(height: 24),
-            _buildContentForTab(_selectedIndex),
+            _buildContentForTab(_selectedIndex4),
           ],
         ),
       ),

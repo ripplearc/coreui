@@ -33,7 +33,7 @@ void main() {
         'Default - Tab 1 Selected',
         CoreSelectButton(
           tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-          initialIndex: 0,
+          selectedIndex: 0,
           onChanged: (_) {},
         ),
       ),
@@ -41,7 +41,7 @@ void main() {
         'Tab 2 Selected',
         CoreSelectButton(
           tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-          initialIndex: 1,
+          selectedIndex: 1,
           onChanged: (_) {},
         ),
       ),
@@ -49,7 +49,7 @@ void main() {
         'Tab 3 Selected',
         CoreSelectButton(
           tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
-          initialIndex: 2,
+          selectedIndex: 2,
           onChanged: (_) {},
         ),
       ),
@@ -64,7 +64,7 @@ void main() {
             'Tab',
             'Another'
           ],
-          initialIndex: 0,
+          selectedIndex: 0,
           onChanged: (_) {},
         ),
       ),
