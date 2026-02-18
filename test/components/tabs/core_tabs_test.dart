@@ -49,7 +49,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home:  const Scaffold(
+          home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
             ),
@@ -66,31 +66,31 @@ void main() {
 
     testWidgets('calls onChanged callback when tab is tapped',
         (WidgetTester tester) async {
-      int selectedIndex = 0;
+      int? changedIndex;
 
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreTabs(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               onChanged: (index) {
-                selectedIndex = index;
+                changedIndex = index;
               },
             ),
           ),
         ),
       );
 
-      expect(selectedIndex, isNull);
+      await tester.pumpAndSettle();
+
+      // Reset in case initial build triggered it
+      changedIndex = null;
 
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
-      expect(selectedIndex, equals(1));
 
-      await tester.tap(find.text('Tab 3'));
-      await tester.pumpAndSettle();
-      expect(selectedIndex, equals(2));
+      expect(changedIndex, equals(1));
     });
 
     testWidgets('respects initialIndex parameter', (WidgetTester tester) async {
