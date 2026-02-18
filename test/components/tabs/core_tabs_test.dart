@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
+
 void main() {
   group('CoreTabs Widget Tests', () {
     testWidgets('renders tabs correctly with initial index',
@@ -9,20 +12,17 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreTabs(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 0,
             ),
           ),
         ),
       );
 
-      final tabsFinder = find.byType(CoreTabs);
-      expect(tabsFinder, findsOneWidget);
-
-      final tabBarFinder = find.byType(TabBar);
-      expect(tabBarFinder, findsOneWidget);
+      expect(find.byType(CoreTabs), findsOneWidget);
+      expect(find.byType(TabBar), findsOneWidget);
 
       expect(find.text('Tab 1'), findsOneWidget);
       expect(find.text('Tab 2'), findsOneWidget);
@@ -33,9 +33,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreTabs(
-              tabs: const ['Tab 1', 'Tab 2'],
+              tabs: ['Tab 1', 'Tab 2'],
             ),
           ),
         ),
@@ -49,9 +49,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home:  const Scaffold(
             body: CoreTabs(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
             ),
           ),
         ),
@@ -86,12 +86,10 @@ void main() {
 
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
-
       expect(selectedIndex, equals(1));
 
       await tester.tap(find.text('Tab 3'));
       await tester.pumpAndSettle();
-
       expect(selectedIndex, equals(2));
     });
 
@@ -99,9 +97,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: Scaffold(
+          home: const Scaffold(
             body: CoreTabs(
-              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               initialIndex: 1,
             ),
           ),
@@ -110,8 +108,12 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final tabBar = find.byType(TabBar);
-      expect(tabBar, findsOneWidget);
+      final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+      final controller = tabBar.controller ?? DefaultTabController.of(
+        tester.element(find.byType(TabBar)),
+      );
+
+      expect(controller.index, 1);
     });
 
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
@@ -125,9 +127,7 @@ void main() {
               builder: (context, setState) {
                 return Column(
                   children: [
-                    CoreTabs(
-                      tabs: tabs,
-                    ),
+                    CoreTabs(tabs: tabs),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -156,6 +156,39 @@ void main() {
       expect(find.text('Tab C'), findsOneWidget);
       expect(find.text('Tab 1'), findsNothing);
       expect(find.text('Tab 2'), findsNothing);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Accessibility Tests
+  // ---------------------------------------------------------------------------
+
+  group('CoreTabs – accessibility', () {
+    const tabs = ['Home', 'Profile', 'Settings'];
+
+    testWidgets('exposes semantic label', (tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          const CoreTabs(
+            tabs: tabs,
+            initialIndex: 0,
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+      final semantics = tester.getSemantics(find.text('Home'));
+      expect(semantics.label, contains('Home'));
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreTabs(
+          tabs: tabs,
+          initialIndex: 0,
+        ),
+        find.text('Home'),
+      );
     });
   });
 }
