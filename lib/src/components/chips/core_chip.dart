@@ -25,45 +25,50 @@ class CoreChip extends StatelessWidget {
     final ValueNotifier<bool> highlight = ValueNotifier(false);
     final ValueNotifier<bool> pressed = ValueNotifier(false);
 
-    return GestureDetector(
-      onTapDown: (_) {
-        highlight.value = true;
-        pressed.value = true;
-      },
-      onTapUp: (_) {
-        pressed.value = false;
-        highlight.value = false;
-        selected.value = !selected.value;
-        onTap?.call();
-      },
-      onTapCancel: () {
-        pressed.value = false;
-        highlight.value = false;
-      },
-      child: ValueListenableBuilder<bool>(
-        valueListenable: selected,
-        builder: (_, isSelected, __) {
-          return ValueListenableBuilder<bool>(
-            valueListenable: highlight,
-            builder: (_, isHighlight, __) {
+    return Semantics(
+      label: label,
+      button: true,
+      selected: selected.value,
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          onTapDown: (_) {
+            highlight.value = true;
+            pressed.value = true;
+          },
+          onTapUp: (_) {
+            pressed.value = false;
+            highlight.value = false;
+            selected.value = !selected.value;
+            onTap?.call();
+          },
+          onTapCancel: () {
+            pressed.value = false;
+            highlight.value = false;
+          },
+          child: ValueListenableBuilder<bool>(
+            valueListenable: selected,
+            builder: (_, isSelected, __) {
               return ValueListenableBuilder<bool>(
-                valueListenable: pressed,
-                builder: (_, isPressed, __) {
-                  return _buildChip(
-                      context, isSelected, isHighlight, isPressed);
+                valueListenable: highlight,
+                builder: (_, isHighlight, __) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: pressed,
+                    builder: (_, isPressed, __) {
+                      return _buildChip(
+                          context, isSelected, isHighlight, isPressed);
+                    },
+                  );
                 },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildChip(BuildContext context,
-      bool selected,
-      bool highlight,
-      bool pressed,) {
+  Widget _buildChip(
+      BuildContext context, bool selected, bool highlight, bool pressed) {
     final bool isLarge = size == CoreChipSize.large;
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
@@ -92,48 +97,51 @@ class CoreChip extends StatelessWidget {
 
     final border = BorderSide(color: borderColor, width: 1.3);
     final shadow = isLarge ? CoreShadows.medium : null;
-
+    final CoreIconData? chipIcon = icon;
     final padding = switch (size) {
       CoreChipSize.small =>
       const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
       CoreChipSize.medium =>
       const EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: 6),
-      CoreChipSize.large =>
-      const EdgeInsets.symmetric(
+      CoreChipSize.large => const EdgeInsets.symmetric(
           horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3),
     };
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 120),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(100),
-        border: Border.fromBorderSide(border),
-        boxShadow: shadow,
-      ),
-      padding: padding,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon case final resolvedIcon?) ...[
+    // Accessibility: ensure minimum tap target size
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.fromBorderSide(border),
+          boxShadow: shadow,
+        ),
+        padding: padding,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (chipIcon != null) ...[
+              CoreIconWidget(
+                icon: chipIcon, // now non-nullable
+                size: CoreSpacing.space5,
+                color: colors.outlineFocus,
+              ),
+            ],
+            Padding(
+              padding: EdgeInsetsDirectional.only(
+                  start: icon != null ? CoreSpacing.space2 : 0,
+                  end: CoreSpacing.space2),
+              child: Text(label, style: textStyle),
+            ),
             CoreIconWidget(
-              icon: resolvedIcon,
+              icon: CoreIcons.close,
               size: CoreSpacing.space5,
-              color: colors.outlineFocus,
+              color: colors.iconGrayMid,
             ),
           ],
-          Padding(
-            padding: EdgeInsetsDirectional.only(
-                start: icon != null ? CoreSpacing.space2 : 0,
-                end: CoreSpacing.space2),
-            child: Text(label, style: textStyle),
-          ),
-          CoreIconWidget(
-            icon: CoreIcons.close,
-            size: CoreSpacing.space5,
-            color: colors.iconGrayMid,
-          ),
-        ],
+        ),
       ),
     );
   }
