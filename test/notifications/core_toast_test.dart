@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../utils/a11y_guidelines.dart';
+import '../utils/test_harness.dart';
+
 void main() {
   group('CoreToast', () {
     setUp(() {
@@ -194,6 +197,44 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Test toast'), findsNothing);
+    });
+
+    group('accessibility guidelines', () {
+      testWidgets('displayed toast close button meets tap target and label guidelines',
+          (tester) async {
+        await setupA11yTest(tester);
+
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(
+            buildTestApp(
+              Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => CoreToast.showSuccess(
+                    context,
+                    'Request successful',
+                    'Close',
+                  ),
+                  child: const Text('Show Toast'),
+                ),
+              ),
+              theme: theme,
+            ),
+          );
+
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(Toast), findsOneWidget);
+
+          await expectMeetsTapTargetAndLabelGuidelines(
+            tester,
+            find.byKey(const Key('toast_close_button')),
+          );
+
+          CoreToast.cleanup();
+          await tester.pumpAndSettle();
+        }
+      });
     });
   });
 } 

@@ -26,13 +26,13 @@ void main() {
                 value: false,
                 onChanged: (_) {},
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.normal,
                 value: true,
                 onChanged: (_) {},
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.lock,
                 value: false,
@@ -40,7 +40,7 @@ void main() {
                 activeLabel: 'Lock',
                 inactiveLabel: 'Unlock',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.lock,
                 value: true,
@@ -48,7 +48,7 @@ void main() {
                 activeLabel: 'Lock',
                 inactiveLabel: 'Unlock',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.normal,
                 value: false,
@@ -56,7 +56,7 @@ void main() {
                 activeLabel: 'Public',
                 inactiveLabel: 'Private',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.normal,
                 value: true,
@@ -64,7 +64,7 @@ void main() {
                 activeLabel: 'Public',
                 inactiveLabel: 'Private',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.imperial,
                 value: false,
@@ -72,7 +72,7 @@ void main() {
                 activeLabel: 'Metric',
                 inactiveLabel: 'Imperial',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               CoreSwitch(
                 type: CoreSwitchType.imperial,
                 value: true,
@@ -85,7 +85,7 @@ void main() {
         ),
       ),
     );
-    await tester.binding.setSurfaceSize(const Size(200, 400));
+    await tester.binding.setSurfaceSize(const Size(200, 500));
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();

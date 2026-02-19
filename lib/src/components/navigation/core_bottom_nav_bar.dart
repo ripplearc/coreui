@@ -329,58 +329,66 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
     final isActive = index == widget.selectedIndex;
     final width = isActive ? layout.activeTabWidth : layout.inactiveTabWidth;
 
-    return AnimatedContainer(
-      duration: widget.animationDuration,
-      curve: Curves.easeOut,
-      width: width,
-      height: layout.tabHeight,
-      padding: EdgeInsets.symmetric(horizontal: layout.tabInnerPad),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(layout.pillRadius),
-        onTap: () => widget.onTabSelected(index),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CoreIconWidget(
-              icon: widget.tabs[index].icon,
-              size: layout.iconSize,
-              color: isActive
-                  ? colors.iconDark
-                  : colors.iconGrayMid,
-            ),
-            AnimatedSwitcher(
-              duration: widget.animationDuration,
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeOut,
-              layoutBuilder: (currentChild, previousChildren) => Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  for (final prev in previousChildren)
-                    Opacity(opacity: 0.2, child: prev),
-                  if (currentChild != null) currentChild,
-                ],
+    return Semantics(
+      label: widget.tabs[index].label,
+      button: true,
+      container: true,
+      excludeSemantics: true,
+      child: AnimatedContainer(
+        duration: widget.animationDuration,
+        curve: Curves.easeOut,
+        width: width,
+        height: layout.tabHeight,
+        padding: EdgeInsets.symmetric(horizontal: layout.tabInnerPad),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(layout.pillRadius),
+          onTap: () => widget.onTabSelected(index),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CoreIconWidget(
+                icon: widget.tabs[index].icon,
+                size: layout.iconSize,
+                color: isActive
+                    ? colors.iconDark
+                    : colors.iconGrayMid,
               ),
-              transitionBuilder: (child, anim) =>
-                  FadeTransition(opacity: anim, child: child),
-              child: isActive
-                  ? Padding(
-                      key: ValueKey('active-$index'),
-                      padding: EdgeInsets.only(left: layout.iconLabelGap),
-                      child: Text(
-                        widget.tabs[index].label,
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        style: typography.bodySmallMedium.copyWith(
-                          fontSize: layout.labelFontSize,
-                          color: colors.textLink,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(key: ValueKey('inactive')),
-            ),
-          ],
+              Flexible(
+                child: AnimatedSwitcher(
+                  duration: widget.animationDuration,
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeOut,
+                  layoutBuilder: (currentChild, previousChildren) => Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      for (final prev in previousChildren)
+                        Opacity(opacity: 0.2, child: prev),
+                      if (currentChild != null) currentChild,
+                    ],
+                  ),
+                  transitionBuilder: (child, anim) =>
+                      FadeTransition(opacity: anim, child: child),
+                  child: isActive
+                      ? Padding(
+                          key: ValueKey('active-$index'),
+                          padding: EdgeInsets.only(left: layout.iconLabelGap),
+                          child: Text(
+                            widget.tabs[index].label,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: typography.bodySmallMedium.copyWith(
+                              fontSize: layout.labelFontSize,
+                              color: colors.iconDark,
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(key: ValueKey('inactive')),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
