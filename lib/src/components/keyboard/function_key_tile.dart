@@ -29,23 +29,46 @@ class FunctionKeyTile extends StatefulWidget {
   State<FunctionKeyTile> createState() => _FunctionKeyTileState();
 }
 
-class _FunctionKeyTileState extends State<FunctionKeyTile> {
-  bool _isPressed = false;
-  static const double _tweenBegin = 0.0;
-  static const double _tweenEndPressed = 1.0;
-  static const double _tweenEndUnpressed = 0.0;
-  static const Duration _tweenDuration = Duration(milliseconds: 200);
+class _FunctionKeyTileState extends State<FunctionKeyTile>
+    with SingleTickerProviderStateMixin {
+  static const Duration _animationDuration = Duration(milliseconds: 200);
+
+  late final AnimationController _animationController;
+  late final Animation<double> _animation;
+  bool _didFireFromTapUp = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _animationDuration,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void _handleTapDown(TapDownDetails details) {
-    setState(() => _isPressed = true);
+    _didFireFromTapUp = false;
+    _animationController.forward();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    setState(() => _isPressed = false);
+    _animationController.reverse();
+    _didFireFromTapUp = true;
+    widget.onTap();
   }
 
   void _handleTapCancel() {
-    setState(() => _isPressed = false);
+    _animationController.reverse();
   }
 
   @override
@@ -91,31 +114,40 @@ class _FunctionKeyTileState extends State<FunctionKeyTile> {
       label: semanticLabel,
       button: true,
       hint: semanticHint,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(
-            begin: _tweenBegin,
-            end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed),
-        duration: _tweenDuration,
-        curve: Curves.easeInOut,
-        builder: (context, animationValue, child) {
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
           final currentBorderRadius = BorderRadius.lerp(
                 BorderRadius.circular(CoreSpacing.space2),
                 BorderRadius.circular(100.0),
-                animationValue,
+                _animation.value,
               ) ??
               BorderRadius.circular(CoreSpacing.space2);
 
-          return GestureDetector(
-            onTap: widget.onTap,
-            onTapDown: _handleTapDown,
-            onTapUp: _handleTapUp,
-            onTapCancel: _handleTapCancel,
-            child: Container(
-              decoration: BoxDecoration(
-                color: colors.backgroundGrayMid,
-                borderRadius: currentBorderRadius,
+          return Listener(
+            onPointerDown: (_) => _animationController.forward(),
+            onPointerUp: (_) => _animationController.reverse(),
+            onPointerCancel: (_) => _animationController.reverse(),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: _handleTapDown,
+              onTapUp: _handleTapUp,
+              onTapCancel: _handleTapCancel,
+              onTap: () {
+                if (!_didFireFromTapUp) {
+                  _animationController.forward().then((_) {
+                    _animationController.reverse();
+                  });
+                  widget.onTap();
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colors.backgroundGrayMid,
+                  borderRadius: currentBorderRadius,
+                ),
+                child: child,
               ),
-              child: child,
             ),
           );
         },

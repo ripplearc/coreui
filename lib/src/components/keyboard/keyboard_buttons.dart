@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A button widget for numeric digit input on the keyboard.
@@ -138,6 +139,8 @@ class CoreUnitButton extends StatelessWidget {
             : effectiveHeight * _KeyboardButton._smallFontSizeRatio)
         : null;
 
+    final isSquareToRoundUnit = unit != UnitType.divideSymbol;
+
     return Semantics(
       label: '${unit.label} unit button',
       button: true,
@@ -163,6 +166,12 @@ class CoreUnitButton extends StatelessWidget {
             : typography.bodyLargeMedium.copyWith(
                 color: textColor,
               ),
+        animationDuration: isSquareToRoundUnit
+            ? _KeyboardButtonState._unitButtonAnimationDuration
+            : null,
+        animationCurve: isSquareToRoundUnit
+            ? _KeyboardButtonState._unitButtonAnimationCurve
+            : null,
       ),
     );
   }
@@ -326,6 +335,8 @@ class _KeyboardButton extends StatefulWidget {
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
   final bool isLabel;
+  final Duration? animationDuration;
+  final Curve? animationCurve;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
@@ -336,19 +347,21 @@ class _KeyboardButton extends StatefulWidget {
 
   static const double _circularBorderRadius = 100.0;
 
-  const _KeyboardButton(
-      {this.label,
-      this.icon,
-      this.borderColor,
-      required this.backgroundColor,
-      required this.onPressed,
-      this.textStyle,
-      this.width,
-      this.height,
-      BorderRadius? borderRadius,
-      this.pressedBorderRadius,
-      required this.isLabel})
-      : borderRadius = borderRadius ??
+  const _KeyboardButton({
+    this.label,
+    this.icon,
+    this.borderColor,
+    required this.backgroundColor,
+    required this.onPressed,
+    this.textStyle,
+    this.width,
+    this.height,
+    BorderRadius? borderRadius,
+    this.pressedBorderRadius,
+    required this.isLabel,
+    this.animationDuration,
+    this.animationCurve,
+  }) : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
@@ -358,6 +371,9 @@ class _KeyboardButton extends StatefulWidget {
 class _KeyboardButtonState extends State<_KeyboardButton>
     with SingleTickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 150);
+  static const Duration _unitButtonAnimationDuration =
+      Duration(milliseconds: 100);
+  static const Curve _unitButtonAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -366,13 +382,15 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   @override
   void initState() {
     super.initState();
+    final duration = widget.animationDuration ?? _animationDuration;
+    final curve = widget.animationCurve ?? Curves.ease;
     _animationController = AnimationController(
       vsync: this,
-      duration: _animationDuration,
+      duration: duration,
     );
     _animation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.ease,
+      curve: curve,
     );
   }
 
@@ -383,6 +401,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   }
 
   void _handleTapDown(TapDownDetails details) {
+    HapticFeedback.lightImpact();
     _isPressed = true;
     _animationController.forward();
   }
