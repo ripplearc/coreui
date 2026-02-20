@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.7] - CoreQuickSheet component
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreQuickSheet**: New standardized bottom sheet component for consistent sheet presentation across the app
+    - Automatic content-based height (up to 90% of screen)
+    - Custom drag handle with consistent styling
+    - Theme-aware background color (defaults to `pageBackground`)
+    - Configurable dismiss behavior (`isDismissible`, `enableDrag`)
+    - Optional safe area handling (`useSafeArea`)
+    - Optional custom background color override
+    - Professional 28px top border radius
+    - Returns values when dismissed for result handling
+
+### 🔧 Fixes
+
+- **Code Quality**
+  - Fixed tooltip component forced unwrapping issue with overlay entry
+  - Improved null safety in tooltip overlay insertion
+
 ## [0.3.6] - Accessibility improvements
 
 ### ✨ Features
