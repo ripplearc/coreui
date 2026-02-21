@@ -295,10 +295,24 @@ echo "" >> "$OUTPUT_FILE"
 echo "**Testing Standards:**" >> "$OUTPUT_FILE"
 echo "- 📝 New components should have corresponding test files in test/components/[category]/" >> "$OUTPUT_FILE"
 echo "- 🖼️ Components should have golden tests (*_golden_test.dart) for visual regression testing" >> "$OUTPUT_FILE"
+echo "- ♿ All components MUST have accessibility tests (check semantic nodes and contrast)" >> "$OUTPUT_FILE"
 echo "- 🔤 Golden tests must use loadFonts() from test/load_fonts.dart in setUpAll()" >> "$OUTPUT_FILE"
 echo "- 🎨 Golden tests with images must use await tester.awaitImages() before golden comparison" >> "$OUTPUT_FILE"
 echo "- 📛 Test files should follow naming convention: [component_name]_test.dart and [component_name]_golden_test.dart" >> "$OUTPUT_FILE"
 echo "- 🎯 Golden test output should be presentable with labels and proper organization" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# =============================================================================
+# RULE 7: LOCALIZATION & STRING HANDLING
+# =============================================================================
+echo "### 🌐 RULE 7: LOCALIZATION & STRING HANDLING" >> "$OUTPUT_FILE"
+echo "CoreUI is a foundation package; localization must be managed by the consuming application." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**String Standards:**" >> "$OUTPUT_FILE"
+echo "- 🚫 NO hardcoded strings for user-facing text within library components" >> "$OUTPUT_FILE"
+echo "- 📥 All strings (labels, hints, error messages) MUST be passed in as parameters" >> "$OUTPUT_FILE"
+echo "- 💡 EXCEPTION: Hardcoded strings are PERMISSIBLE in example/ or golden test files to showcase component usage" >> "$OUTPUT_FILE"
+echo "- 🌍 Localization logic remains in the app layer, not in the CoreUI package" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 # =============================================================================
