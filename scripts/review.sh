@@ -295,10 +295,45 @@ echo "" >> "$OUTPUT_FILE"
 echo "**Testing Standards:**" >> "$OUTPUT_FILE"
 echo "- 📝 New components should have corresponding test files in test/components/[category]/" >> "$OUTPUT_FILE"
 echo "- 🖼️ Components should have golden tests (*_golden_test.dart) for visual regression testing" >> "$OUTPUT_FILE"
+echo "- ♿ All components MUST have accessibility tests (check semantic nodes and contrast)" >> "$OUTPUT_FILE"
 echo "- 🔤 Golden tests must use loadFonts() from test/load_fonts.dart in setUpAll()" >> "$OUTPUT_FILE"
 echo "- 🎨 Golden tests with images must use await tester.awaitImages() before golden comparison" >> "$OUTPUT_FILE"
 echo "- 📛 Test files should follow naming convention: [component_name]_test.dart and [component_name]_golden_test.dart" >> "$OUTPUT_FILE"
 echo "- 🎯 Golden test output should be presentable with labels and proper organization" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# =============================================================================
+# RULE 7: LOCALIZATION & STRING HANDLING
+# =============================================================================
+echo "### 🌐 RULE 7: LOCALIZATION & STRING HANDLING" >> "$OUTPUT_FILE"
+echo "CoreUI is a foundation package; localization must be managed by the consuming application." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**String Standards:**" >> "$OUTPUT_FILE"
+echo "- 🚫 NO hardcoded strings for user-facing text within library components" >> "$OUTPUT_FILE"
+echo "- 📥 All strings (labels, hints, error messages) MUST be passed in as parameters" >> "$OUTPUT_FILE"
+echo "- 💡 EXCEPTION: Hardcoded strings are PERMISSIBLE in example/ or golden test files to showcase component usage" >> "$OUTPUT_FILE"
+echo "- 🌍 Localization logic remains in the app layer, not in the CoreUI package" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# =============================================================================
+# RULE 8: SELF-DOCUMENTING & CLEAN CODE (ANTI-AI ARTIFACTS)
+# =============================================================================
+echo "### 🧹 RULE 7: SELF-DOCUMENTING & CLEAN CODE" >> "$OUTPUT_FILE"
+echo "**Core Principle:** Code must be expressive and clean. Use 'Code Documentation' to define contracts, but avoid 'Implementation Comments' to explain logic." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**✅ What to Keep (Code Documentation):**" >> "$OUTPUT_FILE"
+echo "- **Public APIs:** Brief docstrings for Classes, Interfaces, and public Methods that explain *purpose* and *usage*." >> "$OUTPUT_FILE"
+echo "- **Member Variables:** Documentation explaining the *intent* of a state variable if not immediately obvious." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**❌ Red Flags (Implementation Comments/Vibe Killers):**" >> "$OUTPUT_FILE"
+echo "- **AI Residuals:** Instructional comments left by LLMs like \`// <-- ADD THIS\`, \`// implementation here\`, or \`// Fix: ...\`." >> "$OUTPUT_FILE"
+echo "- **Step-by-Step Narratives:** Comments inside methods explaining *what* each line does. If the logic is complex, extract it into a named private method instead." >> "$OUTPUT_FILE"
+echo "- **Obscure Naming:** Using generic names (\`data\`, \`info\`, \`val\`) that force a comment to explain what the variable actually holds." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**Action Required:**" >> "$OUTPUT_FILE"
+echo "- **Purge AI Artifacts:** Delete all instructional placeholders or AI-suggested annotations." >> "$OUTPUT_FILE"
+echo "- **Refactor vs. Explain:** If you feel the urge to write a comment inside a function, refactor that logic into a descriptive variable or helper method instead." >> "$OUTPUT_FILE"
+echo "- **Maintain Contracts:** Ensure docstrings accurately reflect the *behavior* of the code without detailing the *implementation*." >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 # =============================================================================
