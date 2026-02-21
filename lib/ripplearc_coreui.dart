@@ -16,6 +16,7 @@ export 'src/components/text_fields/text_field.dart';
 export 'src/components/tooltips/tooltip.dart';
 export 'src/notifications/success_modal.dart';
 export 'src/notifications/toast.dart';
+export 'src/components/select_button/core_select_button.dart';
 // Theme exports
 export 'src/theme/app_typography_extension.dart';
 export 'src/theme/color_tokens.dart';
