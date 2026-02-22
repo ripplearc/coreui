@@ -19,134 +19,56 @@ void main() {
         final isCI = Platform.environment.containsKey('CI') ||
             Platform.environment.containsKey('GITHUB_ACTIONS');
         if (isCI) return;
-        await tester.binding.setSurfaceSize(const Size(1200, 600));
+        await tester.binding.setSurfaceSize(const Size(1200, 900));
 
-        final selectedSmall = ValueNotifier<bool>(false);
-        final selectedSmallIcon = ValueNotifier<bool>(false);
-        final selectedMedium = ValueNotifier<bool>(false);
-        final selectedMediumIcon = ValueNotifier<bool>(false);
-        final selectedMediumSelected = ValueNotifier<bool>(true);
-        final selectedLarge = ValueNotifier<bool>(false);
-        final selectedLargeIcon = ValueNotifier<bool>(false);
-        final selectedLargeSelected = ValueNotifier<bool>(true);
+        final mediumDefault1 = ValueNotifier<bool>(false);
+        final mediumHighlight1 = ValueNotifier<bool>(false);
+        final mediumPressed1 = ValueNotifier<bool>(false);
+        final mediumSelected1 = ValueNotifier<bool>(true);
 
-        final chips = <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+        final largeDefault1 = ValueNotifier<bool>(false);
+        final largeHighlight1 = ValueNotifier<bool>(false);
+        final largePressed1 = ValueNotifier<bool>(false);
+        final largeSelected1 = ValueNotifier<bool>(true);
+
+        final mediumDefault2 = ValueNotifier<bool>(false);
+        final mediumHighlight2 = ValueNotifier<bool>(false);
+        final mediumPressed2 = ValueNotifier<bool>(false);
+        final mediumSelected2 = ValueNotifier<bool>(true);
+
+        final largeDefault2 = ValueNotifier<bool>(false);
+        final largeHighlight2 = ValueNotifier<bool>(false);
+        final largePressed2 = ValueNotifier<bool>(false);
+        final largeSelected2 = ValueNotifier<bool>(true);
+
+        Widget buildStateRow(
+            String label,
+            ValueNotifier<bool> mediumNotifier,
+            ValueNotifier<bool> largeNotifier,
+            ) {
+          return Row(
             children: [
-              Text('Small - Default',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Small Chip',
-                selected: selectedSmall,
-                size: CoreChipSize.small,
+              SizedBox(
+                width: 140,
+                child: Text(label, style: typography.bodyMediumRegular),
               ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Small - With Icon',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
+              const SizedBox(width: 40),
               CoreChip(
-                label: 'Small Icon',
-                selected: selectedSmallIcon,
-                size: CoreChipSize.small,
+                label: 'Chips',
+                selected: mediumNotifier,
+                size: CoreChipSize.medium,
+                icon: CoreIcons.check,
+              ),
+              const SizedBox(width: 280),
+              CoreChip(
+                label: 'Chips',
+                selected: largeNotifier,
+                size: CoreChipSize.large,
                 icon: CoreIcons.check,
               ),
             ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Medium - Default',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Medium Chip',
-                selected: selectedMedium,
-                size: CoreChipSize.medium,
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Medium - With Icon',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Medium Icon',
-                selected: selectedMediumIcon,
-                size: CoreChipSize.medium,
-                icon: CoreIcons.favorite,
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Medium - Selected',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Selected',
-                selected: selectedMediumSelected,
-                size: CoreChipSize.medium,
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Large - Default',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Large Chip',
-                selected: selectedLarge,
-                size: CoreChipSize.large,
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Large - With Icon',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Large Icon',
-                selected: selectedLargeIcon,
-                size: CoreChipSize.large,
-                icon: CoreIcons.settings,
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Large - Selected',
-                  style: typography.bodySmallSemiBold),
-              const SizedBox(height: 8),
-              CoreChip(
-                label: 'Selected',
-                selected: selectedLargeSelected,
-                size: CoreChipSize.large,
-              ),
-            ],
-          ),
-        ];
+          );
+        }
 
         final widget = MaterialApp(
           theme: ThemeData(
@@ -154,12 +76,40 @@ void main() {
           ),
           home: Scaffold(
             backgroundColor: colors.pageBackground,
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Wrap(
-                spacing: 24,
-                runSpacing: 24,
-                children: chips,
+            body: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xFFB8A8D8),
+                    width: 2,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildStateRow('Default', mediumDefault1, largeDefault1),
+                    const SizedBox(height: 36),
+                    buildStateRow('Highlight', mediumHighlight1, largeHighlight1),
+                    const SizedBox(height: 36),
+                    buildStateRow('On Click', mediumPressed1, largePressed1),
+                    const SizedBox(height: 36),
+                    buildStateRow('After click', mediumSelected1, largeSelected1),
+
+                    const SizedBox(height: 60),
+
+                    buildStateRow('Default', mediumDefault2, largeDefault2),
+                    const SizedBox(height: 36),
+                    buildStateRow('Highlight', mediumHighlight2, largeHighlight2),
+                    const SizedBox(height: 36),
+                    buildStateRow('On Click', mediumPressed2, largePressed2),
+                    const SizedBox(height: 36),
+                    buildStateRow('After click', mediumSelected2, largeSelected2),
+                  ],
+                ),
               ),
             ),
           ),
