@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../golden_test_typography.dart';
 import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
     await loadFonts();
+    TestWidgetsFlutterBinding.ensureInitialized();
   });
   final colors = AppColorsExtension.create();
-  final typography = createGoldenTestTypography();
+  final typography = AppTypographyExtension.create();
   testWidgets('CoreSelectButton - Golden Test', (tester) async {
     const pressedKey = Key('pressed_tab');
 
