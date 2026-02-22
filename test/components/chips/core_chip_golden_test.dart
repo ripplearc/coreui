@@ -52,14 +52,14 @@ void main() {
                 width: 140,
                 child: Text(label, style: typography.bodyMediumRegular),
               ),
-              const SizedBox(width: 40),
+              const SizedBox(width: CoreSpacing.space8),
               CoreChip(
                 label: 'Chips',
                 selected: mediumNotifier,
                 size: CoreChipSize.medium,
                 icon: CoreIcons.check,
               ),
-              const SizedBox(width: 280),
+              const SizedBox(width: CoreSpacing.space56),
               CoreChip(
                 label: 'Chips',
                 selected: largeNotifier,
@@ -77,36 +77,29 @@ void main() {
           home: Scaffold(
             backgroundColor: colors.pageBackground,
             body: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(0xFFB8A8D8),
-                    width: 2,
-                    strokeAlign: BorderSide.strokeAlignInside,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
+              child: Padding(
+
+                padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space8, vertical: CoreSpacing.space8),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     buildStateRow('Default', mediumDefault1, largeDefault1),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('Highlight', mediumHighlight1, largeHighlight1),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('On Click', mediumPressed1, largePressed1),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('After click', mediumSelected1, largeSelected1),
 
-                    const SizedBox(height: 60),
+                    const SizedBox(height: CoreSpacing.space8),
 
                     buildStateRow('Default', mediumDefault2, largeDefault2),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('Highlight', mediumHighlight2, largeHighlight2),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('On Click', mediumPressed2, largePressed2),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: CoreSpacing.space8),
                     buildStateRow('After click', mediumSelected2, largeSelected2),
                   ],
                 ),
