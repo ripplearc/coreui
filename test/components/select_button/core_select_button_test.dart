@@ -46,7 +46,6 @@ void main() {
         ),
       );
 
-      // Verify selection state via Semantics rather than internal style details.
       final tab1Semantics = tester.getSemantics(find.text('Tab 1'));
       final tab2Semantics = tester.getSemantics(find.text('Tab 2'));
 
@@ -153,7 +152,6 @@ void main() {
         ),
       );
 
-      // Ensure decoration exists and is correct type
       expect(outerContainer.decoration, isA<BoxDecoration>());
 
       final decoration = outerContainer.decoration as BoxDecoration;
@@ -178,7 +176,6 @@ void main() {
         ),
       );
 
-      // Tapping should not throw even without a callback.
       await tester.tap(find.text('Tab 2'));
       await tester.pumpAndSettle();
 
@@ -201,12 +198,10 @@ void main() {
         ),
       );
 
-      // All tabs should be present in the widget tree (inside SingleChildScrollView).
       for (int i = 0; i < tabs.length; i++) {
         expect(find.text(tabs[i]), findsOneWidget);
       }
 
-      // Verify the horizontal scroll view is present.
       expect(
         find.descendant(
           of: find.byType(CoreSelectButton),
