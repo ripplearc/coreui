@@ -6,6 +6,8 @@ import '../../utils/a11y_guidelines.dart';
 import '../../utils/test_harness.dart';
 
 void main() {
+  final typography = AppTypographyExtension.create();
+
   group('CoreTabs Widget Tests', () {
     testWidgets('renders tabs correctly with initial index',
         (WidgetTester tester) async {
@@ -165,6 +167,37 @@ void main() {
       expect(find.text('Tab C'), findsOneWidget);
       expect(find.text('Tab 1'), findsNothing);
       expect(find.text('Tab 2'), findsNothing);
+    });
+
+    testWidgets('applies correct label styles to TabBar',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: const Scaffold(
+            body: CoreTabs(
+              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+              initialIndex: 0,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+
+      expect(
+        tabBar.labelStyle,
+        equals(typography.bodyMediumSemiBold),
+      );
+
+      expect(
+        tabBar.unselectedLabelStyle,
+        equals(typography.bodyMediumRegular),
+      );
     });
   });
 
