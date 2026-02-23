@@ -86,7 +86,6 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Reset in case initial build triggered it
       changedIndex = null;
 
       await tester.tap(find.text('Tab 2'));
@@ -124,7 +123,7 @@ void main() {
       }
 
       expect(controller, isNotNull);
-      expect(controller!.index, equals(1));
+      expect(controller.index, equals(1));
     });
 
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
