@@ -118,7 +118,15 @@ class _CoreQuickSheetContent extends StatelessWidget {
     );
 
     if (useSafeArea) {
-      content = SafeArea(top: false, child: content);
+      content = ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(CoreQuickSheet._borderRadius),
+        ),
+        child: ColoredBox(
+          color: backgroundColor,
+          child: SafeArea(top: false, child: content),
+        ),
+      );
     }
 
     return content;
