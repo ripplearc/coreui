@@ -59,14 +59,13 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
           style: typography.bodyLargeSemiBold,
         ),
         const SizedBox(height: CoreSpacing.space3),
-        for (int i = 0; i < tabs.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: CoreSpacing.space4),
-            child: CoreTabs(
-              tabs: tabs,
-              initialIndex: 0,
-            ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: CoreSpacing.space4),
+          child: CoreTabs(
+            tabs: tabs,
+            initialIndex: 0,
           ),
+        ),
       ],
     );
   }
