@@ -4,14 +4,27 @@ A horizontal tab bar component following the Core design system. Displays a list
 highlighting the currently selected tab.
 
 ## Usage
+CoreTabs is intended to be used together with TabBarView and requires a DefaultTabController in the widget tree.
 
 ```dart
-CoreTabs(
-  tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-  initialIndex: 0,
-  onChanged: (index) {
-    print('Selected tab: $index');
-  },
+DefaultTabController(
+  length: 3,
+  child: Column(
+    children: [
+      CoreTabs(
+        tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+      ),
+      Expanded(
+        child: TabBarView(
+          children: [
+            Center(child: Text('Tab 1 Content')),
+            Center(child: Text('Tab 2 Content')),
+            Center(child: Text('Tab 3 Content')),
+          ],
+        ),
+      ),
+    ],
+  ),
 )
 ```
 

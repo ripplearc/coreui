@@ -64,7 +64,7 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
             padding: const EdgeInsets.only(bottom: CoreSpacing.space4),
             child: CoreTabs(
               tabs: tabs,
-              initialIndex: i,
+              initialIndex: 0,
             ),
           ),
       ],
