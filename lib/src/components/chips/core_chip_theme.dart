@@ -10,11 +10,11 @@ abstract final class CoreChipTheme {
   static EdgeInsets padding(CoreChipSize size) => switch (size) {
         CoreChipSize.small => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space2,
-            vertical: 2,
+            vertical: CoreSpacing.space3 / CoreSpacing.space2,
           ),
         CoreChipSize.medium => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3,
-            vertical: 6,
+            vertical: CoreSpacing.space3,
           ),
         CoreChipSize.large => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3,

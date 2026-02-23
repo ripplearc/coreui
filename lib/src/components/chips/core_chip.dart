@@ -104,60 +104,63 @@ class CoreChip extends StatelessWidget {
               child: ValueListenableBuilder<bool>(
                 valueListenable: _pressed,
                 builder: (context, isPressed, _) {
-                  return AnimatedContainer(
-                    duration: CoreChipTheme.animationDuration,
-                    clipBehavior: Clip.none,
-                    decoration: BoxDecoration(
-                      color: CoreChipTheme.background(
-                        size: size,
-                        isSelected: isSelected,
-                        isPressed: isPressed,
-                        colors: colors,
-                      ),
-                      borderRadius: BorderRadius.circular(CoreSpacing.space6),
-                      border: Border.fromBorderSide(
-                        BorderSide(
-                          color: CoreChipTheme.borderColor(
-                            size: size,
-                            isSelected: isSelected,
-                            isPressed: isPressed,
-                            colors: colors,
-                          ),
-                          width: CoreChipTheme.borderWidth,
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: CoreSpacing.space2),
+                    child: AnimatedContainer(
+                      duration: CoreChipTheme.animationDuration,
+                      clipBehavior: Clip.none,
+                      decoration: BoxDecoration(
+                        color: CoreChipTheme.background(
+                          size: size,
+                          isSelected: isSelected,
+                          isPressed: isPressed,
+                          colors: colors,
                         ),
-                      ),
-                      boxShadow: CoreChipTheme.shadow(size),
-                    ),
-                    padding: CoreChipTheme.padding(size),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (icon case final resolvedIcon?) ...[
-                          CoreIconWidget(
-                            icon: resolvedIcon,
-                            size: CoreSpacing.space5,
-                            color: colors.outlineFocus,
+                        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+                        border: Border.fromBorderSide(
+                          BorderSide(
+                            color: CoreChipTheme.borderColor(
+                              size: size,
+                              isSelected: isSelected,
+                              isPressed: isPressed,
+                              colors: colors,
+                            ),
+                            width: CoreChipTheme.borderWidth,
                           ),
-                          const SizedBox(width: CoreSpacing.space2),
+                        ),
+                        boxShadow: CoreChipTheme.shadow(size),
+                      ),
+                      padding: CoreChipTheme.padding(size),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (icon case final resolvedIcon?) ...[
+                            CoreIconWidget(
+                              icon: resolvedIcon,
+                              size: CoreSpacing.space5,
+                              color: colors.outlineFocus,
+                            ),
+                            const SizedBox(width: CoreSpacing.space2),
+                          ],
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                                end: CoreSpacing.space2),
+                            child: Text(
+                              label,
+                              style: typography.bodyMediumRegular,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onRemove,
+                            behavior: HitTestBehavior.opaque,
+                            child: CoreIconWidget(
+                              icon: CoreIcons.close,
+                              size: CoreSpacing.space5,
+                              color: colors.iconGrayMid,
+                            ),
+                          ),
                         ],
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(
-                              end: CoreSpacing.space2),
-                          child: Text(
-                            label,
-                            style: typography.bodyMediumRegular,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: onRemove,
-                          behavior: HitTestBehavior.opaque,
-                          child: CoreIconWidget(
-                            icon: CoreIcons.close,
-                            size: CoreSpacing.space5,
-                            color: colors.iconGrayMid,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 },
