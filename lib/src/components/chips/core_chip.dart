@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
+import 'core_chip_theme.dart';
 
 /// The size variant of a [CoreChip].
+///
+/// [small] and [medium] share the same visual appearance (light grey
+/// background, no shadow). [large] uses a white/inverse background with a
+/// drop shadow.
 enum CoreChipSize {
-  /// Compact chip with minimal padding.
   small,
-
-  /// Standard chip size (default).
   medium,
-
-  /// Prominent chip with a drop shadow.
   large,
 }
 
 /// A selectable chip that supports three sizes, an optional leading icon,
-/// and animated visual feedback for default, highlight, pressed, and selected
-/// states.
+/// a persistent close (×) button, and animated visual feedback for default,
+/// pressed, and selected states.
 ///
-/// Example:
+/// ## Sizes
+/// [CoreChipSize.small] and [CoreChipSize.medium] share the same visual.
+/// [CoreChipSize.large] uses a white surface with a drop shadow.
+///
+/// ## State ownership
+/// The caller owns **selection** via [selected] ([ValueNotifier<bool>]).
+/// The ephemeral pressed state is managed internally.
+///
+/// ## Example
 /// ```dart
 /// final isSelected = ValueNotifier<bool>(false);
 ///
@@ -27,14 +35,27 @@ enum CoreChipSize {
 ///   selected: isSelected,
 ///   size: CoreChipSize.medium,
 ///   icon: CoreIcons.check,
-///   onTap: () => print('tapped'),
+///   onTap: () => debugPrint('toggled'),
+///   onRemove: () => debugPrint('removed'),
 /// )
 /// ```
 class CoreChip extends StatelessWidget {
+  CoreChip({
+    super.key,
+    required this.label,
+    required this.selected,
+    this.size = CoreChipSize.medium,
+    this.icon,
+    this.onTap,
+    this.onRemove,
+  });
+
   /// The text label displayed on the chip.
   final String label;
 
   /// Controls and reflects the selected state of the chip.
+  ///
+  /// The chip toggles this value on tap and notifies [onTap] afterwards.
   final ValueNotifier<bool> selected;
 
   /// The size variant of the chip. Defaults to [CoreChipSize.medium].
@@ -43,138 +64,107 @@ class CoreChip extends StatelessWidget {
   /// Optional leading icon displayed before the label.
   final CoreIconData? icon;
 
-  /// Optional callback invoked after the chip is tapped and its state toggled.
+  /// Called after the chip is tapped and [selected] has been toggled.
   final VoidCallback? onTap;
 
-  const CoreChip({
-    super.key,
-    required this.label,
-    required this.selected,
-    this.size = CoreChipSize.medium,
-    this.icon,
-    this.onTap,
-  });
+  /// Called when the user taps the close (×) icon.
+  ///
+  /// The caller is responsible for removing the chip from the widget tree.
+  final VoidCallback? onRemove;
+
+  final ValueNotifier<bool> _pressed = ValueNotifier(false);
+
+  void _onTapDown(TapDownDetails _) => _pressed.value = true;
+
+  void _onTapUp(TapUpDetails _) {
+    _pressed.value = false;
+    selected.value = !selected.value;
+    onTap?.call();
+  }
+
+  void _onTapCancel() => _pressed.value = false;
 
   @override
   Widget build(BuildContext context) {
-    final ValueNotifier<bool> highlight = ValueNotifier(false);
-    final ValueNotifier<bool> pressed = ValueNotifier(false);
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
 
     return GestureDetector(
-      onTapDown: (_) {
-        highlight.value = true;
-        pressed.value = true;
-      },
-      onTapUp: (_) {
-        pressed.value = false;
-        highlight.value = false;
-        selected.value = !selected.value;
-        onTap?.call();
-      },
-      onTapCancel: () {
-        pressed.value = false;
-        highlight.value = false;
-      },
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
       child: ValueListenableBuilder<bool>(
         valueListenable: selected,
-        builder: (_, isSelected, __) {
+        builder: (context, isSelected, _) {
           return Semantics(
             label: label,
             button: true,
             selected: isSelected,
             child: ExcludeSemantics(
               child: ValueListenableBuilder<bool>(
-                valueListenable: highlight,
-                builder: (_, isHighlight, __) {
-                  return ValueListenableBuilder<bool>(
-                    valueListenable: pressed,
-                    builder: (_, isPressed, __) {
-                      return _buildChip(
-                          context, isSelected, isHighlight, isPressed);
-                    },
+                valueListenable: _pressed,
+                builder: (context, isPressed, _) {
+                  return AnimatedContainer(
+                    duration: CoreChipTheme.animationDuration,
+                    clipBehavior: Clip.none,
+                    decoration: BoxDecoration(
+                      color: CoreChipTheme.background(
+                        size: size,
+                        isSelected: isSelected,
+                        isPressed: isPressed,
+                        colors: colors,
+                      ),
+                      borderRadius: BorderRadius.circular(CoreSpacing.space6),
+                      border: Border.fromBorderSide(
+                        BorderSide(
+                          color: CoreChipTheme.borderColor(
+                            size: size,
+                            isSelected: isSelected,
+                            isPressed: isPressed,
+                            colors: colors,
+                          ),
+                          width: CoreChipTheme.borderWidth,
+                        ),
+                      ),
+                      boxShadow: CoreChipTheme.shadow(size),
+                    ),
+                    padding: CoreChipTheme.padding(size),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (icon case final resolvedIcon?) ...[
+                          CoreIconWidget(
+                            icon: resolvedIcon,
+                            size: CoreSpacing.space5,
+                            color: colors.outlineFocus,
+                          ),
+                          const SizedBox(width: CoreSpacing.space2),
+                        ],
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(
+                              end: CoreSpacing.space2),
+                          child: Text(
+                            label,
+                            style: typography.bodyMediumRegular,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: onRemove,
+                          behavior: HitTestBehavior.opaque,
+                          child: CoreIconWidget(
+                            icon: CoreIcons.close,
+                            size: CoreSpacing.space5,
+                            color: colors.iconGrayMid,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildChip(
-      BuildContext context, bool selected, bool highlight, bool pressed) {
-    final bool isLarge = size == CoreChipSize.large;
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-
-    final textStyle = typography.bodyMediumRegular;
-
-    final defaultBackground = isLarge ? colors.textInverse : colors.chipGrey;
-
-    final defaultBorder = isLarge ? colors.lineMid : colors.chipGrey;
-    final highlightBorder = colors.lineHighlight;
-    final pressedBorder = colors.lineDarkOutline;
-    final selectedBorder = colors.outlineHover;
-
-    Color background = defaultBackground;
-    Color borderColor = defaultBorder;
-
-    if (pressed) {
-      borderColor = pressedBorder;
-    } else if (highlight) {
-      borderColor = highlightBorder;
-    }
-
-    if (selected) {
-      borderColor = selectedBorder;
-    }
-
-    final border = BorderSide(color: borderColor, width: 1.3);
-    final shadow = isLarge ? CoreShadows.medium : null;
-    final padding = switch (size) {
-      CoreChipSize.small =>
-      const EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2),
-      CoreChipSize.medium =>
-      const EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: 6),
-      CoreChipSize.large => const EdgeInsets.symmetric(
-          horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3),
-    };
-
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 120),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.fromBorderSide(border),
-          boxShadow: shadow,
-        ),
-        padding: padding,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon case final resolvedIcon?) ...[
-              CoreIconWidget(
-                icon: resolvedIcon,
-                size: CoreSpacing.space5,
-                color: colors.outlineFocus,
-              ),
-            ],
-            Padding(
-              padding: EdgeInsetsDirectional.only(
-                  start: icon != null ? CoreSpacing.space2 : 0,
-                  end: CoreSpacing.space2),
-              child: Text(label, style: textStyle),
-            ),
-            CoreIconWidget(
-              icon: CoreIcons.close,
-              size: CoreSpacing.space5,
-              color: colors.iconGrayMid,
-            ),
-          ],
-        ),
       ),
     );
   }
