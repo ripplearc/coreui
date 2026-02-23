@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../golden_test_typography.dart';
 import '../../load_fonts.dart';
 
 void main() {
@@ -12,108 +9,128 @@ void main() {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
+
   final colors = AppColorsExtension.create();
-  final typography = createGoldenTestTypography();
+  final typography = AppTypographyExtension.create();
+
   testWidgets('CoreChip Component Visual Regression Test',
-          (WidgetTester tester) async {
-        final isCI = Platform.environment.containsKey('CI') ||
-            Platform.environment.containsKey('GITHUB_ACTIONS');
-        if (isCI) return;
-        await tester.binding.setSurfaceSize(const Size(1200, 900));
+      (WidgetTester tester) async {
+    debugDisableShadows = false;
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
 
-        final mediumDefault1 = ValueNotifier<bool>(false);
-        final mediumHighlight1 = ValueNotifier<bool>(false);
-        final mediumPressed1 = ValueNotifier<bool>(false);
-        final mediumSelected1 = ValueNotifier<bool>(true);
+    // ── Small & Medium notifiers ─────────────────────────────────────────────
+    final smallDefault = ValueNotifier<bool>(false);
+    final smallPressed = ValueNotifier<bool>(false);
+    final smallSelected = ValueNotifier<bool>(true);
 
-        final largeDefault1 = ValueNotifier<bool>(false);
-        final largeHighlight1 = ValueNotifier<bool>(false);
-        final largePressed1 = ValueNotifier<bool>(false);
-        final largeSelected1 = ValueNotifier<bool>(true);
+    final mediumDefault = ValueNotifier<bool>(false);
+    final mediumPressed = ValueNotifier<bool>(false);
+    final mediumSelected = ValueNotifier<bool>(true);
 
-        final mediumDefault2 = ValueNotifier<bool>(false);
-        final mediumHighlight2 = ValueNotifier<bool>(false);
-        final mediumPressed2 = ValueNotifier<bool>(false);
-        final mediumSelected2 = ValueNotifier<bool>(true);
+    // ── Large notifiers ──────────────────────────────────────────────────────
+    final largeDefault = ValueNotifier<bool>(false);
+    final largePressed = ValueNotifier<bool>(false);
+    final largeSelected = ValueNotifier<bool>(true);
 
-        final largeDefault2 = ValueNotifier<bool>(false);
-        final largeHighlight2 = ValueNotifier<bool>(false);
-        final largePressed2 = ValueNotifier<bool>(false);
-        final largeSelected2 = ValueNotifier<bool>(true);
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
-        Widget buildStateRow(
-            String label,
-            ValueNotifier<bool> mediumNotifier,
-            ValueNotifier<bool> largeNotifier,
-            ) {
-          return Row(
-            children: [
-              SizedBox(
-                width: 140,
-                child: Text(label, style: typography.bodyMediumRegular),
-              ),
-              const SizedBox(width: CoreSpacing.space8),
-              CoreChip(
-                label: 'Chips',
-                selected: mediumNotifier,
-                size: CoreChipSize.medium,
-                icon: CoreIcons.check,
-              ),
-              const SizedBox(width: CoreSpacing.space56),
-              CoreChip(
-                label: 'Chips',
-                selected: largeNotifier,
-                size: CoreChipSize.large,
-                icon: CoreIcons.check,
-              ),
-            ],
-          );
-        }
+    Widget stateLabel(String label) => SizedBox(
+          width: 120,
+          child: Text(label, style: typography.bodyMediumRegular),
+        );
 
-        final widget = MaterialApp(
-          theme: ThemeData(
-            extensions: [colors, typography],
+    /// One row: label | small chip | medium chip
+    Widget smallMediumRow(
+      String label,
+      ValueNotifier<bool> smallNotifier,
+      ValueNotifier<bool> mediumNotifier,
+    ) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          stateLabel(label),
+          const SizedBox(width: CoreSpacing.space8),
+          CoreChip(
+            label: 'Chips',
+            selected: smallNotifier,
+            size: CoreChipSize.small,
+            icon: CoreIcons.check,
           ),
-          home: Scaffold(
-            backgroundColor: colors.pageBackground,
-            body: Center(
-              child: Padding(
+          const SizedBox(width: CoreSpacing.space8),
+          CoreChip(
+            label: 'Chips',
+            selected: mediumNotifier,
+            size: CoreChipSize.medium,
+            icon: CoreIcons.check,
+          ),
+        ],
+      );
+    }
 
-                padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space8, vertical: CoreSpacing.space8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildStateRow('Default', mediumDefault1, largeDefault1),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('Highlight', mediumHighlight1, largeHighlight1),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('On Click', mediumPressed1, largePressed1),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('After click', mediumSelected1, largeSelected1),
+    /// One row: label | large chip
+    Widget largeRow(
+      String label,
+      ValueNotifier<bool> largeNotifier,
+    ) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          stateLabel(label),
+          const SizedBox(width: CoreSpacing.space8),
+          CoreChip(
+            label: 'Chips',
+            selected: largeNotifier,
+            size: CoreChipSize.large,
+            icon: CoreIcons.check,
+          ),
+        ],
+      );
+    }
 
-                    const SizedBox(height: CoreSpacing.space8),
+    // ── Widget ───────────────────────────────────────────────────────────────
 
-                    buildStateRow('Default', mediumDefault2, largeDefault2),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('Highlight', mediumHighlight2, largeHighlight2),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('On Click', mediumPressed2, largePressed2),
-                    const SizedBox(height: CoreSpacing.space8),
-                    buildStateRow('After click', mediumSelected2, largeSelected2),
-                  ],
-                ),
-              ),
+    final widget = MaterialApp(
+      theme: ThemeData(extensions: [colors, typography]),
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoreSpacing.space8,
+              vertical: CoreSpacing.space8,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Section 1: Small & Medium ──────────────────────────────
+                smallMediumRow('Default', smallDefault, mediumDefault),
+                const SizedBox(height: CoreSpacing.space8),
+                smallMediumRow('On Click', smallPressed, mediumPressed),
+                const SizedBox(height: CoreSpacing.space8),
+                smallMediumRow('After click', smallSelected, mediumSelected),
+
+                const SizedBox(height: CoreSpacing.space12),
+
+                // ── Section 2: Large ───────────────────────────────────────
+                largeRow('Default', largeDefault),
+                const SizedBox(height: CoreSpacing.space8),
+                largeRow('On Click', largePressed),
+                const SizedBox(height: CoreSpacing.space8),
+                largeRow('After click', largeSelected),
+              ],
             ),
           ),
-        );
+        ),
+      ),
+    );
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
 
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle();
-
-        await expectLater(
-          find.byType(MaterialApp),
-          matchesGoldenFile('goldens/core_chip_component.png'),
-        );
-      });
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_chip_component.png'),
+    );
+    debugDisableShadows = true;
+  });
 }
