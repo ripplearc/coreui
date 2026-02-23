@@ -14,7 +14,7 @@ abstract final class CoreChipTheme {
           ),
         CoreChipSize.medium => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3,
-            vertical: CoreSpacing.space3,
+            vertical: CoreSpacing.space2,
           ),
         CoreChipSize.large => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3,
