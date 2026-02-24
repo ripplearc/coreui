@@ -12,7 +12,7 @@ This is a **controlled** widget — the parent is responsible for tracking the s
 ```dart
 CoreSelectButton(
   tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-  selectedIndex: 0,
+  selectedIndex: selectedIndex,
   onChanged: (index) {
     setState(() => selectedIndex = index);
   },

@@ -215,11 +215,11 @@ void main() {
       );
     });
   });
-
-  group('CoreSelectButton – accessibility', () {
+  group('CoreSelectButton - accessibility', () {
     const tabs = ['Tab 1', 'Tab 2', 'Tab 3'];
 
-    testWidgets('exposes semantic label', (tester) async {
+    testWidgets('exposes semantic label for selected and unselected tabs',
+        (tester) async {
       await setupA11yTest(tester);
 
       await tester.pumpWidget(
@@ -231,16 +231,21 @@ void main() {
           theme: CoreTheme.light(),
         ),
       );
-      final semantics = tester.getSemantics(find.text('Tab 1'));
-      expect(semantics.label, contains('Tab 1'));
+      final selectedSemantics = tester.getSemantics(find.text('Tab 1'));
+      expect(selectedSemantics.label, contains('Tab 1'));
+      expect(selectedSemantics.hasFlag(SemanticsFlag.isSelected), isTrue);
 
+      final unselectedSemantics = tester.getSemantics(find.text('Tab 2'));
+      expect(unselectedSemantics.label, contains('Tab 2'));
+      expect(unselectedSemantics.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(unselectedSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => const CoreSelectButton(
           tabs: tabs,
           selectedIndex: 0,
         ),
-        find.text('Tab 1'),
+        find.text('Tab 2'),
       );
     });
   });
