@@ -53,8 +53,6 @@ class CoreSelectButton extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: List.generate(
-            // Interleave tabs with spacers: [tab, spacer, tab, spacer, tab]
-            // Odd indices are spacers, even indices are tabs.
             tabs.length * 2 - 1,
             (index) {
               if (index.isOdd) {
