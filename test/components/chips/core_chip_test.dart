@@ -20,6 +20,7 @@ void main() {
             body: CoreChip(
               label: 'Test Chip',
               selected: selected,
+              withClosedIcon: true,
             ),
           ),
         ),
@@ -176,6 +177,7 @@ void main() {
             body: CoreChip(
               label: 'Chip with Close',
               selected: selected,
+              withClosedIcon: true,
             ),
           ),
         ),
@@ -218,6 +220,32 @@ void main() {
 
       expect(selected.value, isTrue);
     });
+
+    testWidgets('close icon triggers onRemove only', (tester) async {
+      final selected = ValueNotifier<bool>(false);
+      var removed = false;
+      var tapped = false;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          theme: CoreTheme.light(),
+          CoreChip(
+            label: 'Filter',
+            selected: selected,
+            withClosedIcon: true,
+            onTap: () => tapped = true,
+            onRemove: () => removed = true,
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(CoreIconWidget));
+      await tester.pumpAndSettle();
+
+      expect(removed, isTrue);
+      expect(tapped, isFalse);
+      expect(selected.value, isFalse);
+    });
   });
 
   group('CoreChip – accessibility', () {
@@ -258,6 +286,28 @@ void main() {
         checkLabeledTapTarget: true,
         checkTextContrast: true,
       );
+    });
+
+    testWidgets('close icon has semantics', (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(
+              label: 'Filter',
+              selected: selected,
+              withClosedIcon: true,
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byKey(const Key('close_icon')));
+
+      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.label, contains('Remove Filter'));
     });
   });
 }

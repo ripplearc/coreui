@@ -17,8 +17,6 @@ void main() {
       (WidgetTester tester) async {
     debugDisableShadows = false;
     await tester.binding.setSurfaceSize(const Size(1200, 900));
-
-    // ── Small & Medium notifiers ─────────────────────────────────────────────
     final smallDefault = ValueNotifier<bool>(false);
     final smallPressed = ValueNotifier<bool>(false);
     final smallSelected = ValueNotifier<bool>(true);
@@ -27,19 +25,13 @@ void main() {
     final mediumPressed = ValueNotifier<bool>(false);
     final mediumSelected = ValueNotifier<bool>(true);
 
-    // ── Large notifiers ──────────────────────────────────────────────────────
     final largeDefault = ValueNotifier<bool>(false);
     final largePressed = ValueNotifier<bool>(false);
     final largeSelected = ValueNotifier<bool>(true);
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
-
     Widget stateLabel(String label) => SizedBox(
           width: 120,
           child: Text(label, style: typography.bodyMediumRegular),
         );
-
-    /// One row: label | small chip | medium chip
     Widget smallMediumRow(
       String label,
       ValueNotifier<bool> smallNotifier,
@@ -67,7 +59,6 @@ void main() {
       );
     }
 
-    /// One row: label | large chip
     Widget largeRow(
       String label,
       ValueNotifier<bool> largeNotifier,
@@ -87,8 +78,6 @@ void main() {
       );
     }
 
-    // ── Widget ───────────────────────────────────────────────────────────────
-
     final widget = MaterialApp(
       theme: ThemeData(extensions: [colors, typography]),
       home: Scaffold(
@@ -103,16 +92,12 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Section 1: Small & Medium ──────────────────────────────
                 smallMediumRow('Default', smallDefault, mediumDefault),
                 const SizedBox(height: CoreSpacing.space8),
                 smallMediumRow('On Click', smallPressed, mediumPressed),
                 const SizedBox(height: CoreSpacing.space8),
                 smallMediumRow('After click', smallSelected, mediumSelected),
-
                 const SizedBox(height: CoreSpacing.space12),
-
-                // ── Section 2: Large ───────────────────────────────────────
                 largeRow('Default', largeDefault),
                 const SizedBox(height: CoreSpacing.space8),
                 largeRow('On Click', largePressed),
