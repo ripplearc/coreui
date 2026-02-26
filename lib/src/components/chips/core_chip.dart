@@ -115,10 +115,9 @@ class _CoreChipState extends State<CoreChip> {
               button: true,
               selected: isSelected,
               child: Material(
-                color: Colors.transparent,
+                color: colors.transparent,
                 child: InkWell(
-                  borderRadius:
-                  BorderRadius.circular(CoreSpacing.space6),
+                  borderRadius: BorderRadius.circular(CoreSpacing.space6),
                   onTap: _handleTap,
                   onTapDown: _onTapDown,
                   onTapUp: _onTapUp,
@@ -137,8 +136,7 @@ class _CoreChipState extends State<CoreChip> {
                           isPressed: isPressed,
                           colors: colors,
                         ),
-                        borderRadius:
-                        BorderRadius.circular(CoreSpacing.space6),
+                        borderRadius: BorderRadius.circular(CoreSpacing.space6),
                         border: Border.fromBorderSide(
                           BorderSide(
                             color: CoreChipTheme.borderColor(
@@ -155,18 +153,16 @@ class _CoreChipState extends State<CoreChip> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (widget.icon != null) ...[
+                          if (widget.icon case final icon?) ...[
                             CoreIconWidget(
-                              icon: widget.icon!,
+                              icon: icon,
                               size: CoreSpacing.space5,
                               color: colors.outlineFocus,
                             ),
-                            const SizedBox(
-                                width: CoreSpacing.space2),
+                            const SizedBox(width: CoreSpacing.space2),
                           ],
                           Padding(
-                            padding:
-                            const EdgeInsetsDirectional.only(
+                            padding: const EdgeInsetsDirectional.only(
                               end: CoreSpacing.space2,
                             ),
                             child: ExcludeSemantics(
@@ -179,8 +175,7 @@ class _CoreChipState extends State<CoreChip> {
                           if (widget.withClosedIcon)
                             Semantics(
                               button: true,
-                              label:
-                              'Remove ${widget.label}',
+                              label: 'Remove ${widget.label}',
                               child: InkResponse(
                                 key: const Key('close_icon'),
                                 onTap: widget.onRemove,
@@ -189,8 +184,7 @@ class _CoreChipState extends State<CoreChip> {
                                 child: CoreIconWidget(
                                   icon: CoreIcons.close,
                                   size: CoreSpacing.space5,
-                                  color:
-                                  colors.iconGrayMid,
+                                  color: colors.iconGrayMid,
                                 ),
                               ),
                             ),
