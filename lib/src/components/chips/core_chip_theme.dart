@@ -55,7 +55,7 @@ abstract final class CoreChipTheme {
   /// Returns the shadow list for a chip of a given [size].
   /// Only [CoreChipSize.large] has a shadow; others return null.
   static List<BoxShadow>? shadow(CoreChipSize size) =>
-      size == CoreChipSize.large ? CoreShadows.medium : null;
+      size == CoreChipSize.large ? CoreShadows.small : null;
 
   /// The default animation duration for pressed/selected transitions.
   static const Duration animationDuration = Duration(milliseconds: 120);

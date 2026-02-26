@@ -1,7 +1,6 @@
 export 'src/components/alerts/toast.dart';
 export 'src/components/avatar/avatar.dart';
 export 'src/components/buttons/core_button.dart';
-// Component exports
 export 'src/components/chips/core_chip.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';

@@ -39,8 +39,8 @@ enum CoreChipSize {
 ///   onRemove: () => debugPrint('removed'),
 /// )
 /// ```
-class CoreChip extends StatelessWidget {
-  CoreChip({
+class CoreChip extends StatefulWidget {
+  const CoreChip({
     super.key,
     required this.label,
     required this.selected,
@@ -48,6 +48,7 @@ class CoreChip extends StatelessWidget {
     this.icon,
     this.onTap,
     this.onRemove,
+    this.withClosedIcon = false,
   });
 
   /// The text label displayed on the chip.
@@ -72,55 +73,76 @@ class CoreChip extends StatelessWidget {
   /// The caller is responsible for removing the chip from the widget tree.
   final VoidCallback? onRemove;
 
+  final bool withClosedIcon;
+
+  @override
+  State<CoreChip> createState() => _CoreChipState();
+}
+
+class _CoreChipState extends State<CoreChip> {
   final ValueNotifier<bool> _pressed = ValueNotifier(false);
+
+  void _handleTap() {
+    widget.selected.value = !widget.selected.value;
+    widget.onTap?.call();
+  }
 
   void _onTapDown(TapDownDetails _) => _pressed.value = true;
 
-  void _onTapUp(TapUpDetails _) {
-    _pressed.value = false;
-    selected.value = !selected.value;
-    onTap?.call();
-  }
+  void _onTapUp(TapUpDetails _) => _pressed.value = false;
 
   void _onTapCancel() => _pressed.value = false;
+
+  @override
+  void dispose() {
+    _pressed.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: ValueListenableBuilder<bool>(
-        valueListenable: selected,
-        builder: (context, isSelected, _) {
-          return Semantics(
-            label: label,
-            button: true,
-            selected: isSelected,
-            child: ExcludeSemantics(
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _pressed,
-                builder: (context, isPressed, _) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: CoreSpacing.space2),
+    return ValueListenableBuilder<bool>(
+      valueListenable: widget.selected,
+      builder: (context, isSelected, _) {
+        return ValueListenableBuilder<bool>(
+          valueListenable: _pressed,
+          builder: (context, isPressed, __) {
+            return Semantics(
+              label: widget.label,
+              button: true,
+              selected: isSelected,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius:
+                  BorderRadius.circular(CoreSpacing.space6),
+                  onTap: _handleTap,
+                  onTapDown: _onTapDown,
+                  onTapUp: _onTapUp,
+                  onTapCancel: _onTapCancel,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: CoreSpacing.space2,
+                    ),
                     child: AnimatedContainer(
                       duration: CoreChipTheme.animationDuration,
-                      clipBehavior: Clip.none,
+                      padding: CoreChipTheme.padding(widget.size),
                       decoration: BoxDecoration(
                         color: CoreChipTheme.background(
-                          size: size,
+                          size: widget.size,
                           isSelected: isSelected,
                           isPressed: isPressed,
                           colors: colors,
                         ),
-                        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+                        borderRadius:
+                        BorderRadius.circular(CoreSpacing.space6),
                         border: Border.fromBorderSide(
                           BorderSide(
                             color: CoreChipTheme.borderColor(
-                              size: size,
+                              size: widget.size,
                               isSelected: isSelected,
                               isPressed: isPressed,
                               colors: colors,
@@ -128,47 +150,60 @@ class CoreChip extends StatelessWidget {
                             width: CoreChipTheme.borderWidth,
                           ),
                         ),
-                        boxShadow: CoreChipTheme.shadow(size),
+                        boxShadow: CoreChipTheme.shadow(widget.size),
                       ),
-                      padding: CoreChipTheme.padding(size),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (icon case final resolvedIcon?) ...[
+                          if (widget.icon != null) ...[
                             CoreIconWidget(
-                              icon: resolvedIcon,
+                              icon: widget.icon!,
                               size: CoreSpacing.space5,
                               color: colors.outlineFocus,
                             ),
-                            const SizedBox(width: CoreSpacing.space2),
+                            const SizedBox(
+                                width: CoreSpacing.space2),
                           ],
                           Padding(
-                            padding: const EdgeInsetsDirectional.only(
-                                end: CoreSpacing.space2),
-                            child: Text(
-                              label,
-                              style: typography.bodyMediumRegular,
+                            padding:
+                            const EdgeInsetsDirectional.only(
+                              end: CoreSpacing.space2,
+                            ),
+                            child: ExcludeSemantics(
+                              child: Text(
+                                widget.label,
+                                style: typography.bodyMediumRegular,
+                              ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: onRemove,
-                            behavior: HitTestBehavior.opaque,
-                            child: CoreIconWidget(
-                              icon: CoreIcons.close,
-                              size: CoreSpacing.space5,
-                              color: colors.iconGrayMid,
+                          if (widget.withClosedIcon)
+                            Semantics(
+                              button: true,
+                              label:
+                              'Remove ${widget.label}',
+                              child: InkResponse(
+                                key: const Key('close_icon'),
+                                onTap: widget.onRemove,
+                                radius: 20,
+                                containedInkWell: true,
+                                child: CoreIconWidget(
+                                  icon: CoreIcons.close,
+                                  size: CoreSpacing.space5,
+                                  color:
+                                  colors.iconGrayMid,
+                                ),
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
