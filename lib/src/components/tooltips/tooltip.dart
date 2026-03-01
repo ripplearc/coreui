@@ -144,7 +144,10 @@ class _CoreTooltipState extends State<CoreTooltip>
       ),
     );
 
-    overlay.insert(_overlayEntry!);
+    final entry = _overlayEntry;
+    if (entry != null) {
+      overlay.insert(entry);
+    }
     _controller.forward(from: 0).then((_) {
       if (mounted) {
         _isAnimating = false;
@@ -400,13 +403,14 @@ class _TooltipOverlayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = AppColorsExtension.of(context);
     return GestureDetector(
       onTap: onDismiss,
       behavior: HitTestBehavior.translucent,
       child: Stack(
         children: [
           Positioned.fill(
-            child: Container(color: Colors.transparent),
+            child: Container(color: colorTheme.transparent),
           ),
           Positioned(
             left: 0,
@@ -414,7 +418,7 @@ class _TooltipOverlayWidget extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Material(
-              color: Colors.transparent,
+              color: colorTheme.transparent,
               child: FadeTransition(
                 opacity: fadeAnimation,
                 child: LayoutBuilder(
