@@ -38,4 +38,9 @@ class CoreSvgIcons {
   static const String calendar = '$_basePath/calendar.svg';
   static const String tag = '$_basePath/tag.svg';
   static const String docs = '$_basePath/docs.svg';
+
+  /// Splash & Animation Icons
+  static const String splashFirstState = '$_basePath/splash_first_state.svg';
+  static const String splashSecondState = '$_basePath/splash_second_state.svg';
+  static const String splashThirdState = '$_basePath/splash_third_state.svg';
 }
