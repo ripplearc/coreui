@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.7] - Add splash screen icons
+
+### ✨ Features
+
+- **Icons**
+  - Added splash screen animation icons (splashFirstState, splashSecondState, splashThirdState)
+  - New SVG icons available via CoreIcons for splash screen animations
+
 ## [0.3.6] - Accessibility improvements
 
 ### ✨ Features

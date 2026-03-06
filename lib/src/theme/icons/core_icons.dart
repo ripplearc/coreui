@@ -129,4 +129,9 @@ class CoreIcons {
   static const verified = CoreMaterialIcons.verified;
   static const addFile = CoreMaterialIcons.addFile;
   static const docs = CoreIconData.svg(CoreSvgIcons.docs);
+
+  // Splash & Animation
+  static const splashFirstState = CoreIconData.svg(CoreSvgIcons.splashFirstState);
+  static const splashSecondState = CoreIconData.svg(CoreSvgIcons.splashSecondState);
+  static const splashThirdState = CoreIconData.svg(CoreSvgIcons.splashThirdState);
 }
