@@ -12,7 +12,7 @@
     - Configurable dismiss behavior (`isDismissible`, `enableDrag`)
     - Optional safe area handling (`useSafeArea`)
     - Optional custom background color override
-    - Professional 28px top border radius
+    - Rounded top corners (28px) per design spec
     - Returns values when dismissed for result handling
 
 ### 🔧 Fixes

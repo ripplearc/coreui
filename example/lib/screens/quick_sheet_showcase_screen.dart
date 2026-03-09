@@ -93,7 +93,6 @@ class QuickSheetShowcaseScreen extends StatelessWidget {
     CoreQuickSheet.show(
       context: context,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.all(CoreSpacing.space6),
@@ -104,7 +103,6 @@ class QuickSheetShowcaseScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              shrinkWrap: true,
               itemCount: 25,
               itemBuilder: (context, index) => ListTile(
                 leading: Icon(

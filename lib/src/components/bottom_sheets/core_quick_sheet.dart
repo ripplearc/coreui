@@ -30,7 +30,12 @@ class CoreQuickSheet {
   ///
   /// Parameters:
   /// - [context]: The build context
-  /// - [child]: The content widget to display in the bottom sheet
+  /// - [child]: The content widget to display in the bottom sheet. The child is
+  ///   wrapped in a [Flexible] widget, which means:
+  ///   - For small content: Use `Column(mainAxisSize: MainAxisSize.min)` to wrap content
+  ///   - For scrollable content: You can use `Column` with `Expanded` children or
+  ///     `ListView` directly, as the [Flexible] wrapper provides flex constraints
+  ///   - The sheet automatically sizes up to 90% of screen height
   /// - [isDismissible]: Whether tapping outside closes the sheet (default: true)
   /// - [enableDrag]: Whether dragging down closes the sheet (default: true)
   /// - [useSafeArea]: Whether to respect safe area insets (default: false)

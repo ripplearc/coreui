@@ -10,6 +10,7 @@ import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 class ComponentsScreen extends StatelessWidget {
   const ComponentsScreen({super.key});
@@ -89,7 +90,7 @@ class ComponentsScreen extends StatelessWidget {
               'Loading Indicator Components',
               const LoadingIndicatorShowcaseScreen(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             _buildShowcaseButton(
               context,
               'Core Quick Sheet Component',

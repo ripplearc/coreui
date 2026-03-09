@@ -141,7 +141,7 @@ void main() {
                   CoreQuickSheet.show(
                     context: context,
                     child: ListView.builder(
-                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: 15,
                       itemBuilder: (context, index) => ListTile(
                         leading: CircleAvatar(
