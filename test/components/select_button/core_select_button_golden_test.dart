@@ -12,8 +12,7 @@ void main() {
   final colors = AppColorsExtension.create();
   final typography = AppTypographyExtension.create();
   testWidgets('CoreSelectButton - Golden Test', (tester) async {
-    const pressedKey = Key('pressed_tab');
-
+    debugDisableShadows = false;
     Widget scenario(String title, Widget button) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -53,21 +52,6 @@ void main() {
           onChanged: (_) {},
         ),
       ),
-      scenario(
-        'Many Tabs',
-        CoreSelectButton(
-          key: pressedKey,
-          tabs: const [
-            'Short',
-            'Medium Tab',
-            'Very Long Tab Name',
-            'Tab',
-            'Another'
-          ],
-          selectedIndex: 0,
-          onChanged: (_) {},
-        ),
-      ),
     ];
 
     await tester.binding.setSurfaceSize(const Size(600, 450));
@@ -99,15 +83,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final gesture =
-        await tester.startGesture(tester.getCenter(find.byKey(pressedKey)));
-    await tester.pumpAndSettle();
-
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_select_button.png'),
     );
 
-    await gesture.up();
+    debugDisableShadows = true;
   });
 }

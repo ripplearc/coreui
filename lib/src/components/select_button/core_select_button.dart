@@ -47,7 +47,7 @@ class CoreSelectButton extends StatelessWidget {
     return Container(
       key: const Key('core_select_button_outer'),
       decoration: BoxDecoration(
-        color: colors.textInverse,
+        color: colors.pageBackground,
         borderRadius: BorderRadius.circular(CoreSpacing.space12),
         boxShadow: CoreShadows.small,
       ),
@@ -94,8 +94,6 @@ class CoreSelectButton extends StatelessWidget {
       selected: selected,
       button: true,
       child: Material(
-        // Transparent Material ancestor is required for InkWell to paint
-        // its splash effect correctly over the AnimatedContainer background.
         type: MaterialType.transparency,
         child: InkWell(
           borderRadius: BorderRadius.circular(CoreSpacing.space12),
@@ -111,7 +109,7 @@ class CoreSelectButton extends StatelessWidget {
               vertical: CoreSpacing.space2,
             ),
             decoration: BoxDecoration(
-              color: selected ? colors.tabsHighlight : colors.lineLight,
+              color: selected ? colors.tabsHighlight : colors.transparent,
               borderRadius: BorderRadius.circular(CoreSpacing.space12),
               boxShadow: selected ? CoreShadows.medium : null,
             ),
