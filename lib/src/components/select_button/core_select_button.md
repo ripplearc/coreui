@@ -10,23 +10,27 @@ This is a **controlled** widget — the parent is responsible for tracking the s
 ## Usage
 
 ```dart
-CoreSelectButton(
-  tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-  selectedIndex: selectedIndex,
-  onChanged: (index) {
-    setState(() => selectedIndex = index);
-  },
+
+int selectedIndex = 0;
+
+CoreSelectButton
+(
+tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+selectedIndex: selectedIndex,
+onChanged: (index) {
+setState(() => selectedIndex = index);
+},
 )
 ```
 
 ## Properties
 
-| Property        | Type                 | Required | Description                                                              |
-|-----------------|----------------------|----------|--------------------------------------------------------------------------|
-| `tabs`          | `List<String>`       | Yes      | List of tab labels to display                                            |
+| Property        | Type                 | Required | Description                                                                                                  |
+|-----------------|----------------------|----------|--------------------------------------------------------------------------------------------------------------|
+| `tabs`          | `List<String>`       | Yes      | List of tab labels to display                                                                                |
 | `selectedIndex` | `int`                | Yes      | The index of the currently selected tab (0-based). Must be updated by the parent in response to `onChanged`. |
-| `onChanged`     | `ValueChanged<int>?` | No       | Callback function triggered when a tab is tapped                         |
-| `key`           | `Key?`               | No       | Optional widget key for testing and identification                       |
+| `onChanged`     | `ValueChanged<int>?` | No       | Callback function triggered when a tab is tapped                                                             |
+| `key`           | `Key?`               | No       | Optional widget key for testing and identification                                                           |
 
 ## Features
 
@@ -64,43 +68,49 @@ capability through `SingleChildScrollView`.
 ### Basic Usage
 
 ```dart
-CoreSelectButton(
-  tabs: ['All', 'Active', 'Archived'],
-  selectedIndex: 0,
-  onChanged: (index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  },
+CoreSelectButton
+(
+tabs: ['All', 'Active', 'Archived'],
+selectedIndex: 0,
+onChanged: (index) {
+setState(() {
+selectedIndex = index;
+});
+},
 )
 ```
 
 ### With Many Tabs
 
 ```dart
-CoreSelectButton(
-  tabs: [
-    'Overview',
-    'Details',
-    'Settings',
-    'History',
-    'Analytics',
-    'Reports',
-  ],
-  selectedIndex: 0,
-  onChanged: (index) {
-    // Handle tab change
-  },
+CoreSelectButton
+(
+tabs: [
+'Overview',
+'Details',
+'Settings',
+'History',
+'Analytics',
+'Reports',
+],
+selectedIndex: 0,
+onChanged: (index) {
+// Handle tab change
+},
 )
 ```
 
 ### Without Callback
 
 ```dart
-CoreSelectButton(
-  tabs: ['Option 1', 'Option 2'],
-  selectedIndex: 1,
-  // onChanged is optional
+CoreSelectButton
+(
+tabs: ['Option 1', 'Option 2'],
+selectedIndex
+:
+1
+,
+// onChanged is optional
 )
 ```
 

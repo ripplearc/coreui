@@ -20,14 +20,14 @@ class _SelectButtonShowcaseScreenState
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-
+    const _multipleTabs = ['Overview', 'Details', 'Settings', 'Advanced'];
     return Scaffold(
       backgroundColor: colors.pageBackground,
       appBar: AppBar(
         title: const Text('Select Button Showcase'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(CoreSpacing.space4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,7 +35,7 @@ class _SelectButtonShowcaseScreenState
               'Basic Select Button',
               style: typography.titleMediumSemiBold,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreSelectButton(
               tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
               selectedIndex: _selectedIndex,
@@ -45,17 +45,17 @@ class _SelectButtonShowcaseScreenState
                 });
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: CoreSpacing.space2),
             Text(
               'Selected: Tab ${_selectedIndex + 1}',
               style: typography.bodyMediumRegular,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text(
               'Two Tabs',
               style: typography.titleMediumSemiBold,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreSelectButton(
               tabs: const ['Active', 'Inactive'],
               selectedIndex: _selectedIndex2,
@@ -65,24 +65,19 @@ class _SelectButtonShowcaseScreenState
                 });
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: CoreSpacing.space2),
             Text(
               'Selected: ${_selectedIndex2 == 0 ? 'Active' : 'Inactive'}',
               style: typography.bodyMediumRegular,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text(
               'Multiple Tabs',
               style: typography.titleMediumSemiBold,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreSelectButton(
-              tabs: const [
-                'Overview',
-                'Details',
-                'Settings',
-                'Advanced',
-              ],
+              tabs: _multipleTabs,
               selectedIndex: _selectedIndex3,
               onChanged: (index) {
                 setState(() {
@@ -90,22 +85,17 @@ class _SelectButtonShowcaseScreenState
                 });
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: CoreSpacing.space2),
             Text(
-              'Selected: ${[
-                'Overview',
-                'Details',
-                'Settings',
-                'Advanced'
-              ][_selectedIndex3]}',
+              'Selected: ${_multipleTabs[_selectedIndex3]}',
               style: typography.bodyMediumRegular,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text(
               'Content Display',
               style: typography.titleMediumSemiBold,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreSelectButton(
               tabs: const ['Profile', 'Settings', 'Notifications'],
               selectedIndex: _selectedIndex4,
@@ -115,7 +105,7 @@ class _SelectButtonShowcaseScreenState
                 });
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: CoreSpacing.space6),
             _buildContentForTab(_selectedIndex4),
           ],
         ),
@@ -134,10 +124,10 @@ class _SelectButtonShowcaseScreenState
     ];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(CoreSpacing.space4),
       decoration: BoxDecoration(
         color: colors.pageBackground,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(CoreSpacing.space2),
         border: Border.all(
           color: colors.lineLight,
         ),

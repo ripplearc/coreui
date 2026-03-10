@@ -6,8 +6,8 @@ import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
+    await loadFonts();
   });
   final colors = AppColorsExtension.create();
   final typography = AppTypographyExtension.create();
@@ -71,7 +71,7 @@ void main() {
     ];
 
     await tester.binding.setSurfaceSize(const Size(600, 450));
-
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(

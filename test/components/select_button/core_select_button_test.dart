@@ -18,7 +18,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               selectedIndex: 0,
@@ -31,13 +31,46 @@ void main() {
       expect(find.text('Tab 2'), findsOneWidget);
       expect(find.text('Tab 3'), findsOneWidget);
     });
+    testWidgets('does not call onChanged when already-selected tab is tapped',
+        (tester) async {
+      bool called = false;
+      await tester.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: CoreSelectButton(
+            tabs: const ['Tab 1', 'Tab 2'],
+            selectedIndex: 0,
+            onChanged: (_) => called = true,
+          ),
+        ),
+      ));
 
+      await tester.tap(find.text('Tab 1'));
+      await tester.pumpAndSettle();
+
+      expect(called, isFalse);
+    });
+
+    testWidgets('does not crash when selectedIndex is out of bounds',
+        (tester) async {
+      expect(
+        () => tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+              body: CoreSelectButton(
+            tabs: ['A', 'B'],
+            selectedIndex: 5,
+          )),
+        )),
+        throwsAssertionError,
+      );
+    });
     testWidgets('highlights selected tab via semantics',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
               selectedIndex: 1,
@@ -82,7 +115,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Only Tab'],
               selectedIndex: 0,
@@ -136,7 +169,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
               selectedIndex: 0,
@@ -146,10 +179,7 @@ void main() {
       );
 
       final outerContainer = tester.widget<Container>(
-        find.descendant(
-          of: find.byType(CoreSelectButton),
-          matching: find.byType(Container).first,
-        ),
+        find.byKey(const Key('core_select_button_outer')),
       );
 
       expect(outerContainer.decoration, isA<BoxDecoration>());
@@ -166,7 +196,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreSelectButton(
               tabs: ['Tab 1', 'Tab 2'],
               selectedIndex: 0,
@@ -180,6 +210,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CoreSelectButton), findsOneWidget);
+
+      final CoreSelectButton button =
+          tester.widget(find.byType(CoreSelectButton));
+      expect(button.selectedIndex, 0);
     });
 
     testWidgets('renders all tabs when many tabs provided',
@@ -224,7 +258,7 @@ void main() {
 
       await tester.pumpWidget(
         buildTestApp(
-          const CoreSelectButton(
+          CoreSelectButton(
             tabs: tabs,
             selectedIndex: 0,
           ),
@@ -241,7 +275,7 @@ void main() {
       expect(unselectedSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreSelectButton(
+        (theme) => CoreSelectButton(
           tabs: tabs,
           selectedIndex: 0,
         ),

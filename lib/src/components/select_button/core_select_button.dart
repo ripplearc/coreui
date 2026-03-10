@@ -36,13 +36,16 @@ class CoreSelectButton extends StatelessWidget {
     required this.tabs,
     required this.selectedIndex,
     this.onChanged,
-  });
+  })  : assert(selectedIndex >= 0, 'selectedIndex must be >= 0'),
+        assert(tabs.length == 0 || selectedIndex < tabs.length,
+            'selectedIndex must be < tabs.length');
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
 
     return Container(
+      key: const Key('core_select_button_outer'),
       decoration: BoxDecoration(
         color: colors.textInverse,
         borderRadius: BorderRadius.circular(CoreSpacing.space12),
@@ -53,7 +56,7 @@ class CoreSelectButton extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: List.generate(
-            tabs.length * 2 - 1,
+            tabs.isEmpty ? 0 : tabs.length * 2 - 1,
             (index) {
               if (index.isOdd) {
                 return const SizedBox(width: CoreSpacing.space2);
@@ -63,7 +66,11 @@ class CoreSelectButton extends StatelessWidget {
                 context,
                 label: tabs[tabIndex],
                 selected: tabIndex == selectedIndex,
-                onTap: () => onChanged?.call(tabIndex),
+                onTap: () {
+                  if (tabIndex != selectedIndex) {
+                    onChanged?.call(tabIndex);
+                  }
+                },
               );
             },
           ),
@@ -71,6 +78,8 @@ class CoreSelectButton extends StatelessWidget {
       ),
     );
   }
+
+  static const Duration _kTabTransitionDuration = Duration(milliseconds: 200);
 
   Widget _buildTab(
     BuildContext context, {
@@ -82,7 +91,6 @@ class CoreSelectButton extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
 
     return Semantics(
-      label: label,
       selected: selected,
       button: true,
       child: Material(
@@ -91,16 +99,19 @@ class CoreSelectButton extends StatelessWidget {
         type: MaterialType.transparency,
         child: InkWell(
           borderRadius: BorderRadius.circular(CoreSpacing.space12),
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(CoreSpacing.space12),
+          ),
           onTap: onTap,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: _kTabTransitionDuration,
             curve: Curves.easeOut,
             padding: const EdgeInsets.symmetric(
               horizontal: CoreSpacing.space5,
               vertical: CoreSpacing.space2,
             ),
             decoration: BoxDecoration(
-              color: selected ? colors.tabsHighlight : colors.textInverse,
+              color: selected ? colors.tabsHighlight : colors.lineLight,
               borderRadius: BorderRadius.circular(CoreSpacing.space12),
               boxShadow: selected ? CoreShadows.medium : null,
             ),
