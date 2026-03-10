@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../golden_test_typography.dart';
 import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
     await loadFonts();
+    TestWidgetsFlutterBinding.ensureInitialized();
   });
 
   final colors = AppColorsExtension.create();
-  final typography = createGoldenTestTypography();
 
   testWidgets('CoreTabs Golden Test - All Variants',
       (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 1100));
-
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(
-          extensions: [colors, typography],
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
         ),
         home: Scaffold(
           backgroundColor: colors.pageBackground,
@@ -30,51 +29,51 @@ void main() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CoreTabs(tabs: ['Tab 1', 'Tab 2'], initialIndex: 0),
+                  CoreTabs(tabs: ['Tab 1', 'Tab 2'], selectedIndex: 0),
                   SizedBox(height: CoreSpacing.space6),
-                  CoreTabs(tabs: ['Tab 1', 'Tab 2'], initialIndex: 1),
+                  CoreTabs(tabs: ['Tab 1', 'Tab 2'], selectedIndex: 1),
                   SizedBox(height: CoreSpacing.space6),
-                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], initialIndex: 0),
+                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], selectedIndex: 0),
                   SizedBox(height: CoreSpacing.space6),
-                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], initialIndex: 1),
+                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], selectedIndex: 1),
                   SizedBox(height: CoreSpacing.space6),
-                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], initialIndex: 2),
-                  SizedBox(height: CoreSpacing.space6),
-                  CoreTabs(
-                      tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
-                      initialIndex: 0),
+                  CoreTabs(tabs: ['Tab 1', 'Tab 2', 'Tab 3'], selectedIndex: 2),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
-                      initialIndex: 1),
+                      selectedIndex: 0),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
-                      initialIndex: 2),
+                      selectedIndex: 1),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
-                      initialIndex: 3),
+                      selectedIndex: 2),
+                  SizedBox(height: CoreSpacing.space6),
+                  CoreTabs(
+                      tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
+                      selectedIndex: 3),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-                      initialIndex: 0),
+                      selectedIndex: 0),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-                      initialIndex: 1),
+                      selectedIndex: 1),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-                      initialIndex: 2),
+                      selectedIndex: 2),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-                      initialIndex: 3),
+                      selectedIndex: 3),
                   SizedBox(height: CoreSpacing.space6),
                   CoreTabs(
                       tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-                      initialIndex: 4),
+                      selectedIndex: 4),
                 ],
               ),
             ),

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-class TabsShowcaseScreen extends StatefulWidget {
-  const TabsShowcaseScreen({super.key});
+class TabsShowcaseScreen extends StatelessWidget {
+  TabsShowcaseScreen({super.key});
 
-  @override
-  State<TabsShowcaseScreen> createState() => _TabsShowcaseScreenState();
-}
+  final ValueNotifier<int> selectedTab = ValueNotifier(0);
 
-class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,24 +17,30 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildInteractiveTabs(context),
+            const SizedBox(height: CoreSpacing.space8),
             _buildTabsSection(
+              context: context,
               title: '2 Tabs',
-              tabs: ['Tab 1', 'Tab 2'],
+              tabs: const ['Tab 1', 'Tab 2'],
             ),
             const SizedBox(height: CoreSpacing.space8),
             _buildTabsSection(
+              context: context,
               title: '3 Tabs',
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
             ),
             const SizedBox(height: CoreSpacing.space8),
             _buildTabsSection(
+              context: context,
               title: '4 Tabs',
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'],
             ),
             const SizedBox(height: CoreSpacing.space8),
             _buildTabsSection(
+              context: context,
               title: '5 Tabs',
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
             ),
           ],
         ),
@@ -45,7 +48,43 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
     );
   }
 
+  Widget _buildInteractiveTabs(BuildContext context) {
+    final typography = AppTypographyExtension.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Interactive Example',
+          style: typography.bodyLargeSemiBold,
+        ),
+        const SizedBox(height: CoreSpacing.space3),
+        ValueListenableBuilder<int>(
+          valueListenable: selectedTab,
+          builder: (context, index, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CoreTabs(
+                  tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+                  selectedIndex: index,
+                  onChanged: (i) => selectedTab.value = i,
+                ),
+                const SizedBox(height: CoreSpacing.space3),
+                Text(
+                  'Selected: Tab ${index + 1}',
+                  style: typography.bodyMediumMedium,
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildTabsSection({
+    required BuildContext context,
     required String title,
     required List<String> tabs,
   }) {
@@ -63,7 +102,6 @@ class _TabsShowcaseScreenState extends State<TabsShowcaseScreen> {
           padding: const EdgeInsets.only(bottom: CoreSpacing.space4),
           child: CoreTabs(
             tabs: tabs,
-            initialIndex: 0,
           ),
         ),
       ],

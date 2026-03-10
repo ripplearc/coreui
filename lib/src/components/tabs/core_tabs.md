@@ -4,28 +4,48 @@ A horizontal tab bar component following the Core design system. Displays a list
 highlighting the currently selected tab.
 
 ## Usage
+
 CoreTabs is intended to be used together with TabBarView and requires a DefaultTabController in the widget tree.
 
 ```dart
-DefaultTabController(
-  length: 3,
-  child: Column(
-    children: [
-      CoreTabs(
-        tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-      ),
-      Expanded(
-        child: TabBarView(
-          children: [
-            Center(child: Text('Tab 1 Content')),
-            Center(child: Text('Tab 2 Content')),
-            Center(child: Text('Tab 3 Content')),
-          ],
+class TabsExample extends StatefulWidget {
+  const TabsExample({super.key});
+
+  @override
+  State<TabsExample> createState() => _TabsExampleState();
+}
+
+class _TabsExampleState extends State<TabsExample> {
+  int selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CoreTabs(
+          tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+          selectedIndex: selectedIndex,
+          onChanged: (index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
         ),
-      ),
-    ],
-  ),
-)
+        const SizedBox(height: 16),
+        Expanded(
+          child: IndexedStack(
+            index: selectedIndex,
+            children: const [
+              Center(child: Text('Tab 1 Content')),
+              Center(child: Text('Tab 2 Content')),
+              Center(child: Text('Tab 3 Content')),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
 ```
 
 ## Properties
@@ -61,30 +81,33 @@ tabs changes.
 ### Two Tabs
 
 ```dart
-CoreTabs(
-  tabs: ['Overview', 'Details'],
+CoreTabs
+(
+tabs: ['Overview', 'Details'],
 )
 ```
 
 ### With Initial Selection
 
 ```dart
-CoreTabs(
-  tabs: ['Home', 'Profile', 'Settings'],
-  initialIndex: 1,
+CoreTabs
+(
+tabs: ['Home', 'Profile', 'Settings'],
+initialIndex: 1,
 )
 ```
 
 ### With Change Handler
 
 ```dart
-CoreTabs(
-  tabs: ['All', 'Active', 'Completed'],
-  onChanged: (index) {
-    setState(() {
-      selectedTabIndex = index;
-    });
-  },
+CoreTabs
+(
+tabs: ['All', 'Active', 'Completed'],
+onChanged: (index) {
+setState(() {
+selectedIndex = index;
+});
+},
 )
 ```
 
@@ -93,7 +116,7 @@ CoreTabs(
 ```dart
 CoreTabs(
   tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
-  initialIndex: 0,
+  selectedIndex : 0,
 )
 ```
 
@@ -102,6 +125,7 @@ CoreTabs(
 The component uses theme extensions for consistent styling:
 
 ```dart
+
 final colors = AppColorsExtension.of(context);
 final typography = AppTypographyExtension.of(context);
 ```

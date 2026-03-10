@@ -6,18 +6,33 @@ import '../../utils/a11y_guidelines.dart';
 import '../../utils/test_harness.dart';
 
 void main() {
-  final typography = AppTypographyExtension.create();
+  final theme = CoreTheme.light();
+  final typography = theme.extension<AppTypographyExtension>()!;
 
   group('CoreTabs Widget Tests', () {
+    testWidgets('does not call onChanged on initial render', (tester) async {
+      bool called = false;
+      await tester.pumpWidget(MaterialApp(
+        theme: theme,
+        home: Scaffold(
+            body: CoreTabs(
+          tabs: ['A', 'B'],
+          onChanged: (_) => called = true,
+        )),
+      ));
+      await tester.pumpAndSettle();
+      expect(called, isFalse);
+    });
+
     testWidgets('renders tabs correctly with initial index',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
@@ -34,7 +49,7 @@ void main() {
     testWidgets('renders with 2 tabs', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2'],
@@ -50,7 +65,7 @@ void main() {
     testWidgets('renders with 5 tabs', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'],
@@ -72,7 +87,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
@@ -94,14 +109,15 @@ void main() {
       expect(changedIndex, equals(1));
     });
 
-    testWidgets('respects initialIndex parameter', (WidgetTester tester) async {
+    testWidgets('respects selectedIndex parameter',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 1,
+              selectedIndex: 1,
             ),
           ),
         ),
@@ -114,16 +130,33 @@ void main() {
 
       final tabBar = tester.widget<TabBar>(tabBarFinder);
 
-      TabController? controller = tabBar.controller;
-
-      if (controller == null) {
-        controller = DefaultTabController.of(
-          tester.element(tabBarFinder),
-        );
-      }
+      final controller = tabBar.controller;
 
       expect(controller, isNotNull);
-      expect(controller.index, equals(1));
+      expect(controller!.index, equals(1));
+    });
+
+    testWidgets('updates labels when tab content changes with same count',
+        (tester) async {
+      List<String> tabs = ['Home', 'Profile'];
+      await tester.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: StatefulBuilder(builder: (context, setState) {
+          return Scaffold(
+              body: Column(children: [
+            CoreTabs(tabs: tabs),
+            ElevatedButton(
+              onPressed: () => setState(() => tabs = ['Feed', 'Search']),
+              child: const Text('Swap'),
+            ),
+          ]));
+        }),
+      ));
+      expect(find.text('Home'), findsOneWidget);
+      await tester.tap(find.text('Swap'));
+      await tester.pumpAndSettle();
+      expect(find.text('Feed'), findsOneWidget);
+      expect(find.text('Home'), findsNothing);
     });
 
     testWidgets('updates when tabs list changes', (WidgetTester tester) async {
@@ -131,7 +164,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: theme,
           home: Scaffold(
             body: StatefulBuilder(
               builder: (context, setState) {
@@ -170,15 +203,13 @@ void main() {
 
     testWidgets('applies correct label styles to TabBar',
         (WidgetTester tester) async {
-      final theme = CoreTheme.light();
-
       await tester.pumpWidget(
         MaterialApp(
           theme: theme,
           home: const Scaffold(
             body: CoreTabs(
               tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              initialIndex: 0,
+              selectedIndex: 0,
             ),
           ),
         ),
@@ -214,9 +245,9 @@ void main() {
         buildTestApp(
           const CoreTabs(
             tabs: tabs,
-            initialIndex: 0,
+            selectedIndex: 0,
           ),
-          theme: CoreTheme.light(),
+          theme: theme,
         ),
       );
       final semantics = tester.getSemantics(find.text('Home'));
@@ -226,7 +257,7 @@ void main() {
         tester,
         (theme) => const CoreTabs(
           tabs: tabs,
-          initialIndex: 0,
+          selectedIndex: 0,
         ),
         find.text('Home'),
       );

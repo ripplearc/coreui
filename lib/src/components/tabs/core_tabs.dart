@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -30,7 +31,7 @@ class CoreTabs extends StatefulWidget {
   /// The index of the initially selected tab.
   ///
   /// Defaults to 0 (the first tab).
-  final int initialIndex;
+  final int selectedIndex;
 
   /// Called when the user selects a different tab.
   ///
@@ -43,7 +44,7 @@ class CoreTabs extends StatefulWidget {
   const CoreTabs({
     super.key,
     required this.tabs,
-    this.initialIndex = 0,
+    this.selectedIndex = 0,
     this.onChanged,
   });
 
@@ -60,13 +61,13 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
     _controller = TabController(
       length: widget.tabs.length,
       vsync: this,
-      initialIndex: widget.initialIndex,
+      initialIndex: widget.selectedIndex,
     );
     _controller.addListener(_onTabChanged);
   }
 
   void _onTabChanged() {
-    if (_controller.indexIsChanging) {
+    if (!_controller.indexIsChanging) {
       widget.onChanged?.call(_controller.index);
     }
   }
@@ -74,15 +75,21 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant CoreTabs oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.tabs.length != widget.tabs.length) {
+
+    if (!listEquals(oldWidget.tabs, widget.tabs)) {
       _controller.removeListener(_onTabChanged);
       _controller.dispose();
+
       _controller = TabController(
         length: widget.tabs.length,
         vsync: this,
-        initialIndex: widget.initialIndex,
+        initialIndex: widget.selectedIndex,
       );
+
       _controller.addListener(_onTabChanged);
+    } else if (oldWidget.selectedIndex != widget.selectedIndex &&
+        widget.selectedIndex != _controller.index) {
+      _controller.animateTo(widget.selectedIndex);
     }
   }
 
@@ -97,31 +104,27 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: TabBar(
-        enableFeedback: false,
-        controller: _controller,
-        isScrollable: true,
-        tabAlignment: TabAlignment.start,
-        indicatorColor: colors.tabsHighlight,
-        indicatorWeight: CoreSpacing.space1,
-        labelColor: colors.textHeadline,
-        unselectedLabelColor: colors.textBody,
-        labelStyle: typography.bodyMediumSemiBold,
-        unselectedLabelStyle: typography.bodyMediumRegular,
-        tabs: [
-          for (final label in widget.tabs)
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
-              child: Tab(
-                text: label,
-                height: CoreSpacing.space10,
-              ),
+    return TabBar(
+      enableFeedback: false,
+      controller: _controller,
+      isScrollable: true,
+      tabAlignment: TabAlignment.start,
+      indicatorColor: colors.tabsHighlight,
+      indicatorWeight: CoreSpacing.space1,
+      labelColor: colors.textHeadline,
+      unselectedLabelColor: colors.textBody,
+      labelStyle: typography.bodyMediumSemiBold,
+      unselectedLabelStyle: typography.bodyMediumRegular,
+      tabs: [
+        for (final label in widget.tabs)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
+            child: Tab(
+              text: label,
+              height: CoreSpacing.space10,
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
