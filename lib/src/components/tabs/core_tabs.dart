@@ -104,27 +104,31 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    return TabBar(
-      enableFeedback: false,
-      controller: _controller,
-      isScrollable: true,
-      tabAlignment: TabAlignment.start,
-      indicatorColor: colors.tabsHighlight,
-      indicatorWeight: CoreSpacing.space1,
-      labelColor: colors.textHeadline,
-      unselectedLabelColor: colors.textBody,
-      labelStyle: typography.bodyMediumSemiBold,
-      unselectedLabelStyle: typography.bodyMediumRegular,
-      tabs: [
-        for (final label in widget.tabs)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
-            child: Tab(
-              text: label,
-              height: CoreSpacing.space10,
+    return IntrinsicWidth(
+      child: TabBar(
+        enableFeedback: false,
+        controller: _controller,
+        isScrollable: true,
+        indicatorSize: TabBarIndicatorSize.tab,
+        tabAlignment: TabAlignment.start,
+        indicatorColor: colors.tabsHighlight,
+        indicatorWeight: CoreSpacing.space1,
+        labelColor: colors.textHeadline,
+        unselectedLabelColor: colors.textBody,
+        labelStyle: typography.bodyMediumSemiBold,
+        unselectedLabelStyle: typography.bodyMediumRegular,
+        tabs: [
+          for (final label in widget.tabs)
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
+              child: Tab(
+                text: label,
+                height: CoreSpacing.space10,
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

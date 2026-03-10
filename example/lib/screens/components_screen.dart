@@ -108,7 +108,7 @@ class ComponentsScreen extends StatelessWidget {
             _buildShowcaseButton(
               context,
               'Tabs Components',
-              const TabsShowcaseScreen(),
+              TabsShowcaseScreen(),
             ),
             // Add more component showcases here as they become available
           ],
