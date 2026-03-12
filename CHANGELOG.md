@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.9] - CoreToast title support
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreToast**: Added optional `title` parameter to `showSuccess`, `showError`, and `showWarning` methods.
+
+### 🔧 Fixes
+
+- **Code Quality**
+  - Improved null safety in `CoreToast` descriptions to avoid displaying "null" strings.
+  - Cleaned up redundant documentation and implementation comments.
+
 ## [0.3.8] - CoreQuickSheet component
 
 ### ✨ Features
