@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_static_colors
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
