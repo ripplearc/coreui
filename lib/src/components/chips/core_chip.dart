@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_static_colors
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -142,12 +141,11 @@ class _CoreChipState extends State<CoreChip> {
                   container: true,
                   selected: isSelected,
                   child: Material(
-                    color: Colors.transparent, // ignore: avoid_static_colors
+                    color: colors.transparent,
                     child: InkWell(
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: WidgetStateProperty.all(
-                        // ignore: avoid_static_colors
-                        Colors.transparent,
+                        colors.transparent,
                       ),
                       focusNode: _focusNode,
                       autofocus: widget.autofocus,
