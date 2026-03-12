@@ -9,32 +9,19 @@ class ChipShowcaseScreen extends StatefulWidget {
 }
 
 class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
-  late ValueNotifier<bool> smallChipSelected;
-  late ValueNotifier<bool> mediumChipSelected;
-  late ValueNotifier<bool> largeChipSelected;
-  late ValueNotifier<bool> smallChipWithIconSelected;
-  late ValueNotifier<bool> mediumChipWithIconSelected;
-  late ValueNotifier<bool> largeChipWithIconSelected;
+  late List<ValueNotifier<bool>> _selected;
 
   @override
   void initState() {
     super.initState();
-    smallChipSelected = ValueNotifier(false);
-    mediumChipSelected = ValueNotifier(false);
-    largeChipSelected = ValueNotifier(false);
-    smallChipWithIconSelected = ValueNotifier(false);
-    mediumChipWithIconSelected = ValueNotifier(false);
-    largeChipWithIconSelected = ValueNotifier(false);
+    _selected = List.generate(6, (_) => ValueNotifier(false));
   }
 
   @override
   void dispose() {
-    smallChipSelected.dispose();
-    mediumChipSelected.dispose();
-    largeChipSelected.dispose();
-    smallChipWithIconSelected.dispose();
-    mediumChipWithIconSelected.dispose();
-    largeChipWithIconSelected.dispose();
+    for (final notifier in _selected) {
+      notifier.dispose();
+    }
     super.dispose();
   }
 
@@ -45,79 +32,79 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Core Chip Showcase')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(CoreSpacing.space4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Chip Sizes', style: typography.titleMediumSemiBold),
-            const SizedBox(height: 20),
+            const SizedBox(height: CoreSpacing.space5),
             Text('Small Chips', style: typography.bodyMediumRegular),
-            const SizedBox(height: 12),
+            const SizedBox(height: CoreSpacing.space3),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: CoreSpacing.space3,
+              runSpacing: CoreSpacing.space3,
               children: [
                 CoreChip(
                   label: 'Small Chip',
-                  selected: smallChipSelected,
+                  selected: _selected[0],
                   size: CoreChipSize.small,
                 ),
                 CoreChip(
                   label: 'Small with Icon',
-                  selected: smallChipWithIconSelected,
+                  selected: _selected[1],
                   size: CoreChipSize.small,
                   icon: CoreIcons.checkCircle,
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text('Medium Chips', style: typography.bodyMediumRegular),
-            const SizedBox(height: 12),
+            const SizedBox(height: CoreSpacing.space3),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: CoreSpacing.space3,
+              runSpacing: CoreSpacing.space3,
               children: [
                 CoreChip(
                   label: 'Medium Chip',
-                  selected: mediumChipSelected,
+                  selected: _selected[2],
                   size: CoreChipSize.medium,
                 ),
                 CoreChip(
                   label: 'Medium with Icon',
-                  selected: mediumChipWithIconSelected,
+                  selected: _selected[3],
                   size: CoreChipSize.medium,
                   icon: CoreIcons.checkCircle,
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text('Large Chips', style: typography.bodyMediumRegular),
-            const SizedBox(height: 12),
+            const SizedBox(height: CoreSpacing.space3),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: CoreSpacing.space3,
+              runSpacing: CoreSpacing.space3,
               children: [
                 CoreChip(
                   label: 'Large Chip',
-                  selected: largeChipSelected,
+                  selected: _selected[4],
                   size: CoreChipSize.large,
                 ),
                 CoreChip(
                   label: 'Large with Icon',
-                  selected: largeChipWithIconSelected,
+                  selected: _selected[5],
                   size: CoreChipSize.large,
                   icon: CoreIcons.checkCircle,
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: CoreSpacing.space8),
             Text('States', style: typography.bodyMediumRegular),
-            const SizedBox(height: 12),
+            const SizedBox(height: CoreSpacing.space3),
             Text(
               'Click chips above to see default, hover, pressed, and selected states.',
               style: typography.bodySmallRegular,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: CoreSpacing.space3),
             Text(
               'The chips use color tokens for consistent styling across states.',
               style: typography.bodySmallRegular

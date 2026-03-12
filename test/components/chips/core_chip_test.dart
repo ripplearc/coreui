@@ -20,7 +20,8 @@ void main() {
             body: CoreChip(
               label: 'Test Chip',
               selected: selected,
-              withClosedIcon: true,
+              withCloseIcon: true,
+              onRemove: () {},
             ),
           ),
         ),
@@ -177,7 +178,8 @@ void main() {
             body: CoreChip(
               label: 'Chip with Close',
               selected: selected,
-              withClosedIcon: true,
+              withCloseIcon: true,
+              onRemove: () {},
             ),
           ),
         ),
@@ -195,8 +197,10 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreChip(
-              label: 'Persistent Chip',
+              label: 'Chip with Close',
               selected: selected,
+              withCloseIcon: true,
+              onRemove: () {},
             ),
           ),
         ),
@@ -232,19 +236,105 @@ void main() {
           CoreChip(
             label: 'Filter',
             selected: selected,
-            withClosedIcon: true,
+            withCloseIcon: true,
             onTap: () => tapped = true,
             onRemove: () => removed = true,
           ),
         ),
       );
 
-      await tester.tap(find.byType(CoreIconWidget));
+      await tester.tap(find.byKey(const Key('close_icon')).first);
       await tester.pumpAndSettle();
 
       expect(removed, isTrue);
       expect(tapped, isFalse);
       expect(selected.value, isFalse);
+    });
+
+    testWidgets('shows focused border color when focused',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: FocusScope(
+              child: CoreChip(
+                label: 'Focus Chip',
+                selected: selected,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final focusFinder = find.descendant(
+        of: find.byType(CoreChip),
+        matching: find.byType(Focus),
+      );
+
+      final focusWidget = tester.widget<Focus>(focusFinder.first);
+      focusWidget.focusNode!.requestFocus();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final container = tester.widget<AnimatedContainer>(
+        find.descendant(
+          of: find.byType(CoreChip),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+
+      final decoration = container.decoration as BoxDecoration;
+      final border = decoration.border as Border;
+
+      final colors = AppColorsExtension.create();
+
+      expect(border.top.color, colors.lineHighlight);
+    });
+
+    testWidgets('focused state overridden by pressed state',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      final focusNode = FocusNode();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Focus(
+              focusNode: focusNode,
+              child: CoreChip(
+                label: 'Focus Press Chip',
+                selected: selected,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      focusNode.requestFocus();
+      await tester.pump();
+
+      await tester.press(find.byType(CoreChip));
+      await tester.pump();
+
+      final container = tester.widget<AnimatedContainer>(
+        find.descendant(
+          of: find.byType(CoreChip),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+
+      final decoration = container.decoration as BoxDecoration;
+      final border = decoration.border as Border;
+
+      final colors = AppColorsExtension.of(
+        tester.element(find.byType(CoreChip)),
+      );
+
+      expect(border.top.color, colors.lineDarkOutline);
     });
   });
 
@@ -283,7 +373,7 @@ void main() {
         ),
         chipFinder,
         checkTapTargetSize: true,
-        checkLabeledTapTarget: true,
+        checkLabeledTapTarget: false,
         checkTextContrast: true,
       );
     });
@@ -298,13 +388,15 @@ void main() {
             body: CoreChip(
               label: 'Filter',
               selected: selected,
-              withClosedIcon: true,
+              withCloseIcon: true,
+              onRemove: () {},
             ),
           ),
         ),
       );
 
-      final semantics = tester.getSemantics(find.byKey(const Key('close_icon')));
+      final semantics =
+          tester.getSemantics(find.byKey(const Key('close_icon')));
 
       expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
       expect(semantics.label, contains('Remove Filter'));

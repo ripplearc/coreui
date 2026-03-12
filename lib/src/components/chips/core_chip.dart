@@ -48,7 +48,7 @@ class CoreChip extends StatefulWidget {
     this.icon,
     this.onTap,
     this.onRemove,
-    this.withClosedIcon = false,
+    this.withCloseIcon = false,
   });
 
   /// The text label displayed on the chip.
@@ -73,7 +73,7 @@ class CoreChip extends StatefulWidget {
   /// The caller is responsible for removing the chip from the widget tree.
   final VoidCallback? onRemove;
 
-  final bool withClosedIcon;
+  final bool withCloseIcon;
 
   @override
   State<CoreChip> createState() => _CoreChipState();
@@ -81,21 +81,28 @@ class CoreChip extends StatefulWidget {
 
 class _CoreChipState extends State<CoreChip> {
   final ValueNotifier<bool> _pressed = ValueNotifier(false);
+  final FocusNode _focusNode = FocusNode();
+  final ValueNotifier<bool> _focused = ValueNotifier(false);
 
   void _handleTap() {
     widget.selected.value = !widget.selected.value;
     widget.onTap?.call();
   }
 
-  void _onTapDown(TapDownDetails _) => _pressed.value = true;
-
-  void _onTapUp(TapUpDetails _) => _pressed.value = false;
-
-  void _onTapCancel() => _pressed.value = false;
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      _focused.value = _focusNode.hasFocus;
+    });
+  }
 
   @override
   void dispose() {
     _pressed.dispose();
+
+    _focusNode.dispose();
+    _focused.dispose();
     super.dispose();
   }
 
@@ -103,99 +110,109 @@ class _CoreChipState extends State<CoreChip> {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-
+    final chipRadius = BorderRadius.circular(CoreSpacing.space6);
     return ValueListenableBuilder<bool>(
       valueListenable: widget.selected,
       builder: (context, isSelected, _) {
         return ValueListenableBuilder<bool>(
           valueListenable: _pressed,
           builder: (context, isPressed, __) {
-            return Semantics(
-              label: widget.label,
-              button: true,
-              selected: isSelected,
-              child: Material(
-                color: colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(CoreSpacing.space6),
-                  onTap: _handleTap,
-                  onTapDown: _onTapDown,
-                  onTapUp: _onTapUp,
-                  onTapCancel: _onTapCancel,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: CoreSpacing.space2,
-                    ),
-                    child: AnimatedContainer(
-                      duration: CoreChipTheme.animationDuration,
-                      padding: CoreChipTheme.padding(widget.size),
-                      decoration: BoxDecoration(
-                        color: CoreChipTheme.background(
-                          size: widget.size,
-                          isSelected: isSelected,
-                          isPressed: isPressed,
-                          colors: colors,
-                        ),
-                        borderRadius: BorderRadius.circular(CoreSpacing.space6),
-                        border: Border.fromBorderSide(
-                          BorderSide(
-                            color: CoreChipTheme.borderColor(
-                              size: widget.size,
-                              isSelected: isSelected,
-                              isPressed: isPressed,
-                              colors: colors,
-                            ),
-                            width: CoreChipTheme.borderWidth,
+            return ValueListenableBuilder<bool>(
+              valueListenable: _focused,
+              builder: (context, isFocused, ___) {
+                return Semantics(
+                  label: widget.label,
+                  button: true,
+                  container: true,
+                  selected: isSelected,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      focusNode: _focusNode,
+                      onFocusChange: (value) => _focused.value = value,
+                      onHighlightChanged: (value) => _pressed.value = value,
+                      borderRadius: chipRadius,
+                      onTap: _handleTap,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: CoreSpacing.space2,
                           ),
-                        ),
-                        boxShadow: CoreChipTheme.shadow(widget.size),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.icon case final icon?) ...[
-                            CoreIconWidget(
-                              icon: icon,
-                              size: CoreSpacing.space5,
-                              color: colors.outlineFocus,
-                            ),
-                            const SizedBox(width: CoreSpacing.space2),
-                          ],
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(
-                              end: CoreSpacing.space2,
-                            ),
-                            child: ExcludeSemantics(
-                              child: Text(
-                                widget.label,
-                                style: typography.bodyMediumRegular,
+                          child: AnimatedContainer(
+                            duration: CoreChipTheme.animationDuration,
+                            padding: CoreChipTheme.padding(widget.size),
+                            decoration: BoxDecoration(
+                              color: CoreChipTheme.background(
+                                size: widget.size,
+                                isSelected: isSelected,
+                                isPressed: isPressed,
+                                isFocused: isFocused,
+                                colors: colors,
                               ),
-                            ),
-                          ),
-                          if (widget.withClosedIcon)
-                            Semantics(
-                              button: true,
-                              label: 'Remove ${widget.label}',
-                              child: InkResponse(
-                                key: const Key('close_icon'),
-                                onTap: widget.onRemove,
-                                radius: 20,
-                                containedInkWell: true,
-                                child: CoreIconWidget(
-                                  icon: CoreIcons.close,
-                                  size: CoreSpacing.space5,
-                                  color: colors.iconGrayMid,
+                              borderRadius: chipRadius,
+                              border: Border.fromBorderSide(
+                                BorderSide(
+                                  color: CoreChipTheme.borderColor(
+                                    size: widget.size,
+                                    isSelected: isSelected,
+                                    isPressed: isPressed,
+                                    isFocused: isFocused,
+                                    colors: colors,
+                                  ),
+                                  width: CoreChipTheme.borderWidthFor(
+                                    isFocused: isFocused,
+                                  ),
                                 ),
                               ),
+                              boxShadow: CoreChipTheme.shadow(widget.size),
                             ),
-                        ],
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (widget.icon case final icon?) ...[
+                                  CoreIconWidget(
+                                    icon: icon,
+                                    size: CoreSpacing.space5,
+                                    color: colors.outlineFocus,
+                                  ),
+                                  const SizedBox(width: CoreSpacing.space2),
+                                ],
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.only(
+                                    end: CoreSpacing.space2,
+                                  ),
+                                  child: ExcludeSemantics(
+                                    child: Text(
+                                      widget.label,
+                                      style: typography.bodyMediumRegular,
+                                    ),
+                                  ),
+                                ),
+                                if (widget.withCloseIcon &&
+                                    widget.onRemove != null)
+                                  Semantics(
+                                    button: true,
+                                    label: 'Remove ${widget.label}',
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      key: const Key('close_icon'),
+                                      onTap: widget.onRemove,
+                                      child: CoreIconWidget(
+                                        icon: CoreIcons.close,
+                                        size: CoreSpacing.space5,
+                                        color: colors.iconGrayMid,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            );
-          },
+                  );
+                },
+              );
+            },
         );
       },
     );

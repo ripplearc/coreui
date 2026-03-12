@@ -1,49 +1,58 @@
 # CoreChip
 
-A selectable chip component that supports different sizes, optional icons, and visual state feedback for default,
-highlight, pressed, and selected states.
+A selectable chip that supports three sizes, an optional leading icon, an optional close (×) action, and visual feedback for default, focused, pressed, and selected states.
 
 ## Usage
 
 ```dart
-final selectedNotifier = ValueNotifier<bool>(false);
+final selected = ValueNotifier<bool>(false);
 
 CoreChip(
   label: 'Filter',
-  selected: selectedNotifier,
-)
+  selected: selected,
+  size: CoreChipSize.medium,
+  icon: CoreIcons.check,
+  onTap: () => debugPrint('toggled'),
+);
 ```
 
 ## Properties
 
-| Property   | Type                  | Required | Default               | Description                                 |
-|------------|-----------------------|----------|-----------------------|---------------------------------------------|
-| `label`    | `String`              | Yes      | —                     | The text displayed on the chip              |
-| `selected` | `ValueNotifier<bool>` | Yes      | —                     | Controls the selected state of the chip     |
-| `size`     | `CoreChipSize`        | No       | `CoreChipSize.medium` | The size of the chip (small, medium, large) |
-| `icon`     | `CoreIconData?`       | No       | `null`                | Optional icon displayed before the label    |
-| `onTap`    | `VoidCallback?`       | No       | `null`                | Callback invoked when the chip is tapped    |
+| Property | Type | Required | Default | Description |
+|---|---|---:|---|---|
+| `label` | `String` | Yes | — | The text displayed on the chip. |
+| `selected` | `ValueNotifier<bool>` | Yes | — | Owns the selected state. The chip toggles `selected.value` on tap. |
+| `size` | `CoreChipSize` | No | `CoreChipSize.medium` | Size variant: `small`, `medium`, `large`. |
+| `icon` | `CoreIconData?` | No | `null` | Optional leading icon shown before the label. |
+| `onTap` | `VoidCallback?` | No | `null` | Called after a tap, after `selected.value` has been toggled. |
+| `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
+| `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
+
+Notes:
+
+- The close icon is rendered only when `withCloseIcon == true` **and** `onRemove != null`.
 
 ## Sizes
 
-| Size     | Horizontal Padding | Vertical Padding | Shadow |
-|----------|--------------------|------------------|--------|
-| `small`  | 8px                | 2px              | None   |
-| `medium` | 12px               | 6px              | None   |
-| `large`  | 12px               | 12px             | Medium |
+`CoreChipSize.small` and `CoreChipSize.medium` share the same overall visual style (grey surface, no shadow). `CoreChipSize.large` uses a page background surface with a drop shadow.
+
+| Size | Padding | Shadow |
+|---|---|---|
+| `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | None |
+| `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | None |
+| `large` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3)` | `CoreShadows.small` |
 
 ## States
 
-The chip supports the following visual states:
+The chip resolves visuals from `CoreChipTheme` based on:
 
-- **Default**: Normal appearance with size-dependent background and border
-- **Highlight**: Border changes to `lineHighlight` color on hover/focus
-- **Pressed**: Border changes to `lineDarkOutline` color while pressed
-- **Selected**: Border changes to `outlineHover` color when selected
+- **Selected** (`selected.value == true`)
+- **Pressed** (pointer down; internal)
+- **Focused** (keyboard focus; internal `FocusNode`)
 
 ## Examples
 
-### Basic Chip
+### Basic chip
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
@@ -51,10 +60,10 @@ final isSelected = ValueNotifier<bool>(false);
 CoreChip(
   label: 'Category',
   selected: isSelected,
-)
+);
 ```
 
-### Chip with Icon
+### Chip with icon
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
@@ -63,10 +72,10 @@ CoreChip(
   label: 'Favorites',
   selected: isSelected,
   icon: CoreIcons.favorite,
-)
+);
 ```
 
-### Small Chip
+### Small chip
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
@@ -75,10 +84,10 @@ CoreChip(
   label: 'Tag',
   selected: isSelected,
   size: CoreChipSize.small,
-)
+);
 ```
 
-### Large Chip with Shadow
+### Large chip with shadow
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
@@ -88,24 +97,24 @@ CoreChip(
   selected: isSelected,
   size: CoreChipSize.large,
   icon: CoreIcons.checkCircle,
-)
+);
 ```
 
-### Chip with Tap Callback
+### Chip with tap + remove
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
 
 CoreChip(
-  label: 'Action',
+  label: 'Removable',
   selected: isSelected,
-  onTap: () {
-    print('Chip tapped, selected: ${isSelected.value}');
-  },
-)
+  withCloseIcon: true,
+  onTap: () => debugPrint('selected: ${isSelected.value}'),
+  onRemove: () => debugPrint('remove chip'),
+);
 ```
 
-### Multiple Chips in a Wrap
+### Multiple chips in a Wrap
 
 ```dart
 final chip1Selected = ValueNotifier<bool>(false);
@@ -120,17 +129,43 @@ Wrap(
     CoreChip(label: 'Option 2', selected: chip2Selected),
     CoreChip(label: 'Option 3', selected: chip3Selected),
   ],
-)
+);
 ```
 
 ## Styling
 
-The component uses theme-aware colors from `AppColorsExtension`:
+The component uses theme-aware tokens from `AppColorsExtension` and `AppTypographyExtension`:
 
-- Background: `textInverse` (large) or `chipGrey` (small/medium)
-- Border: Varies by state (`lineMid`, `lineHighlight`, `lineDarkOutline`, `outlineHover`)
-- Icon color: `outlineFocus` (leading icon), `iconGrayMid` (close icon)
-- Typography: `bodyMediumRegular`
-- Border radius: Fully rounded (100px)
-- Animation duration: 120ms for state transitions
+- **Text style**: `typography.bodyMediumRegular`
+- **Corner radius**: `BorderRadius.circular(CoreSpacing.space6)`
+- **Animation**: `CoreChipTheme.animationDuration` (`120ms`)
+- **Icons**:
+  - Leading icon color: `colors.outlineFocus`
+  - Close icon color: `colors.iconGrayMid`
 
+### Background resolution
+
+Priority: pressed → focused (small/medium only) → selected → default.
+
+- Default background:
+  - `large`: `colors.pageBackground`
+  - `small`/`medium`: `colors.chipGrey`
+- Pressed: `colors.pageBackground`
+- Focused (small/medium): `colors.chipGrey`
+- Selected: `colors.pageBackground`
+
+### Border color resolution
+
+Priority: selected → pressed → focused → default.
+
+- Selected: `colors.outlineHover`
+- Pressed: `colors.lineDarkOutline`
+- Focused: `colors.lineHighlight`
+- Default:
+  - `large`: `colors.lineMid`
+  - `small`/`medium`: `colors.chipGrey`
+
+### Border width
+
+- Default: `CoreChipTheme.borderWidth` (`1px`)
+- Focused: `CoreChipTheme.borderWidthFor(isFocused: true)` (`2px`)

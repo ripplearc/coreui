@@ -3,20 +3,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
-
+ThemeData _createTestTheme() {
+  return CoreTheme.light().copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
 void main() {
   setUpAll(() async {
-    await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
+    await loadFonts();
   });
-
-  final colors = AppColorsExtension.create();
-  final typography = AppTypographyExtension.create();
 
   testWidgets('CoreChip Component Visual Regression Test',
       (WidgetTester tester) async {
+    final colors = AppColorsExtension.create();
+    final typography = AppTypographyExtension.create();
     debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
     await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final smallDefault = ValueNotifier<bool>(false);
     final smallPressed = ValueNotifier<bool>(false);
     final smallSelected = ValueNotifier<bool>(true);
@@ -79,7 +84,7 @@ void main() {
     }
 
     final widget = MaterialApp(
-      theme: ThemeData(extensions: [colors, typography]),
+      theme:_createTestTheme(),
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: Center(
