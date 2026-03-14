@@ -110,6 +110,13 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
               style: typography.bodySmallRegular
                   .copyWith(fontStyle: FontStyle.italic),
             ),
+            const SizedBox(height: CoreSpacing.space3),
+            Text('Non-interactive', style: typography.bodyMediumRegular),
+            const SizedBox(height: CoreSpacing.space3),
+            CoreChip(
+              label: 'Read-only',
+              selected: ValueNotifier(false),
+            ),
           ],
         ),
       ),

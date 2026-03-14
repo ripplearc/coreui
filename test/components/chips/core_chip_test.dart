@@ -306,9 +306,9 @@ void main() {
             body: Focus(
               focusNode: focusNode,
               child: CoreChip(
-                label: 'Focus Press Chip',
-                selected: selected,
-              ),
+                  label: 'Focus Press Chip',
+                  selected: selected,
+                  focusNode: focusNode),
             ),
           ),
         ),

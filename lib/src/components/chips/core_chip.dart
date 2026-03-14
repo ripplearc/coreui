@@ -141,11 +141,11 @@ class _CoreChipState extends State<CoreChip> {
                   container: true,
                   selected: isSelected,
                   child: Material(
-                    color: colors.transparent,
+                    color: Colors.transparent,
                     child: InkWell(
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: WidgetStateProperty.all(
-                        colors.transparent,
+                        Colors.transparent,
                       ),
                       focusNode: _focusNode,
                       autofocus: widget.autofocus,
