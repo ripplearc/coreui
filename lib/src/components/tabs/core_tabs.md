@@ -53,7 +53,7 @@ class _TabsExampleState extends State<TabsExample> {
 | Property       | Type                 | Required | Default | Description                                    |
 |----------------|----------------------|----------|---------|------------------------------------------------|
 | `tabs`         | `List<String>`       | Yes      | -       | The list of tab labels to display              |
-| `initialIndex` | `int`                | No       | `0`     | The index of the initially selected tab        |
+| `selectedIndex` | `int`                | No       | `0`     | The index of the initially selected tab        |
 | `onChanged`    | `ValueChanged<int>?` | No       | `null`  | Callback when the user selects a different tab |
 
 ## Features
@@ -73,8 +73,7 @@ The currently selected tab is highlighted with an indicator line using the `tabs
 
 ### Dynamic Updates
 
-The component handles dynamic tab list changes gracefully, recreating the internal `TabController` when the number of
-tabs changes.
+The component handles dynamic tab list changes gracefully, recreating the internal TabController when the tab list changes (including label-only changes with the same count).
 
 ## Examples
 
@@ -93,7 +92,7 @@ tabs: ['Overview', 'Details'],
 CoreTabs
 (
 tabs: ['Home', 'Profile', 'Settings'],
-initialIndex: 1,
+selectedIndex: 1,
 )
 ```
 

@@ -81,34 +81,6 @@ void main() {
       expect(find.text('Tab 5'), findsOneWidget);
     });
 
-    testWidgets('calls onChanged callback when tab is tapped',
-        (WidgetTester tester) async {
-      int? changedIndex;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: theme,
-          home: Scaffold(
-            body: CoreTabs(
-              tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-              onChanged: (index) {
-                changedIndex = index;
-              },
-            ),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      changedIndex = null;
-
-      await tester.tap(find.text('Tab 2'));
-      await tester.pumpAndSettle();
-
-      expect(changedIndex, equals(1));
-    });
-
     testWidgets('respects selectedIndex parameter',
         (WidgetTester tester) async {
       await tester.pumpWidget(

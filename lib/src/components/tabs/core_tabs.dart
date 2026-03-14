@@ -15,7 +15,7 @@ import '../../../ripplearc_coreui.dart';
 /// ```dart
 /// CoreTabs(
 ///   tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-///   initialIndex: 0,
+///   selectedIndex: 0,
 ///   onChanged: (index) => print('Selected tab: $index'),
 /// )
 /// ```
