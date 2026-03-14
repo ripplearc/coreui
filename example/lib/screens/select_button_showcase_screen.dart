@@ -15,12 +15,12 @@ class _SelectButtonShowcaseScreenState
   int _selectedIndex2 = 1;
   int _selectedIndex3 = 0;
   int _selectedIndex4 = 0;
+  static const _multipleTabs = ['Overview', 'Details', 'Settings', 'Advanced'];
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    const _multipleTabs = ['Overview', 'Details', 'Settings', 'Advanced'];
     return Scaffold(
       backgroundColor: colors.pageBackground,
       appBar: AppBar(

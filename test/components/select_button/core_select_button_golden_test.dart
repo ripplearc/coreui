@@ -20,6 +20,7 @@ void main() {
         children: [
           Text(
             title,
+            style: typography.bodyMediumSemiBold,
           ),
           const SizedBox(height: 8),
           button,
