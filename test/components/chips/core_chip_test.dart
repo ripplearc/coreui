@@ -304,11 +304,11 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: Focus(
-              focusNode: focusNode,
               child: CoreChip(
-                  label: 'Focus Press Chip',
-                  selected: selected,
-                  focusNode: focusNode),
+                label: 'Focus Press Chip',
+                selected: selected,
+                focusNode: focusNode,
+              ),
             ),
           ),
         ),
