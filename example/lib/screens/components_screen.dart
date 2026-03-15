@@ -97,7 +97,7 @@ class ComponentsScreen extends StatelessWidget {
               'Core Quick Sheet Component',
               const QuickSheetShowcaseScreen(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             _buildShowcaseButton(
               context,
               'Select button Components',

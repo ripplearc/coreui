@@ -9,10 +9,12 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
-  final colors = AppColorsExtension.create();
-  final typography = AppTypographyExtension.create();
+
   testWidgets('CoreSelectButton - Golden Test', (tester) async {
+    final colors = AppColorsExtension.create();
+    final typography = AppTypographyExtension.create();
     debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
     Widget scenario(String title, Widget button) {
       return Column(
         mainAxisSize: MainAxisSize.min,

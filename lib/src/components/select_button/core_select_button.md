@@ -10,16 +10,14 @@ This is a **controlled** widget — the parent is responsible for tracking the s
 ## Usage
 
 ```dart
-
 int selectedIndex = 0;
 
-CoreSelectButton
-(
-tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
-selectedIndex: selectedIndex,
-onChanged: (index) {
-setState(() => selectedIndex = index);
-},
+CoreSelectButton(
+  tabs: ['Tab 1', 'Tab 2', 'Tab 3'],
+  selectedIndex: selectedIndex,
+  onChanged: (index) {
+    setState(() => selectedIndex = index);
+  },
 )
 ```
 
@@ -68,49 +66,43 @@ capability through `SingleChildScrollView`.
 ### Basic Usage
 
 ```dart
-CoreSelectButton
-(
-tabs: ['All', 'Active', 'Archived'],
-selectedIndex: 0,
-onChanged: (index) {
-setState(() {
-selectedIndex = index;
-});
-},
+CoreSelectButton(
+  tabs: ['All', 'Active', 'Archived'],
+  selectedIndex: 0,
+  onChanged: (index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  },
 )
 ```
 
 ### With Many Tabs
 
 ```dart
-CoreSelectButton
-(
-tabs: [
-'Overview',
-'Details',
-'Settings',
-'History',
-'Analytics',
-'Reports',
-],
-selectedIndex: 0,
-onChanged: (index) {
-// Handle tab change
-},
+CoreSelectButton(
+  tabs: [
+    'Overview',
+    'Details',
+    'Settings',
+    'History',
+    'Analytics',
+    'Reports',
+  ],
+  selectedIndex: 0,
+  onChanged: (index) {
+    // Handle tab change
+  },
 )
 ```
 
 ### Without Callback
 
 ```dart
-CoreSelectButton
-(
-tabs: ['Option 1', 'Option 2'],
-selectedIndex
-:
-1
-,
-// onChanged is optional
+CoreSelectButton(
+  tabs: ['Option 1', 'Option 2'],
+  selectedIndex: 1,
+  // onChanged is optional
 )
 ```
 

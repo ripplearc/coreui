@@ -213,6 +213,9 @@ void main() {
 
       final CoreSelectButton button =
           tester.widget(find.byType(CoreSelectButton));
+
+      // Verifies the tap doesn't throw when onChanged is null.
+      // selectedIndex stays 0 because this is a controlled widget with no setState.
       expect(button.selectedIndex, 0);
     });
 
