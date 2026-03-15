@@ -14,7 +14,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
   @override
   void initState() {
     super.initState();
-    _selected = List.generate(6, (_) => ValueNotifier(false));
+    _selected = List.generate(7, (_) => ValueNotifier(false));
   }
 
   @override
@@ -115,7 +115,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
             const SizedBox(height: CoreSpacing.space3),
             CoreChip(
               label: 'Read-only',
-              selected: ValueNotifier(false),
+              selected: _selected[6],
             ),
           ],
         ),

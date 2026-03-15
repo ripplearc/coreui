@@ -254,30 +254,23 @@ void main() {
     testWidgets('shows focused border color when focused',
         (WidgetTester tester) async {
       final selected = ValueNotifier<bool>(false);
+      final focusNode = FocusNode();
 
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: FocusScope(
-              child: CoreChip(
-                label: 'Focus Chip',
-                selected: selected,
-              ),
+            body: CoreChip(
+              label: 'Focus Chip',
+              selected: selected,
+              focusNode: focusNode,
             ),
           ),
         ),
       );
 
-      final focusFinder = find.descendant(
-        of: find.byType(CoreChip),
-        matching: find.byType(Focus),
-      );
-
-      final focusWidget = tester.widget<Focus>(focusFinder.first);
-      focusWidget.focusNode!.requestFocus();
+      focusNode.requestFocus();
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
 
       final container = tester.widget<AnimatedContainer>(
         find.descendant(
@@ -285,11 +278,9 @@ void main() {
           matching: find.byType(AnimatedContainer),
         ),
       );
-
-      final decoration = container.decoration as BoxDecoration;
-      final border = decoration.border as Border;
-
-      final colors = AppColorsExtension.create();
+      final border = (container.decoration as BoxDecoration).border as Border;
+      final colors =
+          AppColorsExtension.of(tester.element(find.byType(CoreChip)));
 
       expect(border.top.color, colors.lineHighlight);
     });
