@@ -268,6 +268,8 @@ void main() {
           theme: CoreTheme.light(),
         ),
       );
+      // The label is surfaced implicitly from the Text child since
+      // CoreSelectButton's Semantics node does not set label explicitly.
       final selectedSemantics = tester.getSemantics(find.text('Tab 1'));
       expect(selectedSemantics.label, contains('Tab 1'));
       expect(selectedSemantics.hasFlag(SemanticsFlag.isSelected), isTrue);

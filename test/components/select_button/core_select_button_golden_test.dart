@@ -55,9 +55,17 @@ void main() {
           onChanged: (_) {},
         ),
       ),
+      scenario(
+        'Many Tabs - Tab 1 Selected',
+        CoreSelectButton(
+          tabs: const ['Overview', 'Details', 'Settings', 'History', 'Analytics', 'Reports'],
+          selectedIndex: 0,
+          onChanged: (_) {},
+        ),
+      ),
     ];
 
-    await tester.binding.setSurfaceSize(const Size(600, 450));
+    await tester.binding.setSurfaceSize(const Size(700, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
@@ -67,8 +75,8 @@ void main() {
         home: Scaffold(
           body: Center(
             child: SizedBox(
-              width: 600,
-              height: 450,
+              width: 700,
+              height: 600,
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
