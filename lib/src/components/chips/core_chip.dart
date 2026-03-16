@@ -149,7 +149,6 @@ class _CoreChipState extends State<CoreChip> {
                       ),
                       focusNode: _focusNode,
                       autofocus: widget.autofocus,
-                      onFocusChange: (value) => _focused.value = value,
                       onHighlightChanged: (value) => _pressed.value = value,
                       borderRadius: chipRadius,
                       onTap: _handleTap,

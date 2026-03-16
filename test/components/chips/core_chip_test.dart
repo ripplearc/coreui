@@ -185,7 +185,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CoreIconWidget), findsWidgets);
+      expect(find.byKey(const Key('close_icon')), findsOneWidget);
     });
 
     testWidgets('maintains selected state across rebuilds',
