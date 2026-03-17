@@ -26,92 +26,94 @@ class ComponentsScreen extends StatelessWidget {
         title: Text('UI Components', style: textTheme.titleLarge),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Component Showcases',
-              style: textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            _buildShowcaseButton(
-              context,
-              'Text Field Components',
-              const TextFieldScreen(),
-            ),
-            _buildShowcaseButton(
-              context,
-              'Single Select Field Components',
-              const SingleItemSelectorShowcaseScreen(),
-            ),
-            _buildShowcaseButton(
-              context,
-              'Button Components',
-              const ButtonShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Chip Components',
-              const ChipShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Toast Components',
-              const ToastShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Tooltip Components',
-              const TooltipShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Switch Components',
-              const SwitchShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Success Modal Components',
-              const SuccessModalShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Bottom Navigation Components',
-              const BottomNavigationShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Keyboard Components',
-              const KeyboardShowcaseScreen(),
-            ),
-            const SizedBox(height: 16),
-            _buildShowcaseButton(
-              context,
-              'Loading Indicator Components',
-              const LoadingIndicatorShowcaseScreen(),
-            ),
-            const SizedBox(height: CoreSpacing.space4),
-            _buildShowcaseButton(
-              context,
-              'Core Quick Sheet Component',
-              const QuickSheetShowcaseScreen(),
-            ),
-            const SizedBox(height: CoreSpacing.space4),
-            _buildShowcaseButton(
-              context,
-              'Select button Components',
-              const SelectButtonShowcaseScreen(),
-            ),
-            // Add more component showcases here as they become available
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Component Showcases',
+                style: textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              _buildShowcaseButton(
+                context,
+                'Text Field Components',
+                const TextFieldScreen(),
+              ),
+              _buildShowcaseButton(
+                context,
+                'Single Select Field Components',
+                const SingleItemSelectorShowcaseScreen(),
+              ),
+              _buildShowcaseButton(
+                context,
+                'Button Components',
+                const ButtonShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Chip Components',
+                const ChipShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Toast Components',
+                const ToastShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Tooltip Components',
+                const TooltipShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Switch Components',
+                const SwitchShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Success Modal Components',
+                const SuccessModalShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Bottom Navigation Components',
+                const BottomNavigationShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Keyboard Components',
+                const KeyboardShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Loading Indicator Components',
+                const LoadingIndicatorShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Core Quick Sheet Component',
+                const QuickSheetShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Select button Components',
+                const SelectButtonShowcaseScreen(),
+              ),
+              // Add more component showcases here as they become available
+            ],
+          ),
         ),
       ),
     );
