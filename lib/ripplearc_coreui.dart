@@ -1,7 +1,8 @@
 export 'src/components/alerts/toast.dart';
-// Component exports
 export 'src/components/avatar/avatar.dart';
+export 'src/components/bottom_sheets/core_quick_sheet.dart';
 export 'src/components/buttons/core_button.dart';
+export 'src/components/chips/core_chip.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';
 export 'src/components/keyboard/core_keyboard.dart';
@@ -10,8 +11,10 @@ export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/loading/core_loading_indicator.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
+export 'src/components/select_button/core_select_button.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
+export 'src/components/tabs/core_tabs.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/components/tooltips/tooltip.dart';
 export 'src/notifications/success_modal.dart';

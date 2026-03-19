@@ -295,6 +295,7 @@ echo "" >> "$OUTPUT_FILE"
 echo "**Testing Standards:**" >> "$OUTPUT_FILE"
 echo "- 📝 New components should have corresponding test files in test/components/[category]/" >> "$OUTPUT_FILE"
 echo "- 🖼️ Components should have golden tests (*_golden_test.dart) for visual regression testing" >> "$OUTPUT_FILE"
+echo "- ♿ All components MUST have accessibility tests (check semantic nodes and contrast)" >> "$OUTPUT_FILE"
 echo "- 🔤 Golden tests must use loadFonts() from test/load_fonts.dart in setUpAll()" >> "$OUTPUT_FILE"
 echo "- 🎨 Golden tests with images must use await tester.awaitImages() before golden comparison" >> "$OUTPUT_FILE"
 echo "- 📛 Test files should follow naming convention: [component_name]_test.dart and [component_name]_golden_test.dart" >> "$OUTPUT_FILE"
@@ -302,6 +303,60 @@ echo "- 🎯 Golden test output should be presentable with labels and proper org
 echo "" >> "$OUTPUT_FILE"
 
 # =============================================================================
+# RULE 7: LOCALIZATION & STRING HANDLING
+# =============================================================================
+echo "### 🌐 RULE 7: LOCALIZATION & STRING HANDLING" >> "$OUTPUT_FILE"
+echo "CoreUI is a foundation package; localization must be managed by the consuming application." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**String Standards:**" >> "$OUTPUT_FILE"
+echo "- 🚫 NO hardcoded strings for user-facing text within library components" >> "$OUTPUT_FILE"
+echo "- 📥 All strings (labels, hints, error messages) MUST be passed in as parameters" >> "$OUTPUT_FILE"
+echo "- 💡 EXCEPTION: Hardcoded strings are PERMISSIBLE in example/ or golden test files to showcase component usage" >> "$OUTPUT_FILE"
+echo "- 🌍 Localization logic remains in the app layer, not in the CoreUI package" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# =============================================================================
+# RULE 8: SELF-DOCUMENTING & CLEAN CODE (ANTI-AI ARTIFACTS)
+# =============================================================================
+echo "### 🧹 RULE 7: SELF-DOCUMENTING & CLEAN CODE" >> "$OUTPUT_FILE"
+echo "**Core Principle:** Code must be expressive and clean. Use 'Code Documentation' to define contracts, but avoid 'Implementation Comments' to explain logic." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**✅ What to Keep (Code Documentation):**" >> "$OUTPUT_FILE"
+echo "- **Public APIs:** Brief docstrings for Classes, Interfaces, and public Methods that explain *purpose* and *usage*." >> "$OUTPUT_FILE"
+echo "- **Member Variables:** Documentation explaining the *intent* of a state variable if not immediately obvious." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**❌ Red Flags (Implementation Comments/Vibe Killers):**" >> "$OUTPUT_FILE"
+echo "- **AI Residuals:** Instructional comments left by LLMs like \`// <-- ADD THIS\`, \`// implementation here\`, or \`// Fix: ...\`." >> "$OUTPUT_FILE"
+echo "- **Step-by-Step Narratives:** Comments inside methods explaining *what* each line does. If the logic is complex, extract it into a named private method instead." >> "$OUTPUT_FILE"
+echo "- **Obscure Naming:** Using generic names (\`data\`, \`info\`, \`val\`) that force a comment to explain what the variable actually holds." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**Action Required:**" >> "$OUTPUT_FILE"
+echo "- **Purge AI Artifacts:** Delete all instructional placeholders or AI-suggested annotations." >> "$OUTPUT_FILE"
+echo "- **Refactor vs. Explain:** If you feel the urge to write a comment inside a function, refactor that logic into a descriptive variable or helper method instead." >> "$OUTPUT_FILE"
+echo "- **Maintain Contracts:** Ensure docstrings accurately reflect the *behavior* of the code without detailing the *implementation*." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# =============================================================================
+# RULE 9: ACCESSIBILITY (A11Y) TESTING
+# =============================================================================
+echo "### ♿ RULE 7: ACCESSIBILITY (A11Y) TESTING" >> "$OUTPUT_FILE"
+echo "User-facing flows must remain perceivable, operable, and understandable for assistive technology users. Accessibility-focused widget tests must be added or updated when UI structure, semantics, or interaction patterns change." >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**A11y Testing Requirements:**" >> "$OUTPUT_FILE"
+echo "- 🏷️ Interactive elements (buttons, tappable icons, toggles) must expose meaningful labels via \`Semantics\`, \`Tooltip\`, or appropriate CoreUI APIs—never rely solely on visual icons" >> "$OUTPUT_FILE"
+echo "- ⌨️ Focus traversal should follow the visual reading order and not trap users; verify with \`WidgetTester\` focus expectations where relevant" >> "$OUTPUT_FILE"
+echo "- 📂 A11y widget tests live under \`test/components/**/*_a11y_test.dart\` and exercise real user flows (e.g., component interactions, primary actions)" >> "$OUTPUT_FILE"
+echo "- 🎨 Tests must utilize \`setupA11yTest(tester)\` to prevent false overflows and verify compliance in both light and dark themes using \`expectMeetsTapTargetAndLabelGuidelinesForEachTheme\`" >> "$OUTPUT_FILE"
+echo "- 📝 When modifying key components (e.g., buttons, avatars, navigation, form controls), existing a11y tests must be updated to cover new states and widgets" >> "$OUTPUT_FILE"
+echo "- ⛔ Removing or bypassing semantics (e.g., \`excludeFromSemantics: true\`) for interactive content without a strong documented reason is forbidden" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "**Action Required:**" >> "$OUTPUT_FILE"
+echo "- 🔍 Check that components touched in this PR have corresponding a11y widget tests (or justify why not in the review)" >> "$OUTPUT_FILE"
+echo "- 🎯 Verify tests assert meaningful semantics (labels, hints) and focus behavior instead of raw widget counts or types" >> "$OUTPUT_FILE"
+echo "- 📛 Ensure \`*_a11y_test.dart\` files are updated to reflect any new interactive elements or flows introduced by this PR" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
++
++# =============================================================================
 # REVIEW SUMMARY TABLE
 # =============================================================================
 echo "## REVIEW SUMMARY" >> "$OUTPUT_FILE"
