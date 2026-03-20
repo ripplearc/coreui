@@ -362,7 +362,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     with SingleTickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 150);
   static const Duration _squareToRoundPressAnimationDuration =
-      Duration(milliseconds: 220);
+      Duration(milliseconds: 125);
   static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
