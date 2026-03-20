@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_typography_extension.dart';
 import '../../theme/spacing.dart';
@@ -35,7 +36,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
-  bool _didFireFromTapUp = false;
+  bool _isPressed = false;
 
   @override
   void initState() {
@@ -57,18 +58,24 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
   }
 
   void _handleTapDown(TapDownDetails details) {
-    _didFireFromTapUp = false;
+    HapticFeedback.lightImpact();
+    _isPressed = true;
     _animationController.forward();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    _animationController.reverse();
-    _didFireFromTapUp = true;
-    widget.onTap();
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+      widget.onTap();
+    }
   }
 
   void _handleTapCancel() {
-    _animationController.reverse();
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+    }
   }
 
   @override
@@ -124,30 +131,17 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
               ) ??
               BorderRadius.circular(CoreSpacing.space2);
 
-          return Listener(
-            onPointerDown: (_) => _animationController.forward(),
-            onPointerUp: (_) => _animationController.reverse(),
-            onPointerCancel: (_) => _animationController.reverse(),
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: _handleTapDown,
-              onTapUp: _handleTapUp,
-              onTapCancel: _handleTapCancel,
-              onTap: () {
-                if (!_didFireFromTapUp) {
-                  _animationController.forward().then((_) {
-                    _animationController.reverse();
-                  });
-                  widget.onTap();
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.backgroundGrayMid,
-                  borderRadius: currentBorderRadius,
-                ),
-                child: child,
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTapDown: _handleTapDown,
+            onTapUp: _handleTapUp,
+            onTapCancel: _handleTapCancel,
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.backgroundGrayMid,
+                borderRadius: currentBorderRadius,
               ),
+              child: child,
             ),
           );
         },

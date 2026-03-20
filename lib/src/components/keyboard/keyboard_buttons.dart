@@ -139,8 +139,6 @@ class CoreUnitButton extends StatelessWidget {
             : effectiveHeight * _KeyboardButton._smallFontSizeRatio)
         : null;
 
-    final isSquareToRoundUnit = unit != UnitType.divideSymbol;
-
     return Semantics(
       label: '${unit.label} unit button',
       button: true,
@@ -166,12 +164,6 @@ class CoreUnitButton extends StatelessWidget {
             : typography.bodyLargeMedium.copyWith(
                 color: textColor,
               ),
-        animationDuration: isSquareToRoundUnit
-            ? _KeyboardButtonState._unitButtonAnimationDuration
-            : null,
-        animationCurve: isSquareToRoundUnit
-            ? _KeyboardButtonState._unitButtonAnimationCurve
-            : null,
       ),
     );
   }
@@ -335,8 +327,6 @@ class _KeyboardButton extends StatefulWidget {
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
   final bool isLabel;
-  final Duration? animationDuration;
-  final Curve? animationCurve;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
@@ -346,6 +336,8 @@ class _KeyboardButton extends StatefulWidget {
   static const double _smallFontSizeRatio = 0.25;
 
   static const double _circularBorderRadius = 100.0;
+
+  static const double _flashOverlayMaxOpacity = 0.4;
 
   const _KeyboardButton({
     this.label,
@@ -359,8 +351,6 @@ class _KeyboardButton extends StatefulWidget {
     BorderRadius? borderRadius,
     this.pressedBorderRadius,
     required this.isLabel,
-    this.animationDuration,
-    this.animationCurve,
   }) : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
@@ -371,27 +361,60 @@ class _KeyboardButton extends StatefulWidget {
 class _KeyboardButtonState extends State<_KeyboardButton>
     with SingleTickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 150);
-  static const Duration _unitButtonAnimationDuration =
-      Duration(milliseconds: 100);
-  static const Curve _unitButtonAnimationCurve = Curves.easeInOutCubic;
+  static const Duration _squareToRoundPressAnimationDuration =
+      Duration(milliseconds: 220);
+  static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
-  late final Animation<double> _animation;
+  late Animation<double> _animation;
   bool _isPressed = false;
+
+  static bool _isSquareToRoundPressStyle(_KeyboardButton w) {
+    final pressed = w.pressedBorderRadius ?? w.borderRadius;
+    return w.pressedBorderRadius != null &&
+        pressed.topLeft.x > w.borderRadius.topLeft.x;
+  }
+
+  static Duration _durationForStyle(bool squareToRound) =>
+      squareToRound ? _squareToRoundPressAnimationDuration : _animationDuration;
+
+  static Curve _curveForStyle(bool squareToRound) =>
+      squareToRound ? _squareToRoundPressAnimationCurve : Curves.ease;
 
   @override
   void initState() {
     super.initState();
-    final duration = widget.animationDuration ?? _animationDuration;
-    final curve = widget.animationCurve ?? Curves.ease;
+    final squareToRound = _isSquareToRoundPressStyle(widget);
     _animationController = AnimationController(
       vsync: this,
-      duration: duration,
+      duration: _durationForStyle(squareToRound),
     );
     _animation = CurvedAnimation(
       parent: _animationController,
-      curve: curve,
+      curve: _curveForStyle(squareToRound),
     );
+  }
+
+  @override
+  void didUpdateWidget(_KeyboardButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.borderRadius == oldWidget.borderRadius &&
+        widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
+      return;
+    }
+    final wasSquareToRound = _isSquareToRoundPressStyle(oldWidget);
+    final isSquareToRound = _isSquareToRoundPressStyle(widget);
+    final newDuration = _durationForStyle(isSquareToRound);
+
+    if (_animationController.duration != newDuration) {
+      _animationController.duration = newDuration;
+    }
+    if (wasSquareToRound != isSquareToRound) {
+      _animation = CurvedAnimation(
+        parent: _animationController,
+        curve: _curveForStyle(isSquareToRound),
+      );
+    }
   }
 
   @override
@@ -451,7 +474,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colors.transparent;
     final effectiveBorderColor = widget.borderColor;
-    final opacityConstant = 0.4;
 
     final staticChild = Center(
       child: widget.isLabel
@@ -478,7 +500,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
           onTapCancel: _handleTapCancel,
           onTap: _handleTap,
           child: Container(
-            padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               border: effectiveBorderColor != null
                   ? Border.all(
@@ -498,10 +519,9 @@ class _KeyboardButtonState extends State<_KeyboardButton>
                 children: [
                   child ?? const SizedBox.shrink(),
                   Opacity(
-                    opacity: _animation.value * opacityConstant,
+                    opacity: _animation.value *
+                        _KeyboardButton._flashOverlayMaxOpacity,
                     child: Container(
-                      padding: EdgeInsets.zero,
-                      margin: EdgeInsets.zero,
                       decoration: BoxDecoration(
                         color: colors.iconGrayLight,
                         borderRadius: currentBorderRadius,
