@@ -32,6 +32,7 @@ class CoreCalculatorChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = this.label;
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final semanticsLabel = label != null ? '$label, $value' : value;
@@ -94,7 +95,7 @@ class CoreCalculatorChip extends StatelessWidget {
                 if (label != null)
                   ExcludeSemantics(
                     child: Text(
-                      label!,
+                      label,
                       style: CoreCalculatorChipTheme.labelStyle(
                         type: type,
                         colors: colors,
