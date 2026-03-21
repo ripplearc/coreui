@@ -23,7 +23,7 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 onTap: () {},
               ),
               CoreCalculatorChip(
-                type: CoreCalculatorChipType.disable,
+                type: CoreCalculatorChipType.disabled,
                 label: 'Area',
                 value: '410.67ft²',
                 onTap: () {},

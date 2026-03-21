@@ -21,7 +21,7 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable => colors.pageBackground,
-      CoreCalculatorChipType.disable => colors.backgroundGrayMid,
+      CoreCalculatorChipType.disabled => colors.backgroundGrayMid,
       CoreCalculatorChipType.active => colors.backgroundGreenMid,
     };
   }
@@ -34,7 +34,7 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable => colors.outlineFocus,
-      CoreCalculatorChipType.disable => colors.lineMid,
+      CoreCalculatorChipType.disabled => colors.lineMid,
       CoreCalculatorChipType.active => colors.lineMid,
     };
   }
@@ -49,7 +49,7 @@ abstract final class CoreCalculatorChipTheme {
     return switch (type) {
       CoreCalculatorChipType.editable =>
         typography.bodySmallRegular.copyWith(color: colors.textLink),
-      CoreCalculatorChipType.disable =>
+      CoreCalculatorChipType.disabled =>
         typography.bodySmallRegular.copyWith(color: colors.textDark),
       CoreCalculatorChipType.active =>
         typography.bodySmallRegular.copyWith(color: colors.textDark),
@@ -66,7 +66,7 @@ abstract final class CoreCalculatorChipTheme {
     return switch (type) {
       CoreCalculatorChipType.editable =>
         typography.bodyMediumSemiBold.copyWith(color: colors.textLink),
-      CoreCalculatorChipType.disable =>
+      CoreCalculatorChipType.disabled =>
         typography.bodyMediumSemiBold.copyWith(color: colors.textDark),
       CoreCalculatorChipType.active =>
         typography.bodyMediumSemiBold.copyWith(color: colors.textDark),
@@ -81,7 +81,7 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable => colors.iconOrient,
-      CoreCalculatorChipType.disable => colors.iconGrayMid,
+      CoreCalculatorChipType.disabled => colors.iconGrayMid,
       CoreCalculatorChipType.active => colors.iconGrayDark,
     };
   }

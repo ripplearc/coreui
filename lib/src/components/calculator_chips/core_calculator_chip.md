@@ -18,12 +18,12 @@ CoreCalculatorChip(
 
 | Property        | Type                     | Required | Default | Description                                                                          |
 |-----------------|--------------------------|---------:|---------|--------------------------------------------------------------------------------------|
-| `type`          | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disable`, `active`).                |
+| `type`          | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disabled`, `active`).                |
 | `value`         | `String`                 |      Yes | —       | The numeric value or content displayed on the chip with heavy text style.            |
-| `onTap`         | `VoidCallback`           |      Yes | —       | Called when the chip is tapped. Ignored if type is `disable`.                        |
-| `label`         | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disable`.  |
-| `withCloseIcon` | `bool`                   |       No | `false` | Whether to show the close (×) icon on the left side. Not shown if type is `disable`. |
-| `onRemove`      | `VoidCallback?`          |       No | `null`  | Called when the close (×) icon is tapped.                                            |
+| `onTap`         | `VoidCallback`           |      Yes | —       | Called when the chip is tapped. Ignored if type is `disabled`.                        |
+| `label`         | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.  |
+| `withCloseIcon` | `bool`                   |       No | `false` | Whether to show the close (×) icon on the left side. Not shown if type is `disabled`. |
+| `onClose`      | `VoidCallback?`          |       No | `null`  | Called when the close (×) icon is tapped.                                            |
 
 ## Types
 
@@ -31,12 +31,12 @@ Calculator chips come in three visual identity variants mapping to their functio
 
 - **Editable**: Light layout with page background surface and focus borders.
 - **Active**: Vivid background (e.g. green) indicating the property is actively changing or applied.
-- **Disable**: Grey, dimmed layout indicating an inactive property.
+- **disabled**: Grey, dimmed layout indicating an inactive property.
 
 | Type       | Background           | Border         | Label/Value Color | Close Icon Color |
 |------------|----------------------|----------------|-------------------|------------------|
 | `editable` | `pageBackground`     | `outlineFocus` | `textLink`        | `iconOrient`     |
-| `disable`  | `backgroundGrayMid`  | `lineMid`      | `textDark`        | `iconGrayMid`    |
+| `disabled`  | `backgroundGrayMid`  | `lineMid`      | `textDark`        | `iconGrayMid`    |
 | `active`   | `backgroundGreenMid` | `lineMid`      | `textDark`        | `iconGrayDark`   |
 
 ## Examples
@@ -58,7 +58,7 @@ Must have `label` and `value`. No tap events will execute.
 
 ```dart
 CoreCalculatorChip(
-  type: CoreCalculatorChipType.disable,
+  type: CoreCalculatorChipType.disabled,
   label: 'Area',
   value: '410.67ft²',
   onTap: () {},
@@ -84,7 +84,7 @@ CoreCalculatorChip(
   value: '4in',
   withCloseIcon: true,
   onTap: () {},
-  onRemove: () => debugPrint('remove'),
+  onClose: () => debugPrint('remove'),
 );
 ```
 

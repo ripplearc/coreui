@@ -5,7 +5,7 @@ import 'core_calculator_chip_theme.dart';
 
 enum CoreCalculatorChipType {
   editable,
-  disable,
+  disabled,
   active,
 }
 
@@ -19,7 +19,7 @@ class CoreCalculatorChip extends StatelessWidget {
     this.withCloseIcon = false,
     this.onClose,
   }) : assert(
-          type != CoreCalculatorChipType.disable || label != null,
+          type != CoreCalculatorChipType.disabled || label != null,
           'Label must not be null when type is disable',
         );
 
@@ -40,11 +40,11 @@ class CoreCalculatorChip extends StatelessWidget {
       label: semanticsLabel,
       button: true,
       container: true,
-      enabled: type != CoreCalculatorChipType.disable,
+      enabled: type != CoreCalculatorChipType.disabled,
       child: Material(
         color: colors.transparent,
         child: InkWell(
-          onTap: type != CoreCalculatorChipType.disable ? onTap : null,
+          onTap: type != CoreCalculatorChipType.disabled ? onTap : null,
           splashFactory: NoSplash.splashFactory,
           overlayColor: WidgetStateProperty.all(
             colors.transparent,
@@ -72,7 +72,7 @@ class CoreCalculatorChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (withCloseIcon && type != CoreCalculatorChipType.disable)
+                if (withCloseIcon && type != CoreCalculatorChipType.disabled)
                   Semantics(
                     button: true,
                     label: 'Close $semanticsLabel',
