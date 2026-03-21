@@ -20,7 +20,7 @@ class CoreCalculatorChip extends StatelessWidget {
     this.onClose,
   }) : assert(
           type != CoreCalculatorChipType.disabled || label != null,
-          'Label must not be null when type is disable',
+          'Label must not be null when type is disabled',
         );
 
   final CoreCalculatorChipType type;
