@@ -27,10 +27,12 @@ CoreChip(
 | `onTap` | `VoidCallback?` | No | `null` | Called after a tap, after `selected.value` has been toggled. |
 | `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
 | `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
+| `backgroundColor` | `Color?` | No | `null` | Optional background color that overrides the theme-resolved background. When provided, it takes full precedence over all state-driven background colors (pressed, focused, selected, default). |
 
 Notes:
 
 - The close icon is rendered only when `withCloseIcon == true` **and** `onRemove != null`.
+- When `backgroundColor` is set, state-driven background colors (pressed, focused, selected) are **not** applied. Only the border and shadow continue to respond to state.
 
 ## Sizes
 
@@ -129,6 +131,40 @@ Wrap(
     CoreChip(label: 'Option 2', selected: chip2Selected),
     CoreChip(label: 'Option 3', selected: chip3Selected),
   ],
+);
+```
+
+### Colored chip
+
+Use `backgroundColor` to override the theme background with any color token.
+The border and interaction states (pressed, focused, selected) still update normally.
+
+```dart
+final isSelected = ValueNotifier<bool>(false);
+final colors = AppColorsExtension.of(context);
+
+// Small
+CoreChip(
+  label: 'Green Small',
+  selected: isSelected,
+  size: CoreChipSize.small,
+  backgroundColor: colors.backgroundGreenMid,
+);
+
+// Medium
+CoreChip(
+  label: 'Green Medium',
+  selected: isSelected,
+  size: CoreChipSize.medium,
+  backgroundColor: colors.backgroundGreenMid,
+);
+
+// Large
+CoreChip(
+  label: 'Green Large',
+  selected: isSelected,
+  size: CoreChipSize.large,
+  backgroundColor: colors.backgroundGreenMid,
 );
 ```
 

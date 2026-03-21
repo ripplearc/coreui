@@ -51,6 +51,7 @@ class CoreChip extends StatefulWidget {
     this.withCloseIcon = false,
     this.focusNode,
     this.autofocus = false,
+    this.backgroundColor
   });
 
   /// An optional focus node to use as the focus node for this widget.
@@ -83,6 +84,9 @@ class CoreChip extends StatefulWidget {
   final VoidCallback? onRemove;
 
   final bool withCloseIcon;
+
+  /// Optional background color.
+  final Color? backgroundColor;
 
   @override
   State<CoreChip> createState() => _CoreChipState();
@@ -160,7 +164,7 @@ class _CoreChipState extends State<CoreChip> {
                           duration: CoreChipTheme.animationDuration,
                           padding: CoreChipTheme.padding(widget.size),
                           decoration: BoxDecoration(
-                            color: CoreChipTheme.background(
+                            color: widget.backgroundColor ?? CoreChipTheme.background(
                               size: widget.size,
                               isSelected: isSelected,
                               isPressed: isPressed,

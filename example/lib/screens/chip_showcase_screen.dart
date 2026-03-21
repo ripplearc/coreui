@@ -14,7 +14,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
   @override
   void initState() {
     super.initState();
-    _selected = List.generate(7, (_) => ValueNotifier(false));
+    _selected = List.generate(10, (_) => ValueNotifier(false));
   }
 
   @override
@@ -116,6 +116,43 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
             CoreChip(
               label: 'Read-only',
               selected: _selected[6],
+            ),
+            const SizedBox(height: CoreSpacing.space8),
+            Text('Colored Chips', style: typography.titleMediumSemiBold),
+            const SizedBox(height: CoreSpacing.space3),
+            Text(
+              'Using backgroundGreenMid across all sizes.',
+              style: typography.bodySmallRegular,
+            ),
+            const SizedBox(height: CoreSpacing.space5),
+            Builder(
+              builder: (context) {
+                final colors = AppColorsExtension.of(context);
+                return Wrap(
+                  spacing: CoreSpacing.space3,
+                  runSpacing: CoreSpacing.space3,
+                  children: [
+                    CoreChip(
+                      label: 'Green Small',
+                      selected: _selected[7],
+                      size: CoreChipSize.small,
+                      backgroundColor: colors.backgroundGreenMid,
+                    ),
+                    CoreChip(
+                      label: 'Green Medium',
+                      selected: _selected[8],
+                      size: CoreChipSize.medium,
+                      backgroundColor: colors.backgroundGreenMid,
+                    ),
+                    CoreChip(
+                      label: 'Green Large',
+                      selected: _selected[9],
+                      size: CoreChipSize.large,
+                      backgroundColor: colors.backgroundGreenMid,
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
