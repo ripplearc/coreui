@@ -46,6 +46,7 @@ void main() {
       );
 
       expect(find.text('Active Val'), findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsNothing);
     });
 
     testWidgets('throws assertion if disable without label',
@@ -60,7 +61,8 @@ void main() {
       );
     });
 
-    testWidgets('calls onTap callback when tapped', (WidgetTester tester) async {
+    testWidgets('calls onTap callback when tapped',
+        (WidgetTester tester) async {
       bool wasPressed = false;
 
       await tester.pumpWidget(
@@ -79,12 +81,13 @@ void main() {
       );
 
       expect(wasPressed, isFalse);
-      await tester.tap(find.byType(CoreCalculatorChip));
+      await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
       expect(wasPressed, isTrue);
     });
 
-    testWidgets('does not call onTap when disabled', (WidgetTester tester) async {
+    testWidgets('does not call onTap when disabled',
+        (WidgetTester tester) async {
       bool wasPressed = false;
 
       await tester.pumpWidget(
@@ -108,11 +111,9 @@ void main() {
       expect(wasPressed, isFalse);
     });
 
-    testWidgets('displays close icon and triggers onRemove',
+    testWidgets('displays close icon and triggers onClose',
         (WidgetTester tester) async {
-      bool removed = false;
-      bool tapped = false;
-
+      bool closed = false;
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -121,8 +122,7 @@ void main() {
               type: CoreCalculatorChipType.editable,
               value: '100',
               withCloseIcon: true,
-              onTap: () => tapped = true,
-              onClose: () => removed = true,
+              onClose: () => closed = true,
             ),
           ),
         ),
@@ -132,8 +132,7 @@ void main() {
 
       await tester.tap(find.byType(CoreIconWidget));
       await tester.pumpAndSettle();
-
-      expect(removed, isTrue);
+      expect(closed, isTrue);
     });
   });
 

@@ -1,29 +1,30 @@
 # CoreCalculatorChip
 
-A specialized chip for the calculator that supports three distinct types (`editable`, `disable`, `active`), an optional
+A specialized chip for the calculator that supports three distinct types (`editable`, `disabled`, `active`), an optional
 label, a required value, and an optional close (×) icon. Uses semantic structuring for accessibility.
 
 ## Usage
 
 ```dart
-CoreCalculatorChip(
-  type: CoreCalculatorChipType.editable,
-  label: 'Length',
-  value: '22ft',
-  onTap: () => debugPrint('chip tapped'),
+CoreCalculatorChip
+(
+type: CoreCalculatorChipType.editable,
+label: 'Length',
+value: '22ft',
+onTap: () => debugPrint('chip tapped'),
 );
 ```
 
 ## Properties
 
-| Property        | Type                     | Required | Default | Description                                                                          |
-|-----------------|--------------------------|---------:|---------|--------------------------------------------------------------------------------------|
+| Property        | Type                     | Required | Default | Description                                                                           |
+|-----------------|--------------------------|---------:|---------|---------------------------------------------------------------------------------------|
 | `type`          | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disabled`, `active`).                |
-| `value`         | `String`                 |      Yes | —       | The numeric value or content displayed on the chip with heavy text style.            |
+| `value`         | `String`                 |      Yes | —       | The numeric value or content displayed on the chip with heavy text style.             |
 | `onTap`         | `VoidCallback`           |      Yes | —       | Called when the chip is tapped. Ignored if type is `disabled`.                        |
 | `label`         | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.  |
 | `withCloseIcon` | `bool`                   |       No | `false` | Whether to show the close (×) icon on the left side. Not shown if type is `disabled`. |
-| `onClose`      | `VoidCallback?`          |       No | `null`  | Called when the close (×) icon is tapped.                                            |
+| `onClose`       | `VoidCallback?`          |       No | `null`  | Called when the close (×) icon is tapped.                                             |
 
 ## Types
 
@@ -36,7 +37,7 @@ Calculator chips come in three visual identity variants mapping to their functio
 | Type       | Background           | Border         | Label/Value Color | Close Icon Color |
 |------------|----------------------|----------------|-------------------|------------------|
 | `editable` | `pageBackground`     | `outlineFocus` | `textLink`        | `iconOrient`     |
-| `disabled`  | `backgroundGrayMid`  | `lineMid`      | `textDark`        | `iconGrayMid`    |
+| `disabled` | `backgroundGrayMid`  | `lineMid`      | `textDark`        | `iconGrayMid`    |
 | `active`   | `backgroundGreenMid` | `lineMid`      | `textDark`        | `iconGrayDark`   |
 
 ## Examples
@@ -44,11 +45,12 @@ Calculator chips come in three visual identity variants mapping to their functio
 ### Editable Chip without Close Icon
 
 ```dart
-CoreCalculatorChip(
-  type: CoreCalculatorChipType.editable,
-  label: 'Length',
-  value: '22ft',
-  onTap: () {},
+CoreCalculatorChip
+(
+type: CoreCalculatorChipType.editable,
+label: 'Length',
+value: '22ft',
+onTap: () {},
 );
 ```
 
@@ -57,34 +59,39 @@ CoreCalculatorChip(
 Must have `label` and `value`. No tap events will execute.
 
 ```dart
-CoreCalculatorChip(
-  type: CoreCalculatorChipType.disabled,
-  label: 'Area',
-  value: '410.67ft²',
-  onTap: () {},
+CoreCalculatorChip
+(
+type: CoreCalculatorChipType.disabled,
+label: 'Area',
+value: '410.67ft²',
+onTap: () {},
 );
 ```
 
 ### Active Chip
 
 ```dart
-CoreCalculatorChip(
-  type: CoreCalculatorChipType.active,
-  label: 'Area',
-  value: '410.67ft²',
-  onTap: () {},
+CoreCalculatorChip
+(
+type: CoreCalculatorChipType.active,
+label: 'Area',
+value: '410.67ft²',
+onTap: () {},
 );
 ```
 
 ### Editable Chip with Close Icon
 
 ```dart
-CoreCalculatorChip(
-  type: CoreCalculatorChipType.editable,
-  value: '4in',
-  withCloseIcon: true,
-  onTap: () {},
-  onClose: () => debugPrint('remove'),
+CoreCalculatorChip
+(
+type: CoreCalculatorChipType.editable,
+value: '4in',
+withCloseIcon: true,
+onTap: () {},
+onClose: () => debugPrint('remove'
+)
+,
 );
 ```
 

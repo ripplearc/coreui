@@ -14,12 +14,12 @@ class CoreCalculatorChip extends StatelessWidget {
     super.key,
     required this.type,
     required this.value,
-    required this.onTap,
+    this.onTap,
     this.label,
     this.withCloseIcon = false,
     this.onClose,
   }) : assert(
-          type != CoreCalculatorChipType.disabled || label != null,
+          !(type == CoreCalculatorChipType.disabled && label == null),
           'Label must not be null when type is disabled',
         );
 
@@ -28,7 +28,7 @@ class CoreCalculatorChip extends StatelessWidget {
   final String value;
   final bool withCloseIcon;
   final VoidCallback? onClose;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

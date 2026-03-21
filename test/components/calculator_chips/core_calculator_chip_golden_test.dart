@@ -71,7 +71,7 @@ void main() {
                 ),
                 const SizedBox(width: CoreSpacing.space8),
                 buildColumnExample(
-                  'Disable',
+                  'Disabled',
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.disabled,
                     label: 'Area',
