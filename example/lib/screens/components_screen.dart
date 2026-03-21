@@ -1,5 +1,6 @@
 import 'package:example/screens/bottom_navigation_showcase_screen.dart';
 import 'package:example/screens/button_showcase_screen.dart';
+import 'package:example/screens/calculator_chip_showcase_screen.dart';
 import 'package:example/screens/chip_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
@@ -55,9 +56,16 @@ class ComponentsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildShowcaseButton(
                 context,
+                'Calculator Chip Components',
+                const CalculatorChipShowcaseScreen(),
+              ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
                 'Chip Components',
                 const ChipShowcaseScreen(),
               ),
+
               const SizedBox(height: 16),
               _buildShowcaseButton(
                 context,

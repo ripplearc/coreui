@@ -2,6 +2,7 @@ export 'src/components/alerts/toast.dart';
 export 'src/components/avatar/avatar.dart';
 export 'src/components/bottom_sheets/core_quick_sheet.dart';
 export 'src/components/buttons/core_button.dart';
+export 'src/components/calculator_chips/core_calculator_chip.dart';
 export 'src/components/chips/core_chip.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';
