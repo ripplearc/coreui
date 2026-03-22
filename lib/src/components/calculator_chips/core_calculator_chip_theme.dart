@@ -87,8 +87,9 @@ abstract final class CoreCalculatorChipTheme {
   }
 
   /// Returns the shadow list for a calculator chip.
-  /// No shadow is defined for calculator chips by default.
-  static List<BoxShadow>? shadow(CoreCalculatorChipType type) => null;
+  /// No shadow is defined for calculator chips by default except for editable chips.
+  static List<BoxShadow>? shadow(CoreCalculatorChipType type) =>
+      type == CoreCalculatorChipType.editable ? CoreShadows.small : null;
 
   /// The standard border radius for all calculator chips.
   static BorderRadius get borderRadius =>

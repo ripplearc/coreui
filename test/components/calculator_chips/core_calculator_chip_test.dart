@@ -106,7 +106,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(CoreCalculatorChip));
+      await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
       expect(wasPressed, isFalse);
     });
