@@ -3,12 +3,41 @@ import 'package:flutter/material.dart';
 import '../../../ripplearc_coreui.dart';
 import 'core_calculator_chip_theme.dart';
 
+/// The type variant of a [CoreCalculatorChip].
+///
+/// [editable] represents a state that can be interacted with, [disabled] is for
+/// non-interactive states, and [active] is for highlighted or currently
+/// selected states.
 enum CoreCalculatorChipType {
   editable,
   disabled,
   active,
 }
 
+/// A chip component specifically designed for calculator or input-driven
+/// interfaces. It displays a value and an optional label, supporting
+/// interactive, disabled, and active states.
+///
+/// ## Types
+/// [CoreCalculatorChipType.editable] is interactive and typically features a
+/// shadow to indicate elevation.
+/// [CoreCalculatorChipType.disabled] is non-interactive and visually muted.
+/// [CoreCalculatorChipType.active] represents a highlighted or selected state.
+///
+/// ## Accessibility
+/// Automatically provides a combined semantic label for [label] and [value].
+///
+/// ## Example
+/// ```dart
+/// CoreCalculatorChip(
+///   type: CoreCalculatorChipType.editable,
+///   label: 'Amount',
+///   value: '123.45',
+///   onTap: () => debugPrint('Chip tapped'),
+///   withCloseIcon: true,
+///   onClose: () => debugPrint('Close tapped'),
+/// )
+/// ```
 class CoreCalculatorChip extends StatelessWidget {
   const CoreCalculatorChip({
     super.key,
@@ -23,11 +52,24 @@ class CoreCalculatorChip extends StatelessWidget {
           'Label must not be null when type is disabled',
         );
 
+  /// The type variant determining the chip's visual and interactive behavior.
   final CoreCalculatorChipType type;
+
+  /// An optional text label displayed before the [value].
+  ///
+  /// Must be non-null if [type] is [CoreCalculatorChipType.disabled].
   final String? label;
+
+  /// The main text value displayed on the chip.
   final String value;
+
+  /// Whether to show a close (×) icon.
   final bool withCloseIcon;
+
+  /// Called when the user taps the close icon.
   final VoidCallback? onClose;
+
+  /// Called when the user taps the chip.
   final VoidCallback? onTap;
 
   @override
