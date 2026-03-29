@@ -35,7 +35,6 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
   static const Duration _animationDuration = Duration(milliseconds: 200);
 
   late final AnimationController _animationController;
-  late final Animation<double> _animation;
   bool _isPressed = false;
 
   @override
@@ -44,10 +43,6 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
     _animationController = AnimationController(
       vsync: this,
       duration: _animationDuration,
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
     );
   }
 
@@ -58,6 +53,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
   }
 
   void _handleTapDown(TapDownDetails details) {
+    if (_isPressed) return;
     HapticFeedback.lightImpact();
     _isPressed = true;
     _animationController.forward();
@@ -122,12 +118,13 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
       button: true,
       hint: semanticHint,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _animationController,
         builder: (context, child) {
+          final t = Curves.easeInOut.transform(_animationController.value);
           final currentBorderRadius = BorderRadius.lerp(
                 BorderRadius.circular(CoreSpacing.space2),
                 BorderRadius.circular(100.0),
-                _animation.value,
+                t,
               ) ??
               BorderRadius.circular(CoreSpacing.space2);
 

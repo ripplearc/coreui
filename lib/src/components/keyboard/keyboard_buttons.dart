@@ -366,7 +366,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
-  late Animation<double> _animation;
   bool _isPressed = false;
 
   static bool _isSquareToRoundPressStyle(_KeyboardButton w) {
@@ -389,10 +388,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
       vsync: this,
       duration: _durationForStyle(squareToRound),
     );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: _curveForStyle(squareToRound),
-    );
   }
 
   @override
@@ -402,18 +397,10 @@ class _KeyboardButtonState extends State<_KeyboardButton>
         widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
       return;
     }
-    final wasSquareToRound = _isSquareToRoundPressStyle(oldWidget);
     final isSquareToRound = _isSquareToRoundPressStyle(widget);
     final newDuration = _durationForStyle(isSquareToRound);
-
     if (_animationController.duration != newDuration) {
       _animationController.duration = newDuration;
-    }
-    if (wasSquareToRound != isSquareToRound) {
-      _animation = CurvedAnimation(
-        parent: _animationController,
-        curve: _curveForStyle(isSquareToRound),
-      );
     }
   }
 
@@ -424,6 +411,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   }
 
   void _handleTapDown(TapDownDetails details) {
+    if (_isPressed) return;
     HapticFeedback.lightImpact();
     _isPressed = true;
     _animationController.forward();
@@ -441,15 +429,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     if (_isPressed) {
       _isPressed = false;
       _animationController.reverse();
-    }
-  }
-
-  void _handleTap() {
-    if (!_isPressed) {
-      _animationController.forward().then((_) {
-        _animationController.reverse();
-      });
-      widget.onPressed();
     }
   }
 
@@ -485,12 +464,14 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     );
 
     return AnimatedBuilder(
-      animation: _animation,
+      animation: _animationController,
       builder: (context, child) {
+        final t = _curveForStyle(_isSquareToRoundPressStyle(widget))
+            .transform(_animationController.value);
         final currentBorderRadius = BorderRadius.lerp(
               widget.borderRadius,
               widget.pressedBorderRadius ?? widget.borderRadius,
-              _animation.value,
+              t,
             ) ??
             widget.borderRadius;
 
@@ -498,7 +479,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
           onTapDown: _handleTapDown,
           onTapUp: _handleTapUp,
           onTapCancel: _handleTapCancel,
-          onTap: _handleTap,
           child: Container(
             decoration: BoxDecoration(
               border: effectiveBorderColor != null
@@ -519,8 +499,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
                 children: [
                   child ?? const SizedBox.shrink(),
                   Opacity(
-                    opacity: _animation.value *
-                        _KeyboardButton._flashOverlayMaxOpacity,
+                    opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
                     child: Container(
                       decoration: BoxDecoration(
                         color: colors.iconGrayLight,
