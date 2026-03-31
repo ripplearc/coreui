@@ -21,6 +21,8 @@ custom_lint:
     - sealed_over_dynamic
     - avoid_static_colors
     - avoid_static_typography
+    - document_enum: false
+    - restrict_core_icon_data: false
 
 linter:
   rules:
