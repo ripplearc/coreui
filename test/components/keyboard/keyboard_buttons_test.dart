@@ -50,6 +50,31 @@ void main() {
       expect(pressedDigit, equals(DigitType.three));
     });
 
+    testWidgets('onDigitPressed is called exactly once per tap', (tester) async {
+      var callCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDigitInput(
+              digit: DigitType.one,
+              onDigitPressed: (_) => callCount++,
+              height: 40.0,
+              width: 40.0,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(CoreDigitInput));
+      await tester.pumpAndSettle();
+      expect(callCount, 1);
+
+      await tester.tap(find.byType(CoreDigitInput));
+      await tester.pumpAndSettle();
+      expect(callCount, 2);
+    });
+
     testWidgets('uses emphasized styling when isEmphasized is true',
         (tester) async {
       await tester.pumpWidget(

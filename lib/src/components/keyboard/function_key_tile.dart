@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_typography_extension.dart';
 import '../../theme/spacing.dart';
@@ -29,23 +30,48 @@ class FunctionKeyTile extends StatefulWidget {
   State<FunctionKeyTile> createState() => _FunctionKeyTileState();
 }
 
-class _FunctionKeyTileState extends State<FunctionKeyTile> {
+class _FunctionKeyTileState extends State<FunctionKeyTile>
+    with SingleTickerProviderStateMixin {
+  static const Duration _animationDuration = Duration(milliseconds: 200);
+
+  late final AnimationController _animationController;
   bool _isPressed = false;
-  static const double _tweenBegin = 0.0;
-  static const double _tweenEndPressed = 1.0;
-  static const double _tweenEndUnpressed = 0.0;
-  static const Duration _tweenDuration = Duration(milliseconds: 200);
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _animationDuration,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void _handleTapDown(TapDownDetails details) {
-    setState(() => _isPressed = true);
+    if (_isPressed) return;
+    HapticFeedback.lightImpact();
+    _isPressed = true;
+    _animationController.forward();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+      widget.onTap();
+    }
   }
 
   void _handleTapCancel() {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+    }
   }
 
   @override
@@ -91,22 +117,19 @@ class _FunctionKeyTileState extends State<FunctionKeyTile> {
       label: semanticLabel,
       button: true,
       hint: semanticHint,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(
-            begin: _tweenBegin,
-            end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed),
-        duration: _tweenDuration,
-        curve: Curves.easeInOut,
-        builder: (context, animationValue, child) {
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          final t = Curves.easeInOut.transform(_animationController.value);
           final currentBorderRadius = BorderRadius.lerp(
                 BorderRadius.circular(CoreSpacing.space2),
                 BorderRadius.circular(100.0),
-                animationValue,
+                t,
               ) ??
               BorderRadius.circular(CoreSpacing.space2);
 
           return GestureDetector(
-            onTap: widget.onTap,
+            behavior: HitTestBehavior.opaque,
             onTapDown: _handleTapDown,
             onTapUp: _handleTapUp,
             onTapCancel: _handleTapCancel,

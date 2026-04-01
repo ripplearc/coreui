@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A button widget for numeric digit input on the keyboard.
@@ -40,7 +41,7 @@ class CoreDigitInput extends StatelessWidget {
       label: '${digit.label} button',
       button: true,
       child: _KeyboardButton(
-        islabel: true,
+        isLabel: true,
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
@@ -90,7 +91,7 @@ class CoreOperatorButton extends StatelessWidget {
       label: '${operatorType.symbol} operator button',
       button: true,
       child: _KeyboardButton(
-        islabel: false,
+        isLabel: false,
         icon: operatorType.icon,
         backgroundColor: backgroundColor,
         onPressed: () => onOperatorPressed(operatorType),
@@ -144,7 +145,7 @@ class CoreUnitButton extends StatelessWidget {
       child: _KeyboardButton(
         label: unit == UnitType.divideSymbol ? null : unit.label,
         icon: unit == UnitType.divideSymbol ? CoreIcons.slash : null,
-        islabel: unit != UnitType.divideSymbol,
+        isLabel: unit != UnitType.divideSymbol,
         backgroundColor: backgroundColor,
         onPressed: () => onUnitSelected(unit),
         width: width,
@@ -213,7 +214,7 @@ class CoreControlButton extends StatelessWidget {
       button: true,
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
-        islabel: false,
+        isLabel: false,
         icon: action.icon,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
@@ -293,7 +294,7 @@ class CoreResultButton extends StatelessWidget {
       hint: 'Calculates and displays the result',
       child: _KeyboardButton(
         label: label,
-        islabel: true,
+        isLabel: true,
         backgroundColor: backgroundColor,
         onPressed: onTap,
         height: effectiveHeight,
@@ -325,7 +326,7 @@ class _KeyboardButton extends StatefulWidget {
   final double? height;
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
-  final bool islabel;
+  final bool isLabel;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
@@ -336,43 +337,100 @@ class _KeyboardButton extends StatefulWidget {
 
   static const double _circularBorderRadius = 100.0;
 
-  const _KeyboardButton(
-      {this.label,
-      this.icon,
-      this.borderColor,
-      required this.backgroundColor,
-      required this.onPressed,
-      this.textStyle,
-      this.width,
-      this.height,
-      BorderRadius? borderRadius,
-      this.pressedBorderRadius,
-      required this.islabel})
-      : borderRadius = borderRadius ??
+  static const double _flashOverlayMaxOpacity = 0.4;
+
+  const _KeyboardButton({
+    this.label,
+    this.icon,
+    this.borderColor,
+    required this.backgroundColor,
+    required this.onPressed,
+    this.textStyle,
+    this.width,
+    this.height,
+    BorderRadius? borderRadius,
+    this.pressedBorderRadius,
+    required this.isLabel,
+  }) : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
   @override
   State<_KeyboardButton> createState() => _KeyboardButtonState();
 }
 
-class _KeyboardButtonState extends State<_KeyboardButton> {
-  static const double _tweenBegin = 0.0;
-  static const double _tweenEndPressed = 1.0;
-  static const double _tweenEndUnpressed = 0.0;
-  static const Duration _tweenDuration = Duration(milliseconds: 200);
+class _KeyboardButtonState extends State<_KeyboardButton>
+    with SingleTickerProviderStateMixin {
+  static const Duration _animationDuration = Duration(milliseconds: 150);
+  static const Duration _squareToRoundPressAnimationDuration =
+      Duration(milliseconds: 125);
+  static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
+  late final AnimationController _animationController;
+  late bool _isSquareToRound;
   bool _isPressed = false;
 
+  static bool _isSquareToRoundPressStyle(_KeyboardButton w) {
+    final pressed = w.pressedBorderRadius ?? w.borderRadius;
+    return w.pressedBorderRadius != null &&
+        pressed.topLeft.x > w.borderRadius.topLeft.x;
+  }
+
+  static Duration _durationForStyle(bool squareToRound) =>
+      squareToRound ? _squareToRoundPressAnimationDuration : _animationDuration;
+
+  static Curve _curveForStyle(bool squareToRound) =>
+      squareToRound ? _squareToRoundPressAnimationCurve : Curves.ease;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSquareToRound = _isSquareToRoundPressStyle(widget);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _durationForStyle(_isSquareToRound),
+    );
+  }
+
+  @override
+  void didUpdateWidget(_KeyboardButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.borderRadius == oldWidget.borderRadius &&
+        widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
+      return;
+    }
+    _isSquareToRound = _isSquareToRoundPressStyle(widget);
+    final newDuration = _durationForStyle(_isSquareToRound);
+    if (_animationController.duration != newDuration) {
+      _animationController.duration = newDuration;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   void _handleTapDown(TapDownDetails details) {
-    setState(() => _isPressed = true);
+    if (_isPressed) return;
+    HapticFeedback.lightImpact();
+    _isPressed = true;
+    _animationController.forward();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+      widget.onPressed();
+    }
   }
 
   void _handleTapCancel() {
-    setState(() => _isPressed = false);
+    if (_isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+    }
   }
 
   Widget _buildIconContent(AppColorsExtension colors, double? effectiveHeight) {
@@ -395,10 +453,10 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
     final effectiveHeight = widget.height;
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colors.transparent;
-    final effectiveBorderColor = widget.borderColor ?? effectiveBackgroundColor;
+    final effectiveBorderColor = widget.borderColor;
 
     final staticChild = Center(
-      child: widget.islabel
+      child: widget.isLabel
           ? Text(
               widget.label ?? '',
               style: widget.textStyle,
@@ -406,34 +464,30 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
           : _buildIconContent(colors, effectiveHeight),
     );
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(
-        begin: _tweenBegin,
-        end: _isPressed ? _tweenEndPressed : _tweenEndUnpressed,
-      ),
-      duration: _tweenDuration,
-      curve: Curves.easeInOut,
-      builder: (context, animationValue, child) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        final t = _curveForStyle(_isSquareToRound)
+            .transform(_animationController.value);
         final currentBorderRadius = BorderRadius.lerp(
               widget.borderRadius,
               widget.pressedBorderRadius ?? widget.borderRadius,
-              animationValue,
+              t,
             ) ??
             widget.borderRadius;
 
         return GestureDetector(
           onTapDown: _handleTapDown,
-          onTapUp: (details) {
-            _handleTapUp(details);
-            widget.onPressed();
-          },
+          onTapUp: _handleTapUp,
           onTapCancel: _handleTapCancel,
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(
-                color: effectiveBorderColor,
-                width: _KeyboardButton._defaultBorderWidth,
-              ),
+              border: effectiveBorderColor != null
+                  ? Border.all(
+                      color: effectiveBorderColor,
+                      width: _KeyboardButton._defaultBorderWidth,
+                    )
+                  : null,
               borderRadius: currentBorderRadius,
               color: effectiveBackgroundColor,
             ),
@@ -441,7 +495,21 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
             height: effectiveHeight,
             child: ClipRRect(
               borderRadius: currentBorderRadius,
-              child: child,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  child ?? const SizedBox.shrink(),
+                  Opacity(
+                    opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colors.iconGrayLight,
+                        borderRadius: currentBorderRadius,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
