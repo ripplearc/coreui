@@ -23,13 +23,18 @@ class CoreToast {
   static bool _disableTimers = false;
 
   /// Shows an error toast.
-  /// Accepts a [context] and an optional [message] as parameters.
-  static void showError(BuildContext context, String? message, String closeLabel) {
+  static void showError(
+    BuildContext context,
+    String message,
+    String closeLabel, {
+    String? title,
+  }) {
     showCustomToast(
       context,
       (overlayContext) => Toast.error(
-        description: '$message',
+        description: message,
         closeLabel: closeLabel,
+        title: title,
         onClose: () {
           _entry?.remove();
         },
@@ -38,13 +43,18 @@ class CoreToast {
   }
 
   /// Shows a success toast.
-  /// Accepts a [context] and an optional [message] as parameters.
-  static void showSuccess(BuildContext context, String? message, String closeLabel) {
+  static void showSuccess(
+    BuildContext context,
+    String message,
+    String closeLabel, {
+    String? title,
+  }) {
     showCustomToast(
       context,
       (overlayContext) => Toast.success(
-        description: '$message',
+        description: message,
         closeLabel: closeLabel,
+        title: title,
         onClose: () {
           _entry?.remove();
         },
@@ -53,13 +63,18 @@ class CoreToast {
   }
 
   /// Shows a warning toast.
-  /// Accepts a [context] and an optional [message] as parameters.
-  static void showWarning(BuildContext context, String? message, String closeLabel) {
+  static void showWarning(
+    BuildContext context,
+    String message,
+    String closeLabel, {
+    String? title,
+  }) {
     showCustomToast(
       context,
       (overlayContext) => Toast.warning(
-        description: '$message',
+        description: message,
         closeLabel: closeLabel,
+        title: title,
         onClose: () {
           _entry?.remove();
         },

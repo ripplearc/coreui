@@ -20,13 +20,15 @@ void main() {
     });
 
     final colors = AppColorsExtension.create();
-    testWidgets('showSuccess displays success toast with default message', (tester) async {
+    testWidgets('showSuccess displays success toast with default message',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Request Successful', 'Close'),
+                onPressed: () => CoreToast.showSuccess(
+                    context, 'Request Successful', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -42,13 +44,72 @@ void main() {
       expect(find.text('Close'), findsOneWidget);
     });
 
-    testWidgets('showError displays error toast with custom message', (tester) async {
+    testWidgets('showSuccess displays success toast with title',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showError(context, 'Custom error message', 'Close'),
+                onPressed: () => CoreToast.showSuccess(
+                  context,
+                  'Your changes have been saved successfully',
+                  'Close',
+                  title: 'Success',
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Success'), findsOneWidget);
+      expect(find.text('Your changes have been saved successfully'),
+          findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+    });
+
+    testWidgets('showSuccess displays no separate title when title is omitted',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showSuccess(
+                  context,
+                  'Request Successful',
+                  'Close',
+                  // title intentionally omitted
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Request Successful'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+      expect(find.byType(Toast), findsOneWidget);
+    });
+
+    testWidgets('showError displays error toast with custom message',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showError(
+                    context, 'Custom error message', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -63,13 +124,71 @@ void main() {
       expect(find.text('Close'), findsOneWidget);
     });
 
-    testWidgets('showWarning displays warning toast with custom message', (tester) async {
+    testWidgets('showError displays error toast with title', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showWarning(context, 'Custom warning message', 'Close'),
+                onPressed: () => CoreToast.showError(
+                  context,
+                  'Something went wrong processing your request',
+                  'Close',
+                  title: 'Error',
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Error'), findsOneWidget);
+      expect(find.text('Something went wrong processing your request'),
+          findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+    });
+
+    testWidgets('showError displays no separate title when title is omitted',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showError(
+                  context,
+                  'Custom error message',
+                  'Close',
+                  // title intentionally omitted
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Custom error message'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+      expect(find.byType(Toast), findsOneWidget);
+    });
+
+    testWidgets('showWarning displays warning toast with custom message',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showWarning(
+                    context, 'Custom warning message', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -82,6 +201,63 @@ void main() {
 
       expect(find.text('Custom warning message'), findsOneWidget);
       expect(find.text('Close'), findsOneWidget);
+    });
+
+    testWidgets('showWarning displays warning toast with title',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showWarning(
+                  context,
+                  'Please review your settings before continuing',
+                  'Close',
+                  title: 'Warning',
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Warning'), findsOneWidget);
+      expect(find.text('Please review your settings before continuing'),
+          findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+    });
+
+    testWidgets('showWarning displays no separate title when title is omitted',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showWarning(
+                  context,
+                  'Custom warning message',
+                  'Close',
+                  // title intentionally omitted
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Toast'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Custom warning message'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
+      expect(find.byType(Toast), findsOneWidget);
     });
 
     testWidgets('showCustomToast displays custom toast', (tester) async {
@@ -119,11 +295,13 @@ void main() {
               builder: (context) => Column(
                 children: [
                   ElevatedButton(
-                    onPressed: () => CoreToast.showSuccess(context, 'First toast', 'Close'),
+                    onPressed: () =>
+                        CoreToast.showSuccess(context, 'First toast', 'Close'),
                     child: const Text('Show First'),
                   ),
                   ElevatedButton(
-                    onPressed: () => CoreToast.showError(context, 'Second toast', 'Close'),
+                    onPressed: () =>
+                        CoreToast.showError(context, 'Second toast', 'Close'),
                     child: const Text('Show Second'),
                   ),
                 ],
@@ -153,7 +331,8 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Test toast', 'Close'),
+                onPressed: () =>
+                    CoreToast.showSuccess(context, 'Test toast', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -179,7 +358,8 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
-                onPressed: () => CoreToast.showSuccess(context, 'Test toast', 'Close'),
+                onPressed: () =>
+                    CoreToast.showSuccess(context, 'Test toast', 'Close'),
                 child: const Text('Show Toast'),
               ),
             ),
@@ -200,7 +380,8 @@ void main() {
     });
 
     group('accessibility guidelines', () {
-      testWidgets('displayed toast close button meets tap target and label guidelines',
+      testWidgets(
+          'displayed toast close button meets tap target and label guidelines',
           (tester) async {
         await setupA11yTest(tester);
 
@@ -237,4 +418,4 @@ void main() {
       });
     });
   });
-} 
+}
