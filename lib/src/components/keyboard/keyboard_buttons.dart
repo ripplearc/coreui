@@ -366,6 +366,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
+  late bool _isSquareToRound;
   bool _isPressed = false;
 
   static bool _isSquareToRoundPressStyle(_KeyboardButton w) {
@@ -383,10 +384,10 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   @override
   void initState() {
     super.initState();
-    final squareToRound = _isSquareToRoundPressStyle(widget);
+    _isSquareToRound = _isSquareToRoundPressStyle(widget);
     _animationController = AnimationController(
       vsync: this,
-      duration: _durationForStyle(squareToRound),
+      duration: _durationForStyle(_isSquareToRound),
     );
   }
 
@@ -397,8 +398,8 @@ class _KeyboardButtonState extends State<_KeyboardButton>
         widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
       return;
     }
-    final isSquareToRound = _isSquareToRoundPressStyle(widget);
-    final newDuration = _durationForStyle(isSquareToRound);
+    _isSquareToRound = _isSquareToRoundPressStyle(widget);
+    final newDuration = _durationForStyle(_isSquareToRound);
     if (_animationController.duration != newDuration) {
       _animationController.duration = newDuration;
     }
@@ -466,7 +467,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
-        final t = _curveForStyle(_isSquareToRoundPressStyle(widget))
+        final t = _curveForStyle(_isSquareToRound)
             .transform(_animationController.value);
         final currentBorderRadius = BorderRadius.lerp(
               widget.borderRadius,

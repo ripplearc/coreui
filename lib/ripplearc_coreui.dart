@@ -6,6 +6,7 @@ export 'src/components/chips/core_chip.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';
 export 'src/components/keyboard/core_keyboard.dart';
+export 'src/components/keyboard/function_key_tile.dart';
 export 'src/components/keyboard/keyboard_buttons.dart';
 export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
