@@ -75,12 +75,9 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      final digitButton = find.text('1');
-      if (digitButton.evaluate().isNotEmpty) {
-        await tester.tap(digitButton);
-        await tester.pumpAndSettle();
-        expect(pressedDigit, equals(DigitType.one));
-      }
+      await tester.tap(find.text('1'));
+      await tester.pumpAndSettle();
+      expect(pressedDigit, equals(DigitType.one));
     });
 
     testWidgets('calls onOperatorPressed when operator button is tapped',
