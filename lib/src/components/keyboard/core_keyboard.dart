@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import 'function_key_tile.dart';
 
 /// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
 ///
