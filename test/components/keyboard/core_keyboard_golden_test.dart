@@ -10,21 +10,30 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     await loadFonts();
   });
+
   final colors = AppColorsExtension.create();
+
+  const basicGeometry = GroupNameType(label: "Basic Geometry");
+  const materials = GroupNameType(label: "Materials");
+  const trigonometry = GroupNameType(label: "Trigonometry");
+
   testWidgets('CoreKeyboard Full UI Golden Test - Multiple Function Groups',
       (tester) async {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: "Basic Geometry"),
+        name: basicGeometry,
         keys: [
           KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
           KeyType(groupName: 'Basic Geometry', label: 'Volume', action: () {}),
           KeyType(
-              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
+            groupName: 'Basic Geometry',
+            label: 'Perimeter',
+            action: () {},
+          ),
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: "Materials"),
+        name: materials,
         keys: [
           KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
           KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
@@ -32,7 +41,7 @@ void main() {
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: "Trigonometry"),
+        name: trigonometry,
         keys: [
           KeyType(groupName: 'Trigonometry', label: 'sin', action: () {}),
           KeyType(groupName: 'Trigonometry', label: 'cos', action: () {}),
@@ -42,10 +51,9 @@ void main() {
     ];
 
     final testAccentColors = {
-      const GroupNameType(label: "Basic Geometry"):
-          colors.keyboardFunctions,
-      const GroupNameType(label: "Materials"): colors.keyboardActions,
-      const GroupNameType(label: "Trigonometry"): colors.keyboardFunctions,
+      basicGeometry: colors.keyboardFunctions,
+      materials: colors.keyboardActions,
+      trigonometry: colors.keyboardFunctions,
     };
 
     final widget = MaterialApp(
@@ -58,7 +66,7 @@ void main() {
         body: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: CoreKeyboard(
-            currentGroup: const GroupNameType(label: "Basic Geometry"),
+            currentGroup: basicGeometry,
             allGroups: testGroups,
             onDigitPressed: (_) {},
             onUnitSelected: (_) {},
@@ -73,23 +81,18 @@ void main() {
         ),
       ),
     );
-
     await tester.binding.setSurfaceSize(const Size(350, 550));
-
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
     await tester.awaitImages();
-
     await expectLater(
       find.byType(Scaffold),
       matchesGoldenFile('goldens/core_keyboard_full_ui_small.png'),
     );
-
     await tester.binding.setSurfaceSize(const Size(800, 650));
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
     await tester.awaitImages();
-
     await expectLater(
       find.byType(Scaffold),
       matchesGoldenFile('goldens/core_keyboard_full_ui_large.png'),

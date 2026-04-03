@@ -108,20 +108,24 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
 
           return Padding(
             padding: const EdgeInsets.only(top: CoreSpacing.space8),
-            child: CoreKeyboard(
-              currentGroup: currentGroup,
-              allGroups: groups,
-              onDigitPressed: onDigitPressed,
-              onUnitSelected: onUnitSelected,
-              onOperatorPressed: onOperatorPressed,
-              onControlAction: onControlActionTriggered,
-              onResultTapped: () => log('Result tapped'),
-              onGroupSelected: onGroupSelected,
-              onKeyTapped: onFunctionKeyTapped,
-              result: ResultType(label: "="),
-              currentUnitSystem: currentUnitSystem,
-              onUnitSystemChanged: onUnitSystemChanged,
-              groupAccentColors: groupAccentColors,
+            child: MediaQuery.removePadding(
+              context: context,
+              removeBottom: true,
+              child: CoreKeyboard(
+                currentGroup: currentGroup,
+                allGroups: groups,
+                onDigitPressed: onDigitPressed,
+                onUnitSelected: onUnitSelected,
+                onOperatorPressed: onOperatorPressed,
+                onControlAction: onControlActionTriggered,
+                onResultTapped: () => log('Result tapped'),
+                onGroupSelected: onGroupSelected,
+                onKeyTapped: onFunctionKeyTapped,
+                result: ResultType(label: "="),
+                currentUnitSystem: currentUnitSystem,
+                onUnitSystemChanged: onUnitSystemChanged,
+                groupAccentColors: groupAccentColors,
+              ),
             ),
           );
         });
