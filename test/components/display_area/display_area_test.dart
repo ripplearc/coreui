@@ -36,9 +36,10 @@ void main() {
 
       final decoration = container.decoration as BoxDecoration;
       final colors = AppColorsExtension.of(tester.element(displayAreaFinder));
-
-      expect(container.constraints!.minHeight, CoreSpacing.space57_5);
-      expect(container.constraints!.maxHeight, CoreSpacing.space57_5);
+      final size = tester.getSize(find.byType(CoreDisplayArea));
+      expect(size.height, CoreSpacing.space57);
+      expect(size.width,
+          tester.view.physicalSize.width / tester.view.devicePixelRatio);
       expect(decoration.color, colors.backgroundBlueLight);
 
       final borderRadius = decoration.borderRadius as BorderRadius;
@@ -46,14 +47,6 @@ void main() {
           borderRadius.bottomLeft, const Radius.circular(CoreSpacing.space7));
       expect(
           borderRadius.bottomRight, const Radius.circular(CoreSpacing.space7));
-
-      final columnFinder = find.descendant(
-        of: displayAreaFinder,
-        matching: find.byType(Column),
-      );
-      expect(columnFinder, findsOneWidget);
-      final column = tester.widget<Column>(columnFinder);
-      expect(column.crossAxisAlignment, CrossAxisAlignment.stretch);
     });
   });
 

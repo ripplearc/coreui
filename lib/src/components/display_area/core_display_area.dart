@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
+/// A colored display area widget with rounded bottom corners,
+/// used to present calculation results at the top of the layout.
 class CoreDisplayArea extends StatelessWidget {
   const CoreDisplayArea({super.key});
 
@@ -9,7 +11,7 @@ class CoreDisplayArea extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     return Container(
-      height: CoreSpacing.space57_5,
+      height: CoreSpacing.space57,
       width: double.infinity,
       decoration: BoxDecoration(
           color: colors.backgroundBlueLight,
@@ -17,10 +19,6 @@ class CoreDisplayArea extends StatelessWidget {
             bottomLeft: Radius.circular(CoreSpacing.space7),
             bottomRight: Radius.circular(CoreSpacing.space7),
           )),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [],
-      ),
     );
   }
 }
