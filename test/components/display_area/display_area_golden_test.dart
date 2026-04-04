@@ -12,9 +12,6 @@ void main() {
 
   testWidgets('DisplayArea Component Visual Regression Test',
       (WidgetTester tester) async {
-    debugDisableShadows = false;
-    addTearDown(() => debugDisableShadows = true);
-
     tester.view.devicePixelRatio = 3.0;
     addTearDown(() => tester.view.resetDevicePixelRatio());
     await tester.binding.setSurfaceSize(const Size(412, 640));
@@ -25,14 +22,14 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: Scaffold(
+      home: const Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Display Area'),
-            const SizedBox(height: CoreSpacing.space8),
-            const CoreDisplayArea(),
+            Text('Display Area'),
+            SizedBox(height: CoreSpacing.space8),
+            CoreDisplayArea(),
           ],
         ),
       ),
@@ -45,7 +42,5 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/display_area_component.png'),
     );
-
-    debugDisableShadows = true;
   });
 }
