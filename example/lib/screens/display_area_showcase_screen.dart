@@ -58,27 +58,33 @@ class DisplayAreaShowcaseScreen extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: colors.pageBackground,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(height: CoreSpacing.space8),
-          CoreKeyboard(
-            currentGroup: _basicGeometryGroup,
-            allGroups: _groups,
-            onDigitPressed: (_) {},
-            onUnitSelected: (_) {},
-            onOperatorPressed: (_) {},
-            onControlAction: (_) {},
-            onResultTapped: () {},
-            onGroupSelected: (_) {},
-            currentUnitSystem: UnitSystem.imperial,
-            onKeyTapped: (_) {},
-            onUnitSystemChanged: (_) {},
-            groupAccentColors: groupAccentColors,
-            result: ResultType(label: '='),
+      backgroundColor: colors.backgroundBlueLight,
+      body: SafeArea(
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: colors.pageBackground),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CoreDisplayArea(),
+              Spacer(),
+              CoreKeyboard(
+                currentGroup: _basicGeometryGroup,
+                allGroups: _groups,
+                onDigitPressed: (_) {},
+                onUnitSelected: (_) {},
+                onOperatorPressed: (_) {},
+                onControlAction: (_) {},
+                onResultTapped: () {},
+                onGroupSelected: (_) {},
+                currentUnitSystem: UnitSystem.imperial,
+                onKeyTapped: (_) {},
+                onUnitSystemChanged: (_) {},
+                groupAccentColors: groupAccentColors,
+                result: ResultType(label: '='),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
