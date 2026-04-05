@@ -15,6 +15,12 @@ class CoreDisplayArea extends StatelessWidget {
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
+
+  /// The semantic label announced by screen readers for the close icon.
+  /// Defaults to `'Close'`. Pass a localized string from the app layer:
+  /// ```dart
+  /// closeSemanticLabel: AppLocalizations.of(context).closeButton,
+  /// ```
   final String closeSemanticLabel;
 
   @override
@@ -37,6 +43,7 @@ class CoreDisplayArea extends StatelessWidget {
         children: [
           _HistoryPanel(
             onClose: onClose,
+            closeSemanticLabel: closeSemanticLabel,
           ),
         ],
       ),
