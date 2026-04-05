@@ -1,13 +1,16 @@
 part of '../../core_display_area.dart';
 
-/// Upper section in display area,
-/// It contains close button and history chips
+/// Upper section in the display area. Currently contains the close button.
+/// TODO CA-590 [Display Area] history chips. https://ripplearc.youtrack.cloud/issue/CA-590/Display-Area-history-chips
 class _HistoryPanel extends StatelessWidget {
-  const _HistoryPanel({this.onClose});
+  const _HistoryPanel({
+    this.onClose,
+    this.closeSemanticLabel = 'Close',
+  });
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
-
+  final String closeSemanticLabel;
   static const double _closeBorderWidth = 1.5;
 
   @override
@@ -30,7 +33,7 @@ class _HistoryPanel extends StatelessWidget {
             color: colors.iconDark,
             padding: const EdgeInsets.all(CoreSpacing.space2),
             onTap: onClose,
-            semanticLabel: 'Close',
+            semanticLabel: closeSemanticLabel,
           ),
         )
       ],

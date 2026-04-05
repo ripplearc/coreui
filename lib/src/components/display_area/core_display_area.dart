@@ -7,10 +7,15 @@ part 'display_area_sections/history_panel/history_panel.dart';
 /// A colored display area widget with rounded bottom corners,
 /// used to present calculation results at the top of the layout.
 class CoreDisplayArea extends StatelessWidget {
-  const CoreDisplayArea({super.key, this.onClose});
+  const CoreDisplayArea({
+    super.key,
+    this.onClose,
+    this.closeSemanticLabel = 'Close',
+  });
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
+  final String closeSemanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +31,13 @@ class CoreDisplayArea extends StatelessWidget {
           )),
       padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _HistoryPanel(
             onClose: onClose,
           ),
-          const Spacer()
         ],
       ),
     );
