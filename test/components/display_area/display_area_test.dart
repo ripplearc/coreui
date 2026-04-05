@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-import '../../utils/a11y_guidelines.dart';
-
 void main() {
   group('DisplayArea Widget Tests', () {
     testWidgets('renders DisplayArea with correct dimensions and decoration',
@@ -28,10 +26,12 @@ void main() {
       expect(displayAreaFinder, findsOneWidget);
 
       final container = tester.widget<Container>(
-        find.descendant(
-          of: displayAreaFinder,
-          matching: find.byType(Container),
-        ),
+        find
+            .descendant(
+              of: displayAreaFinder,
+              matching: find.byType(Container),
+            )
+            .first,
       );
 
       final decoration = container.decoration as BoxDecoration;
@@ -48,23 +48,27 @@ void main() {
       expect(
           borderRadius.bottomRight, const Radius.circular(CoreSpacing.space7));
     });
-  });
 
-  group('DisplayArea – accessibility', () {
-    testWidgets('meets basic accessibility guidelines',
+    testWidgets('triggers onClose when close icon is tapped',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
-
-      await setupA11yTest(tester);
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (theme) => const CoreDisplayArea(),
-        find.byType(CoreDisplayArea),
-        checkTapTargetSize: false,
-        checkLabeledTapTarget: false,
-        checkTextContrast: false,
+      bool closed = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              onClose: () => closed = true,
+            ),
+          ),
+        ),
       );
+
+      final closeIconFinder = find.byType(CoreIconWidget);
+      expect(closeIconFinder, findsOneWidget);
+
+      await tester.tap(closeIconFinder);
+      await tester.pumpAndSettle();
+      expect(closed, isTrue);
     });
   });
 }

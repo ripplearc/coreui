@@ -43,6 +43,7 @@ class CoreIconWidget extends StatelessWidget {
             ? ColorFilter.mode(iconColor, BlendMode.srcIn)
             : null,
         fit: BoxFit.contain,
+        semanticsLabel: semanticLabel,
       );
     } else {
       iconWidget = Icon(
