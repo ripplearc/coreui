@@ -28,10 +28,12 @@ void main() {
       expect(displayAreaFinder, findsOneWidget);
 
       final container = tester.widget<Container>(
-        find.descendant(
-          of: displayAreaFinder,
-          matching: find.byType(Container),
-        ),
+        find
+            .descendant(
+              of: displayAreaFinder,
+              matching: find.byType(Container),
+            )
+            .first,
       );
 
       final decoration = container.decoration as BoxDecoration;
@@ -47,6 +49,28 @@ void main() {
           borderRadius.bottomLeft, const Radius.circular(CoreSpacing.space7));
       expect(
           borderRadius.bottomRight, const Radius.circular(CoreSpacing.space7));
+    });
+
+    testWidgets('triggers onClose when close icon is tapped',
+        (WidgetTester tester) async {
+      bool closed = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              onClose: () => closed = true,
+            ),
+          ),
+        ),
+      );
+
+      final closeIconFinder = find.byType(CoreIconWidget);
+      expect(closeIconFinder, findsOneWidget);
+
+      await tester.tap(closeIconFinder);
+      await tester.pumpAndSettle();
+      expect(closed, isTrue);
     });
   });
 
@@ -64,6 +88,37 @@ void main() {
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
         checkTextContrast: false,
+      );
+    });
+
+    testWidgets('close icon has correct semantics',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              onClose: () {},
+            ),
+          ),
+        ),
+      );
+
+      final closeIconFinder = find.byType(CoreIconWidget);
+      expect(closeIconFinder, findsOneWidget);
+
+      final semantics = tester.getSemantics(closeIconFinder);
+      expect(semantics.label, 'Close');
+      expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreDisplayArea(onClose: () {}),
+        closeIconFinder,
+        checkTapTargetSize: true,
+        checkLabeledTapTarget: false,
+        checkTextContrast: true,
       );
     });
   });
