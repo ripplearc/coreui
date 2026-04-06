@@ -13,6 +13,7 @@ class CoreDisplayArea extends StatelessWidget {
     this.onClose,
     this.closeSemanticLabel = 'Close',
     this.chipsList = const [],
+    this.historyPlaceholder = 'Here will show what you type'
   });
 
   /// Called when the user taps the close icon.
@@ -22,12 +23,16 @@ class CoreDisplayArea extends StatelessWidget {
   /// Defaults to `'Close'`. Pass a localized string from the app layer:
   /// ```dart
   /// closeSemanticLabel: AppLocalizations.of(context).closeButton,
+  /// historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
   /// ```
   final String closeSemanticLabel;
   
   /// The list of [CoreCalculatorChip] widgets displayed in the history panel.
   /// Defaults to an empty list when no chips are provided.
   final List<CoreCalculatorChip> chipsList;
+
+  /// The placeholder text to display when the [chipsList] is empty.
+  final String historyPlaceholder;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +56,7 @@ class CoreDisplayArea extends StatelessWidget {
             onClose: onClose,
             closeSemanticLabel: closeSemanticLabel,
             chipsList: chipsList,
+            historyPlaceholder: historyPlaceholder,
           ),
         ],
       ),

@@ -107,7 +107,7 @@ void main() {
       expect(chipFinder, findsNWidgets(3));
     });
 
-    testWidgets('renders no chips when chipsList is empty',
+    testWidgets('shows default placeholder text when chipsList is empty',
         (WidgetTester tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
@@ -121,8 +121,28 @@ void main() {
         ),
       );
 
-      final chipFinder = find.byType(CoreCalculatorChip);
-      expect(chipFinder, findsNothing);
+      expect(find.byType(CoreCalculatorChip), findsNothing);
+      expect(find.text('Here will show what you type'), findsOneWidget);
+    });
+
+    testWidgets('shows custom historyPlaceholder text when chipsList is empty',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              historyPlaceholder: 'Enter a value to begin',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreCalculatorChip), findsNothing);
+      expect(find.text('Enter a value to begin'), findsOneWidget);
     });
 
     testWidgets('renders chips with correct text content',

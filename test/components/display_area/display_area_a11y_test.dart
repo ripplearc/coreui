@@ -119,5 +119,39 @@ void main() {
         checkTextContrast: false,
       );
     });
+
+    testWidgets('placeholder text is visible when history is empty',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(),
+          ),
+        ),
+      );
+
+      expect(find.text('Here will show what you type'), findsOneWidget);
+    });
+
+    testWidgets('empty state meets accessibility guidelines',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
   });
 }
