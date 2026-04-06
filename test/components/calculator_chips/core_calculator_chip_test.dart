@@ -111,9 +111,7 @@ void main() {
       expect(wasPressed, isFalse);
     });
 
-    testWidgets('displays close icon and triggers onClose',
-        (WidgetTester tester) async {
-      bool closed = false;
+    testWidgets('displays factor icon correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -121,18 +119,14 @@ void main() {
             body: CoreCalculatorChip(
               type: CoreCalculatorChipType.editable,
               value: '100',
-              withCloseIcon: true,
-              onClose: () => closed = true,
+              factor: CoreIcons.addOperator,
+              onTap: () {},
             ),
           ),
         ),
       );
 
       expect(find.byType(CoreIconWidget), findsOneWidget);
-
-      await tester.tap(find.byType(CoreIconWidget));
-      await tester.pumpAndSettle();
-      expect(closed, isTrue);
     });
   });
 

@@ -60,13 +60,12 @@ void main() {
                 ),
                 const SizedBox(width: CoreSpacing.space8),
                 buildColumnExample(
-                  'Editable w/ Icon',
+                  'Editable w/ Factor',
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.editable,
                     value: '4in',
-                    withCloseIcon: true,
+                    factor: CoreIcons.addOperator,
                     onTap: () {},
-                    onClose: () {},
                   ),
                 ),
                 const SizedBox(width: CoreSpacing.space8),
@@ -91,13 +90,21 @@ void main() {
                 ),
                 const SizedBox(width: CoreSpacing.space8),
                 buildColumnExample(
-                  'Active w/ Icon',
+                  'Active w/ Factor',
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.active,
                     value: '4in',
-                    withCloseIcon: true,
+                    factor: CoreIcons.addOperator,
                     onTap: () {},
-                    onClose: () {},
+                  ),
+                ),
+                const SizedBox(width: CoreSpacing.space8),
+                buildColumnExample(
+                  'Active w/ Factor',
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.active,
+                    factor: CoreIcons.addOperator,
+                    onTap: () {},
                   ),
                 ),
               ],
