@@ -5,10 +5,12 @@ part of '../../core_display_area.dart';
 /// This panel includes a close button and a list of history chips.
 class _HistoryPanel extends StatelessWidget {
   /// Creates a [_HistoryPanel].
-  const _HistoryPanel({this.onClose,
+  const _HistoryPanel({
+    this.onClose,
     this.closeSemanticLabel = 'Close',
     required this.chipsList,
-    this.historyPlaceholder = 'Here will show what you type'});
+    this.historyPlaceholder = 'Here will show what you type',
+  });
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
@@ -32,7 +34,9 @@ class _HistoryPanel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: CoreSpacing.space3),
       child: Row(
-        crossAxisAlignment: chipsList.isNotEmpty ? CrossAxisAlignment.start  :CrossAxisAlignment.center,
+        crossAxisAlignment: chipsList.isNotEmpty
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
         children: [
           Container(
             decoration: BoxDecoration(

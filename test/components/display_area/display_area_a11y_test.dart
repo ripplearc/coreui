@@ -42,7 +42,7 @@ void main() {
       expect(closeIconFinder, findsOneWidget);
 
       final semantics = tester.getSemantics(closeIconFinder);
-      expect(semantics.label, 'Close');
+      expect(semantics.label, CoreDisplayArea.defaultCloseSemanticLabel);
       expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
@@ -135,7 +135,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Here will show what you type'), findsOneWidget);
+      expect(
+          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
     });
 
     testWidgets('empty state meets accessibility guidelines',
