@@ -122,7 +122,8 @@ void main() {
       );
 
       expect(find.byType(CoreCalculatorChip), findsNothing);
-      expect(find.text('Here will show what you type'), findsOneWidget);
+      expect(
+          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
     });
 
     testWidgets('shows custom historyPlaceholder text when chipsList is empty',
