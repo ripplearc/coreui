@@ -24,6 +24,9 @@ class CoreDisplayArea extends StatelessWidget {
   /// closeSemanticLabel: AppLocalizations.of(context).closeButton,
   /// ```
   final String closeSemanticLabel;
+  
+  /// The list of [CoreCalculatorChip] widgets displayed in the history panel.
+  /// Defaults to an empty list when no chips are provided.
   final List<CoreCalculatorChip> chipsList;
 
   @override
