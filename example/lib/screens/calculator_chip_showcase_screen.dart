@@ -37,15 +37,18 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
               CoreCalculatorChip(
                 type: CoreCalculatorChipType.editable,
                 value: '4in',
-                withCloseIcon: true,
-                onClose: () {},
+                factor: CoreIcons.addOperator,
                 onTap: () {},
               ),
               CoreCalculatorChip(
                 type: CoreCalculatorChipType.active,
                 value: '4in',
-                withCloseIcon: true,
-                onClose: () {},
+                factor: CoreIcons.addOperator,
+                onTap: () {},
+              ),
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.active,
+                factor: CoreIcons.addOperator,
                 onTap: () {},
               ),
             ],

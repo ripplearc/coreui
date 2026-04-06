@@ -34,19 +34,17 @@ enum CoreCalculatorChipType {
 ///   label: 'Amount',
 ///   value: '123.45',
 ///   onTap: () => debugPrint('Chip tapped'),
-///   withCloseIcon: true,
-///   onClose: () => debugPrint('Close tapped'),
+///   factor: CoreIcons.addOperator,
 /// )
 /// ```
 class CoreCalculatorChip extends StatelessWidget {
   const CoreCalculatorChip({
     super.key,
     required this.type,
-    required this.value,
+    this.value,
     this.onTap,
     this.label,
-    this.withCloseIcon = false,
-    this.onClose,
+    this.factor,
   }) : assert(
           !(type == CoreCalculatorChipType.disabled && label == null),
           'Label must not be null when type is disabled',
@@ -60,14 +58,11 @@ class CoreCalculatorChip extends StatelessWidget {
   /// Must be non-null if [type] is [CoreCalculatorChipType.disabled].
   final String? label;
 
-  /// The main text value displayed on the chip.
-  final String value;
+  /// The value displayed on the chip.
+  final String? value;
 
-  /// Whether to show a close (×) icon.
-  final bool withCloseIcon;
-
-  /// Called when the user taps the close icon.
-  final VoidCallback? onClose;
+  /// An optional factor icon (e.g., +, -, x) displayed before the chip content.
+  final CoreIconData? factor;
 
   /// Called when the user taps the chip.
   final VoidCallback? onTap;
@@ -75,9 +70,15 @@ class CoreCalculatorChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = this.label;
+    final value = this.value;
+    final factor = this.factor;
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    final semanticsLabel = label != null ? '$label, $value' : value;
+    final semanticsParts = [
+      if (label != null && label.isNotEmpty) label,
+      if (value != null && value.isNotEmpty) value,
+    ];
+    final semanticsLabel = semanticsParts.join(', ');
 
     return Semantics(
       label: semanticsLabel,
@@ -115,22 +116,14 @@ class CoreCalculatorChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (withCloseIcon && type != CoreCalculatorChipType.disabled)
-                  Semantics(
-                    button: true,
-                    label: 'Close $semanticsLabel',
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: onClose,
-                      child: Center(
-                        child: CoreIconWidget(
-                          icon: CoreIcons.cross,
-                          size: CoreSpacing.space5,
-                          color: CoreCalculatorChipTheme.iconColor(
-                            type: type,
-                            colors: colors,
-                          ),
-                        ),
+                if (factor != null && type != CoreCalculatorChipType.disabled)
+                  Center(
+                    child: CoreIconWidget(
+                      icon: factor,
+                      size: CoreSpacing.space5,
+                      color: CoreCalculatorChipTheme.factorColor(
+                        type: type,
+                        colors: colors,
                       ),
                     ),
                   ),
@@ -145,17 +138,19 @@ class CoreCalculatorChip extends StatelessWidget {
                       ),
                     ),
                   ),
-                const SizedBox(width: CoreSpacing.space1),
-                ExcludeSemantics(
-                  child: Text(
-                    value,
-                    style: CoreCalculatorChipTheme.valueStyle(
-                      type: type,
-                      colors: colors,
-                      typography: typography,
+                if (value != null) ...[
+                  const SizedBox(width: CoreSpacing.space1),
+                  ExcludeSemantics(
+                    child: Text(
+                      value,
+                      style: CoreCalculatorChipTheme.valueStyle(
+                        type: type,
+                        colors: colors,
+                        typography: typography,
+                      ),
                     ),
                   ),
-                ),
+                ]
               ],
             ),
           ),
