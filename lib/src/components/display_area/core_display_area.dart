@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
+part 'display_area_sections/history_panel/history_chips.dart';
 part 'display_area_sections/history_panel/history_panel.dart';
 
 /// A colored display area widget with rounded bottom corners,
@@ -11,6 +12,7 @@ class CoreDisplayArea extends StatelessWidget {
     super.key,
     this.onClose,
     this.closeSemanticLabel = 'Close',
+    this.chipsList = const [],
   });
 
   /// Called when the user taps the close icon.
@@ -22,6 +24,7 @@ class CoreDisplayArea extends StatelessWidget {
   /// closeSemanticLabel: AppLocalizations.of(context).closeButton,
   /// ```
   final String closeSemanticLabel;
+  final List<CoreCalculatorChip> chipsList;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,7 @@ class CoreDisplayArea extends StatelessWidget {
           _HistoryPanel(
             onClose: onClose,
             closeSemanticLabel: closeSemanticLabel,
+            chipsList: chipsList,
           ),
         ],
       ),

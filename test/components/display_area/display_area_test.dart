@@ -70,5 +70,85 @@ void main() {
       await tester.pumpAndSettle();
       expect(closed, isTrue);
     });
+
+    testWidgets('renders history chips when chipsList is provided',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.active,
+                ),
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.disabled,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chipFinder = find.byType(CoreCalculatorChip);
+      expect(chipFinder, findsNWidgets(3));
+    });
+
+    testWidgets('renders no chips when chipsList is empty',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(),
+          ),
+        ),
+      );
+
+      final chipFinder = find.byType(CoreCalculatorChip);
+      expect(chipFinder, findsNothing);
+    });
+
+    testWidgets('renders chips with correct text content',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Width',
+                  value: '10ft',
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Width'), findsOneWidget);
+      expect(find.text('10ft'), findsOneWidget);
+    });
   });
 }

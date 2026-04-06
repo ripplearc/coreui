@@ -65,7 +65,25 @@ class DisplayAreaShowcaseScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const CoreDisplayArea(),
+              const CoreDisplayArea(
+                chipsList: [
+                  CoreCalculatorChip(
+                    label: "Length",
+                    value: "16ft 14in",
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Length",
+                    value: "16ft 14in",
+                    type: CoreCalculatorChipType.active,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Length",
+                    value: "16ft 14in",
+                    type: CoreCalculatorChipType.disabled,
+                  ),
+                ],
+              ),
               Spacer(),
               CoreKeyboard(
                 currentGroup: _basicGeometryGroup,
