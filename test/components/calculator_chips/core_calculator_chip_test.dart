@@ -214,5 +214,25 @@ void main() {
         checkTextContrast: true,
       );
     });
+
+    testWidgets('factor icon is excluded from semantics tree', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              value: '100',
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      final chipFinder = find.byType(CoreCalculatorChip);
+      final semantics = tester.getSemantics(chipFinder);
+      expect(semantics.label, '100');
+    });
   });
 }

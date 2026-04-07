@@ -78,7 +78,7 @@ class CoreCalculatorChip extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
     final semanticsLabel = label != null
         ? '$label${value != null ? ', $value' : ''}'
-        : value ?? '';
+        : value ?? 'Factor chip';
 
     return Semantics(
       label: semanticsLabel,
