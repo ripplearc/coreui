@@ -82,6 +82,36 @@ class DisplayAreaShowcaseScreen extends StatelessWidget {
                     value: "16ft 14in",
                     type: CoreCalculatorChipType.disabled,
                   ),
+                  CoreCalculatorChip(
+                    label: "Width",
+                    value: "10ft",
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Height",
+                    value: "8ft",
+                    type: CoreCalculatorChipType.active,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Weight",
+                    value: "20lbs",
+                    type: CoreCalculatorChipType.disabled,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Volume",
+                    value: "100gal",
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Width",
+                    value: "10ft",
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    label: "Width",
+                    value: "10ft",
+                    type: CoreCalculatorChipType.editable,
+                  ),
                 ],
               ),
               Spacer(),

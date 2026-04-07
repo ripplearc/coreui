@@ -27,18 +27,21 @@ class _HistoryPanel extends StatelessWidget {
   /// The placeholder text to display when the [chipsList] is empty.
   final String historyPlaceholder;
 
+  /// The top space to align with chips single row.
+  static const double _topSpace = 2;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: CoreSpacing.space3),
+    return Container(
+      height: CoreSpacing.space21,
+      margin: const EdgeInsets.only(top: CoreSpacing.space1),
       child: Row(
-        crossAxisAlignment: chipsList.isNotEmpty
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            margin: const EdgeInsets.only(top: _topSpace),
             decoration: BoxDecoration(
               color: colors.backgroundBlueMid,
               shape: BoxShape.circle,
@@ -63,10 +66,13 @@ class _HistoryPanel extends StatelessWidget {
             )
           else
             Flexible(
-              child: Text(
-                historyPlaceholder,
-                style: typography.bodyMediumRegular
-                    .copyWith(color: colors.textHeadline),
+              child: Padding(
+                padding: const EdgeInsets.only(top: CoreSpacing.space3),
+                child: Text(
+                  historyPlaceholder,
+                  style: typography.bodyMediumRegular
+                      .copyWith(color: colors.textHeadline),
+                ),
               ),
             )
         ],

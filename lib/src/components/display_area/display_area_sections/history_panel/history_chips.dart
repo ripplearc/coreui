@@ -10,11 +10,15 @@ class _HistoryChips extends StatelessWidget {
   /// The list of items (chips) to be arranged in the history section.
   final List<CoreCalculatorChip> chipsList;
 
+  /// The vertical padding for the scrollable chips area.
+  static const double _verticalSpace = 10;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(top: CoreSpacing.space2),
+      child: SingleChildScrollView(
+        reverse: true,
+        padding: const EdgeInsets.symmetric(vertical: _verticalSpace),
         child: Wrap(
           spacing: CoreSpacing.space2,
           runSpacing: CoreSpacing.space2,
