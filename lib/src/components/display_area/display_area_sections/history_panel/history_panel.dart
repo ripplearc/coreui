@@ -9,6 +9,7 @@ class _HistoryPanel extends StatelessWidget {
     this.onClose,
     this.closeSemanticLabel = 'Close',
     required this.chipsList,
+    this.historyPlaceholder = 'Here will show what you type',
   });
 
   /// Called when the user taps the close icon.
@@ -23,13 +24,19 @@ class _HistoryPanel extends StatelessWidget {
   /// The list of items (chips) to be displayed in the history section.
   final List<CoreCalculatorChip> chipsList;
 
+  /// The placeholder text to display when the [chipsList] is empty.
+  final String historyPlaceholder;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: CoreSpacing.space3),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: chipsList.isNotEmpty
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -50,9 +57,18 @@ class _HistoryPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(width: CoreSpacing.space2),
-          _HistoryChips(
-            chipsList: chipsList,
-          )
+          if (chipsList.isNotEmpty)
+            _HistoryChips(
+              chipsList: chipsList,
+            )
+          else
+            Flexible(
+              child: Text(
+                historyPlaceholder,
+                style: typography.bodyMediumRegular
+                    .copyWith(color: colors.textHeadline),
+              ),
+            )
         ],
       ),
     );

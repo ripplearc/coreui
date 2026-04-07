@@ -42,7 +42,7 @@ void main() {
       expect(closeIconFinder, findsOneWidget);
 
       final semantics = tester.getSemantics(closeIconFinder);
-      expect(semantics.label, 'Close');
+      expect(semantics.label, CoreDisplayArea.defaultCloseSemanticLabel);
       expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
@@ -113,6 +113,41 @@ void main() {
             ),
           ],
         ),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
+
+    testWidgets('placeholder text is visible when history is empty',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(),
+          ),
+        ),
+      );
+
+      expect(
+          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
+    });
+
+    testWidgets('empty state meets accessibility guidelines',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
