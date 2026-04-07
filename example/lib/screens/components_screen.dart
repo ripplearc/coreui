@@ -14,6 +14,7 @@ import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
+import 'package:example/screens/writing_dots_showcase_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -38,7 +39,7 @@ class ComponentsScreen extends StatelessWidget {
                 style: textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: CoreSpacing.space8),
               _buildShowcaseButton(
                 context,
                 'Text Field Components',
@@ -54,65 +55,71 @@ class ComponentsScreen extends StatelessWidget {
                 'Button Components',
                 const ButtonShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Calculator Chip Components',
                 const CalculatorChipShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Chip Components',
                 const ChipShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Display Area Component',
                 const DisplayAreaShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Toast Components',
                 const ToastShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Tooltip Components',
                 const TooltipShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Switch Components',
                 const SwitchShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Success Modal Components',
                 const SuccessModalShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Bottom Navigation Components',
                 const BottomNavigationShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Keyboard Components',
                 const KeyboardShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Loading Indicator Components',
                 const LoadingIndicatorShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Writing Dots Components',
+                const WritingDotsShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
@@ -126,7 +133,7 @@ class ComponentsScreen extends StatelessWidget {
                 'Select button Components',
                 const SelectButtonShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Tabs Components',
