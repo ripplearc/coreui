@@ -14,6 +14,7 @@ import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
+import 'package:example/screens/writing_dots_showcase_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -114,6 +115,12 @@ class ComponentsScreen extends StatelessWidget {
                 'Loading Indicator Components',
                 const LoadingIndicatorShowcaseScreen(),
               ),
+              const SizedBox(height: 16),
+              _buildShowcaseButton(
+                context,
+                'Writing Dots Components',
+                const WritingDotsShowcaseScreen(),
+              ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
@@ -126,7 +133,7 @@ class ComponentsScreen extends StatelessWidget {
                 'Select button Components',
                 const SelectButtonShowcaseScreen(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
                 context,
                 'Tabs Components',
