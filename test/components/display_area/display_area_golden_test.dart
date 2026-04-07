@@ -30,6 +30,7 @@ void main() {
             Text('Display Area'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              label: 'Area',
               chipsList: [
                 CoreCalculatorChip(
                   label: "Length",
@@ -78,6 +79,8 @@ void main() {
             Text('Display Area - two rows of chips'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              label: 'Length',
+              isTyping: true,
               chipsList: [
                 CoreCalculatorChip(
                   label: "Length",
@@ -103,7 +106,6 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pump();
-
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/display_area_component_two_rows_chips.png'),
@@ -166,6 +168,8 @@ void main() {
             const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
               onClose: () {},
+              label: 'Length',
+              isTyping: true,
               chipsList: const [
                 CoreCalculatorChip(
                   label: "Length",
@@ -216,7 +220,6 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pump();
-
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile(

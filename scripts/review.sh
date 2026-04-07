@@ -355,8 +355,8 @@ echo "- 🔍 Check that components touched in this PR have corresponding a11y wi
 echo "- 🎯 Verify tests assert meaningful semantics (labels, hints) and focus behavior instead of raw widget counts or types" >> "$OUTPUT_FILE"
 echo "- 📛 Ensure \`*_a11y_test.dart\` files are updated to reflect any new interactive elements or flows introduced by this PR" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
-+
-+# =============================================================================
+
+# =============================================================================
 # REVIEW SUMMARY TABLE
 # =============================================================================
 echo "## REVIEW SUMMARY" >> "$OUTPUT_FILE"
