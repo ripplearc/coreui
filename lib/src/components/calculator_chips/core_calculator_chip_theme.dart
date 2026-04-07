@@ -73,9 +73,9 @@ abstract final class CoreCalculatorChipTheme {
     };
   }
 
-  /// Returns the close icon color for a calculator chip given its [type]
+  /// Returns the factor icon color for a calculator chip given its [type]
   /// and the current [colors] theme.
-  static Color iconColor({
+  static Color factorColor({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
   }) {

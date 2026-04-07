@@ -80,6 +80,7 @@ void main() {
         ),
       );
 
+      expect(find.byType(CoreIconWidget), findsNothing);
       expect(wasPressed, isFalse);
       await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
@@ -108,12 +109,11 @@ void main() {
 
       await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
+      expect(find.byType(CoreIconWidget), findsNothing);
       expect(wasPressed, isFalse);
     });
 
-    testWidgets('displays close icon and triggers onClose',
-        (WidgetTester tester) async {
-      bool closed = false;
+    testWidgets('displays factor icon correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
@@ -121,18 +121,54 @@ void main() {
             body: CoreCalculatorChip(
               type: CoreCalculatorChipType.editable,
               value: '100',
-              withCloseIcon: true,
-              onClose: () => closed = true,
+              factor: CoreIcons.addOperator,
+              onTap: () {},
             ),
           ),
         ),
       );
 
       expect(find.byType(CoreIconWidget), findsOneWidget);
+    });
 
-      await tester.tap(find.byType(CoreIconWidget));
-      await tester.pumpAndSettle();
-      expect(closed, isTrue);
+    testWidgets('renders factor-only chip (null value) correctly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+      expect(find.byType(Text), findsNothing);
+    });
+
+    testWidgets('renders label and factor chip (null value) correctly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              label: 'Label Only',
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+      expect(find.text('Label Only'), findsOneWidget);
+      expect(find.byType(Text), findsNWidgets(1));
     });
   });
 
@@ -158,6 +194,7 @@ void main() {
 
       final chipFinder = find.byType(CoreCalculatorChip);
       expect(chipFinder, findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsNothing);
 
       final semantics = tester.getSemantics(chipFinder);
       expect(semantics.label, '$label, $value');
@@ -176,6 +213,26 @@ void main() {
         checkLabeledTapTarget: false,
         checkTextContrast: true,
       );
+    });
+
+    testWidgets('factor icon is excluded from semantics tree', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              value: '100',
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      final chipFinder = find.byType(CoreCalculatorChip);
+      final semantics = tester.getSemantics(chipFinder);
+      expect(semantics.label, '100');
     });
   });
 }

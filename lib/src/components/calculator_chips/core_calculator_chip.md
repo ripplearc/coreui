@@ -1,7 +1,7 @@
 # CoreCalculatorChip
 
 A specialized chip for the calculator that supports three distinct types (`editable`, `disabled`, `active`), an optional
-label, a required value, and an optional close (×) icon. Uses semantic structuring for accessibility.
+label, a value, and an optional factor icon (+, -, etc). Uses semantic structuring for accessibility.
 
 ## Usage
 
@@ -19,11 +19,10 @@ CoreCalculatorChip(
 | Property        | Type                     | Required | Default | Description                                                                           |
 |-----------------|--------------------------|---------:|---------|---------------------------------------------------------------------------------------|
 | `type`          | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disabled`, `active`).                |
-| `value`         | `String`                 |      Yes | —       | The numeric value or content displayed on the chip with heavy text style.             |
+| `value`         | `String`                 |       No | `null`  | The numeric value or content displayed on the chip with heavy text style.             |
+| `factor`        | `CoreIconData?`          |       No | `null`  | An optional factor icon (e.g. `+`, `-`, `x`) displayed before the element.            |
 | `onTap`         | `VoidCallback`           |       No | `null`  | Called when the chip is tapped. Ignored if type is `disabled`.                        |
 | `label`         | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.  |
-| `withCloseIcon` | `bool`                   |       No | `false` | Whether to show the close (×) icon on the left side. Not shown if type is `disabled`. |
-| `onClose`       | `VoidCallback?`          |       No | `null`  | Called when the close (×) icon is tapped.                                             |
 
 ## Types
 
@@ -33,7 +32,7 @@ Calculator chips come in three visual identity variants mapping to their functio
 - **Active**: Vivid background (e.g. green) indicating the property is actively changing or applied.
 - **disabled**: Grey, dimmed layout indicating an inactive property.
 
-| Type       | Background           | Border         | Label/Value Color | Close Icon Color | Shadow  |
+| Type       | Background           | Border         | Label/Value Color | Factor Color   | Shadow  |
 |------------|----------------------|----------------|-------------------|------------------|---------|
 | `editable` | `pageBackground`     | `outlineFocus` | `textLink`        | `iconOrient`     | `small` |
 | `disabled` | `backgroundGrayMid`  | `lineMid`      | `textDark`        | `iconGrayMid`    | `null`  |
@@ -41,7 +40,7 @@ Calculator chips come in three visual identity variants mapping to their functio
 
 ## Examples
 
-### Editable Chip without Close Icon
+### Editable Chip without Factor
 
 ```dart
 CoreCalculatorChip(
@@ -76,15 +75,14 @@ CoreCalculatorChip(
 );
 ```
 
-### Editable Chip with Close Icon
+### Editable Chip with Factor
 
 ```dart
 CoreCalculatorChip(
   type: CoreCalculatorChipType.editable,
   value: '4in',
-  withCloseIcon: true,
+  factor: CoreIcons.addOperator,
   onTap: () {},
-  onClose: () => debugPrint('remove'),
 );
 ```
 
