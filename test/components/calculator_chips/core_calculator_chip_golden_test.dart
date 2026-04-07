@@ -100,7 +100,7 @@ void main() {
                 ),
                 const SizedBox(width: CoreSpacing.space8),
                 buildColumnExample(
-                  'Active w/ Factor',
+                  'Active w/ Factor only',
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.active,
                     factor: CoreIcons.addOperator,

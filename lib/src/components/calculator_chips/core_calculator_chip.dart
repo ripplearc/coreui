@@ -74,11 +74,9 @@ class CoreCalculatorChip extends StatelessWidget {
     final factor = this.factor;
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    final semanticsParts = [
-      if (label != null && label.isNotEmpty) label,
-      if (value != null && value.isNotEmpty) value,
-    ];
-    final semanticsLabel = semanticsParts.join(', ');
+    final semanticsLabel = label != null
+        ? '$label${value != null ? ', $value' : ''}'
+        : value ?? '';
 
     return Semantics(
       label: semanticsLabel,

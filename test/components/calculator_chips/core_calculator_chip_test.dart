@@ -128,6 +128,46 @@ void main() {
 
       expect(find.byType(CoreIconWidget), findsOneWidget);
     });
+
+    testWidgets('renders factor-only chip (null value) correctly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+      expect(find.byType(Text), findsNothing);
+    });
+
+    testWidgets('renders label and factor chip (null value) correctly',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              label: 'Label Only',
+              factor: CoreIcons.addOperator,
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+      expect(find.text('Label Only'), findsOneWidget);
+      expect(find.byType(Text), findsNWidgets(1));
+    });
   });
 
   group('CoreCalculatorChip – accessibility', () {
