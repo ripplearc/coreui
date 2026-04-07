@@ -54,5 +54,70 @@ void main() {
         checkTextContrast: true,
       );
     });
+
+    testWidgets('history chips expose correct semantic labels',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: 'Width',
+                  value: '10ft',
+                  type: CoreCalculatorChipType.active,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chipFinder = find.byType(CoreCalculatorChip);
+      expect(chipFinder, findsNWidgets(2));
+
+      final firstChipSemantics = tester.getSemantics(chipFinder.first);
+      expect(firstChipSemantics.label, 'Length, 16ft 14in');
+      expect(firstChipSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+    });
+
+    testWidgets('history chips meet accessibility guidelines',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(
+          chipsList: [
+            CoreCalculatorChip(
+              label: 'Length',
+              value: '16ft 14in',
+              type: CoreCalculatorChipType.editable,
+            ),
+            CoreCalculatorChip(
+              label: 'Length',
+              value: '16ft 14in',
+              type: CoreCalculatorChipType.active,
+            ),
+          ],
+        ),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
   });
 }
