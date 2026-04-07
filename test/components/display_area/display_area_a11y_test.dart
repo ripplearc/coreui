@@ -154,5 +154,36 @@ void main() {
         checkTextContrast: false,
       );
     });
+    testWidgets('label meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(label: 'Current Total'),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
+
+    testWidgets('typing indicator exposes correct semantics',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(isTyping: true),
+          ),
+        ),
+      );
+
+      final writingIndicator = find.byType(CoreWritingDots);
+      expect(writingIndicator, findsOneWidget);
+
+      final semantics = tester.getSemantics(writingIndicator);
+      expect(semantics.label, 'Writing');
+    });
   });
 }

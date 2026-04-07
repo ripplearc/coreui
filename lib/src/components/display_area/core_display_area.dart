@@ -4,6 +4,7 @@ import '../../../ripplearc_coreui.dart';
 
 part 'display_area_sections/history_panel/history_chips.dart';
 part 'display_area_sections/history_panel/history_panel.dart';
+part 'display_area_sections/label_section.dart';
 
 /// A colored display area widget with rounded bottom corners,
 /// used to present calculation results at the top of the layout.
@@ -21,6 +22,8 @@ class CoreDisplayArea extends StatelessWidget {
     this.closeSemanticLabel = defaultCloseSemanticLabel,
     this.chipsList = const [],
     this.historyPlaceholder = defaultHistoryPlaceholder,
+    this.label = '',
+    this.isTyping = false,
   });
 
   /// Called when the user taps the close icon.
@@ -47,6 +50,13 @@ class CoreDisplayArea extends StatelessWidget {
   /// ```
   final String historyPlaceholder;
 
+  /// The main label text shown in the bottom section of the display area.
+  final String label;
+
+  /// Whether to display a typing animation indicator next to the [label].
+  /// Defaults to false.
+  final bool isTyping;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -70,6 +80,10 @@ class CoreDisplayArea extends StatelessWidget {
             closeSemanticLabel: closeSemanticLabel,
             chipsList: chipsList,
             historyPlaceholder: historyPlaceholder,
+          ),
+          _LabelSection(
+            label: label,
+            isTyping: isTyping,
           ),
         ],
       ),
