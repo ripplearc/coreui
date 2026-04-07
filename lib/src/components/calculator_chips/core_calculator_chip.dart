@@ -61,7 +61,9 @@ class CoreCalculatorChip extends StatelessWidget {
   /// The value displayed on the chip.
   final String? value;
 
-  /// An optional factor icon (e.g., +, -, x) displayed before the chip content.
+  /// An optional factor icon (e.g., +, -, ×) displayed before the chip content.
+  ///
+  /// Not rendered when [type] is [CoreCalculatorChipType.disabled].
   final CoreIconData? factor;
 
   /// Called when the user taps the chip.
@@ -115,13 +117,13 @@ class CoreCalculatorChip extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (factor != null && type != CoreCalculatorChipType.disabled)
-                  Center(
-                    child: CoreIconWidget(
-                      icon: factor,
-                      size: CoreSpacing.space5,
-                      color: CoreCalculatorChipTheme.factorColor(
-                        type: type,
-                        colors: colors,
+                  ExcludeSemantics(
+                    child: Center(
+                      child: CoreIconWidget(
+                        icon: factor,
+                        size: CoreSpacing.space5,
+                        color: CoreCalculatorChipTheme.factorColor(
+                            type: type, colors: colors),
                       ),
                     ),
                   ),

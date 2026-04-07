@@ -80,6 +80,7 @@ void main() {
         ),
       );
 
+      expect(find.byType(CoreIconWidget), findsNothing);
       expect(wasPressed, isFalse);
       await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
@@ -108,6 +109,7 @@ void main() {
 
       await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
+      expect(find.byType(CoreIconWidget), findsNothing);
       expect(wasPressed, isFalse);
     });
 
@@ -192,6 +194,7 @@ void main() {
 
       final chipFinder = find.byType(CoreCalculatorChip);
       expect(chipFinder, findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsNothing);
 
       final semantics = tester.getSemantics(chipFinder);
       expect(semantics.label, '$label, $value');
