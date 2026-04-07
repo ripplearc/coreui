@@ -6,17 +6,8 @@ signal that another participant (e.g. a remote user or an AI assistant) is curre
 ## Usage
 
 ```dart
-CoreWritingDots
-
-()
-CoreWritingDots
-(
-size
-:
-CoreSpacing
-.
-space12
-)
+CoreWritingDots()
+CoreWritingDots(size: CoreSpacing.space12)
 ```
 
 ## Properties

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+/// A showcase screen demonstrating the available [CoreWritingDots] variants
+/// and sizes.
 class WritingDotsShowcaseScreen extends StatelessWidget {
   const WritingDotsShowcaseScreen({super.key});
 
