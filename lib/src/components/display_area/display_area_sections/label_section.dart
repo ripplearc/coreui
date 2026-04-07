@@ -23,6 +23,7 @@ class _LabelSection extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(label,
             style: typography.titleMediumSemiBold
