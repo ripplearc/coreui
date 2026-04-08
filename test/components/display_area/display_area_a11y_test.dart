@@ -178,6 +178,7 @@ void main() {
           ),
         ),
       );
+      await tester.pump();
 
       final writingIndicator = find.byType(CoreWritingDots);
       expect(writingIndicator, findsOneWidget);
