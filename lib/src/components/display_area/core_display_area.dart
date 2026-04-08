@@ -51,6 +51,7 @@ class CoreDisplayArea extends StatelessWidget {
   final String historyPlaceholder;
 
   /// The main label text shown in the bottom section of the display area.
+  /// Defaults to ''.
   final String label;
 
   /// Whether to display a typing animation indicator next to the [label].
