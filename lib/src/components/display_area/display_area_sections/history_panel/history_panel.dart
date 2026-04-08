@@ -30,12 +30,15 @@ class _HistoryPanel extends StatelessWidget {
   /// The top space to align with chips single row.
   static const double _topSpace = 2;
 
+  /// The height of history panel.
+  static const double _panelHeight = 84;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     return Container(
-      height: CoreSpacing.space21,
+      height: _panelHeight,
       margin: const EdgeInsets.only(top: CoreSpacing.space1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,9 +55,10 @@ class _HistoryPanel extends StatelessWidget {
             ),
             child: CoreIconWidget(
               icon: CoreIcons.cross,
-              size: CoreSpacing.space6,
+              size: CoreSpacing.space7,
               color: colors.iconDark,
-              padding: const EdgeInsets.all(CoreSpacing.space2),
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               onTap: onClose,
               semanticLabel: closeSemanticLabel,
             ),
@@ -67,7 +71,7 @@ class _HistoryPanel extends StatelessWidget {
           else
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.only(top: CoreSpacing.space3),
+                padding: const EdgeInsets.only(top: CoreSpacing.space5),
                 child: Text(
                   historyPlaceholder,
                   style: typography.bodyMediumRegular

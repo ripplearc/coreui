@@ -10,6 +10,7 @@ import '../theme/icons/icon_data.dart';
 /// [semanticLabel] is the semantic label for the icon
 /// [onTap] is the callback function when the icon is tapped
 /// [padding] is the padding around the icon
+/// [visualDensity]: Controls the compactness of the [IconButton]
 class CoreIconWidget extends StatelessWidget {
   final CoreIconData icon;
   final double? size;
@@ -17,16 +18,17 @@ class CoreIconWidget extends StatelessWidget {
   final String? semanticLabel;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
+  final VisualDensity? visualDensity;
 
-  const CoreIconWidget({
-    super.key,
-    required this.icon,
-    this.size,
-    this.color,
-    this.semanticLabel,
-    this.onTap,
-    this.padding,
-  });
+  const CoreIconWidget(
+      {super.key,
+      required this.icon,
+      this.size,
+      this.color,
+      this.semanticLabel,
+      this.onTap,
+      this.padding,
+      this.visualDensity});
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +40,7 @@ class CoreIconWidget extends StatelessWidget {
         icon.svgPath ?? '',
         width: size,
         height: size,
-        colorFilter:
-            iconColor != null
+        colorFilter: iconColor != null
             ? ColorFilter.mode(iconColor, BlendMode.srcIn)
             : null,
         fit: BoxFit.contain,
@@ -65,6 +66,7 @@ class CoreIconWidget extends StatelessWidget {
         onPressed: onTap,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
+        visualDensity: visualDensity,
       );
     }
 

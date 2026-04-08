@@ -157,15 +157,16 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Display Area - more than two rows'),
-            SizedBox(height: CoreSpacing.space8),
+            const Text('Display Area - more than two rows'),
+            const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
-              chipsList: [
+              onClose: () {},
+              chipsList: const [
                 CoreCalculatorChip(
                   label: "Length",
                   value: "16ft 14in",
@@ -218,7 +219,8 @@ void main() {
 
     await expectLater(
       find.byType(MaterialApp),
-      matchesGoldenFile('goldens/display_area_component_more_than_two_rows.png'),
+      matchesGoldenFile(
+          'goldens/display_area_component_more_than_two_rows.png'),
     );
   });
 }
