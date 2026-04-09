@@ -28,9 +28,11 @@ class _HistoryPanel extends StatelessWidget {
   final String historyPlaceholder;
 
   /// The top space to align with chips single row.
-  static const double _topSpace = 2;
+  static const double _topSpace = CoreSpacing.space1;
 
-  /// The height of history panel.
+  /// Fixed height for the history panel (84px).
+  /// This is enforced by design specs and may not scale well with large text.
+  /// todo: Track a11y improvement to support dynamic height with text scaling.
   static const double _panelHeight = 84;
 
   @override

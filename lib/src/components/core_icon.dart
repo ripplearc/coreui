@@ -18,6 +18,8 @@ class CoreIconWidget extends StatelessWidget {
   final String? semanticLabel;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
+
+  /// Controls the compactness of the [IconButton]. Defaults to null (platform default).
   final VisualDensity? visualDensity;
 
   const CoreIconWidget(

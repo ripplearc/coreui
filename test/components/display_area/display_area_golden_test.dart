@@ -49,7 +49,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
@@ -102,7 +102,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
@@ -136,7 +136,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
@@ -215,7 +215,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),

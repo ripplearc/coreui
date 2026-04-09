@@ -11,7 +11,7 @@ class _HistoryChips extends StatelessWidget {
   final List<CoreCalculatorChip> chipsList;
 
   /// The vertical padding for the scrollable chips area.
-  static const double _verticalSpace = 10;
+  static const double _verticalSpace = CoreSpacing.space5;
 
   @override
   Widget build(BuildContext context) {
