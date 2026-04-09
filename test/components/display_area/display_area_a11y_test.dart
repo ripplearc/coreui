@@ -186,5 +186,18 @@ void main() {
       final semantics = tester.getSemantics(writingIndicator);
       expect(semantics.label, 'Writing');
     });
+
+    testWidgets('value meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(value: '1234.56'),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
   });
 }

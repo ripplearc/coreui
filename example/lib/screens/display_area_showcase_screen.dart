@@ -67,6 +67,7 @@ class DisplayAreaShowcaseScreen extends StatelessWidget {
             children: [
               const CoreDisplayArea(
                 label: 'Length',
+                value: '16ft 14in',
                 isTyping: true,
                 chipsList: [
                   CoreCalculatorChip(
