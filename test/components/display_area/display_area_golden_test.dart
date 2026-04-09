@@ -170,6 +170,7 @@ void main() {
               onClose: () {},
               label: 'Length',
               isTyping: true,
+              value: '16ft 14in',
               chipsList: const [
                 CoreCalculatorChip(
                   label: "Length",

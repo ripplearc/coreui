@@ -5,6 +5,7 @@ import '../../../ripplearc_coreui.dart';
 part 'display_area_sections/history_panel/history_chips.dart';
 part 'display_area_sections/history_panel/history_panel.dart';
 part 'display_area_sections/label_section.dart';
+part 'display_area_sections/value_section.dart';
 
 /// A colored display area widget with rounded bottom corners,
 /// used to present calculation results at the top of the layout.
@@ -24,6 +25,7 @@ class CoreDisplayArea extends StatelessWidget {
     this.historyPlaceholder = defaultHistoryPlaceholder,
     this.label = '',
     this.isTyping = false,
+    this.value = '',
   });
 
   /// Called when the user taps the close icon.
@@ -58,6 +60,10 @@ class CoreDisplayArea extends StatelessWidget {
   /// Defaults to false.
   final bool isTyping;
 
+  /// The main value text shown in the end section of the display area.
+  /// Defaults to ''.
+  final String value;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -86,6 +92,7 @@ class CoreDisplayArea extends StatelessWidget {
             label: label,
             isTyping: isTyping,
           ),
+          _ValueSection(value: value),
         ],
       ),
     );

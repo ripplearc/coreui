@@ -257,5 +257,18 @@ void main() {
 
       expect(find.byType(CoreWritingDots), findsNothing);
     });
+
+    testWidgets('renders the provided value text', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(value: '123.45'),
+          ),
+        ),
+      );
+
+      expect(find.text('123.45'), findsOneWidget);
+    });
   });
 }
