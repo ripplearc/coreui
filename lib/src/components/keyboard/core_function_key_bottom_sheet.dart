@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import 'function_key_tile.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///

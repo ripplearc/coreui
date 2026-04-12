@@ -260,79 +260,79 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? shadowGrey18,
   }) {
     return AppColorsExtension(
-      textHeadline: textHeadline ?? this.textHeadline,
-      textDark: textDark ?? this.textDark,
-      textBody: textBody ?? this.textBody,
-      textDisable: textDisable ?? this.textDisable,
-      textInverse: textInverse ?? this.textInverse,
-      textLink: textLink ?? this.textLink,
-      textInfo: textInfo ?? this.textInfo,
-      textWarning: textWarning ?? this.textWarning,
-      textError: textError ?? this.textError,
-      textSuccess: textSuccess ?? this.textSuccess,
-      pageBackground: pageBackground ?? this.pageBackground,
-      backgroundGrayLight: backgroundGrayLight ?? this.backgroundGrayLight,
-      backgroundGrayMid: backgroundGrayMid ?? this.backgroundGrayMid,
-      backgroundBlueLight: backgroundBlueLight ?? this.backgroundBlueLight,
-      backgroundBlueMid: backgroundBlueMid ?? this.backgroundBlueMid,
-      backgroundGreenLight: backgroundGreenLight ?? this.backgroundGreenLight,
-      backgroundGreenMid: backgroundGreenMid ?? this.backgroundGreenMid,
-      backgroundRedLight: backgroundRedLight ?? this.backgroundRedLight,
-      backgroundRedMid: backgroundRedMid ?? this.backgroundRedMid,
-      backgroundOrangeLight:
-          backgroundOrangeLight ?? this.backgroundOrangeLight,
-      backgroundOrangeMid: backgroundOrangeMid ?? this.backgroundOrangeMid,
-      backgroundDarkGray: backgroundDarkGray ?? this.backgroundDarkGray,
-      backgroundDarkOrient: backgroundDarkOrient ?? this.backgroundDarkOrient,
-      orientLight: orientLight ?? this.orientLight,
-      orientMid: orientMid ?? this.orientMid,
-      lineLight: lineLight ?? this.lineLight,
-      lineMid: lineMid ?? this.lineMid,
-      lineDarkOutline: lineDarkOutline ?? this.lineDarkOutline,
-      lineHighlight: lineHighlight ?? this.lineHighlight,
-      outlineHover: outlineHover ?? this.outlineHover,
-      outlineFocus: outlineFocus ?? this.outlineFocus,
-      tabsHighlight: tabsHighlight ?? this.tabsHighlight,
-      statusError: statusError ?? this.statusError,
-      statusSuccess: statusSuccess ?? this.statusSuccess,
-      buttonSurface: buttonSurface ?? this.buttonSurface,
-      buttonHover: buttonHover ?? this.buttonHover,
-      buttonDisable: buttonDisable ?? this.buttonDisable,
-      buttonPress: buttonPress ?? this.buttonPress,
-      iconDark: iconDark ?? this.iconDark,
-      iconGrayDark: iconGrayDark ?? this.iconGrayDark,
-      iconGrayMid: iconGrayMid ?? this.iconGrayMid,
-      iconGrayLight: iconGrayLight ?? this.iconGrayLight,
-      iconWhite: iconWhite ?? this.iconWhite,
-      iconRed: iconRed ?? this.iconRed,
-      iconGreen: iconGreen ?? this.iconGreen,
-      iconOrange: iconOrange ?? this.iconOrange,
-      iconBlue: iconBlue ?? this.iconBlue,
-      iconOrient: iconOrient ?? this.iconOrient,
-      chipGrey: chipGrey ?? this.chipGrey,
-      chipPrimary: chipPrimary ?? this.chipPrimary,
-      chipRed: chipRed ?? this.chipRed,
-      chipOrange: chipOrange ?? this.chipOrange,
-      chipBlue: chipBlue ?? this.chipBlue,
-      chipGreen: chipGreen ?? this.chipGreen,
-      alertRed: alertRed ?? this.alertRed,
-      alertOrange: alertOrange ?? this.alertOrange,
-      alertBlue: alertBlue ?? this.alertBlue,
-      alertGreen: alertGreen ?? this.alertGreen,
-      keyboardNumbers: keyboardNumbers ?? this.keyboardNumbers,
-      keyboardCalculate: keyboardCalculate ?? this.keyboardCalculate,
-      keyboardUnits: keyboardUnits ?? this.keyboardUnits,
-      keyboardFunctions: keyboardFunctions ?? this.keyboardFunctions,
-      keyboardActions: keyboardActions ?? this.keyboardActions,
-      keyboardMain: keyboardMain ?? this.keyboardMain,
-      transparent: transparent ?? this.transparent,
-      shadowGrey3: shadowGrey3 ?? this.shadowGrey3,
-      shadowGrey5: shadowGrey5 ?? this.shadowGrey5,
-      shadowGrey6: shadowGrey6 ?? this.shadowGrey6,
-      shadowGrey7: shadowGrey7 ?? this.shadowGrey7,
-      shadowGrey8: shadowGrey8 ?? this.shadowGrey8,
-      shadowGrey10: shadowGrey10 ?? this.shadowGrey10,
-      shadowGrey18: shadowGrey18 ?? this.shadowGrey18,
+        textHeadline: textHeadline ?? this.textHeadline,
+        textDark: textDark ?? this.textDark,
+        textBody: textBody ?? this.textBody,
+        textDisable: textDisable ?? this.textDisable,
+        textInverse: textInverse ?? this.textInverse,
+        textLink: textLink ?? this.textLink,
+        textInfo: textInfo ?? this.textInfo,
+        textWarning: textWarning ?? this.textWarning,
+        textError: textError ?? this.textError,
+        textSuccess: textSuccess ?? this.textSuccess,
+        pageBackground: pageBackground ?? this.pageBackground,
+        backgroundGrayLight: backgroundGrayLight ?? this.backgroundGrayLight,
+        backgroundGrayMid: backgroundGrayMid ?? this.backgroundGrayMid,
+        backgroundBlueLight: backgroundBlueLight ?? this.backgroundBlueLight,
+        backgroundBlueMid: backgroundBlueMid ?? this.backgroundBlueMid,
+        backgroundGreenLight: backgroundGreenLight ?? this.backgroundGreenLight,
+        backgroundGreenMid: backgroundGreenMid ?? this.backgroundGreenMid,
+        backgroundRedLight: backgroundRedLight ?? this.backgroundRedLight,
+        backgroundRedMid: backgroundRedMid ?? this.backgroundRedMid,
+        backgroundOrangeLight:
+            backgroundOrangeLight ?? this.backgroundOrangeLight,
+        backgroundOrangeMid: backgroundOrangeMid ?? this.backgroundOrangeMid,
+        backgroundDarkGray: backgroundDarkGray ?? this.backgroundDarkGray,
+        backgroundDarkOrient: backgroundDarkOrient ?? this.backgroundDarkOrient,
+        orientLight: orientLight ?? this.orientLight,
+        orientMid: orientMid ?? this.orientMid,
+        lineLight: lineLight ?? this.lineLight,
+        lineMid: lineMid ?? this.lineMid,
+        lineDarkOutline: lineDarkOutline ?? this.lineDarkOutline,
+        lineHighlight: lineHighlight ?? this.lineHighlight,
+        outlineHover: outlineHover ?? this.outlineHover,
+        outlineFocus: outlineFocus ?? this.outlineFocus,
+        tabsHighlight: tabsHighlight ?? this.tabsHighlight,
+        statusError: statusError ?? this.statusError,
+        statusSuccess: statusSuccess ?? this.statusSuccess,
+        buttonSurface: buttonSurface ?? this.buttonSurface,
+        buttonHover: buttonHover ?? this.buttonHover,
+        buttonDisable: buttonDisable ?? this.buttonDisable,
+        buttonPress: buttonPress ?? this.buttonPress,
+        iconDark: iconDark ?? this.iconDark,
+        iconGrayDark: iconGrayDark ?? this.iconGrayDark,
+        iconGrayMid: iconGrayMid ?? this.iconGrayMid,
+        iconGrayLight: iconGrayLight ?? this.iconGrayLight,
+        iconWhite: iconWhite ?? this.iconWhite,
+        iconRed: iconRed ?? this.iconRed,
+        iconGreen: iconGreen ?? this.iconGreen,
+        iconOrange: iconOrange ?? this.iconOrange,
+        iconBlue: iconBlue ?? this.iconBlue,
+        iconOrient: iconOrient ?? this.iconOrient,
+        chipGrey: chipGrey ?? this.chipGrey,
+        chipPrimary: chipPrimary ?? this.chipPrimary,
+        chipRed: chipRed ?? this.chipRed,
+        chipOrange: chipOrange ?? this.chipOrange,
+        chipBlue: chipBlue ?? this.chipBlue,
+        chipGreen: chipGreen ?? this.chipGreen,
+        alertRed: alertRed ?? this.alertRed,
+        alertOrange: alertOrange ?? this.alertOrange,
+        alertBlue: alertBlue ?? this.alertBlue,
+        alertGreen: alertGreen ?? this.alertGreen,
+        keyboardNumbers: keyboardNumbers ?? this.keyboardNumbers,
+        keyboardCalculate: keyboardCalculate ?? this.keyboardCalculate,
+        keyboardUnits: keyboardUnits ?? this.keyboardUnits,
+        keyboardFunctions: keyboardFunctions ?? this.keyboardFunctions,
+        keyboardActions: keyboardActions ?? this.keyboardActions,
+        keyboardMain: keyboardMain ?? this.keyboardMain,
+        transparent: transparent ?? this.transparent,
+        shadowGrey3: shadowGrey3 ?? this.shadowGrey3,
+        shadowGrey5: shadowGrey5 ?? this.shadowGrey5,
+        shadowGrey6: shadowGrey6 ?? this.shadowGrey6,
+        shadowGrey7: shadowGrey7 ?? this.shadowGrey7,
+        shadowGrey8: shadowGrey8 ?? this.shadowGrey8,
+        shadowGrey10: shadowGrey10 ?? this.shadowGrey10,
+        shadowGrey18: shadowGrey18 ?? this.shadowGrey18,
     );
   }
 
@@ -457,10 +457,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       shadowGrey6: Color.lerp(shadowGrey6, other.shadowGrey6, t) ?? shadowGrey6,
       shadowGrey7: Color.lerp(shadowGrey7, other.shadowGrey7, t) ?? shadowGrey7,
       shadowGrey8: Color.lerp(shadowGrey8, other.shadowGrey8, t) ?? shadowGrey8,
-      shadowGrey10:
-          Color.lerp(shadowGrey10, other.shadowGrey10, t) ?? shadowGrey10,
-      shadowGrey18:
-          Color.lerp(shadowGrey18, other.shadowGrey18, t) ?? shadowGrey18,
+      shadowGrey10: Color.lerp(shadowGrey10, other.shadowGrey10, t) ?? shadowGrey10,
+      shadowGrey18: Color.lerp(shadowGrey18, other.shadowGrey18, t) ?? shadowGrey18,
     );
   }
 
@@ -477,7 +475,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       textWarning: CoreTextColors.warning,
       textError: CoreTextColors.error,
       textSuccess: CoreTextColors.success,
-
+      
       // Background Colors
       pageBackground: CoreBackgroundColors.pageBackground,
       backgroundGrayLight: CoreBackgroundColors.backgroundGrayLight,
@@ -494,7 +492,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       backgroundDarkOrient: CoreBackgroundColors.backgroundDarkOrient,
       orientLight: CoreBackgroundColors.backgroundOrientLight,
       orientMid: CoreBackgroundColors.backgroundOrientMid,
-
+      
       // Border Colors
       lineLight: CoreBorderColors.lineLight,
       lineMid: CoreBorderColors.lineMid,
@@ -503,17 +501,17 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       outlineHover: CoreBorderColors.outlineHover,
       outlineFocus: CoreBorderColors.outlineFocus,
       tabsHighlight: CoreBorderColors.tabsHighlight,
-
+      
       // Status Colors
       statusError: CoreStatusColors.error,
       statusSuccess: CoreStatusColors.success,
-
+      
       // Button Colors
       buttonSurface: CoreButtonColors.surface,
       buttonHover: CoreButtonColors.hover,
       buttonDisable: CoreButtonColors.disable,
       buttonPress: CoreButtonColors.press,
-
+      
       // Icon Colors
       iconDark: CoreIconColors.dark,
       iconGrayDark: CoreIconColors.grayDark,
@@ -525,7 +523,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       iconOrange: CoreIconColors.orange,
       iconBlue: CoreIconColors.blue,
       iconOrient: CoreIconColors.orient,
-
+      
       // Chip Colors
       chipGrey: CoreChipColors.gray,
       chipPrimary: CoreChipColors.primary,
@@ -533,13 +531,13 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       chipOrange: CoreChipColors.orange,
       chipBlue: CoreChipColors.blue,
       chipGreen: CoreChipColors.green,
-
+      
       // Alert Colors
       alertRed: CoreAlertColors.red,
       alertOrange: CoreAlertColors.orange,
       alertBlue: CoreAlertColors.blue,
       alertGreen: CoreAlertColors.green,
-
+      
       // Keyboard Colors
       keyboardNumbers: CoreKeyboardColors.numbers,
       keyboardCalculate: CoreKeyboardColors.calculate,
@@ -549,7 +547,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       keyboardMain: CoreKeyboardColors.main,
 
       // Utility Colors
-      transparent: CorePrimitiveColors.transparent,
+      transparent: CoreUtilityColors.transparent,
 
       // Shadow Colors
       shadowGrey3: CoreShadowColors.shadowGrey3,
