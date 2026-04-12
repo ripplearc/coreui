@@ -214,7 +214,7 @@ class CoreBrandColors {
   static const Color orient = _CoreColorPalette.orient900;
 }
 
-// Utility-related color tokens
-class CoreUtilityColors {
+// Primitive color tokens
+class CorePrimitiveColors {
   static const Color transparent = _CoreColorPalette.transparent;
 }
