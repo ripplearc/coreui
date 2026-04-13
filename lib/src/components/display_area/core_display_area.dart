@@ -88,11 +88,12 @@ class CoreDisplayArea extends StatelessWidget {
             chipsList: chipsList,
             historyPlaceholder: historyPlaceholder,
           ),
-          _LabelSection(
-            label: label,
-            isTyping: isTyping,
-          ),
-          _ValueSection(value: value),
+          if (label.isNotEmpty || isTyping)
+            _LabelSection(
+              label: label,
+              isTyping: isTyping,
+            ),
+          if (value.isNotEmpty) _ValueSection(value: value),
         ],
       ),
     );

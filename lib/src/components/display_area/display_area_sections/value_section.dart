@@ -1,5 +1,7 @@
 part of '../core_display_area.dart';
 
+/// A trailing-aligned section that renders the primary display value
+/// at the end of the display area using headline typography.
 class _ValueSection extends StatelessWidget {
   const _ValueSection({required this.value});
 
@@ -10,13 +12,13 @@ class _ValueSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(value,
-            style: typography.headlineLargeSemiBold
-                .copyWith(color: colors.textDark)),
-      ],
+    return Align(
+      alignment: AlignmentDirectional.centerEnd,
+      child: Text(
+        value,
+        style:
+            typography.headlineLargeSemiBold.copyWith(color: colors.textDark),
+      ),
     );
   }
 }

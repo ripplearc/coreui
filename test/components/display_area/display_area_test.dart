@@ -270,5 +270,22 @@ void main() {
 
       expect(find.text('123.45'), findsOneWidget);
     });
+    testWidgets('does not render value when value is empty',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(),
+          ),
+        ),
+      );
+      expect(find.text(''), findsNothing);
+      expect(find.text('0'), findsNothing);
+      expect(find.text('null'), findsNothing);
+    });
   });
 }
