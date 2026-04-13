@@ -6,12 +6,16 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
 
+Future<void> setTestViewport(WidgetTester tester) async {
+  addTearDown(() => tester.view.resetPhysicalSize());
+  tester.view.physicalSize = const ui.Size(1100, 1600);
+}
+
 void main() {
   group('DisplayArea – accessibility', () {
     testWidgets('meets basic accessibility guidelines',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await setTestViewport(tester);
 
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
@@ -26,6 +30,8 @@ void main() {
 
     testWidgets('close icon has correct semantics',
         (WidgetTester tester) async {
+      await setTestViewport(tester);
+
       await setupA11yTest(tester);
       await tester.pumpWidget(
         MaterialApp(
@@ -57,8 +63,7 @@ void main() {
 
     testWidgets('history chips expose correct semantic labels',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await setTestViewport(tester);
 
       await setupA11yTest(tester);
       await tester.pumpWidget(
@@ -93,8 +98,7 @@ void main() {
 
     testWidgets('history chips meet accessibility guidelines',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await setTestViewport(tester);
 
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
@@ -122,8 +126,7 @@ void main() {
 
     testWidgets('placeholder text is visible when history is empty',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await setTestViewport(tester);
 
       await setupA11yTest(tester);
       await tester.pumpWidget(
@@ -136,13 +139,14 @@ void main() {
       );
 
       expect(
-          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
+        find.text(CoreDisplayArea.defaultHistoryPlaceholder),
+        findsOneWidget,
+      );
     });
 
     testWidgets('empty state meets accessibility guidelines',
         (WidgetTester tester) async {
-      addTearDown(() => tester.view.resetPhysicalSize());
-      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await setTestViewport(tester);
 
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
@@ -154,8 +158,11 @@ void main() {
         checkTextContrast: false,
       );
     });
+
     testWidgets('label meets accessibility guidelines',
         (WidgetTester tester) async {
+      await setTestViewport(tester);
+
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -169,6 +176,8 @@ void main() {
 
     testWidgets('typing indicator exposes correct semantics',
         (WidgetTester tester) async {
+      await setTestViewport(tester);
+
       await setupA11yTest(tester);
       await tester.pumpWidget(
         MaterialApp(
@@ -189,6 +198,8 @@ void main() {
 
     testWidgets('value meets accessibility guidelines',
         (WidgetTester tester) async {
+      await setTestViewport(tester);
+
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -196,7 +207,7 @@ void main() {
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
-        checkTextContrast: false,
+        checkTextContrast: true,
       );
     });
   });
