@@ -10,7 +10,6 @@ import '../theme/icons/icon_data.dart';
 /// [semanticLabel] is the semantic label for the icon
 /// [onTap] is the callback function when the icon is tapped
 /// [padding] is the padding around the icon
-/// [visualDensity]: Controls the compactness of the [IconButton]
 class CoreIconWidget extends StatelessWidget {
   final CoreIconData icon;
   final double? size;

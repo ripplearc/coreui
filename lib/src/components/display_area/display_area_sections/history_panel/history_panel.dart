@@ -32,7 +32,8 @@ class _HistoryPanel extends StatelessWidget {
 
   /// Fixed height for the history panel (84px).
   /// This is enforced by design specs and may not scale well with large text.
-  /// todo: Track a11y improvement to support dynamic height with text scaling.
+  /// todo: CA-634 Track a11y improvement to support dynamic height with text scaling.
+  /// https://ripplearc.youtrack.cloud/issue/CA-634/Display-Area-Track-a11y-improvement
   static const double _panelHeight = 84;
 
   @override
