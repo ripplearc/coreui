@@ -170,7 +170,7 @@ void main() {
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
-        checkTextContrast: false,
+        checkTextContrast: true,
       );
     });
 
