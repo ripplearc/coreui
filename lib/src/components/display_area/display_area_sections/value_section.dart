@@ -3,10 +3,17 @@ part of '../core_display_area.dart';
 /// A trailing-aligned section that renders the primary display value
 /// at the end of the display area using headline typography.
 class _ValueSection extends StatelessWidget {
-  const _ValueSection({required this.value});
+  const _ValueSection(
+      {required this.value, this.hasError = false, this.errorTitle = 'Error'});
 
   /// The main text value to be displayed.
   final String value;
+
+  /// Whether the value section should display an error title instead of the [value].
+  final bool hasError;
+
+  /// The error title to display when [hasError] is true.
+  final String errorTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,7 @@ class _ValueSection extends StatelessWidget {
     return Align(
       alignment: AlignmentDirectional.centerEnd,
       child: Text(
-        value,
+        hasError ? errorTitle : value,
         style:
             typography.headlineLargeSemiBold.copyWith(color: colors.textDark),
       ),

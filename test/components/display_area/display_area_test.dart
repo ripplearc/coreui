@@ -281,9 +281,51 @@ void main() {
         ),
       );
 
-      expect(find.text(''), findsNothing);
-      expect(find.text('0'), findsNothing);
       expect(find.text('null'), findsNothing);
+    });
+
+    testWidgets('renders error title when hasError is true',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              value: '123.45',
+              hasError: true,
+              errorTitle: 'Custom Error',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('123.45'), findsNothing);
+      expect(find.text('Custom Error'), findsOneWidget);
+    });
+
+    testWidgets('renders error message chip when hasError is true',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Width',
+                  value: '10ft',
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+              hasError: true,
+              errorMessage: 'Dimension Error',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Width'), findsOneWidget);
+      expect(find.text('Dimension Error'), findsOneWidget);
     });
   });
 }

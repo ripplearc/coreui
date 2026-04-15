@@ -210,5 +210,25 @@ void main() {
         checkTextContrast: true,
       );
     });
+
+    testWidgets('error state meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(
+          hasError: true,
+          errorMessage: 'Dimension Error',
+          errorTitle: 'Error',
+          value: '123.45',
+        ),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: true,
+      );
+    });
   });
 }
