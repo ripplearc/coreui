@@ -27,18 +27,27 @@ class _HistoryPanel extends StatelessWidget {
   /// The placeholder text to display when the [chipsList] is empty.
   final String historyPlaceholder;
 
+  /// The top space to align with chips single row.
+  static const double _topSpace = CoreSpacing.space1;
+
+  /// Fixed height for the history panel (84px).
+  /// This is enforced by design specs and may not scale well with large text.
+  // TODO: [CA-634] Track a11y improvement to support dynamic height with text scaling.
+  // https://ripplearc.youtrack.cloud/issue/CA-634
+  static const double _panelHeight = 84;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: CoreSpacing.space3),
+    return Container(
+      height: _panelHeight,
+      margin: const EdgeInsets.only(top: CoreSpacing.space1),
       child: Row(
-        crossAxisAlignment: chipsList.isNotEmpty
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            margin: const EdgeInsets.only(top: _topSpace),
             decoration: BoxDecoration(
               color: colors.backgroundBlueMid,
               shape: BoxShape.circle,
@@ -49,9 +58,10 @@ class _HistoryPanel extends StatelessWidget {
             ),
             child: CoreIconWidget(
               icon: CoreIcons.cross,
-              size: CoreSpacing.space6,
+              size: CoreSpacing.space7,
               color: colors.iconDark,
-              padding: const EdgeInsets.all(CoreSpacing.space2),
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.all(CoreSpacing.space3),
               onTap: onClose,
               semanticLabel: closeSemanticLabel,
             ),
@@ -63,10 +73,13 @@ class _HistoryPanel extends StatelessWidget {
             )
           else
             Flexible(
-              child: Text(
-                historyPlaceholder,
-                style: typography.bodyMediumRegular
-                    .copyWith(color: colors.textHeadline),
+              child: Padding(
+                padding: const EdgeInsets.only(top: CoreSpacing.space5),
+                child: Text(
+                  historyPlaceholder,
+                  style: typography.bodyMediumRegular
+                      .copyWith(color: colors.textHeadline),
+                ),
               ),
             )
         ],

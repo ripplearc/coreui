@@ -49,7 +49,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
@@ -102,7 +102,7 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
@@ -136,11 +136,91 @@ void main() {
     );
 
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/display_area_component_empty_state.png'),
+    );
+  });
+
+  testWidgets(
+      'DisplayArea Component with more than two rows of chips Visual Regression Test',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Display Area - more than two rows'),
+            const SizedBox(height: CoreSpacing.space8),
+            CoreDisplayArea(
+              onClose: () {},
+              chipsList: const [
+                CoreCalculatorChip(
+                  label: "Length",
+                  value: "16ft 14in",
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: "Length",
+                  value: "16ft 14in",
+                  type: CoreCalculatorChipType.active,
+                ),
+                CoreCalculatorChip(
+                  label: "Length",
+                  value: "16ft 14in",
+                  type: CoreCalculatorChipType.disabled,
+                ),
+                CoreCalculatorChip(
+                  label: "Width",
+                  value: "10ft",
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: "Height",
+                  value: "8ft",
+                  type: CoreCalculatorChipType.active,
+                ),
+                CoreCalculatorChip(
+                  label: "Weight",
+                  value: "20lbs",
+                  type: CoreCalculatorChipType.disabled,
+                ),
+                CoreCalculatorChip(
+                  label: "Volume",
+                  value: "100gal",
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: "Width",
+                  value: "10ft",
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile(
+          'goldens/display_area_component_more_than_two_rows.png'),
     );
   });
 }

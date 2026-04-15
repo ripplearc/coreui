@@ -171,5 +171,51 @@ void main() {
       expect(find.text('Width'), findsOneWidget);
       expect(find.text('10ft'), findsOneWidget);
     });
+
+    testWidgets('renders SingleChildScrollView for scrollable chips',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Item 1',
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: 'Item 2',
+                  type: CoreCalculatorChipType.active,
+                ),
+                CoreCalculatorChip(
+                  label: 'Item 3',
+                  type: CoreCalculatorChipType.disabled,
+                ),
+                CoreCalculatorChip(
+                  label: 'Item 4',
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final scrollFinder = find.byType(SingleChildScrollView);
+      expect(scrollFinder, findsOneWidget);
+
+      final scrollWidget = tester.widget<SingleChildScrollView>(scrollFinder);
+      expect(scrollWidget.reverse, isTrue);
+
+      final wrapFinder = find.descendant(
+        of: scrollFinder,
+        matching: find.byType(Wrap),
+      );
+      expect(wrapFinder, findsOneWidget);
+    });
   });
 }
