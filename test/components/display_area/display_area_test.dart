@@ -217,5 +217,45 @@ void main() {
       );
       expect(wrapFinder, findsOneWidget);
     });
+    testWidgets('renders the provided label text', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(label: 'Total Output'),
+          ),
+        ),
+      );
+
+      expect(find.text('Total Output'), findsOneWidget);
+    });
+
+    testWidgets('displays typing indicator when isTyping is true',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(label: 'Total Output', isTyping: true),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreWritingDots), findsOneWidget);
+    });
+
+    testWidgets('hides typing indicator when isTyping is false',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(label: 'Total Output', isTyping: false),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreWritingDots), findsNothing);
+    });
   });
 }
