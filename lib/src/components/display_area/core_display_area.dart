@@ -9,6 +9,8 @@ part 'display_area_sections/value_section.dart';
 
 /// A colored display area widget with rounded bottom corners,
 /// used to present calculation results at the top of the layout.
+/// [hasError] toggles the error state. When true, [errorTitle] replaces
+/// the value display and [errorMessage] appears as an error chip.
 class CoreDisplayArea extends StatelessWidget {
   /// The default placeholder text shown when no chips are provided.
   static const String defaultHistoryPlaceholder =
@@ -27,8 +29,8 @@ class CoreDisplayArea extends StatelessWidget {
       this.isTyping = false,
       this.value = '',
       this.hasError = false,
-      this.errorMessage = 'Dimension Error',
-      this.errorTitle = 'Error'});
+      this.errorMessage = '',
+      this.errorTitle = ''});
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;

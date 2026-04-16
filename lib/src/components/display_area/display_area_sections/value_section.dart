@@ -4,7 +4,7 @@ part of '../core_display_area.dart';
 /// at the end of the display area using headline typography.
 class _ValueSection extends StatelessWidget {
   const _ValueSection(
-      {required this.value, this.hasError = false, this.errorTitle = 'Error'});
+      {required this.value, required this.hasError, required this.errorTitle});
 
   /// The main text value to be displayed.
   final String value;
@@ -22,7 +22,7 @@ class _ValueSection extends StatelessWidget {
     return Align(
       alignment: AlignmentDirectional.centerEnd,
       child: Text(
-        hasError ? errorTitle : value,
+        hasError && errorTitle.isNotEmpty ? errorTitle : value,
         style:
             typography.headlineLargeSemiBold.copyWith(color: colors.textDark),
       ),

@@ -7,8 +7,8 @@ class _HistoryChips extends StatelessWidget {
   /// Creates a [_HistoryChips].
   const _HistoryChips(
       {required this.chipsList,
-      this.hasError = false,
-      this.errorMessage = 'Dimension Error'});
+      required this.hasError,
+      required this.errorMessage});
 
   /// The list of items (chips) to be arranged in the history section.
   final List<CoreCalculatorChip> chipsList;
@@ -35,20 +35,25 @@ class _HistoryChips extends StatelessWidget {
           runSpacing: CoreSpacing.space2,
           children: [
             ...chipsList,
-            if (hasError)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoreSpacing.space2,
-                  vertical: CoreSpacing.space1,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.chipRed,
-                  borderRadius: BorderRadius.circular(CoreSpacing.space5),
-                ),
-                child: Text(
-                  errorMessage,
-                  style: typography.bodyMediumRegular
-                      .copyWith(color: colors.textDark),
+            if (hasError && errorMessage.isNotEmpty)
+              Semantics(
+                label: errorMessage,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space2,
+                    vertical: CoreSpacing.space1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.chipRed,
+                    borderRadius: BorderRadius.circular(CoreSpacing.space5),
+                  ),
+                  child: ExcludeSemantics(
+                    child: Text(
+                      errorMessage,
+                      style: typography.bodyMediumRegular
+                          .copyWith(color: colors.textDark),
+                    ),
+                  ),
                 ),
               ),
           ],

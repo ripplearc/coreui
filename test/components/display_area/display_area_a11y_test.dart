@@ -230,5 +230,56 @@ void main() {
         checkTextContrast: true,
       );
     });
+
+    testWidgets('error message in history chips exposes correct semantics',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      const errorMessage = 'Dimension Error';
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft',
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+              hasError: true,
+              errorMessage: errorMessage,
+            ),
+          ),
+        ),
+      );
+
+      final errorSemantics = tester.getSemantics(find.text(errorMessage));
+      expect(errorSemantics.label, errorMessage);
+    });
+
+    testWidgets('error title in value section exposes correct semantics',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      const errorTitle = 'Error';
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              hasError: true,
+              errorTitle: errorTitle,
+            ),
+          ),
+        ),
+      );
+
+      final errorTitleSemantics = tester.getSemantics(find.text(errorTitle));
+      expect(errorTitleSemantics.label, errorTitle);
+    });
   });
 }

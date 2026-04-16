@@ -10,8 +10,8 @@ class _HistoryPanel extends StatelessWidget {
       this.closeSemanticLabel = 'Close',
       required this.chipsList,
       this.historyPlaceholder = 'Here will show what you type',
-      this.hasError = false,
-      this.errorMessage = 'Error'});
+      required this.hasError,
+      required this.errorMessage});
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;

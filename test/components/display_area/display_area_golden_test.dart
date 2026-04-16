@@ -251,6 +251,7 @@ void main() {
             CoreDisplayArea(
               label: 'Length',
               hasError: true,
+              errorMessage: 'Dimension Error',
               errorTitle: 'Error',
               chipsList: [
                 CoreCalculatorChip(
