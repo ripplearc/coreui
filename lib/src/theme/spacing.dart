@@ -15,6 +15,7 @@ class CoreSpacing {
   static const double space6 = 24.0; // 1.5rem = 24px
   static const double space7 = 28.0; // 1.75rem = 28px
   static const double space8 = 32.0; // 2rem = 32px
+  static const double space9 = 36.0; // 2.25rem = 36px
   static const double space10 = 40.0; // 2.5rem = 40px
   static const double space12 = 48.0; // 3rem = 48px
   static const double space16 = 64.0; // 4rem = 64px

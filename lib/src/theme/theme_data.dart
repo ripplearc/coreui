@@ -49,6 +49,7 @@ class CoreTheme {
       statusSuccess: CoreStatusColors.success,
 
       // Button Colors
+      buttonInverse: CoreButtonColors.inverse,
       buttonSurface: CoreButtonColors.surface,
       buttonHover: CoreButtonColors.hover,
       buttonDisable: CoreButtonColors.disable,

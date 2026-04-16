@@ -1,5 +1,5 @@
-import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:flutter/material.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 class ButtonShowcaseScreen extends StatefulWidget {
   const ButtonShowcaseScreen({super.key});
@@ -10,14 +10,17 @@ class ButtonShowcaseScreen extends StatefulWidget {
 
 class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
   bool _isDisabled = false;
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).coreColors;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Button Showcase'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(CoreSpacing.space4),
         child: Column(
           children: [
             CoreButton(
@@ -26,7 +29,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               variant: CoreButtonVariant.primary,
               isDisabled: _isDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Primary + Icon',
               onPressed: () {},
@@ -34,11 +37,10 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               isDisabled: _isDisabled,
               icon: CoreIconWidget(
                 icon: CoreIcons.checkCircle,
-                color:
-                    _isDisabled ? CoreTextColors.body : CoreTextColors.inverse,
+                color: _isDisabled ? colors.textBody : colors.textInverse,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Primary Focused',
               onPressed: () {},
@@ -47,18 +49,17 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               autofocus: true,
               icon: CoreIconWidget(
                 icon: CoreIcons.checkCircle,
-                color:
-                    _isDisabled ? CoreTextColors.body : CoreTextColors.inverse,
+                color: _isDisabled ? colors.textBody : colors.textInverse,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Secondary Button',
               onPressed: () {},
               variant: CoreButtonVariant.secondary,
               isDisabled: _isDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Secondary + Icon',
               onPressed: () {},
@@ -66,12 +67,10 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               isDisabled: _isDisabled,
               icon: CoreIconWidget(
                 icon: CoreIcons.checkCircle,
-                color: _isDisabled
-                    ? CoreTextColors.disable
-                    : CoreButtonColors.surface,
+                color: _isDisabled ? colors.textDisable : colors.buttonSurface,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Secondary Focused',
               onPressed: () {},
@@ -80,12 +79,10 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               autofocus: true,
               icon: CoreIconWidget(
                 icon: CoreIcons.checkCircle,
-                color: _isDisabled
-                    ? CoreTextColors.disable
-                    : CoreButtonColors.hover,
+                color: _isDisabled ? colors.textDisable : colors.buttonHover,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Social Button',
               onPressed: () {},
@@ -93,7 +90,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               variant: CoreButtonVariant.social,
               isDisabled: _isDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Spacedout',
               onPressed: () {},
@@ -102,7 +99,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               spaceOut: true,
               isDisabled: _isDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               label: 'Social Focused',
               onPressed: () {},
@@ -112,7 +109,44 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               autofocus: true,
               isDisabled: _isDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: CoreSpacing.space4),
+            CoreButton(
+              onPressed: () {},
+              variant: CoreButtonVariant.social,
+              shadows: CoreShadows.small,
+              fullWidth: false,
+              trailing: true,
+              icon: CoreIconWidget(
+                icon: CoreIcons.edit,
+                color: colors.textHeadline,
+              ),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'O.C: ',
+                      style: Theme.of(context)
+                          .coreTypography
+                          .bodyLargeSemiBold
+                          .copyWith(
+                            color: colors.textBody,
+                            fontWeight: FontWeight.normal,
+                          ),
+                    ),
+                    TextSpan(
+                      text: '6ft',
+                      style: Theme.of(context)
+                          .coreTypography
+                          .bodyLargeSemiBold
+                          .copyWith(
+                            color: colors.textHeadline,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: CoreSpacing.space4),
             Switch(
                 value: _isDisabled,
                 onChanged: (state) {
