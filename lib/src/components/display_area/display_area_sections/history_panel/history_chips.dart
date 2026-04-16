@@ -5,7 +5,10 @@ part of '../../core_display_area.dart';
 /// It uses a [Wrap] widget to arrange chips in multiple lines if needed.
 class _HistoryChips extends StatelessWidget {
   /// Creates a [_HistoryChips].
-  const _HistoryChips({required this.chipsList});
+  const _HistoryChips(
+      {required this.chipsList,
+      required this.hasError,
+      required this.errorMessage});
 
   /// The list of items (chips) to be arranged in the history section.
   final List<CoreCalculatorChip> chipsList;
@@ -13,8 +16,16 @@ class _HistoryChips extends StatelessWidget {
   /// The vertical padding for the scrollable chips area.
   static const double _verticalSpace = CoreSpacing.space5;
 
+  /// Whether to display an error chip at the end of the history.
+  final bool hasError;
+
+  /// The error message to display in the error chip when [hasError] is true.
+  final String errorMessage;
+
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     return Expanded(
       child: SingleChildScrollView(
         reverse: true,
@@ -22,7 +33,30 @@ class _HistoryChips extends StatelessWidget {
         child: Wrap(
           spacing: CoreSpacing.space2,
           runSpacing: CoreSpacing.space2,
-          children: chipsList,
+          children: [
+            ...chipsList,
+            if (hasError && errorMessage.isNotEmpty)
+              Semantics(
+                label: errorMessage,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space2,
+                    vertical: CoreSpacing.space1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.chipRed,
+                    borderRadius: BorderRadius.circular(CoreSpacing.space5),
+                  ),
+                  child: ExcludeSemantics(
+                    child: Text(
+                      errorMessage,
+                      style: typography.bodyMediumRegular
+                          .copyWith(color: colors.textDark),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

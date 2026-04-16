@@ -7,8 +7,10 @@ part 'display_area_sections/history_panel/history_panel.dart';
 part 'display_area_sections/label_section.dart';
 part 'display_area_sections/value_section.dart';
 
-/// A colored display area widget with rounded bottom corners,
-/// used to present calculation results at the top of the layout.
+/// Creates a [CoreDisplayArea].
+///
+/// [hasError] toggles the error state. When true, [errorTitle] replaces
+/// the value display and [errorMessage] appears as an error chip.
 class CoreDisplayArea extends StatelessWidget {
   /// The default placeholder text shown when no chips are provided.
   static const String defaultHistoryPlaceholder =
@@ -17,16 +19,18 @@ class CoreDisplayArea extends StatelessWidget {
   /// The default semantic label for the close icon.
   static const String defaultCloseSemanticLabel = 'Close';
 
-  const CoreDisplayArea({
-    super.key,
-    this.onClose,
-    this.closeSemanticLabel = defaultCloseSemanticLabel,
-    this.chipsList = const [],
-    this.historyPlaceholder = defaultHistoryPlaceholder,
-    this.label = '',
-    this.isTyping = false,
-    this.value = '',
-  });
+  const CoreDisplayArea(
+      {super.key,
+      this.onClose,
+      this.closeSemanticLabel = defaultCloseSemanticLabel,
+      this.chipsList = const [],
+      this.historyPlaceholder = defaultHistoryPlaceholder,
+      this.label = '',
+      this.isTyping = false,
+      this.value = '',
+      this.hasError = false,
+      this.errorMessage = '',
+      this.errorTitle = ''});
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
@@ -64,6 +68,18 @@ class CoreDisplayArea extends StatelessWidget {
   /// Defaults to ''.
   final String value;
 
+  /// Whether the display area is currently in an error state.
+  /// Defaults to false.
+  final bool hasError;
+
+  /// The error message to display when [hasError] is true.
+  /// Defaults to 'Dimension Error'.
+  final String errorMessage;
+
+  /// The error title to display in the value section when [hasError] is true.
+  /// Defaults to 'Error'.
+  final String errorTitle;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -87,13 +103,20 @@ class CoreDisplayArea extends StatelessWidget {
             closeSemanticLabel: closeSemanticLabel,
             chipsList: chipsList,
             historyPlaceholder: historyPlaceholder,
+            errorMessage: errorMessage,
+            hasError: hasError,
           ),
           if (label.isNotEmpty || isTyping)
             _LabelSection(
               label: label,
               isTyping: isTyping,
             ),
-          if (value.isNotEmpty) _ValueSection(value: value),
+          if (value.isNotEmpty || hasError)
+            _ValueSection(
+              value: value,
+              hasError: hasError,
+              errorTitle: errorTitle,
+            ),
         ],
       ),
     );

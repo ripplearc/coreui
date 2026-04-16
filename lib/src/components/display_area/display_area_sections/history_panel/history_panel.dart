@@ -5,12 +5,13 @@ part of '../../core_display_area.dart';
 /// This panel includes a close button and a list of history chips.
 class _HistoryPanel extends StatelessWidget {
   /// Creates a [_HistoryPanel].
-  const _HistoryPanel({
-    this.onClose,
-    this.closeSemanticLabel = 'Close',
-    required this.chipsList,
-    this.historyPlaceholder = 'Here will show what you type',
-  });
+  const _HistoryPanel(
+      {this.onClose,
+      this.closeSemanticLabel = 'Close',
+      required this.chipsList,
+      this.historyPlaceholder = 'Here will show what you type',
+      required this.hasError,
+      required this.errorMessage});
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
@@ -35,6 +36,12 @@ class _HistoryPanel extends StatelessWidget {
   // TODO: [CA-634] Track a11y improvement to support dynamic height with text scaling.
   // https://ripplearc.youtrack.cloud/issue/CA-634
   static const double _panelHeight = 84;
+
+  /// Whether the panel should display an error state.
+  final bool hasError;
+
+  /// The error message to be passed down to the history chips when [hasError] is true.
+  final String errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +77,8 @@ class _HistoryPanel extends StatelessWidget {
           if (chipsList.isNotEmpty)
             _HistoryChips(
               chipsList: chipsList,
+              hasError: hasError,
+              errorMessage: errorMessage,
             )
           else
             Flexible(
