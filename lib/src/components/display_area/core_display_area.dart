@@ -7,8 +7,8 @@ part 'display_area_sections/history_panel/history_panel.dart';
 part 'display_area_sections/label_section.dart';
 part 'display_area_sections/value_section.dart';
 
-/// A colored display area widget with rounded bottom corners,
-/// used to present calculation results at the top of the layout.
+/// Creates a [CoreDisplayArea].
+///
 /// [hasError] toggles the error state. When true, [errorTitle] replaces
 /// the value display and [errorMessage] appears as an error chip.
 class CoreDisplayArea extends StatelessWidget {
