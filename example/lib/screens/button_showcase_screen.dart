@@ -112,7 +112,7 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
             const SizedBox(height: CoreSpacing.space4),
             CoreButton(
               onPressed: () {},
-              variant: CoreButtonVariant.social,
+              variant: CoreButtonVariant.secondary,
               shadows: CoreShadows.small,
               fullWidth: false,
               trailing: true,

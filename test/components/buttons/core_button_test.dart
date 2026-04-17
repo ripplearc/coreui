@@ -159,8 +159,9 @@ void main() {
 
     testWidgets('social variant throws when size is not large', (tester) async {
       final List<FlutterErrorDetails> errors = [];
+      final originalOnError = FlutterError.onError;
+      addTearDown(() => FlutterError.onError = originalOnError);
       FlutterError.onError = (details) => errors.add(details);
-
       await tester.pumpWidget(
         _wrapWithTheme(
           const CoreButton(

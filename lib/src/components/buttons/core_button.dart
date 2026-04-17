@@ -117,7 +117,7 @@ class _CoreButtonState extends State<CoreButton> {
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
-          ? colors.buttonInverse
+          ? colors.transparent
           : colors.buttonDisable;
     }
     switch (variant) {
@@ -128,9 +128,11 @@ class _CoreButtonState extends State<CoreButton> {
                 ? colors.buttonHover
                 : colors.buttonSurface;
       case CoreButtonVariant.secondary:
-        return colors.transparent;
+        return widget.shadows == null
+            ? colors.transparent
+            : colors.buttonInverse;
       case CoreButtonVariant.social:
-        return colors.textInverse;
+        return colors.buttonInverse;
     }
   }
 
@@ -183,7 +185,6 @@ class _CoreButtonState extends State<CoreButton> {
     }
   }
 
-  // Builds the label text or returns the custom child if provided.
   Widget _buildLabel(bool isEnabled, AppColorsExtension colors) {
     final child = widget.child;
     if (child != null) return child;
@@ -205,7 +206,6 @@ class _CoreButtonState extends State<CoreButton> {
     );
   }
 
-  // Builds the internal content row including icon and label/child.
   Widget _buildContentRow() {
     final colors = Theme.of(context).coreColors;
     final isEnabled = !widget.isDisabled && widget.onPressed != null;
@@ -281,7 +281,7 @@ class _CoreButtonState extends State<CoreButton> {
         color: colors.transparent,
         child: SizedBox(
           width: widget.fullWidth ? double.infinity : null,
-          height: _height,
+          height: widget.variant == CoreButtonVariant.social ? null : _height,
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.borderRadius),
