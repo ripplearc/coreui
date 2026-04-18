@@ -30,7 +30,10 @@ class CoreDisplayArea extends StatelessWidget {
       this.value = '',
       this.hasError = false,
       this.errorMessage = '',
-      this.errorTitle = ''});
+      this.errorTitle = '',
+      this.dependentKeyLabel = '',
+      this.dependentKeyValue = '',
+      this.onPressedDependentKey});
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
@@ -76,9 +79,19 @@ class CoreDisplayArea extends StatelessWidget {
   /// Defaults to 'Dimension Error'.
   final String errorMessage;
 
-  /// The error title to display in the value section when [hasError] is true.
   /// Defaults to 'Error'.
   final String errorTitle;
+
+  /// The label for the dependent key displayed in the value section.
+  /// Defaults to ''.
+  final String dependentKeyLabel;
+
+  /// The value for the dependent key displayed in the value section.
+  /// Defaults to ''.
+  final String dependentKeyValue;
+
+  /// Called when the user taps the dependent key button.
+  final VoidCallback? onPressedDependentKey;
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +124,17 @@ class CoreDisplayArea extends StatelessWidget {
               label: label,
               isTyping: isTyping,
             ),
-          if (value.isNotEmpty || hasError)
+          if (value.isNotEmpty ||
+              hasError ||
+              dependentKeyLabel.isNotEmpty ||
+              dependentKeyValue.isNotEmpty)
             _ValueSection(
               value: value,
               hasError: hasError,
               errorTitle: errorTitle,
+              dependentKeyLabel: dependentKeyLabel,
+              dependentKeyValue: dependentKeyValue,
+              onPressedDependentKey: onPressedDependentKey,
             ),
         ],
       ),

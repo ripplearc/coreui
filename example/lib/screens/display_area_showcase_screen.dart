@@ -65,12 +65,15 @@ class DisplayAreaShowcaseScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const CoreDisplayArea(
+              CoreDisplayArea(
                 label: 'Length',
                 value: '16ft 14in',
                 hasError: true,
                 isTyping: true,
-                chipsList: [
+                dependentKeyLabel: 'O.C',
+                dependentKeyValue: '16in',
+                onPressedDependentKey: () {},
+                chipsList: const [
                   CoreCalculatorChip(
                     label: "Length",
                     value: "16ft 14in",
