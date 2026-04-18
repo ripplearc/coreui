@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'color_tokens.dart';
 
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
@@ -45,6 +46,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color statusSuccess;
 
   // Button Colors
+  final Color buttonInverse;
   final Color buttonSurface;
   final Color buttonHover;
   final Color buttonDisable;
@@ -131,6 +133,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.tabsHighlight,
     required this.statusError,
     required this.statusSuccess,
+    required this.buttonInverse,
     required this.buttonSurface,
     required this.buttonHover,
     required this.buttonDisable,
@@ -220,6 +223,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? tabsHighlight,
     Color? statusError,
     Color? statusSuccess,
+    Color? buttonInverse,
     Color? buttonSurface,
     Color? buttonHover,
     Color? buttonDisable,
@@ -295,6 +299,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       tabsHighlight: tabsHighlight ?? this.tabsHighlight,
       statusError: statusError ?? this.statusError,
       statusSuccess: statusSuccess ?? this.statusSuccess,
+      buttonInverse: buttonInverse ?? this.buttonInverse,
       buttonSurface: buttonSurface ?? this.buttonSurface,
       buttonHover: buttonHover ?? this.buttonHover,
       buttonDisable: buttonDisable ?? this.buttonDisable,
@@ -409,6 +414,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       statusError: Color.lerp(statusError, other.statusError, t) ?? statusError,
       statusSuccess:
           Color.lerp(statusSuccess, other.statusSuccess, t) ?? statusSuccess,
+      buttonInverse:
+          Color.lerp(buttonInverse, other.buttonInverse, t) ?? buttonInverse,
       buttonSurface:
           Color.lerp(buttonSurface, other.buttonSurface, t) ?? buttonSurface,
       buttonHover: Color.lerp(buttonHover, other.buttonHover, t) ?? buttonHover,
@@ -509,6 +516,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       statusSuccess: CoreStatusColors.success,
 
       // Button Colors
+      buttonInverse: CoreButtonColors.inverse,
       buttonSurface: CoreButtonColors.surface,
       buttonHover: CoreButtonColors.hover,
       buttonDisable: CoreButtonColors.disable,
