@@ -21,8 +21,8 @@ custom_lint:
     - sealed_over_dynamic
     - avoid_static_colors
     - avoid_static_typography
-    - document_enum: false
-    - restrict_core_icon_data: false
+    - document_enum: false  # TODO: [CA-632] Add doc comments to all enums. https://ripplearc.youtrack.cloud/issue/CA-632/Core-UI-Enable-documentenum-lint-rule-on-core-UI-repo
+    - restrict_core_icon_data: false  # TODO: [CA-633] Scope rule to exclude coreui package. https://ripplearc.youtrack.cloud/issue/CA-633/Lint-Scope-restrictcoreicondata-rule-in-ripplearc-flutter-lint-to-fire-only-outside-coreui
 
 linter:
   rules:
