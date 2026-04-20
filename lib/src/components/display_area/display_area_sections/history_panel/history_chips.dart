@@ -1,64 +1,89 @@
 part of '../../core_display_area.dart';
 
-/// A responsive widget that displays a list of calculator chips.
+/// Renders a [Wrap] of [CoreCalculatorChip] widgets inside the history panel.
 ///
-/// It uses a [Wrap] widget to arrange chips in multiple lines if needed.
+/// In [isCollapsed] mode the visible area is capped to two chip rows using a
+/// [SingleChildScrollView] anchored at the end (most-recent chips), combined
+/// with [NeverScrollableScrollPhysics] so the area is never user-scrollable.
+///
+/// In expanded modes the chips fill their natural height with no scroll
+/// physics; when [DisplayAreaStage.fullScreen] is active the containing
+/// [_HistoryPanel] wraps everything in its own [SingleChildScrollView].
 class _HistoryChips extends StatelessWidget {
-  /// Creates a [_HistoryChips].
-  const _HistoryChips(
-      {required this.chipsList,
-      required this.hasError,
-      required this.errorMessage});
+  const _HistoryChips({
+    required this.chipsList,
+    required this.hasError,
+    required this.errorMessage,
+    required this.isCollapsed,
+  });
 
-  /// The list of items (chips) to be arranged in the history section.
   final List<CoreCalculatorChip> chipsList;
-
-  /// The vertical padding for the scrollable chips area.
-  static const double _verticalSpace = CoreSpacing.space5;
-
-  /// Whether to display an error chip at the end of the history.
   final bool hasError;
-
-  /// The error message to display in the error chip when [hasError] is true.
   final String errorMessage;
+
+  /// When true, the chips area is height-constrained to [_twoRowMaxHeight]
+  /// and anchored at the bottom of the scroll extent (most-recent chips).
+  final bool isCollapsed;
+
+  static const double _twoRowMaxHeight = 68.0;
+
+  static const double _collapsedVerticalPadding = CoreSpacing.space1;
+
+  static const double _expandedVerticalPadding = CoreSpacing.space3;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    return Expanded(
-      child: SingleChildScrollView(
-        reverse: true,
-        padding: const EdgeInsets.symmetric(vertical: _verticalSpace),
-        child: Wrap(
-          spacing: CoreSpacing.space2,
-          runSpacing: CoreSpacing.space2,
-          children: [
-            ...chipsList,
-            if (hasError && errorMessage.isNotEmpty)
-              Semantics(
-                label: errorMessage,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CoreSpacing.space2,
-                    vertical: CoreSpacing.space1,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.chipRed,
-                    borderRadius: BorderRadius.circular(CoreSpacing.space5),
-                  ),
-                  child: ExcludeSemantics(
-                    child: Text(
-                      errorMessage,
-                      style: typography.bodyMediumRegular
-                          .copyWith(color: colors.textDark),
-                    ),
-                  ),
-                ),
+
+    final chipWidgets = <Widget>[
+      ...chipsList,
+      if (hasError && errorMessage.isNotEmpty)
+        Semantics(
+          label: errorMessage,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoreSpacing.space2,
+              vertical: CoreSpacing.space1,
+            ),
+            decoration: BoxDecoration(
+              color: colors.chipRed,
+              borderRadius: BorderRadius.circular(CoreSpacing.space5),
+            ),
+            child: ExcludeSemantics(
+              child: Text(
+                errorMessage,
+                style: typography.bodyMediumRegular
+                    .copyWith(color: colors.textDark),
               ),
-          ],
+            ),
+          ),
         ),
-      ),
+    ];
+
+    final wrap = Wrap(
+      spacing: CoreSpacing.space2,
+      runSpacing: CoreSpacing.space2,
+      children: chipWidgets,
+    );
+
+    if (isCollapsed) {
+      return ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxHeight: _twoRowMaxHeight + _collapsedVerticalPadding * 2,
+        ),
+        child: SingleChildScrollView(
+          reverse: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding:
+              const EdgeInsets.symmetric(vertical: _collapsedVerticalPadding),
+          child: wrap,
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: _expandedVerticalPadding),
+      child: wrap,
     );
   }
 }

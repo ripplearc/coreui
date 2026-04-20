@@ -205,7 +205,12 @@ void main() {
         ),
       );
 
-      final scrollFinder = find.byType(SingleChildScrollView);
+      final scrollFinder = find
+          .descendant(
+            of: find.byType(CoreDisplayArea),
+            matching: find.byType(SingleChildScrollView),
+          )
+          .last;
       expect(scrollFinder, findsOneWidget);
 
       final scrollWidget = tester.widget<SingleChildScrollView>(scrollFinder);
@@ -468,22 +473,225 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets(
-        'does not render dependent key button when label and value are empty',
+    testWidgets('performs 2-stage expansion when chipsList length <= 5',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
-              dependentKeyLabel: '',
-              dependentKeyValue: '',
+              label: 'Length',
+              value: '16ft 14in',
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.editable,
+                ),
+                CoreCalculatorChip(
+                  label: 'Width',
+                  value: '10ft',
+                  type: CoreCalculatorChipType.active,
+                ),
+              ],
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'May 27, 2025',
+                  value: '2700ft³',
+                  chipsList: [
+                    CoreCalculatorChip(
+                      label: 'Length',
+                      value: '16ft 14in',
+                      type: CoreCalculatorChipType.editable,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
       );
 
-      expect(find.byType(CoreButton), findsNothing);
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsNothing);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsOneWidget);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      final historyPanel = find.byWidgetPredicate(
+          (w) => w.runtimeType.toString() == '_HistoryPanel');
+      expect(historyPanel, findsOneWidget);
+    });
+
+    testWidgets('performs 3-stage expansion when chipsList length > 5',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              label: 'Length',
+              value: '16ft 14in',
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              chipsList: [
+                CoreCalculatorChip(
+                    label: '1', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '2', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '3', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '4', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '5', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '6', type: CoreCalculatorChipType.active),
+              ],
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'May 27, 2025',
+                  value: '2700ft³',
+                  chipsList: [
+                    CoreCalculatorChip(
+                      label: 'Length',
+                      value: '16ft 14in',
+                      type: CoreCalculatorChipType.editable,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsNothing);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsNothing);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsOneWidget);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('collapses when swiping up', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              label: 'Length',
+              value: '16ft 14in',
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              chipsList: [
+                CoreCalculatorChip(
+                    label: '1', type: CoreCalculatorChipType.active),
+              ],
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'May 27, 2025',
+                  value: '2700ft³',
+                  chipsList: [
+                    CoreCalculatorChip(
+                      label: 'Length',
+                      value: '16ft 14in',
+                      type: CoreCalculatorChipType.editable,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsOneWidget);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byWidgetPredicate(
+              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+          findsNothing);
+    });
+
+    testWidgets('calls onStageChanged with correct stages',
+        (WidgetTester tester) async {
+      final stages = <DisplayAreaStage>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              label: 'Length',
+              value: '16ft 14in',
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Length',
+                  value: '16ft 14in',
+                  type: CoreCalculatorChipType.editable,
+                ),
+              ],
+              onStageChanged: (stage) => stages.add(stage),
+            ),
+          ),
+        ),
+      );
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      expect(
+          stages,
+          containsAllInOrder([
+            DisplayAreaStage.expandedPrevious,
+            DisplayAreaStage.fullScreen,
+          ]));
     });
   });
 }
