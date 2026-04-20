@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -27,17 +26,7 @@ void main() {
       );
 
       final handle = tester.ensureSemantics();
-      // Use .first to target the outermost Semantics owned by this widget.
-      // CoreIconWidget adds its own Semantics node internally, so the
-      // descendant finder returns more than one match without the guard.
-      final node = tester.getSemantics(
-        find
-            .descendant(
-              of: find.byType(CoreFilterChip),
-              matching: find.byType(Semantics),
-            )
-            .first,
-      );
+      final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.hasFlag(SemanticsFlag.isButton), isFalse);
       handle.dispose();
@@ -59,14 +48,7 @@ void main() {
       );
 
       final handle = tester.ensureSemantics();
-      final node = tester.getSemantics(
-        find
-            .descendant(
-              of: find.byType(CoreFilterChip),
-              matching: find.byType(Semantics),
-            )
-            .first,
-      );
+      final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.hasFlag(SemanticsFlag.isButton), isTrue);
 

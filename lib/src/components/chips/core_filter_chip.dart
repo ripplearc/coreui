@@ -4,7 +4,7 @@ import '../../../ripplearc_coreui.dart';
 
 /// A dropdown-style filter chip used in filter rows.
 ///
-/// Renders as an outlined pill with a label and trailing dropdown arrow.
+/// Renders as a filled pill with a label and trailing dropdown arrow.
 /// When [onTap] is null the chip is rendered in a non-interactive state.
 class CoreFilterChip extends StatelessWidget {
   const CoreFilterChip({
@@ -43,22 +43,26 @@ class CoreFilterChip extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(CoreSpacing.space3),
-              color: colors.lineLight,
+              color: colors.backgroundGrayMid,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  label,
-                  style: typography.bodyMediumRegular.copyWith(
-                    color: colors.textDark,
+                ExcludeSemantics(
+                  child: Text(
+                    label,
+                    style: typography.bodyMediumRegular.copyWith(
+                      color: colors.textDark,
+                    ),
                   ),
                 ),
                 const SizedBox(width: CoreSpacing.space2),
-                CoreIconWidget(
-                  icon: CoreIcons.arrowDropDown,
-                  color: colors.textDark,
-                  size: CoreSpacing.space4,
+                ExcludeSemantics(
+                  child: CoreIconWidget(
+                    icon: CoreIcons.arrowDropDown,
+                    color: colors.iconDark,
+                    size: CoreSpacing.space4,
+                  ),
                 ),
               ],
             ),

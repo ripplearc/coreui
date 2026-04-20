@@ -74,5 +74,21 @@ void main() {
         matchesGoldenFile('goldens/core_filter_chip_long_label.png'),
       );
     });
+
+    testWidgets('renders disabled chip correctly', (tester) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await pumpFilterChip(
+        tester: tester,
+        label: 'Tags',
+      );
+
+      await expectLater(
+        find.byType(CoreFilterChip),
+        matchesGoldenFile('goldens/core_filter_chip_disabled.png'),
+      );
+    });
   });
 }

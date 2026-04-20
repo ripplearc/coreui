@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -20,14 +19,7 @@ void main() {
         ),
       );
 
-      final node = tester.getSemantics(
-        find
-            .descendant(
-              of: find.byType(CoreFilterChip),
-              matching: find.byType(Semantics),
-            )
-            .first,
-      );
+      final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.hasFlag(SemanticsFlag.isButton), isTrue);
     });
@@ -42,14 +34,7 @@ void main() {
         ),
       );
 
-      final node = tester.getSemantics(
-        find
-            .descendant(
-              of: find.byType(CoreFilterChip),
-              matching: find.byType(Semantics),
-            )
-            .first,
-      );
+      final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.hasFlag(SemanticsFlag.isButton), isFalse);
     });
