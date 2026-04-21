@@ -79,6 +79,7 @@ class CoreDisplayArea extends StatelessWidget {
   /// Defaults to 'Dimension Error'.
   final String errorMessage;
 
+  /// The error title to display in the value section when [hasError] is true.
   /// Defaults to 'Error'.
   final String errorTitle;
 
