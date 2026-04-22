@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0] - CoreFilterChip component
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreFilterChip**: New dropdown-style filter chip for filter rows.
+    - Filled pill design using `backgroundGrayMid` (`#F2F4F7`) background token
+    - Trailing dropdown arrow icon in `iconDark` (`#015B7C`) color
+    - `label` (required) and `onTap` (optional) public API — chip is non-interactive when `onTap` is null
+    - Full accessibility support: outer `Semantics` node exposes label and button role (only when enabled); `Text` and arrow icon wrapped in `ExcludeSemantics` to prevent double-announcement
+    - Widget tests, accessibility tests, and golden tests (enabled, long label, disabled states)
+
 ## [0.3.9] - CoreToast title support
 
 ### ✨ Features
