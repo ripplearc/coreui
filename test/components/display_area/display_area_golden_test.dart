@@ -171,6 +171,9 @@ void main() {
               label: 'Length',
               isTyping: true,
               value: '16ft 14in',
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              onPressedDependentKey: () {},
               chipsList: const [
                 CoreCalculatorChip(
                   label: "Length",

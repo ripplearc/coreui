@@ -281,5 +281,49 @@ void main() {
       final errorTitleSemantics = tester.getSemantics(find.text(errorTitle));
       expect(errorTitleSemantics.label, errorTitle);
     });
+
+    testWidgets('dependent key button meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const CoreDisplayArea(
+          dependentKeyLabel: 'O.C',
+          dependentKeyValue: '16in',
+        ),
+        find.byType(CoreButton),
+        checkTapTargetSize: true,
+        checkLabeledTapTarget: true,
+        checkTextContrast: true,
+      );
+    });
+
+    testWidgets('dependent key button exposes correct semantics',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+              onPressedDependentKey: () {},
+            ),
+          ),
+        ),
+      );
+
+      final buttonFinder = find.byType(CoreButton);
+      expect(buttonFinder, findsOneWidget);
+
+      final semantics = tester.getSemantics(buttonFinder);
+      expect(semantics.label, contains('O.C: 16in'));
+      expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+    });
   });
 }

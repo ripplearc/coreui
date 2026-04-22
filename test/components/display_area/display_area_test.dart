@@ -388,5 +388,102 @@ void main() {
 
       expect(find.text('Width'), findsOneWidget);
     });
+    testWidgets('renders dependent key when label or value is provided',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C',
+              dependentKeyValue: '16in',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.textContaining('O.C: ', findRichText: true), findsOneWidget);
+      expect(find.textContaining('16in', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('formats dependent key label with colon automatically',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C',
+            ),
+          ),
+        ),
+      );
+      expect(find.textContaining('O.C: ', findRichText: true), findsOneWidget);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C:',
+            ),
+          ),
+        ),
+      );
+      expect(find.textContaining('O.C: ', findRichText: true), findsOneWidget);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C: ',
+            ),
+          ),
+        ),
+      );
+      expect(find.textContaining('O.C: ', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('triggers onPressedDependentKey when button is tapped',
+        (WidgetTester tester) async {
+      bool pressed = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: 'O.C',
+              onPressedDependentKey: () => pressed = true,
+            ),
+          ),
+        ),
+      );
+
+      final buttonFinder = find.byType(CoreButton);
+      expect(buttonFinder, findsOneWidget);
+
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+      expect(pressed, isTrue);
+    });
+
+    testWidgets(
+        'does not render dependent key button when label and value are empty',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              dependentKeyLabel: '',
+              dependentKeyValue: '',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CoreButton), findsNothing);
+    });
   });
 }
