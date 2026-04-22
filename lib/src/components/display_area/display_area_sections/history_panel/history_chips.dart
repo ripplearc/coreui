@@ -25,6 +25,7 @@ class _HistoryChips extends StatelessWidget {
   /// and anchored at the bottom of the scroll extent (most-recent chips).
   final bool isCollapsed;
 
+  /// 2 chip rows × ~30 dp chip height + 8 dp runSpacing gap between rows
   static const double _twoRowMaxHeight = 68.0;
 
   static const double _collapsedVerticalPadding = CoreSpacing.space1;

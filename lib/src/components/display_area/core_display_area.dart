@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../ripplearc_coreui.dart';
-import 'bloc/display_area_expansion_bloc.dart';
-import 'bloc/display_area_expansion_event.dart';
+import 'display_area_stage_controller.dart' as logic;
 
 part 'display_area_sections/history_panel/history_chips.dart';
 part 'display_area_sections/history_panel/history_panel.dart';
@@ -33,7 +31,7 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// [DisplayAreaStage.expandedPrevious] and [DisplayAreaStage.fullScreen].
 /// Use [onStageChanged] to react to stage transitions — for example to
 /// animate a keyboard component out of view.
-class CoreDisplayArea extends StatelessWidget {
+class CoreDisplayArea extends StatefulWidget {
   /// The default placeholder text shown when no chips are provided.
   static const String defaultHistoryPlaceholder =
       'Here will show what you type';
@@ -127,70 +125,52 @@ class CoreDisplayArea extends StatelessWidget {
   final void Function(DisplayAreaStage stage)? onStageChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final bool exceedsTwoRows = chipsList.length > _twoRowChipThreshold;
+  State<CoreDisplayArea> createState() => _CoreDisplayAreaState();
+}
 
-    return BlocProvider<DisplayAreaExpansionBloc>(
-      create: (_) => DisplayAreaExpansionBloc(),
-      child: BlocConsumer<DisplayAreaExpansionBloc, DisplayAreaExpansionState>(
-        listener: (_, state) => onStageChanged?.call(state.stage),
-        builder: (context, state) => _buildBody(
-          context: context,
-          state: state,
-          bloc: context.read<DisplayAreaExpansionBloc>(),
-          exceedsTwoRows: exceedsTwoRows,
-        ),
-      ),
-    );
+class _CoreDisplayAreaState extends State<CoreDisplayArea> {
+  final _stageController = logic.DisplayAreaStageController();
+  DisplayAreaStage _stage = DisplayAreaStage.collapsed;
+
+  void _updateStage(DisplayAreaStage next) {
+    if (next == _stage) return;
+    setState(() => _stage = next);
+    widget.onStageChanged?.call(_stage);
   }
 
-  Widget _buildBody({
-    required BuildContext context,
-    required DisplayAreaExpansionState state,
-    required DisplayAreaExpansionBloc bloc,
-    required bool exceedsTwoRows,
-  }) {
+  void _handleCollapse() {
+    _updateStage(DisplayAreaStage.collapsed);
+    widget.onClose?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
-    final int _kSwipeVelocityThreshold = 80;
-    final stage = state.stage;
+    final mq = MediaQuery.of(context);
+    const int kSwipeVelocityThreshold = 80;
+
     final columnChildren = <Widget>[
-      if (stage == DisplayAreaStage.fullScreen)
-        Expanded(
-          child: _HistoryPanel(
-            onClose: () {
-              bloc.add(CollapseEvent());
-              onClose?.call();
-            },
-            closeSemanticLabel: closeSemanticLabel,
-            chipsList: chipsList,
-            previousSessions: previousSessions,
-            historyPlaceholder: historyPlaceholder,
-            errorMessage: errorMessage,
-            hasError: hasError,
-            stage: stage,
-            showCurrentChips: false,
-          ),
-        )
-      else
-        _HistoryPanel(
-          onClose: () {
-            bloc.add(CollapseEvent());
-            onClose?.call();
-          },
-          closeSemanticLabel: closeSemanticLabel,
-          chipsList: chipsList,
-          previousSessions: previousSessions,
-          historyPlaceholder: historyPlaceholder,
-          errorMessage: errorMessage,
-          hasError: hasError,
-          stage: stage,
+      Flexible(
+        flex: _stage == DisplayAreaStage.fullScreen ? 1 : 0,
+        child: _HistoryPanel(
+          key: const Key('display_area_history_panel'),
+          onClose: _handleCollapse,
+          closeSemanticLabel: widget.closeSemanticLabel,
+          chipsList: widget.chipsList,
+          previousSessions: widget.previousSessions,
+          historyPlaceholder: widget.historyPlaceholder,
+          errorMessage: widget.errorMessage,
+          hasError: widget.hasError,
+          stage: _stage,
+          showCurrentChips: _stage != DisplayAreaStage.fullScreen,
         ),
+      ),
       DecoratedBox(
         decoration: BoxDecoration(
-          color: stage == DisplayAreaStage.fullScreen
+          color: _stage == DisplayAreaStage.fullScreen
               ? colors.backgroundBlueLight
               : colors.transparent,
-          borderRadius: stage == DisplayAreaStage.fullScreen
+          borderRadius: _stage == DisplayAreaStage.fullScreen
               ? const BorderRadius.vertical(
                   top: Radius.circular(CoreSpacing.space7))
               : null,
@@ -200,7 +180,7 @@ class CoreDisplayArea extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (stage == DisplayAreaStage.fullScreen) ...[
+              if (_stage == DisplayAreaStage.fullScreen) ...[
                 const SizedBox(height: CoreSpacing.space3),
                 Center(
                   child: Container(
@@ -214,29 +194,29 @@ class CoreDisplayArea extends StatelessWidget {
                   ),
                 ),
                 _HistoryChips(
-                  chipsList: chipsList,
-                  hasError: hasError,
-                  errorMessage: errorMessage,
+                  chipsList: widget.chipsList,
+                  hasError: widget.hasError,
+                  errorMessage: widget.errorMessage,
                   isCollapsed: false,
                 ),
               ],
-              if (label.isNotEmpty || isTyping)
-                _LabelSection(label: label, isTyping: isTyping),
-              if (value.isNotEmpty ||
-                  hasError ||
-                  dependentKeyLabel.isNotEmpty ||
-                  dependentKeyValue.isNotEmpty)
+              if (widget.label.isNotEmpty || widget.isTyping)
+                _LabelSection(label: widget.label, isTyping: widget.isTyping),
+              if (widget.value.isNotEmpty ||
+                  widget.hasError ||
+                  widget.dependentKeyLabel.isNotEmpty ||
+                  widget.dependentKeyValue.isNotEmpty)
                 _ValueSection(
-                  value: value,
-                  hasError: hasError,
-                  errorTitle: errorTitle,
-                  dependentKeyLabel: dependentKeyLabel,
-                  dependentKeyValue: dependentKeyValue,
-                  onPressedDependentKey: onPressedDependentKey,
+                  value: widget.value,
+                  hasError: widget.hasError,
+                  errorTitle: widget.errorTitle,
+                  dependentKeyLabel: widget.dependentKeyLabel,
+                  dependentKeyValue: widget.dependentKeyValue,
+                  onPressedDependentKey: widget.onPressedDependentKey,
                 ),
-              if (stage != DisplayAreaStage.collapsed)
+              if (_stage != DisplayAreaStage.collapsed)
                 const SizedBox(height: CoreSpacing.space5),
-              if (stage == DisplayAreaStage.fullScreen)
+              if (_stage == DisplayAreaStage.fullScreen)
                 const SizedBox(height: CoreSpacing.space10),
             ],
           ),
@@ -245,7 +225,7 @@ class CoreDisplayArea extends StatelessWidget {
     ];
 
     final innerColumn = Column(
-      mainAxisSize: stage == DisplayAreaStage.fullScreen
+      mainAxisSize: _stage == DisplayAreaStage.fullScreen
           ? MainAxisSize.max
           : MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,10 +236,19 @@ class CoreDisplayArea extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onVerticalDragEnd: (details) {
         final velocity = details.primaryVelocity ?? 0;
-        if (velocity > _kSwipeVelocityThreshold) {
-          bloc.add(SwipeDownEvent(exceedsTwoRows: exceedsTwoRows));
-        } else if (velocity < -_kSwipeVelocityThreshold) {
-          bloc.add(SwipeUpEvent(exceedsTwoRows: exceedsTwoRows));
+        final exceedsTwoRows =
+            widget.chipsList.length > CoreDisplayArea._twoRowChipThreshold;
+
+        if (velocity > kSwipeVelocityThreshold) {
+          _updateStage(_stageController.nextStage(
+            _stage,
+            exceedsTwoRows: exceedsTwoRows,
+          ));
+        } else if (velocity < -kSwipeVelocityThreshold) {
+          _updateStage(_stageController.previousStage(
+            _stage,
+            exceedsTwoRows: exceedsTwoRows,
+          ));
         }
       },
       child: AnimatedSize(
@@ -268,28 +257,27 @@ class CoreDisplayArea extends StatelessWidget {
         alignment: Alignment.topCenter,
         child: Container(
           width: double.infinity,
-          height: stage == DisplayAreaStage.fullScreen
-              ? MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.vertical
+          height: _stage == DisplayAreaStage.fullScreen
+              ? mq.size.height - mq.padding.vertical - mq.viewInsets.bottom
               : null,
-          constraints: stage == DisplayAreaStage.collapsed
+          constraints: _stage == DisplayAreaStage.collapsed
               ? const BoxConstraints(
                   minHeight: CoreSpacing.space57,
                   maxHeight: CoreSpacing.space57,
                 )
               : null,
           decoration: BoxDecoration(
-            color: stage == DisplayAreaStage.fullScreen
+            color: _stage == DisplayAreaStage.fullScreen
                 ? colors.backgroundBlueMid
                 : colors.backgroundBlueLight,
-            borderRadius: stage == DisplayAreaStage.fullScreen
+            borderRadius: _stage == DisplayAreaStage.fullScreen
                 ? BorderRadius.zero
                 : const BorderRadius.only(
                     bottomLeft: Radius.circular(CoreSpacing.space7),
                     bottomRight: Radius.circular(CoreSpacing.space7),
                   ),
           ),
-          child: stage == DisplayAreaStage.fullScreen
+          child: _stage == DisplayAreaStage.fullScreen
               ? innerColumn
               : SingleChildScrollView(
                   physics: const NeverScrollableScrollPhysics(),

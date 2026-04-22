@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// The expansion stage of [CoreDisplayArea].
 ///
 /// Controls which sections are visible, whether the close icon is shown,
@@ -15,6 +13,7 @@ enum DisplayAreaStage {
 
   /// Previous-session chips are revealed with a distinct background colour.
   ///
+  /// In this stage, only the most recent past session is shown as a teaser.
   /// The close icon and its reserved layout space are removed at this stage.
   expandedPrevious,
 
@@ -23,32 +22,4 @@ enum DisplayAreaStage {
   /// Both current and previous chips are presented in a unified scrollable
   /// panel. The close icon is hidden.
   fullScreen,
-}
-
-/// Immutable state for [DisplayAreaExpansionBloc].
-@immutable
-final class DisplayAreaExpansionState {
-  const DisplayAreaExpansionState({
-    this.stage = DisplayAreaStage.collapsed,
-  });
-
-  /// The current expansion stage.
-  final DisplayAreaStage stage;
-
-  /// Returns a copy with [stage] replaced.
-  DisplayAreaExpansionState copyWith({DisplayAreaStage? stage}) =>
-      DisplayAreaExpansionState(stage: stage ?? this.stage);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DisplayAreaExpansionState &&
-          runtimeType == other.runtimeType &&
-          stage == other.stage;
-
-  @override
-  int get hashCode => stage.hashCode;
-
-  @override
-  String toString() => 'DisplayAreaExpansionState(stage: $stage)';
 }

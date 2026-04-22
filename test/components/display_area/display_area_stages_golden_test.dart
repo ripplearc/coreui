@@ -147,4 +147,71 @@ void main() {
       matchesGoldenFile('goldens/core_display_area_stage_3_fullscreen.png'),
     );
   });
+
+  testWidgets('CoreDisplayArea 2-Stage Expansion Path Golden Test',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 892));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    // ≤ 5 chips triggers the 2-stage path
+    const List<CoreCalculatorChip> fewChips = [
+      CoreCalculatorChip(
+        label: 'Volume',
+        value: '100gal',
+        type: CoreCalculatorChipType.editable,
+      ),
+      CoreCalculatorChip(
+        label: 'Width',
+        value: '10ft',
+        type: CoreCalculatorChipType.editable,
+      ),
+      CoreCalculatorChip(
+        label: 'Width',
+        value: '10ft',
+        type: CoreCalculatorChipType.editable,
+      ),
+    ];
+
+    await tester.pumpWidget(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        body: CoreDisplayArea(
+          label: 'Length',
+          value: '16ft 14in',
+          isTyping: false,
+          dependentKeyLabel: 'O.C',
+          dependentKeyValue: '16in',
+          onPressedDependentKey: () {},
+          chipsList: fewChips,
+          previousSessions: mockPreviousSessions,
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    // 1st Swipe -> expandedPrevious
+    await tester.fling(
+        find.byType(CoreDisplayArea), const Offset(0, 300), 1000);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreDisplayArea),
+      matchesGoldenFile('goldens/core_display_area_2stage_1_previous.png'),
+    );
+
+    // 2nd Swipe -> fullScreen
+    await tester.fling(
+        find.byType(CoreDisplayArea), const Offset(0, 300), 1000);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreDisplayArea),
+      matchesGoldenFile('goldens/core_display_area_2stage_2_fullscreen.png'),
+    );
+  });
 }

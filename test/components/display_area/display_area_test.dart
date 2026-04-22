@@ -515,24 +515,19 @@ void main() {
       );
 
       expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
-          findsNothing);
+          find.byKey(const Key('display_area_previous_section')), findsNothing);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
-      expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+      expect(find.byKey(const Key('display_area_previous_section')),
           findsOneWidget);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
 
-      final historyPanel = find.byWidgetPredicate(
-          (w) => w.runtimeType.toString() == '_HistoryPanel');
+      final historyPanel = find.byKey(const Key('display_area_history_panel'));
       expect(historyPanel, findsOneWidget);
     });
 
@@ -580,24 +575,18 @@ void main() {
       );
 
       expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
-          findsNothing);
+          find.byKey(const Key('display_area_previous_section')), findsNothing);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
       expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
-          findsNothing);
+          find.byKey(const Key('display_area_previous_section')), findsNothing);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
-      expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+      expect(find.byKey(const Key('display_area_previous_section')),
           findsOneWidget);
 
       await tester.fling(
@@ -640,18 +629,14 @@ void main() {
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
-      expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
+      expect(find.byKey(const Key('display_area_previous_section')),
           findsOneWidget);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
       await tester.pumpAndSettle();
       expect(
-          find.byWidgetPredicate(
-              (w) => w.runtimeType.toString() == '_PreviousChipsSection'),
-          findsNothing);
+          find.byKey(const Key('display_area_previous_section')), findsNothing);
     });
 
     testWidgets('calls onStageChanged with correct stages',
@@ -692,6 +677,99 @@ void main() {
             DisplayAreaStage.expandedPrevious,
             DisplayAreaStage.fullScreen,
           ]));
+    });
+
+    testWidgets(
+        'N8: Full swipe-up reversal path (fullScreen -> expandedPrevious -> collapsed)',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              chipsList: [
+                CoreCalculatorChip(
+                    label: '1', type: CoreCalculatorChipType.active),
+              ],
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'May 27, 2025',
+                  value: '2700ft³',
+                  chipsList: [],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      expect(
+          find.byKey(const Key('display_area_history_panel')), findsOneWidget);
+      final size = tester.getSize(find.byType(CoreDisplayArea));
+      expect(size.height, greaterThanOrEqualTo(600));
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('display_area_previous_section')),
+          findsOneWidget);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
+      await tester.pumpAndSettle();
+      expect(
+          find.byKey(const Key('display_area_previous_section')), findsNothing);
+      expect(tester.getSize(find.byType(CoreDisplayArea)).height,
+          CoreSpacing.space57);
+    });
+
+    testWidgets(
+        'N9: previousSessions = [] edge case (close tap fires CollapseEvent)',
+        (WidgetTester tester) async {
+      bool closed = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              onClose: () => closed = true,
+              chipsList: const [
+                CoreCalculatorChip(
+                    label: '1', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '2', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '3', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '4', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '5', type: CoreCalculatorChipType.active),
+                CoreCalculatorChip(
+                    label: '6', type: CoreCalculatorChipType.active),
+              ],
+              previousSessions: const [],
+            ),
+          ),
+        ),
+      );
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      final closeIconFinder = find.byType(CoreIconWidget);
+      expect(closeIconFinder, findsOneWidget);
+
+      await tester.tap(closeIconFinder);
+      await tester.pumpAndSettle();
+      expect(closed, isTrue);
     });
   });
 }

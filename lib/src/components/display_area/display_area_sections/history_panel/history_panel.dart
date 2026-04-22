@@ -1,20 +1,11 @@
 part of '../../core_display_area.dart';
 
-/// The upper history section of [CoreDisplayArea].
+/// A widget representing the upper history panel section in the display area.
 ///
-/// Manages the close icon, the [_HistoryChips] of the current session,
-/// and the [_PreviousChipsSection] for earlier sessions.
-///
-/// Stage-based behaviour:
-/// - [DisplayAreaStage.collapsed] / [DisplayAreaStage.expandedCurrent]:
-///   close icon is visible.
-/// - [DisplayAreaStage.expandedPrevious] / [DisplayAreaStage.fullScreen]:
-///   close icon and its reserved space are removed via [AnimatedSize].
-/// - [DisplayAreaStage.expandedPrevious] / [DisplayAreaStage.fullScreen]:
-///   [_PreviousChipsSection] slides in below the current chips.
-/// - [DisplayAreaStage.fullScreen]: the entire panel content is scrollable.
+/// This panel includes a close button and a list of history chips.
 class _HistoryPanel extends StatelessWidget {
   const _HistoryPanel({
+    super.key,
     this.onClose,
     this.closeSemanticLabel = 'Close',
     required this.chipsList,
@@ -65,14 +56,15 @@ class _HistoryPanel extends StatelessWidget {
               bottom: CoreSpacing.space3,
             ),
             child: _PreviousChipsSection(
-              sessions: stage == DisplayAreaStage.expandedPrevious
-                  ? [previousSessions.last]
-                  : previousSessions,
+              key: const Key('display_area_previous_section'),
+              sessions: previousSessions,
+              limitToLast: stage == DisplayAreaStage.expandedPrevious,
             ),
           )
         : const SizedBox.shrink();
 
     final mainColumn = SafeArea(
+      top: stage != DisplayAreaStage.fullScreen,
       child: Column(
         mainAxisSize: _isFullScreen ? MainAxisSize.max : MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,24 +181,36 @@ class _HistoryPanel extends StatelessWidget {
 
 /// Previous calculation sessions rendered vertically with dividers.
 class _PreviousChipsSection extends StatelessWidget {
-  const _PreviousChipsSection({required this.sessions});
+  const _PreviousChipsSection({
+    super.key,
+    required this.sessions,
+    this.limitToLast = false,
+  });
 
   final List<CoreHistorySessionData> sessions;
-  static const double _dividerThickness = 1;
+
+  /// Whether to show only the last session (used as a teaser in expandedPrevious stage).
+  final bool limitToLast;
+
+  /// Standard thickness for the divider between past sessions.
+  static const double _kDividerThickness = 1;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
+    final start =
+        limitToLast ? (sessions.length - 1).clamp(0, sessions.length) : 0;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (int i = 0; i < sessions.length; i++) ...[
-          if (i > 0)
+        for (int i = start; i < sessions.length; i++) ...[
+          if (i > start)
             Divider(
-              thickness: _dividerThickness,
+              thickness: _kDividerThickness,
               color: colors.lineDarkOutline,
             ),
           Padding(
