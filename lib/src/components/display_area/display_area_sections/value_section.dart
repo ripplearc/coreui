@@ -12,24 +12,11 @@ class _ValueSection extends StatelessWidget {
     this.onPressedDependentKey,
   });
 
-  /// The main text value to be displayed.
   final String value;
-
-  /// Whether the value section should display an error title instead of the [value].
   final bool hasError;
-
-  /// The error title to display when [hasError] is true.
   final String errorTitle;
-
-  /// The descriptive label for the dependent key (e.g., "O.C").
-  /// This is automatically formatted with a colon if not already present.
   final String dependentKeyLabel;
-
-  /// The primary value associated with the dependent key (e.g., "16in").
   final String dependentKeyValue;
-
-  /// Callback triggered when the dependent key button is pressed.
-  /// If null, the button will be rendered in a disabled state.
   final VoidCallback? onPressedDependentKey;
 
   @override
@@ -64,6 +51,7 @@ class _ValueSection extends StatelessWidget {
               icon: CoreIconWidget(
                 icon: CoreIcons.edit,
                 color: colors.iconDark,
+                // TODO: [CA-640] Use CoreIconSize.small once introduced. https://ripplearc.youtrack.cloud/issue/CA-640
                 size: CoreSpacing.space4,
               ),
               child: Text.rich(
