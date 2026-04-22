@@ -27,6 +27,7 @@ export 'src/notifications/toast.dart';
 // Theme exports
 export 'src/theme/app_typography_extension.dart';
 export 'src/theme/color_tokens.dart';
+export 'src/theme/icon_sizes.dart';
 export 'src/theme/icons/core_icons.dart';
 export 'src/theme/icons/icon_data.dart';
 export 'src/theme/icons/letter_avatar_icons.dart';
