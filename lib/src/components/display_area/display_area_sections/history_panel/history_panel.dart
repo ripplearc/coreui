@@ -1,8 +1,5 @@
 part of '../../core_display_area.dart';
 
-/// A widget representing the upper history panel section in the display area.
-///
-/// This panel includes a close button and a list of history chips.
 class _HistoryPanel extends StatelessWidget {
   const _HistoryPanel({
     super.key,
@@ -179,7 +176,6 @@ class _HistoryPanel extends StatelessWidget {
   }
 }
 
-/// Previous calculation sessions rendered vertically with dividers.
 class _PreviousChipsSection extends StatelessWidget {
   const _PreviousChipsSection({
     super.key,
@@ -188,11 +184,7 @@ class _PreviousChipsSection extends StatelessWidget {
   });
 
   final List<CoreHistorySessionData> sessions;
-
-  /// Whether to show only the last session (used as a teaser in expandedPrevious stage).
   final bool limitToLast;
-
-  /// Standard thickness for the divider between past sessions.
   static const double _kDividerThickness = 1;
 
   @override

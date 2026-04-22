@@ -1,14 +1,5 @@
 part of '../../core_display_area.dart';
 
-/// Renders a [Wrap] of [CoreCalculatorChip] widgets inside the history panel.
-///
-/// In [isCollapsed] mode the visible area is capped to two chip rows using a
-/// [SingleChildScrollView] anchored at the end (most-recent chips), combined
-/// with [NeverScrollableScrollPhysics] so the area is never user-scrollable.
-///
-/// In expanded modes the chips fill their natural height with no scroll
-/// physics; when [DisplayAreaStage.fullScreen] is active the containing
-/// [_HistoryPanel] wraps everything in its own [SingleChildScrollView].
 class _HistoryChips extends StatelessWidget {
   const _HistoryChips({
     required this.chipsList,
@@ -20,9 +11,6 @@ class _HistoryChips extends StatelessWidget {
   final List<CoreCalculatorChip> chipsList;
   final bool hasError;
   final String errorMessage;
-
-  /// When true, the chips area is height-constrained to [_twoRowMaxHeight]
-  /// and anchored at the bottom of the scroll extent (most-recent chips).
   final bool isCollapsed;
 
   /// 2 chip rows × ~30 dp chip height + 8 dp runSpacing gap between rows

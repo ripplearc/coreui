@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../ripplearc_coreui.dart';
 import 'display_area_stage_controller.dart' as logic;
@@ -129,13 +130,14 @@ class CoreDisplayArea extends StatefulWidget {
 }
 
 class _CoreDisplayAreaState extends State<CoreDisplayArea> {
-  final _stageController = logic.DisplayAreaStageController();
   DisplayAreaStage _stage = DisplayAreaStage.collapsed;
 
   void _updateStage(DisplayAreaStage next) {
     if (next == _stage) return;
+    if (next.index > _stage.index) HapticFeedback.mediumImpact();
+    if (next.index < _stage.index) HapticFeedback.lightImpact();
     setState(() => _stage = next);
-    widget.onStageChanged?.call(_stage);
+    widget.onStageChanged?.call(next);
   }
 
   void _handleCollapse() {
@@ -143,11 +145,12 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
     widget.onClose?.call();
   }
 
+  static const int _kSwipeVelocityThreshold = 80;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final mq = MediaQuery.of(context);
-    const int kSwipeVelocityThreshold = 80;
 
     final columnChildren = <Widget>[
       Flexible(
@@ -239,13 +242,13 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
         final exceedsTwoRows =
             widget.chipsList.length > CoreDisplayArea._twoRowChipThreshold;
 
-        if (velocity > kSwipeVelocityThreshold) {
-          _updateStage(_stageController.nextStage(
+        if (velocity > _kSwipeVelocityThreshold) {
+          _updateStage(logic.DisplayAreaStageController.next(
             _stage,
             exceedsTwoRows: exceedsTwoRows,
           ));
-        } else if (velocity < -kSwipeVelocityThreshold) {
-          _updateStage(_stageController.previousStage(
+        } else if (velocity < -_kSwipeVelocityThreshold) {
+          _updateStage(logic.DisplayAreaStageController.previous(
             _stage,
             exceedsTwoRows: exceedsTwoRows,
           ));

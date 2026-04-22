@@ -1,26 +1,21 @@
-import 'package:flutter/services.dart';
-
 import 'display_area_stage.dart';
 
 /// Encapsulates the logic for stage transitions in [CoreDisplayArea].
 class DisplayAreaStageController {
+  const DisplayAreaStageController._();
+
   /// Returns the next stage when swiping down.
-  ///
-  /// Triggers haptic feedback if a transition occurs.
-  DisplayAreaStage nextStage(
+  static DisplayAreaStage next(
     DisplayAreaStage current, {
     required bool exceedsTwoRows,
   }) {
     switch (current) {
       case DisplayAreaStage.collapsed:
-        final next = exceedsTwoRows
+        return exceedsTwoRows
             ? DisplayAreaStage.expandedCurrent
             : DisplayAreaStage.expandedPrevious;
-        HapticFeedback.mediumImpact();
-        return next;
 
       case DisplayAreaStage.expandedCurrent:
-        HapticFeedback.mediumImpact();
         return DisplayAreaStage.expandedPrevious;
 
       case DisplayAreaStage.expandedPrevious:
@@ -32,20 +27,16 @@ class DisplayAreaStageController {
   }
 
   /// Returns the next stage when swiping up.
-  ///
-  /// Triggers haptic feedback if a transition occurs.
-  DisplayAreaStage previousStage(
+  static DisplayAreaStage previous(
     DisplayAreaStage current, {
     required bool exceedsTwoRows,
   }) {
     switch (current) {
       case DisplayAreaStage.fullScreen:
-        HapticFeedback.lightImpact();
         return DisplayAreaStage.expandedPrevious;
 
       case DisplayAreaStage.expandedPrevious:
         if (exceedsTwoRows) {
-          HapticFeedback.lightImpact();
           return DisplayAreaStage.expandedCurrent;
         } else {
           return DisplayAreaStage.collapsed;
