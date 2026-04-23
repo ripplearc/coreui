@@ -51,8 +51,7 @@ class _ValueSection extends StatelessWidget {
               icon: CoreIconWidget(
                 icon: CoreIcons.edit,
                 color: colors.iconDark,
-                // TODO: [CA-640] Use CoreIconSize.small once introduced. https://ripplearc.youtrack.cloud/issue/CA-640
-                size: CoreSpacing.space4,
+                size: CoreIconSize.small,
               ),
               child: Text.rich(
                 TextSpan(
