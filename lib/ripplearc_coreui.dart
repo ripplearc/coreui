@@ -7,6 +7,8 @@ export 'src/components/chips/core_chip.dart';
 export 'src/components/chips/core_filter_chip.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/display_area/core_display_area.dart';
+export 'src/components/display_area/core_history_session_data.dart';
+export 'src/components/display_area/display_area_stage.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';
 export 'src/components/keyboard/core_keyboard.dart';
 export 'src/components/keyboard/function_key_tile.dart';

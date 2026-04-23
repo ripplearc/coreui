@@ -325,5 +325,112 @@ void main() {
       expect(semantics.label, contains('O.C: 16in'));
       expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
     });
+
+    testWidgets('expandedPrevious state meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      for (final theme in kA11yTestThemes) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: const Scaffold(
+              body: CoreDisplayArea(
+                previousSessions: [
+                  CoreHistorySessionData(
+                    dateLabel: 'Previous',
+                    chipsList: [],
+                    value: '100',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.fling(
+            find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+        await tester.pumpAndSettle();
+
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byType(CoreDisplayArea),
+          checkTapTargetSize: false,
+          checkLabeledTapTarget: false,
+          checkTextContrast: true,
+        );
+      }
+    });
+
+    testWidgets('fullScreen state meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      for (final theme in kA11yTestThemes) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: const Scaffold(
+              body: CoreDisplayArea(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.fling(
+            find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+        await tester.pumpAndSettle();
+        await tester.fling(
+            find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+        await tester.pumpAndSettle();
+
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byType(CoreDisplayArea),
+          checkTapTargetSize: false,
+          checkLabeledTapTarget: false,
+          checkTextContrast: true,
+        );
+      }
+    });
+
+    testWidgets('revealed previous sessions are readable by screen readers',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'Oct 20, 2026',
+                  chipsList: [],
+                  value: '42.0',
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Oct 20, 2026'), findsOneWidget);
+      expect(find.text('42.0'), findsOneWidget);
+
+      final dateSemantics = tester.getSemantics(find.text('Oct 20, 2026'));
+      expect(dateSemantics.label, 'Oct 20, 2026');
+
+      final valueSemantics = tester.getSemantics(find.text('42.0'));
+      expect(valueSemantics.label, '42.0');
+    });
   });
 }
