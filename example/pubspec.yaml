@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   ripplearc_coreui:
     path: ../
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:
