@@ -185,17 +185,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
             children: [
               if (_stage == DisplayAreaStage.fullScreen) ...[
                 const SizedBox(height: CoreSpacing.space3),
-                Center(
-                  child: Container(
-                    width: CoreSpacing.space8,
-                    height: 2,
-                    margin: const EdgeInsets.only(bottom: CoreSpacing.space4),
-                    decoration: BoxDecoration(
-                      color: colors.lineDarkOutline,
-                      borderRadius: BorderRadius.circular(CoreSpacing.space1),
-                    ),
-                  ),
-                ),
+                const _DragHandle(),
                 _HistoryChips(
                   chipsList: widget.chipsList,
                   hasError: widget.hasError,
@@ -286,6 +276,26 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
                   physics: const NeverScrollableScrollPhysics(),
                   child: innerColumn,
                 ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DragHandle extends StatelessWidget {
+  const _DragHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    return Center(
+      child: Container(
+        width: CoreSpacing.space8,
+        height: 2,
+        margin: const EdgeInsets.only(bottom: CoreSpacing.space4),
+        decoration: BoxDecoration(
+          color: colors.lineDarkOutline,
+          borderRadius: BorderRadius.circular(CoreSpacing.space1),
         ),
       ),
     );

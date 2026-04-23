@@ -44,6 +44,32 @@ class _HistoryPanel extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
+    return SafeArea(
+      top: stage != DisplayAreaStage.fullScreen,
+      child: Column(
+        mainAxisSize: _isFullScreen ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPreviousSection(colors),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: CoreSpacing.space3),
+                if (stage == DisplayAreaStage.expandedPrevious)
+                  const _DragHandle(),
+                _buildChipsRow(colors, typography),
+                const SizedBox(height: CoreSpacing.space1),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviousSection(AppColorsExtension colors) {
     final previousSection = _showPreviousSection
         ? Container(
             width: double.infinity,
@@ -60,119 +86,93 @@ class _HistoryPanel extends StatelessWidget {
           )
         : const SizedBox.shrink();
 
-    final mainColumn = SafeArea(
-      top: stage != DisplayAreaStage.fullScreen,
-      child: Column(
-        mainAxisSize: _isFullScreen ? MainAxisSize.max : MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (_isFullScreen && _showPreviousSection)
-            Expanded(
-              child: SingleChildScrollView(
-                reverse: true,
-                child: previousSection,
-              ),
-            )
-          else
-            AnimatedSize(
-              duration: _kDisplayAreaAnimationDuration,
-              curve: Curves.easeInOut,
-              alignment: Alignment.topCenter,
-              child: previousSection,
+    if (_isFullScreen && _showPreviousSection) {
+      return Expanded(
+        child: SingleChildScrollView(
+          reverse: true,
+          child: previousSection,
+        ),
+      );
+    }
+
+    return AnimatedSize(
+      duration: _kDisplayAreaAnimationDuration,
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: previousSection,
+    );
+  }
+
+  Widget _buildChipsRow(
+      AppColorsExtension colors, AppTypographyExtension typography) {
+    if (!showCurrentChips) return const SizedBox.shrink();
+
+    return Row(
+      crossAxisAlignment: stage == DisplayAreaStage.expandedCurrent
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: [
+        _buildCloseIcon(colors),
+        if (chipsList.isNotEmpty)
+          Expanded(
+            child: _HistoryChips(
+              chipsList: chipsList,
+              hasError: hasError,
+              errorMessage: errorMessage,
+              isCollapsed: _isCollapsed,
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: CoreSpacing.space3),
-                if (stage == DisplayAreaStage.expandedPrevious)
-                  Center(
-                    child: Container(
-                      width: CoreSpacing.space8,
-                      height: 2,
-                      margin: const EdgeInsets.only(bottom: CoreSpacing.space4),
-                      decoration: BoxDecoration(
-                        color: colors.lineDarkOutline,
-                        borderRadius: BorderRadius.circular(CoreSpacing.space1),
-                      ),
-                    ),
-                  ),
-                if (showCurrentChips)
-                  Row(
-                    crossAxisAlignment:
-                        stage == DisplayAreaStage.expandedCurrent
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.center,
-                    children: [
-                      AnimatedSize(
-                        duration: _kDisplayAreaAnimationDuration,
-                        curve: Curves.easeInOut,
-                        alignment: Alignment.centerLeft,
-                        child: _showCloseIcon
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        top: stage ==
-                                                DisplayAreaStage.expandedCurrent
-                                            ? CoreSpacing.space2
-                                            : 0),
-                                    decoration: BoxDecoration(
-                                      color: colors.backgroundBlueMid,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: colors.outlineFocus,
-                                        width: _closeBorderWidth,
-                                      ),
-                                    ),
-                                    child: CoreIconWidget(
-                                      icon: CoreIcons.cross,
-                                      // TODO: [CA-640] Change to CoreIconSize
-                                      // https://ripplearc.youtrack.cloud/agiles/176-9/179-48?issue=CA-640
-                                      size: CoreSpacing.space7,
-                                      color: colors.iconDark,
-                                      visualDensity: VisualDensity.compact,
-                                      padding: const EdgeInsets.all(
-                                          CoreSpacing.space3),
-                                      onTap: onClose,
-                                      semanticLabel: closeSemanticLabel,
-                                    ),
-                                  ),
-                                  const SizedBox(width: CoreSpacing.space2),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      if (chipsList.isNotEmpty)
-                        Expanded(
-                          child: _HistoryChips(
-                            chipsList: chipsList,
-                            hasError: hasError,
-                            errorMessage: errorMessage,
-                            isCollapsed: _isCollapsed,
-                          ),
-                        )
-                      else
-                        Flexible(
-                          child: Text(
-                            historyPlaceholder,
-                            style: typography.bodyMediumRegular
-                                .copyWith(color: colors.textHeadline),
-                          ),
-                        ),
-                    ],
-                  ),
-                const SizedBox(height: CoreSpacing.space1),
-              ],
+          )
+        else
+          Flexible(
+            child: Text(
+              historyPlaceholder,
+              style: typography.bodyMediumRegular
+                  .copyWith(color: colors.textHeadline),
             ),
           ),
-        ],
-      ),
+      ],
     );
+  }
 
-    return mainColumn;
+  Widget _buildCloseIcon(AppColorsExtension colors) {
+    return AnimatedSize(
+      duration: _kDisplayAreaAnimationDuration,
+      curve: Curves.easeInOut,
+      alignment: Alignment.centerLeft,
+      child: _showCloseIcon
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                      top: stage == DisplayAreaStage.expandedCurrent
+                          ? CoreSpacing.space2
+                          : 0),
+                  decoration: BoxDecoration(
+                    color: colors.backgroundBlueMid,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: colors.outlineFocus,
+                      width: _closeBorderWidth,
+                    ),
+                  ),
+                  child: CoreIconWidget(
+                    icon: CoreIcons.cross,
+                    // TODO: [CA-640] Change to CoreIconSize
+                    // https://ripplearc.youtrack.cloud/agiles/176-9/179-48?issue=CA-640
+                    size: CoreSpacing.space7,
+                    color: colors.iconDark,
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.all(CoreSpacing.space3),
+                    onTap: onClose,
+                    semanticLabel: closeSemanticLabel,
+                  ),
+                ),
+                const SizedBox(width: CoreSpacing.space2),
+              ],
+            )
+          : const SizedBox.shrink(),
+    );
   }
 }
 
