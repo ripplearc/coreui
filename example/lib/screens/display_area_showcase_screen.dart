@@ -112,28 +112,83 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                             }
                           },
                           chipsList: chips,
-                          previousSessions: const [],
+                          previousSessions: [
+                            CoreHistorySessionData(
+                              dateLabel: 'May 24, 2026',
+                              value: '12.0',
+                              chipsList: [
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Length',
+                                  value: '10 ft',
+                                ),
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Width',
+                                  value: '12 ft',
+                                ),
+                              ],
+                            ),
+                            CoreHistorySessionData(
+                              dateLabel: 'Yesterday',
+                              value: '10.5',
+                              chipsList: [
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Rise',
+                                  value: '8.4 ft',
+                                ),
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Run',
+                                  value: '0.8 ft',
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    CoreKeyboard(
-                      currentGroup: _basicGeometryGroup,
-                      allGroups: _groups,
-                      onDigitPressed: (digit) =>
-                          bloc.add(DigitPressed(digit.label)),
-                      onUnitSelected: (unit) =>
-                          bloc.add(UnitSelected(unit.label)),
-                      onOperatorPressed: (op) =>
-                          bloc.add(OperatorPressed(op.symbol)),
-                      onControlAction: (_) {},
-                      onResultTapped: () =>
-                          bloc.add(const OperatorPressed('=')),
-                      onGroupSelected: (_) {},
-                      currentUnitSystem: UnitSystem.imperial,
-                      onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
-                      onUnitSystemChanged: (_) {},
-                      groupAccentColors: groupAccentColors,
-                      result: const ResultType(label: '='),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween<double>(
+                        begin: 1.0,
+                        end: switch (_currentStage) {
+                          DisplayAreaStage.collapsed => 1.0,
+                          DisplayAreaStage.expandedCurrent => 0.95,
+                          DisplayAreaStage.expandedPrevious => 0.75,
+                          DisplayAreaStage.fullScreen => 0.0,
+                        },
+                      ),
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      builder: (context, factor, child) {
+                        return ClipRect(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: factor,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: CoreKeyboard(
+                        currentGroup: _basicGeometryGroup,
+                        allGroups: _groups,
+                        onDigitPressed: (digit) =>
+                            bloc.add(DigitPressed(digit.label)),
+                        onUnitSelected: (unit) =>
+                            bloc.add(UnitSelected(unit.label)),
+                        onOperatorPressed: (op) =>
+                            bloc.add(OperatorPressed(op.symbol)),
+                        onControlAction: (_) {},
+                        onResultTapped: () =>
+                            bloc.add(const OperatorPressed('=')),
+                        onGroupSelected: (_) {},
+                        currentUnitSystem: UnitSystem.imperial,
+                        onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
+                        onUnitSystemChanged: (_) {},
+                        groupAccentColors: groupAccentColors,
+                        result: const ResultType(label: '='),
+                      ),
                     ),
                   ],
                 );

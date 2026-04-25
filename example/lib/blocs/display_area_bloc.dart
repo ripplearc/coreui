@@ -5,7 +5,17 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 part 'display_area_event.dart';
 part 'display_area_state.dart';
 
+/// A BLoC that manages the logic for the calculator display area.
+///
+/// It handles key selections, digit presses, unit selections, and operators,
+/// and automatically computes a "Pitch" result when both "Rise" and "Run"
+/// are provided.
 class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
+  static const String _riseLabel = 'Rise';
+  static const String _runLabel = 'Run';
+  static const String _pitchLabel = 'Pitch-rise per 12in run';
+
+  /// Creates a [DisplayAreaBloc].
   DisplayAreaBloc() : super(DisplayAreaState.initial()) {
     on<KeySelected>(_onKeySelected);
     on<DigitPressed>(_onDigitPressed);
@@ -20,6 +30,7 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
     emit(finalizedState.copyWith(
       activeInputLabel: () => event.label,
       currentInputValue: '',
+      currentNumericValue: '',
       isTyping: true,
       resultLabel: () => null,
       resultValue: () => null,
@@ -31,7 +42,11 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
     if (!state.isTyping) return;
 
     final newValue = state.currentInputValue + event.digit;
-    emit(state.copyWith(currentInputValue: newValue));
+    final newNumericValue = state.currentNumericValue + event.digit;
+    emit(state.copyWith(
+      currentInputValue: newValue,
+      currentNumericValue: newNumericValue,
+    ));
   }
 
   void _onUnitSelected(UnitSelected event, Emitter<DisplayAreaState> emit) {
@@ -75,13 +90,19 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
           List<CoreCalculatorChip>.from(currentState.completedChips)
             ..add(newChip);
 
+      final updatedNumericValues =
+          Map<String, double>.from(currentState.finalizedValues)
+            ..[completedInputLabel] =
+                double.tryParse(currentState.currentNumericValue) ?? 0.0;
+
       var newState = currentState.copyWith(
         isTyping: false,
         completedChips: updatedChips,
+        finalizedValues: updatedNumericValues,
       );
 
-      if (updatedChips.any((c) => c.label == 'Rise') &&
-          updatedChips.any((c) => c.label == 'Run')) {
+      if (updatedNumericValues.containsKey(_riseLabel) &&
+          updatedNumericValues.containsKey(_runLabel)) {
         newState = _computePitch(newState);
       }
 
@@ -91,12 +112,9 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
   }
 
   DisplayAreaState _computePitch(DisplayAreaState currentState) {
-    final chips = currentState.completedChips;
-    final riseChip = chips.firstWhere((c) => c.label == 'Rise');
-    final runChip = chips.firstWhere((c) => c.label == 'Run');
-
-    final riseValue = _parseValue(riseChip.value ?? '');
-    final runValue = _parseValue(runChip.value ?? '');
+    final values = currentState.finalizedValues;
+    final riseValue = values[_riseLabel];
+    final runValue = values[_runLabel];
 
     if (riseValue != null && runValue != null && runValue != 0) {
       final pitchDecimal = riseValue / runValue;
@@ -104,10 +122,10 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
           double.parse(pitchDecimal.toStringAsFixed(2)).toString();
 
       return currentState.copyWith(
-        resultLabel: () => 'Pitch-rise per 12in run',
+        resultLabel: () => _pitchLabel,
         resultValue: () => pitchString,
         resultChip: () => CoreCalculatorChip(
-          label: 'Pitch-rise per 12in run',
+          label: _pitchLabel,
           value: pitchString,
           type: CoreCalculatorChipType.disabled,
         ),
@@ -115,18 +133,6 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
     }
 
     return currentState;
-  }
-
-  double? _parseValue(String value) {
-    final regex = RegExp(r'(\d+\.?\d*)');
-    final match = regex.firstMatch(value);
-    if (match != null) {
-      final groupValue = match.group(1);
-      if (groupValue != null) {
-        return double.tryParse(groupValue);
-      }
-    }
-    return null;
   }
 
   void _onResetRequested(ResetRequested event, Emitter<DisplayAreaState> emit) {

@@ -108,11 +108,14 @@ class _HistoryPanel extends StatelessWidget {
     if (!showCurrentChips) return const SizedBox.shrink();
 
     return Row(
-      crossAxisAlignment: stage == DisplayAreaStage.expandedCurrent
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCloseIcon(colors),
+        if (chipsList.isEmpty)
+          Expanded(
+            child: _buildCloseIcon(colors: colors, typography: typography),
+          )
+        else
+          _buildCloseIcon(colors: colors, typography: typography),
         if (chipsList.isNotEmpty)
           Expanded(
             child: _HistoryChips(
@@ -122,19 +125,13 @@ class _HistoryPanel extends StatelessWidget {
               isCollapsed: _isCollapsed,
             ),
           )
-        else
-          Flexible(
-            child: Text(
-              historyPlaceholder,
-              style: typography.bodyMediumRegular
-                  .copyWith(color: colors.textHeadline),
-            ),
-          ),
       ],
     );
   }
 
-  Widget _buildCloseIcon(AppColorsExtension colors) {
+  Widget _buildCloseIcon(
+      {required AppColorsExtension colors,
+      required AppTypographyExtension typography}) {
     return AnimatedSize(
       duration: _kDisplayAreaAnimationDuration,
       curve: Curves.easeInOut,
@@ -144,10 +141,6 @@ class _HistoryPanel extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  margin: EdgeInsets.only(
-                      top: stage == DisplayAreaStage.expandedCurrent
-                          ? CoreSpacing.space2
-                          : 0),
                   decoration: BoxDecoration(
                     color: colors.backgroundBlueMid,
                     shape: BoxShape.circle,
@@ -160,15 +153,23 @@ class _HistoryPanel extends StatelessWidget {
                     icon: CoreIcons.cross,
                     // TODO: [CA-640] Change to CoreIconSize
                     // https://ripplearc.youtrack.cloud/agiles/176-9/179-48?issue=CA-640
-                    size: CoreSpacing.space7,
+                    size: CoreSpacing.space6,
                     color: colors.iconDark,
                     visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.all(CoreSpacing.space3),
+                    padding: const EdgeInsets.all(CoreSpacing.space1),
                     onTap: onClose,
                     semanticLabel: closeSemanticLabel,
                   ),
                 ),
                 const SizedBox(width: CoreSpacing.space2),
+                if (chipsList.isEmpty)
+                  Flexible(
+                    child: Text(
+                      historyPlaceholder,
+                      style: typography.bodyMediumRegular
+                          .copyWith(color: colors.textHeadline),
+                    ),
+                  ),
               ],
             )
           : const SizedBox.shrink(),
