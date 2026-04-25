@@ -151,9 +151,7 @@ class _HistoryPanel extends StatelessWidget {
                   ),
                   child: CoreIconWidget(
                     icon: CoreIcons.cross,
-                    // TODO: [CA-640] Change to CoreIconSize
-                    // https://ripplearc.youtrack.cloud/agiles/176-9/179-48?issue=CA-640
-                    size: CoreSpacing.space6,
+                    size: CoreIconSize.large,
                     color: colors.iconDark,
                     visualDensity: VisualDensity.compact,
                     padding: const EdgeInsets.all(CoreSpacing.space1),
