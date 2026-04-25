@@ -659,6 +659,13 @@ void main() {
                 ),
               ],
               onStageChanged: (stage) => stages.add(stage),
+              previousSessions: [
+                CoreHistorySessionData(
+                  dateLabel: 'Previous',
+                  chipsList: [],
+                  value: '100',
+                ),
+              ],
             ),
           ),
         ),

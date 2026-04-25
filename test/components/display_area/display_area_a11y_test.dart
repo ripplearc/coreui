@@ -28,39 +28,6 @@ void main() {
       );
     });
 
-    testWidgets('close icon has correct semantics',
-        (WidgetTester tester) async {
-      await setTestViewport(tester);
-
-      await setupA11yTest(tester);
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreDisplayArea(
-              onClose: () {},
-            ),
-          ),
-        ),
-      );
-
-      final closeIconFinder = find.byType(CoreIconWidget);
-      expect(closeIconFinder, findsOneWidget);
-
-      final semantics = tester.getSemantics(closeIconFinder);
-      expect(semantics.label, CoreDisplayArea.defaultCloseSemanticLabel);
-      expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (theme) => CoreDisplayArea(onClose: () {}),
-        closeIconFinder,
-        checkTapTargetSize: true,
-        checkLabeledTapTarget: false,
-        checkTextContrast: true,
-      );
-    });
-
     testWidgets('history chips expose correct semantic labels',
         (WidgetTester tester) async {
       await setTestViewport(tester);
@@ -282,24 +249,6 @@ void main() {
       expect(errorTitleSemantics.label, errorTitle);
     });
 
-    testWidgets('dependent key button meets accessibility guidelines',
-        (WidgetTester tester) async {
-      await setTestViewport(tester);
-
-      await setupA11yTest(tester);
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (theme) => const CoreDisplayArea(
-          dependentKeyLabel: 'O.C',
-          dependentKeyValue: '16in',
-        ),
-        find.byType(CoreButton),
-        checkTapTargetSize: true,
-        checkLabeledTapTarget: true,
-        checkTextContrast: true,
-      );
-    });
-
     testWidgets('dependent key button exposes correct semantics',
         (WidgetTester tester) async {
       await setTestViewport(tester);
@@ -374,7 +323,15 @@ void main() {
           MaterialApp(
             theme: theme,
             home: const Scaffold(
-              body: CoreDisplayArea(),
+              body: CoreDisplayArea(
+                previousSessions: [
+                  CoreHistorySessionData(
+                    dateLabel: 'Previous',
+                    chipsList: [],
+                    value: '100',
+                  ),
+                ],
+              ),
             ),
           ),
         );

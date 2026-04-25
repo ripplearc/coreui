@@ -140,6 +140,21 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
     widget.onStageChanged?.call(next);
   }
 
+  @override
+  void didUpdateWidget(CoreDisplayArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.previousSessions.isEmpty &&
+        oldWidget.previousSessions.isNotEmpty &&
+        (_stage == DisplayAreaStage.expandedPrevious ||
+            _stage == DisplayAreaStage.fullScreen)) {
+      final exceedsTwoRows =
+          widget.chipsList.length > CoreDisplayArea._twoRowChipThreshold;
+      _updateStage(exceedsTwoRows
+          ? DisplayAreaStage.expandedCurrent
+          : DisplayAreaStage.collapsed);
+    }
+  }
+
   void _handleCollapse() {
     _updateStage(DisplayAreaStage.collapsed);
     widget.onClose?.call();
@@ -233,15 +248,22 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
             widget.chipsList.length > CoreDisplayArea._twoRowChipThreshold;
 
         if (velocity > _kSwipeVelocityThreshold) {
-          _updateStage(logic.DisplayAreaStageController.next(
+          final nextStage = logic.DisplayAreaStageController.next(
             _stage,
             exceedsTwoRows: exceedsTwoRows,
-          ));
+          );
+          if (widget.previousSessions.isEmpty &&
+              (nextStage == DisplayAreaStage.expandedPrevious ||
+                  nextStage == DisplayAreaStage.fullScreen)) {
+            return;
+          }
+          _updateStage(nextStage);
         } else if (velocity < -_kSwipeVelocityThreshold) {
-          _updateStage(logic.DisplayAreaStageController.previous(
+          final nextStage = logic.DisplayAreaStageController.previous(
             _stage,
             exceedsTwoRows: exceedsTwoRows,
-          ));
+          );
+          _updateStage(nextStage);
         }
       },
       child: AnimatedSize(
