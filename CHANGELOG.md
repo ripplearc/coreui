@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.1] - CoreIconSize token
+
+### ✨ Features
+
+- **Design Tokens**
+  - **CoreIconSize**: New icon size token with four canonical sizes — `size16` (16dp), `size20` (20dp), `size24` (24dp), `size32` (32dp).
+    - Value-based naming reflects how icon sizes are referenced in design tooling and specs
+    - Exported from the public barrel alongside other theme tokens
+    - Golden test verifying each size using `CoreIconWidget`
+
 ## [0.4.0] - CoreFilterChip component
 
 ### ✨ Features
