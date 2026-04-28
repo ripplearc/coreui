@@ -13,7 +13,6 @@ class DisplayAreaState extends Equatable {
   final String currentNumericValue;
 
   /// Whether the user is currently in the middle of an input sequence.
-
   final bool isTyping;
 
   /// The list of inputs that have been finalized and converted into chips.
@@ -23,7 +22,6 @@ class DisplayAreaState extends Equatable {
   final Map<String, double> finalizedValues;
 
   /// The label for the computed result (e.g. "Pitch"), or `null` if none.
-
   final String? resultLabel;
 
   /// The value for the computed result, or `null` if none.
