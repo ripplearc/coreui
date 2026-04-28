@@ -45,8 +45,14 @@ class DisplayAreaState extends Equatable {
     this.resultChip,
   });
 
+  /// Returns the initial [DisplayAreaState] with all fields at their defaults.
   factory DisplayAreaState.initial() => const DisplayAreaState();
 
+  /// Returns a copy of this state with the specified fields replaced.
+  ///
+  /// Nullable fields ([activeInputLabel], [resultLabel], [resultValue],
+  /// [resultChip]) use a `Function()?` wrapper to distinguish
+  /// `null` (clear the field) from absent (keep the current value).
   DisplayAreaState copyWith({
     String? Function()? activeInputLabel,
     String? currentInputValue,
