@@ -124,14 +124,16 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Display Area - empty state'),
-            SizedBox(height: CoreSpacing.space8),
-            CoreDisplayArea(),
+            const Text('Display Area - empty state'),
+            const SizedBox(height: CoreSpacing.space8),
+            CoreDisplayArea(
+              onClose: () {},
+            ),
           ],
         ),
       ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+import '../blocs/display_area_bloc.dart';
 
 /// A showcase screen demonstrating [CoreDisplayArea] with multi-stage
 /// swipe-to-expand interaction alongside [CoreKeyboard].
@@ -66,301 +69,130 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
       _trigonometryGroup: colors.textSuccess,
     };
 
-    return Scaffold(
-      backgroundColor: colors.backgroundBlueLight,
-      body: SafeArea(
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: colors.pageBackground),
-          child: SingleChildScrollView(
-            physics: _currentStage != DisplayAreaStage.collapsed
-                ? const NeverScrollableScrollPhysics()
-                : const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                CoreDisplayArea(
-                  label: 'Length',
-                  value: '16ft 14in',
-                  hasError: true,
-                  isTyping: true,
-                  dependentKeyLabel: 'O.C',
-                  dependentKeyValue: '16in',
-                  onPressedDependentKey: () {},
-                  onStageChanged: (stage) {
-                    if (_currentStage != stage) {
-                      setState(() => _currentStage = stage);
-                    }
-                  },
-                  chipsList: const [
-                    CoreCalculatorChip(
-                      label: 'Length',
-                      value: '16ft 14in',
-                      type: CoreCalculatorChipType.editable,
+    return BlocProvider(
+      create: (context) => DisplayAreaBloc(),
+      child: Scaffold(
+        backgroundColor: colors.backgroundBlueLight,
+        body: SafeArea(
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: colors.pageBackground),
+            child: BlocBuilder<DisplayAreaBloc, DisplayAreaState>(
+              builder: (context, state) {
+                final bloc = context.read<DisplayAreaBloc>();
+
+                final chips = [
+                  ...state.completedChips,
+                  if (state.isTyping)
+                    if (state.activeInputLabel case final label?)
+                      CoreCalculatorChip(
+                        label: label,
+                        value: state.currentInputValue,
+                        type: CoreCalculatorChipType.active,
+                      ),
+                  if (state.resultChip case final resultChip?) resultChip,
+                ];
+
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: _currentStage != DisplayAreaStage.collapsed
+                            ? const NeverScrollableScrollPhysics()
+                            : const AlwaysScrollableScrollPhysics(),
+                        child: CoreDisplayArea(
+                          label:
+                              state.resultLabel ?? state.activeInputLabel ?? '',
+                          value: state.resultValue ?? state.currentInputValue,
+                          hasError: false,
+                          isTyping: state.isTyping,
+                          onClose: () => bloc.add(const ResetRequested()),
+                          onStageChanged: (stage) {
+                            if (_currentStage != stage) {
+                              setState(() => _currentStage = stage);
+                            }
+                          },
+                          chipsList: chips,
+                          previousSessions: [
+                            CoreHistorySessionData(
+                              dateLabel: 'May 24, 2026',
+                              value: '12.0',
+                              chipsList: [
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Length',
+                                  value: '10 ft',
+                                ),
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Width',
+                                  value: '12 ft',
+                                ),
+                              ],
+                            ),
+                            CoreHistorySessionData(
+                              dateLabel: 'Yesterday',
+                              value: '10.5',
+                              chipsList: [
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Rise',
+                                  value: '8.4 ft',
+                                ),
+                                const CoreCalculatorChip(
+                                  type: CoreCalculatorChipType.disabled,
+                                  label: 'Run',
+                                  value: '0.8 ft',
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    CoreCalculatorChip(
-                      label: 'Length',
-                      value: '16ft 14in',
-                      type: CoreCalculatorChipType.active,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Length',
-                      value: '16ft 14in',
-                      type: CoreCalculatorChipType.disabled,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Width',
-                      value: '10ft',
-                      type: CoreCalculatorChipType.editable,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Height',
-                      value: '8ft',
-                      type: CoreCalculatorChipType.active,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Weight',
-                      value: '20lbs',
-                      type: CoreCalculatorChipType.disabled,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Volume',
-                      value: '100gal',
-                      type: CoreCalculatorChipType.editable,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Width',
-                      value: '10ft',
-                      type: CoreCalculatorChipType.editable,
-                    ),
-                    CoreCalculatorChip(
-                      label: 'Width',
-                      value: '10ft',
-                      type: CoreCalculatorChipType.editable,
-                    ),
-                  ],
-                  previousSessions: const [
-                    CoreHistorySessionData(
-                      dateLabel: 'May 27, 2025',
-                      value: '2700ft³',
-                      chipsList: [
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Height',
-                          value: '8ft',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Weight',
-                          value: '20lbs',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Volume',
-                          value: '100gal',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                      ],
-                    ),
-                    CoreHistorySessionData(
-                      dateLabel: 'May 27, 2025',
-                      value: '2700ft³',
-                      chipsList: [
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Height',
-                          value: '8ft',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Weight',
-                          value: '20lbs',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Volume',
-                          value: '100gal',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                      ],
-                    ),
-                    CoreHistorySessionData(
-                      dateLabel: 'May 27, 2025',
-                      value: '2700ft³',
-                      chipsList: [
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Height',
-                          value: '8ft',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Weight',
-                          value: '20lbs',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Volume',
-                          value: '100gal',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                      ],
-                    ),
-                    CoreHistorySessionData(
-                      dateLabel: 'Today',
-                      value: '300ft²',
-                      chipsList: [
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Length',
-                          value: '16ft 14in',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Height',
-                          value: '8ft',
-                          type: CoreCalculatorChipType.active,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Weight',
-                          value: '20lbs',
-                          type: CoreCalculatorChipType.disabled,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Volume',
-                          value: '100gal',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                        CoreCalculatorChip(
-                          label: 'Width',
-                          value: '10ft',
-                          type: CoreCalculatorChipType.editable,
-                        ),
-                      ],
+                    TweenAnimationBuilder<double>(
+                      tween: Tween<double>(
+                        begin: 1.0,
+                        end: switch (_currentStage) {
+                          DisplayAreaStage.collapsed => 1.0,
+                          DisplayAreaStage.expandedCurrent => 0.95,
+                          DisplayAreaStage.expandedPrevious => 0.75,
+                          DisplayAreaStage.fullScreen => 0.0,
+                        },
+                      ),
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      builder: (context, factor, child) {
+                        return ClipRect(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: factor,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: CoreKeyboard(
+                        currentGroup: _basicGeometryGroup,
+                        allGroups: _groups,
+                        onDigitPressed: (digit) =>
+                            bloc.add(DigitPressed(digit.label)),
+                        onUnitSelected: (unit) =>
+                            bloc.add(UnitSelected(unit.label)),
+                        onOperatorPressed: (op) =>
+                            bloc.add(OperatorPressed(op.symbol)),
+                        onControlAction: (_) {},
+                        onResultTapped: () =>
+                            bloc.add(const OperatorPressed('=')),
+                        onGroupSelected: (_) {},
+                        currentUnitSystem: UnitSystem.imperial,
+                        onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
+                        onUnitSystemChanged: (_) {},
+                        groupAccentColors: groupAccentColors,
+                        result: const ResultType(label: '='),
+                      ),
                     ),
                   ],
-                ),
-                const SizedBox(height: CoreSpacing.space7),
-                CoreKeyboard(
-                  currentGroup: _basicGeometryGroup,
-                  allGroups: _groups,
-                  onDigitPressed: (_) {},
-                  onUnitSelected: (_) {},
-                  onOperatorPressed: (_) {},
-                  onControlAction: (_) {},
-                  onResultTapped: () {},
-                  onGroupSelected: (_) {},
-                  currentUnitSystem: UnitSystem.imperial,
-                  onKeyTapped: (_) {},
-                  onUnitSystemChanged: (_) {},
-                  groupAccentColors: groupAccentColors,
-                  result: ResultType(label: '='),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),
