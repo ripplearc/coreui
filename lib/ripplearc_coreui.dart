@@ -21,6 +21,7 @@ export 'src/components/select_button/core_select_button.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
 export 'src/components/tabs/core_tabs.dart';
+export 'src/components/search/core_search_box.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/components/tooltips/tooltip.dart';
 export 'src/components/writing_dots/core_writing_dots.dart';
