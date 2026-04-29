@@ -30,6 +30,14 @@ class DisplayAreaState extends Equatable {
   /// A standalone chip representing the final computed result.
   final CoreCalculatorChip? resultChip;
 
+  /// Label for the dependent key shown in the display area value section.
+  /// `null` means no dependent key is displayed.
+  final String? dependentKeyLabel;
+
+  /// Value for the dependent key shown in the display area value section.
+  /// `null` means no dependent key is displayed.
+  final String? dependentKeyValue;
+
   /// Creates a [DisplayAreaState].
   const DisplayAreaState({
     this.activeInputLabel,
@@ -41,6 +49,8 @@ class DisplayAreaState extends Equatable {
     this.resultLabel,
     this.resultValue,
     this.resultChip,
+    this.dependentKeyLabel,
+    this.dependentKeyValue,
   });
 
   /// Returns the initial [DisplayAreaState] with all fields at their defaults.
@@ -61,6 +71,8 @@ class DisplayAreaState extends Equatable {
     String? Function()? resultLabel,
     String? Function()? resultValue,
     CoreCalculatorChip? Function()? resultChip,
+    String? Function()? dependentKeyLabel,
+    String? Function()? dependentKeyValue,
   }) {
     return DisplayAreaState(
       activeInputLabel:
@@ -73,6 +85,12 @@ class DisplayAreaState extends Equatable {
       resultLabel: resultLabel != null ? resultLabel() : this.resultLabel,
       resultValue: resultValue != null ? resultValue() : this.resultValue,
       resultChip: resultChip != null ? resultChip() : this.resultChip,
+      dependentKeyLabel: dependentKeyLabel != null
+          ? dependentKeyLabel()
+          : this.dependentKeyLabel,
+      dependentKeyValue: dependentKeyValue != null
+          ? dependentKeyValue()
+          : this.dependentKeyValue,
     );
   }
 
@@ -87,5 +105,7 @@ class DisplayAreaState extends Equatable {
         resultLabel,
         resultValue,
         resultChip,
+        dependentKeyLabel,
+        dependentKeyValue,
       ];
 }
