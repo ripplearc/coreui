@@ -12,7 +12,7 @@ class _LabelSection extends StatelessWidget {
   });
 
   /// The main text label to be displayed.
-  final String label;
+  final String? label;
 
   /// Whether to show the typing indicator animation next to the label.
   /// Defaults to false.
@@ -24,7 +24,7 @@ class _LabelSection extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
     return Row(
       children: [
-        Text(label,
+        Text(label ?? '',
             style: typography.titleMediumSemiBold
                 .copyWith(color: colors.textDark)),
         if (isTyping)

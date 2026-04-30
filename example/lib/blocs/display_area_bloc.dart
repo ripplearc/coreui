@@ -20,8 +20,6 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
   static const String _fenceLabel = 'Fence';
   static const String _fenceResultLabel = 'Posts';
   static const String _ocLabel = 'O.C';
-
-  /// On-center spacing used in the fence-post calculation (demo constant).
   static const double _fenceOcSpacing = 6.0;
 
   /// Creates a [DisplayAreaBloc].

@@ -50,14 +50,14 @@ class CoreDisplayArea extends StatefulWidget {
     this.chipsList = const [],
     this.previousSessions = const [],
     this.historyPlaceholder = defaultHistoryPlaceholder,
-    this.label = '',
+    this.label,
     this.isTyping = false,
-    this.value = '',
+    this.value,
     this.hasError = false,
     this.errorMessage = '',
     this.errorTitle = '',
-    this.dependentKeyLabel = '',
-    this.dependentKeyValue = '',
+    this.dependentKeyLabel,
+    this.dependentKeyValue,
     this.onPressedDependentKey,
     this.onStageChanged,
   });
@@ -87,15 +87,15 @@ class CoreDisplayArea extends StatefulWidget {
   /// ```
   final String historyPlaceholder;
 
-  /// Main label text shown in the label section. Defaults to `''`.
-  final String label;
+  /// Main label text shown in the label section. Defaults to `null`.
+  final String? label;
 
   /// Whether to display a typing-animation indicator next to [label].
   /// Defaults to `false`.
   final bool isTyping;
 
-  /// Main value text shown in the value section. Defaults to `''`.
-  final String value;
+  /// Main value text shown in the value section. Defaults to `null`.
+  final String? value;
 
   /// Whether the display area is in an error state. Defaults to `false`.
   final bool hasError;
@@ -107,11 +107,11 @@ class CoreDisplayArea extends StatefulWidget {
   /// Defaults to 'Error'.
   final String errorTitle;
 
-  /// Label for the dependent key button in the value section. Defaults to `''`.
-  final String dependentKeyLabel;
+  /// Label for the dependent key button in the value section. Defaults to `null`.
+  final String? dependentKeyLabel;
 
-  /// Value for the dependent key button in the value section. Defaults to `''`.
-  final String dependentKeyValue;
+  /// Value for the dependent key button in the value section. Defaults to `null`.
+  final String? dependentKeyValue;
 
   /// Called when the user taps the dependent key button.
   final VoidCallback? onPressedDependentKey;
@@ -208,12 +208,12 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
                   isCollapsed: false,
                 ),
               ],
-              if (widget.label.isNotEmpty || widget.isTyping)
+              if ((widget.label?.isNotEmpty ?? false) || widget.isTyping)
                 _LabelSection(label: widget.label, isTyping: widget.isTyping),
-              if (widget.value.isNotEmpty ||
+              if ((widget.value?.isNotEmpty ?? false) ||
                   widget.hasError ||
-                  widget.dependentKeyLabel.isNotEmpty ||
-                  widget.dependentKeyValue.isNotEmpty)
+                  (widget.dependentKeyLabel?.isNotEmpty ?? false) ||
+                  (widget.dependentKeyValue?.isNotEmpty ?? false))
                 _ValueSection(
                   value: widget.value,
                   hasError: widget.hasError,

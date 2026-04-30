@@ -101,8 +101,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                             ? const NeverScrollableScrollPhysics()
                             : const AlwaysScrollableScrollPhysics(),
                         child: CoreDisplayArea(
-                          label:
-                              state.resultLabel ?? state.activeInputLabel ?? '',
+                          label: state.resultLabel ?? state.activeInputLabel,
                           value: state.resultValue ?? state.currentInputValue,
                           hasError: false,
                           isTyping: state.isTyping,
@@ -112,8 +111,8 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                               setState(() => _currentStage = stage);
                             }
                           },
-                          dependentKeyLabel: state.dependentKeyLabel ?? '',
-                          dependentKeyValue: state.dependentKeyValue ?? '',
+                          dependentKeyLabel: state.dependentKeyLabel,
+                          dependentKeyValue: state.dependentKeyValue,
                           onPressedDependentKey: () {},
                           chipsList: chips,
                           previousSessions: [
