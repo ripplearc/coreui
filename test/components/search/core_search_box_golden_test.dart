@@ -6,8 +6,8 @@ import '../../load_fonts.dart';
 
 void main() {
   setUpAll(() async {
-    await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
+    await loadFonts();
   });
 
   final colors = AppColorsExtension.create();
@@ -54,9 +54,12 @@ void main() {
       ),
     );
 
-    await tester.binding.setSurfaceSize(const Size(400, 600));
+    tester.view.physicalSize = const Size(400, 600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     await expectLater(
       find.byType(Scaffold),

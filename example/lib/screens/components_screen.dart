@@ -14,6 +14,7 @@ import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
+import 'package:example/screens/search_box_showcase_screen.dart';
 import 'package:example/screens/writing_dots_showcase_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -138,6 +139,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Tabs Components',
                 TabsShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Search Box Components',
+                const SearchBoxShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],

@@ -10,14 +10,6 @@ import '../core_icon.dart';
 ///
 /// Unlike [CoreTextField], [CoreSearchBox] has no visible border — it is intended
 /// for use as a global or in-page search bar where a flat appearance is preferred.
-///
-/// [hintText] The placeholder text shown when the field is empty.
-/// [controller] Optional controller for reading or setting the field value.
-/// [onChanged] Called whenever the text changes.
-/// [onSearch] Called when the user submits via the keyboard search action.
-/// [onClear] Called when the user taps the clear button. The field is cleared automatically.
-/// [enabled] Whether the field is interactive. Defaults to true.
-/// [focusNode] Optional focus node for controlling focus programmatically.
 class CoreSearchBox extends StatefulWidget {
   /// The placeholder text shown when the field is empty.
   final String? hintText;
@@ -40,6 +32,9 @@ class CoreSearchBox extends StatefulWidget {
   /// Optional focus node for controlling focus programmatically.
   final FocusNode? focusNode;
 
+  /// Semantic label for the clear button. Defaults to 'Clear search'.
+  final String clearSemanticLabel;
+
   const CoreSearchBox({
     super.key,
     this.hintText,
@@ -49,6 +44,7 @@ class CoreSearchBox extends StatefulWidget {
     this.onClear,
     this.enabled = true,
     this.focusNode,
+    this.clearSemanticLabel = 'Clear search',
   });
 
   @override
@@ -56,6 +52,8 @@ class CoreSearchBox extends StatefulWidget {
 }
 
 class _CoreSearchBoxState extends State<CoreSearchBox> {
+  static const double _iconConstraintSize = CoreSpacing.space12;
+  static const double _iconSize = CoreSpacing.space5;
   late TextEditingController _controller;
   late FocusNode _focusNode;
   bool _hasText = false;
@@ -166,32 +164,33 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
           padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
           child: CoreIconWidget(
             icon: CoreIcons.search,
-            size: 20,
+            size: _iconSize,
             color: isDisabled ? colors.textDisable : colors.iconGrayMid,
           ),
         ),
-        prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        prefixIconConstraints: BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
         suffixIcon: _hasText && !isDisabled
             ? Semantics(
                 button: true,
-                label: 'Clear search',
-                child: GestureDetector(
+                label: widget.clearSemanticLabel,
+                child: InkWell(
                   key: const ValueKey('core_search_box_clear_button'),
                   onTap: _handleClear,
+                  borderRadius: BorderRadius.circular(CoreSpacing.space5),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: CoreSpacing.space3,
                     ),
                     child: CoreIconWidget(
                       icon: CoreIcons.close,
-                      size: 20,
+                      size: _iconSize,
                       color: colors.iconGrayMid,
                     ),
                   ),
                 ),
               )
             : null,
-        suffixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        suffixIconConstraints: BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
