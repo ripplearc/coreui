@@ -18,6 +18,7 @@ export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/loading/core_loading_indicator.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/select_button/core_select_button.dart';
+export 'src/components/search/core_search_row_item.dart';
 export 'src/components/selects/single_item_selector.dart';
 export 'src/components/switches/switch.dart';
 export 'src/components/tabs/core_tabs.dart';
