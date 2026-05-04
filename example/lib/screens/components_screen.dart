@@ -6,6 +6,7 @@ import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
+import 'package:example/screens/search/search_row_item_screen.dart';
 import 'package:example/screens/select_button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
@@ -145,6 +146,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Search Box Components',
                 const SearchBoxShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Search Row Item Component',
+                const SearchRowItemShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],

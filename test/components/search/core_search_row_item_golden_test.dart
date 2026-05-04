@@ -18,8 +18,9 @@ void main() {
 
   testWidgets('CoreSearchRowItem Visual Regression Test',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(390, 300));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.physicalSize = const Size(390, 300);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
 
     final colors = AppColorsExtension.create();
 
