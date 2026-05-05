@@ -13,7 +13,7 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (_) => const Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(CoreSpacing.space4),
           child: CoreSearchBox(
             hintText: 'Search for Calculation and cost',
           ),
