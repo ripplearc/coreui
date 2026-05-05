@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1] - Remove accidental search icon from CoreSearchBox
+
+### 🔧 Fixes
+
+- **UI Components**
+  - **CoreSearchBox**: Removed the leading search icon that was added by mistake.
+
 ## [0.7.0] - CoreCheckRowItem & CoreDatePicker
 
 ### ✨ Features
@@ -25,7 +32,7 @@
 
 - **UI Components**
   - **CoreSearchBox**: New borderless search input field.
-    - Built-in leading search icon and auto-appearing clear button (shown only when the field has text)
+    - Auto-appearing clear button (shown only when the field has text)
     - Flat appearance with no visible border — designed for global or in-page search bars
     - Accepts an optional `TextEditingController` and `FocusNode`; manages its own when none are supplied
     - `onChanged`, `onSearch` (keyboard submit), and `onClear` callbacks
