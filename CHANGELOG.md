@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0] - Search components
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreSearchBox**: New borderless search input field.
+    - Built-in leading search icon and auto-appearing clear button (shown only when the field has text)
+    - Flat appearance with no visible border — designed for global or in-page search bars
+    - Accepts an optional `TextEditingController` and `FocusNode`; manages its own when none are supplied
+    - `onChanged`, `onSearch` (keyboard submit), and `onClear` callbacks
+    - `enabled` flag renders the field non-interactive with a `backgroundGrayMid` fill
+    - `clearSemanticLabel` localizable constructor param (defaults to `'Clear search'`)
+    - `hintText` localizable constructor param for placeholder text
+  - **CoreSearchRowItem**: New single-row item for search screens.
+    - Two named constructors: `CoreSearchRowItem.recentSearch` (history icon) and `CoreSearchRowItem.suggestion` (search icon with bold-prefix query highlighting)
+    - Trailing ↗ icon with independent `onTrailingTap` callback (e.g. fill the search field without triggering a search)
+    - `showTrailingIcon` flag to hide the trailing icon
+    - `semanticLabel` and `trailingSemanticLabel` localizable params for full screen-reader support
+    - Custom variant via the default constructor: caller supplies any `leadingIcon` and a pre-built `label` widget
+
 ## [0.4.1] - CoreIconSize token
 
 ### ✨ Features
