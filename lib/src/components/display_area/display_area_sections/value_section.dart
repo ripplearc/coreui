@@ -12,22 +12,23 @@ class _ValueSection extends StatelessWidget {
     this.onPressedDependentKey,
   });
 
-  final String value;
+  final String? value;
   final bool hasError;
   final String errorTitle;
-  final String dependentKeyLabel;
-  final String dependentKeyValue;
+  final String? dependentKeyLabel;
+  final String? dependentKeyValue;
   final VoidCallback? onPressedDependentKey;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    final String formattedLabel = dependentKeyLabel.isEmpty
+    final label = dependentKeyLabel ?? '';
+    final String formattedLabel = label.isEmpty
         ? ''
-        : dependentKeyLabel.trimRight().endsWith(':')
-            ? '${dependentKeyLabel.trimRight()} '
-            : '${dependentKeyLabel.trimRight()}: ';
+        : label.trimRight().endsWith(':')
+            ? '${label.trimRight()} '
+            : '${label.trimRight()}: ';
 
     return Align(
       alignment: AlignmentDirectional.centerEnd,
@@ -35,14 +36,15 @@ class _ValueSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            hasError && errorTitle.isNotEmpty ? errorTitle : value,
+            hasError && errorTitle.isNotEmpty ? errorTitle : (value ?? ''),
             style: typography.headlineLargeSemiBold
                 .copyWith(color: colors.textDark),
           ),
-          if (dependentKeyLabel.isNotEmpty || dependentKeyValue.isNotEmpty)
+          if ((dependentKeyLabel?.isNotEmpty ?? false) ||
+              (dependentKeyValue?.isNotEmpty ?? false))
             CoreButton(
               onPressed: onPressedDependentKey,
-              semanticsLabel: '$formattedLabel$dependentKeyValue',
+              semanticsLabel: '$formattedLabel${dependentKeyValue ?? ''}',
               size: CoreButtonSize.medium,
               shadows: CoreShadows.small,
               variant: CoreButtonVariant.secondary,
@@ -63,7 +65,7 @@ class _ValueSection extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: dependentKeyValue,
+                      text: dependentKeyValue ?? '',
                       style: typography.bodySmallSemiBold.copyWith(
                         color: colors.textDark,
                       ),

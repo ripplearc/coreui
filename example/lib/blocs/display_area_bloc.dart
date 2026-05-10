@@ -8,12 +8,19 @@ part 'display_area_state.dart';
 /// A BLoC that manages the logic for the calculator display area.
 ///
 /// It handles key selections, digit presses, unit selections, and operators,
-/// and automatically computes a "Pitch" result when both "Rise" and "Run"
-/// are provided.
+/// automatically computes a "Pitch" result when both "Rise" and "Run" are
+/// provided, and computes a "Fence" post count when the Fence function key is
+/// selected after a Length has been entered.
 class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
   static const String _riseLabel = 'Rise';
   static const String _runLabel = 'Run';
   static const String _pitchLabel = 'Pitch-rise per 12in run';
+
+  static const String _lengthLabel = 'Length';
+  static const String _fenceLabel = 'Fence';
+  static const String _fenceResultLabel = 'Posts';
+  static const String _ocLabel = 'O.C';
+  static const double _fenceOcSpacing = 6.0;
 
   /// Creates a [DisplayAreaBloc].
   DisplayAreaBloc() : super(DisplayAreaState.initial()) {
@@ -25,6 +32,12 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
   }
 
   void _onKeySelected(KeySelected event, Emitter<DisplayAreaState> emit) {
+    if (event.label == _fenceLabel) {
+      final finalizedState = _finalizeCurrentInput(state);
+      emit(_computeFence(finalizedState));
+      return;
+    }
+
     final finalizedState = _finalizeCurrentInput(state);
 
     emit(finalizedState.copyWith(
@@ -133,6 +146,31 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
     }
 
     return currentState;
+  }
+
+  DisplayAreaState _computeFence(DisplayAreaState currentState) {
+    final length = currentState.finalizedValues[_lengthLabel];
+    if (length == null) {
+      return currentState;
+    }
+
+    final posts = (length / _fenceOcSpacing).ceil() + 1;
+    final postsString = posts.toString();
+    final ocValueString = '${_fenceOcSpacing.toInt()}ft';
+
+    return currentState.copyWith(
+      isTyping: false,
+      activeInputLabel: () => null,
+      resultLabel: () => _fenceResultLabel,
+      resultValue: () => postsString,
+      resultChip: () => CoreCalculatorChip(
+        label: _fenceLabel,
+        value: postsString,
+        type: CoreCalculatorChipType.disabled,
+      ),
+      dependentKeyLabel: () => _ocLabel,
+      dependentKeyValue: () => ocValueString,
+    );
   }
 
   void _onResetRequested(ResetRequested event, Emitter<DisplayAreaState> emit) {

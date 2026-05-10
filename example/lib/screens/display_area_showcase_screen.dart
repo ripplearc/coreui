@@ -48,6 +48,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
         KeyType(groupName: 'Materials', label: 'Kg'),
         KeyType(groupName: 'Materials', label: 'Tons'),
         KeyType(groupName: 'Materials', label: 'Drywall'),
+        KeyType(groupName: 'Materials', label: 'Fence'),
       ],
     ),
     FunctionGroup(
@@ -100,8 +101,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                             ? const NeverScrollableScrollPhysics()
                             : const AlwaysScrollableScrollPhysics(),
                         child: CoreDisplayArea(
-                          label:
-                              state.resultLabel ?? state.activeInputLabel ?? '',
+                          label: state.resultLabel ?? state.activeInputLabel,
                           value: state.resultValue ?? state.currentInputValue,
                           hasError: false,
                           isTyping: state.isTyping,
@@ -111,6 +111,9 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                               setState(() => _currentStage = stage);
                             }
                           },
+                          dependentKeyLabel: state.dependentKeyLabel,
+                          dependentKeyValue: state.dependentKeyValue,
+                          onPressedDependentKey: () {},
                           chipsList: chips,
                           previousSessions: [
                             CoreHistorySessionData(
