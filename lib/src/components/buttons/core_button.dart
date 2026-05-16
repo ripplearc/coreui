@@ -6,8 +6,13 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// - [medium]: 40px height.
 /// - [small]: 36px height.
 enum CoreButtonSize {
+  /// 48px height.
   large,
+
+  /// 40px height.
   medium,
+
+  /// 36px height.
   small,
 }
 
@@ -15,7 +20,16 @@ enum CoreButtonSize {
 /// - [primary]: Default button style with a solid background.
 /// - [secondary]: Button with a white background and border.
 /// - [social]: Button styled for social media actions.
-enum CoreButtonVariant { primary, secondary, social }
+enum CoreButtonVariant {
+  /// Default button style with a solid background.
+  primary,
+
+  /// Button with a white background and border.
+  secondary,
+
+  /// Button styled for social media actions.
+  social,
+}
 
 /// A customizable button widget that supports flexible content.
 /// Either [label] or [child] must be provided.

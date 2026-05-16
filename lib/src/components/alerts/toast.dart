@@ -13,7 +13,19 @@ import '../core_icon.dart';
 /// - [warning]: Warning toast with orange background and icon for cautionary messages.
 /// - [info]: Information toast with blue background and icon for general notifications.
 /// - [success]: Success toast with green background and icon for positive confirmations.
-enum _ToastType { error, warning, info, success }
+enum _ToastType {
+  /// Error toast with red background and icon for critical issues.
+  error,
+
+  /// Warning toast with orange background and icon for cautionary messages.
+  warning,
+
+  /// Information toast with blue background and icon for general notifications.
+  info,
+
+  /// Success toast with green background and icon for positive confirmations.
+  success,
+}
 
 /// A notification widget that displays temporary messages to users with different visual styles.
 ///

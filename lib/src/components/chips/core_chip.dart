@@ -9,8 +9,13 @@ import 'core_chip_theme.dart';
 /// background, no shadow). [large] uses a white/inverse background with a
 /// drop shadow.
 enum CoreChipSize {
+  /// Small size variant.
   small,
+
+  /// Medium size variant.
   medium,
+
+  /// Large size variant.
   large,
 }
 
