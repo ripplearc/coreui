@@ -42,16 +42,22 @@ enum CoreChipSize {
 class CoreChip extends StatefulWidget {
   const CoreChip({
     super.key,
-    required this.label,
+    this.label,
+    this.value,
+    this.unit,
     required this.selected,
     this.size = CoreChipSize.medium,
     this.icon,
     this.onTap,
     this.onRemove,
     this.withCloseIcon = false,
+    this.isSmartChip = false,
     this.focusNode,
     this.autofocus = false,
-  });
+  }) : assert(
+          label != null || value != null || unit != null,
+          'At least one of label, value, or unit must be provided.',
+        );
 
   /// An optional focus node to use as the focus node for this widget.
   final FocusNode? focusNode;
@@ -60,8 +66,17 @@ class CoreChip extends StatefulWidget {
   /// node in its scope is currently focused.
   final bool autofocus;
 
-  /// The text label displayed on the chip.
-  final String label;
+  /// Whether this chip acts as a "smart chip" (briefly highlights on tap instead of toggling selection).
+  final bool isSmartChip;
+
+  /// The primary text displayed on the chip.
+  final String? label;
+
+  /// Optional secondary text displayed after [label], styled in a darker color.
+  final String? value;
+
+  /// Optional unit displayed after [value], styled in heavy weight.
+  final String? unit;
 
   /// Controls and reflects the selected state of the chip.
   ///
@@ -90,12 +105,23 @@ class CoreChip extends StatefulWidget {
 
 class _CoreChipState extends State<CoreChip> {
   final ValueNotifier<bool> _pressed = ValueNotifier(false);
+  final ValueNotifier<bool> _highlighted = ValueNotifier(false);
   late final FocusNode _focusNode;
   final ValueNotifier<bool> _focused = ValueNotifier(false);
 
   void _handleTap() {
-    widget.selected.value = !widget.selected.value;
     widget.onTap?.call();
+
+    if (widget.isSmartChip) {
+      _highlighted.value = true;
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          _highlighted.value = false;
+        }
+      });
+    } else {
+      widget.selected.value = !widget.selected.value;
+    }
   }
 
   void _handleFocusChange() {
@@ -113,6 +139,7 @@ class _CoreChipState extends State<CoreChip> {
   @override
   void dispose() {
     _pressed.dispose();
+    _highlighted.dispose();
     _focusNode.removeListener(_handleFocusChange);
     if (widget.focusNode == null) {
       _focusNode.dispose();
@@ -133,101 +160,168 @@ class _CoreChipState extends State<CoreChip> {
           valueListenable: _pressed,
           builder: (context, isPressed, __) {
             return ValueListenableBuilder<bool>(
-              valueListenable: _focused,
-              builder: (context, isFocused, ___) {
-                return Semantics(
-                  label: widget.label,
-                  button: true,
-                  container: true,
-                  selected: isSelected,
-                  child: Material(
-                    color: colors.transparent,
-                    child: InkWell(
-                      splashFactory: NoSplash.splashFactory,
-                      overlayColor: WidgetStateProperty.all(
-                        colors.transparent,
-                      ),
-                      focusNode: _focusNode,
-                      autofocus: widget.autofocus,
-                      onHighlightChanged: (value) => _pressed.value = value,
-                      borderRadius: chipRadius,
-                      onTap: _handleTap,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: CoreSpacing.space2,
-                        ),
-                        child: AnimatedContainer(
-                          duration: CoreChipTheme.animationDuration,
-                          padding: CoreChipTheme.padding(widget.size),
-                          decoration: BoxDecoration(
-                            color: CoreChipTheme.background(
-                              size: widget.size,
-                              isSelected: isSelected,
-                              isPressed: isPressed,
-                              isFocused: isFocused,
-                              colors: colors,
-                            ),
-                            borderRadius: chipRadius,
-                            border: Border.fromBorderSide(
-                              BorderSide(
-                                color: CoreChipTheme.borderColor(
-                                  size: widget.size,
-                                  isSelected: isSelected,
-                                  isPressed: isPressed,
-                                  isFocused: isFocused,
-                                  colors: colors,
-                                ),
-                                width: CoreChipTheme.borderWidthFor(
-                                  isFocused: isFocused,
-                                ),
+              valueListenable: _highlighted,
+              builder: (context, isHighlighted, __) {
+                return ValueListenableBuilder<bool>(
+                  valueListenable: _focused,
+                  builder: (context, isFocused, ___) {
+                    final activeFocused = isFocused || isHighlighted;
+                    return Semantics(
+                        label: [widget.label, widget.value, widget.unit]
+                            .where((e) => e != null)
+                            .join(' '),
+                        button: true,
+                        container: true,
+                        selected: isSelected,
+                        child: Material(
+                            color: colors.transparent,
+                            child: InkWell(
+                              splashFactory: NoSplash.splashFactory,
+                              overlayColor: WidgetStateProperty.all(
+                                colors.transparent,
                               ),
-                            ),
-                            boxShadow: CoreChipTheme.shadow(widget.size),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (widget.icon case final icon?) ...[
-                                CoreIconWidget(
-                                  icon: icon,
-                                  size: CoreSpacing.space5,
-                                  color: colors.outlineFocus,
+                              focusNode: _focusNode,
+                              autofocus: widget.autofocus,
+                              onHighlightChanged: (value) =>
+                                  _pressed.value = value,
+                              borderRadius: chipRadius,
+                              onTap: _handleTap,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: CoreSpacing.space2,
                                 ),
-                                const SizedBox(width: CoreSpacing.space2),
-                              ],
-                              Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  end: CoreSpacing.space2,
-                                ),
-                                child: ExcludeSemantics(
-                                  child: Text(
-                                    widget.label,
-                                    style: typography.bodyMediumRegular,
-                                  ),
-                                ),
-                              ),
-                              if (widget.withCloseIcon &&
-                                  widget.onRemove != null)
-                                Semantics(
-                                  button: true,
-                                  label: 'Remove ${widget.label}',
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    key: const Key('close_icon'),
-                                    onTap: widget.onRemove,
-                                    child: CoreIconWidget(
-                                      icon: CoreIcons.close,
-                                      size: CoreSpacing.space5,
-                                      color: colors.iconGrayMid,
+                                child: AnimatedContainer(
+                                  duration: CoreChipTheme.animationDuration,
+                                  padding: CoreChipTheme.padding(widget.size) -
+                                      EdgeInsets.all(activeFocused
+                                          ? CoreChipTheme.borderWidth
+                                          : 0.0) as EdgeInsetsGeometry,
+                                  decoration: BoxDecoration(
+                                    color: CoreChipTheme.background(
+                                      size: widget.size,
+                                      isSelected: isSelected,
+                                      isPressed: isPressed,
+                                      isFocused: activeFocused,
+                                      colors: colors,
                                     ),
+                                    borderRadius: chipRadius,
+                                    border: Border.fromBorderSide(
+                                      BorderSide(
+                                        color: CoreChipTheme.borderColor(
+                                          size: widget.size,
+                                          isSelected: isSelected,
+                                          isPressed: isPressed,
+                                          isFocused: activeFocused,
+                                          colors: colors,
+                                        ),
+                                        width: CoreChipTheme.borderWidthFor(
+                                          isFocused: activeFocused,
+                                        ),
+                                      ),
+                                    ),
+                                    boxShadow:
+                                        CoreChipTheme.shadow(widget.size),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (widget.icon case final icon?) ...[
+                                        CoreIconWidget(
+                                          icon: icon,
+                                          size: CoreSpacing.space5,
+                                          color: colors.outlineFocus,
+                                        ),
+                                        const SizedBox(
+                                            width: CoreSpacing.space2),
+                                      ],
+                                      Flexible(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.only(
+                                            end: CoreSpacing.space2,
+                                          ),
+                                          child: ExcludeSemantics(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                if (widget.label case final label?)
+                                                  Flexible(
+                                                    child: Text(
+                                                      label,
+                                                      style: typography
+                                                          .bodyMediumMedium
+                                                          .copyWith(
+                                                        color: colors.textBody,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                if (widget.label != null &&
+                                                    (widget.value != null ||
+                                                        widget.unit != null))
+                                                  const SizedBox(
+                                                      width:
+                                                          CoreSpacing.space1),
+                                                if (widget.value case final value?)
+                                                  Flexible(
+                                                    child: Text(
+                                                      value,
+                                                      style: typography
+                                                          .bodyMediumMedium
+                                                          .copyWith(
+                                                        color: colors.textDark,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                if (widget.unit case final unit?)
+                                                  Flexible(
+                                                    child: Text(
+                                                      unit,
+                                                      style: typography
+                                                          .bodyMediumSemiBold
+                                                          .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: colors.textDark,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      if (widget.withCloseIcon &&
+                                          widget.onRemove != null)
+                                        Semantics(
+                                          button: true,
+                                          label: 'Remove ${[
+                                            widget.label,
+                                            widget.value,
+                                            widget.unit
+                                          ].where((e) => e != null).join(' ')}',
+                                          child: GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            key: const Key('close_icon'),
+                                            onTap: widget.onRemove,
+                                            child: CoreIconWidget(
+                                              icon: CoreIcons.close,
+                                              size: CoreSpacing.space5,
+                                              color: colors.iconGrayMid,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                              ),
+                            )));
+                  },
                 );
               },
             );

@@ -20,15 +20,20 @@ CoreChip(
 
 | Property | Type | Required | Default | Description |
 |---|---|---:|---|---|
-| `label` | `String` | Yes | — | The text displayed on the chip. |
-| `selected` | `ValueNotifier<bool>` | Yes | — | Owns the selected state. The chip toggles `selected.value` on tap. |
+| `label` | `String?` | No | `null` | The primary text displayed on the chip. |
+| `value` | `String?` | No | `null` | Optional secondary text displayed after the label in bold. |
+| `unit` | `String?` | No | `null` | Optional unit displayed after the value in heavy weight. |
+| `selected` | `ValueNotifier<bool>` | Yes | — | Owns the selected state. The chip toggles `selected.value` on tap (unless `isSmartChip` is true). |
 | `size` | `CoreChipSize` | No | `CoreChipSize.medium` | Size variant: `small`, `medium`, `large`. |
 | `icon` | `CoreIconData?` | No | `null` | Optional leading icon shown before the label. |
-| `onTap` | `VoidCallback?` | No | `null` | Called after a tap, after `selected.value` has been toggled. |
+| `onTap` | `VoidCallback?` | No | `null` | Called after a tap. |
 | `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
+| `isSmartChip` | `bool` | No | `false` | If true, the chip acts as a "smart chip" that highlights on tap for 1 second instead of toggling selection. |
 | `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
 
 Notes:
+
+- At least one of `label`, `value`, or `unit` must be provided.
 
 - The close icon is rendered only when `withCloseIcon == true` **and** `onRemove != null`.
 
@@ -129,6 +134,32 @@ Wrap(
     CoreChip(label: 'Option 2', selected: chip2Selected),
     CoreChip(label: 'Option 3', selected: chip3Selected),
   ],
+);
+```
+
+### Multi-part chip
+
+```dart
+final isSelected = ValueNotifier<bool>(false);
+
+CoreChip(
+  label: 'Volume',
+  value: '2700',
+  unit: 'ft³',
+  selected: isSelected,
+);
+```
+
+### Smart chip
+
+```dart
+final isSelected = ValueNotifier<bool>(false);
+
+CoreChip(
+  label: 'Smart Chip',
+  selected: isSelected,
+  isSmartChip: true,
+  icon: CoreIcons.lightning,
 );
 ```
 
