@@ -43,7 +43,7 @@ void main() {
         ),
         chipFinder,
         checkTapTargetSize: true,
-        checkLabeledTapTarget: false,
+        checkLabeledTapTarget: true,
         checkTextContrast: true,
       );
     });

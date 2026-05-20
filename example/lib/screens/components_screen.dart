@@ -7,15 +7,16 @@ import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
 import 'package:example/screens/search/search_row_item_screen.dart';
+import 'package:example/screens/search_box_showcase_screen.dart';
 import 'package:example/screens/select_button_showcase_screen.dart';
 import 'package:example/screens/single_selector_showcase_screen.dart';
 import 'package:example/screens/success_modal_showcase_screen.dart';
+import 'package:example/screens/suggestion_area_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
-import 'package:example/screens/search_box_showcase_screen.dart';
 import 'package:example/screens/writing_dots_showcase_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -98,6 +99,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Success Modal Components',
                 const SuccessModalShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Suggestion Area Component',
+                const SuggestionAreaShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
