@@ -98,6 +98,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color shadowGrey10;
   final Color shadowGrey18;
 
+  // Accents
+  final Color indigo;
+
   const AppColorsExtension({
     required this.textHeadline,
     required this.textDark,
@@ -172,6 +175,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.shadowGrey8,
     required this.shadowGrey10,
     required this.shadowGrey18,
+    required this.indigo,
   });
 
   /// Static method to get the current AppColorsExtension from context.
@@ -262,6 +266,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? shadowGrey8,
     Color? shadowGrey10,
     Color? shadowGrey18,
+    Color? indigo,
   }) {
     return AppColorsExtension(
       textHeadline: textHeadline ?? this.textHeadline,
@@ -338,6 +343,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       shadowGrey8: shadowGrey8 ?? this.shadowGrey8,
       shadowGrey10: shadowGrey10 ?? this.shadowGrey10,
       shadowGrey18: shadowGrey18 ?? this.shadowGrey18,
+      indigo: indigo ?? this.indigo,
     );
   }
 
@@ -468,6 +474,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           Color.lerp(shadowGrey10, other.shadowGrey10, t) ?? shadowGrey10,
       shadowGrey18:
           Color.lerp(shadowGrey18, other.shadowGrey18, t) ?? shadowGrey18,
+      indigo: Color.lerp(indigo, other.indigo, t) ?? indigo,
     );
   }
 
@@ -567,6 +574,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       shadowGrey8: CoreShadowColors.shadowGrey8,
       shadowGrey10: CoreShadowColors.shadowGrey10,
       shadowGrey18: CoreShadowColors.shadowGrey18,
+
+      // Accents
+      indigo: CoreAccentsColors.indigo,
     );
   }
 }

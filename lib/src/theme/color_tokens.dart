@@ -87,8 +87,10 @@ abstract class _CoreColorPalette {
 
   // Utility
   static const Color transparent = Color(0x00000000);
-}
 
+  // Accents
+  static const Color indigo = Color(0xFF6155F5);
+}
 // Text-related color tokens
 // https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=1-601&t=TW26RstPBOLMrBqw-4
 
@@ -217,4 +219,9 @@ class CoreBrandColors {
 /// Primitive color tokens used as foundational values in the design system.
 class CorePrimitiveColors {
   static const Color transparent = _CoreColorPalette.transparent;
+}
+
+// Accents color tokens
+class CoreAccentsColors {
+  static const Color indigo = _CoreColorPalette.indigo;
 }

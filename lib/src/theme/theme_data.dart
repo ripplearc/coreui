@@ -99,6 +99,9 @@ class CoreTheme {
       shadowGrey8: CoreShadowColors.shadowGrey8,
       shadowGrey10: CoreShadowColors.shadowGrey10,
       shadowGrey18: CoreShadowColors.shadowGrey18,
+
+      // Accents
+      indigo: CoreAccentsColors.indigo,
     );
   }
 
