@@ -27,52 +27,6 @@ enum _ToastType {
   success,
 }
 
-/// A notification widget that displays temporary messages to users with different visual styles.
-///
-/// The Toast component supports four distinct types:
-/// - Error: Red styling for critical issues
-/// - Warning: Orange styling for cautionary messages
-/// - Info: Blue styling for general notifications
-/// - Success: Green styling for positive confirmations
-///
-/// ## Basic Usage
-///
-/// ```dart
-/// // Error toast
-/// Toast.error(
-///   description: 'An error occurred',
-///   closeLabel: 'Close',
-/// )
-/// ```
-///
-/// ## Toast with Title
-///
-/// ```dart
-/// // Success toast with title
-/// Toast.success(
-///   title: 'Operation Complete',
-///   description: 'Your changes have been saved successfully.',
-///   closeLabel: 'Dismiss',
-/// )
-/// ```
-///
-/// ## Toast with Close Callback
-///
-/// ```dart
-/// // Warning toast with custom close handler
-/// Toast.warning(
-///   description: 'Please review your settings',
-///   closeLabel: 'Close',
-///   onClose: () {
-///     // Handle close action
-///   },
-/// )
-/// ```
-///
-/// [title] is the optional title text displayed above the description.
-/// [description] is the main message to be displayed in the toast.
-/// [closeLabel] is the text label for the close button.
-/// [onClose] is the optional callback function triggered when the close button is pressed.
 class Toast extends StatelessWidget {
   final String? title;
   final String description;

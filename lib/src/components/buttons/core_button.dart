@@ -31,25 +31,6 @@ enum CoreButtonVariant {
   social,
 }
 
-/// A customizable button widget that supports flexible content.
-/// Either [label] or [child] must be provided.
-///
-/// - [label] is the text displayed on the button.
-/// - [child] is an optional custom widget displayed in place of the label.
-/// - [onPressed] is the callback function when the button is pressed.
-/// - [size] determines the height of the button.
-/// - [variant] determines the button's style.
-/// - [icon] is an optional icon displayed on the button.
-/// - [isDisabled] indicates whether the button is disabled.
-/// - [fullWidth] makes the button take the full width of its parent.
-/// - [borderRadius] sets the button's border radius.
-/// - [centerAlign] aligns the content in the center.
-/// - [spaceOut] adds spacing between the icon and text.
-/// - [trailing] places the icon at the end of the button.
-/// - [shadows] is an optional list of box shadows applied to the button.
-/// - [semanticsLabel] overrides the accessible label; defaults to [label].
-/// - [focusNode] used to control button focus state.
-/// - [autofocus] determines whether the button should be auto focused.
 class CoreButton extends StatefulWidget {
   final String? label;
   final Widget? child;
