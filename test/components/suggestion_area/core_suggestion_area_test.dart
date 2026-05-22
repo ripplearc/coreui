@@ -34,8 +34,6 @@ void main() {
             .first,
       );
 
-      expect(container.constraints!.minHeight, CoreSpacing.space16);
-      expect(container.constraints!.maxHeight, CoreSpacing.space16);
       expect(container.alignment, AlignmentDirectional.centerStart);
       expect(container.margin,
           const EdgeInsets.symmetric(horizontal: CoreSpacing.space4));

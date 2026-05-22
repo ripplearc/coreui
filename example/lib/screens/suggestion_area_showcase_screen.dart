@@ -98,7 +98,7 @@ class _SuggestionAreaShowcaseScreenState
                       ),
                     ),
                   ),
-                  CoreSuggestionArea(),
+                  const CoreSuggestionArea(),
                   TweenAnimationBuilder<double>(
                     tween: Tween<double>(
                       begin: 0.95,

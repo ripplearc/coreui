@@ -7,6 +7,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// to the user, including AI-driven insights and contextual unit conversions.
 ///
 /// Displays [suggestionAreaPlaceholder] when the suggestion list is empty
+// TODO: [CA-692] Add core_suggestion_area.md documentation file.
+// https://ripplearc.youtrack.cloud/issue/CA-692/Suggestion-Area-ADD-md-file
 class CoreSuggestionArea extends StatelessWidget {
   const CoreSuggestionArea({
     super.key,
