@@ -193,9 +193,11 @@ class _CoreChipState extends State<CoreChip> {
                                 child: AnimatedContainer(
                                   duration: CoreChipTheme.animationDuration,
                                   padding: CoreChipTheme.padding(widget.size) -
-                                      EdgeInsets.all(activeFocused
-                                          ? CoreChipTheme.borderWidth
-                                          : 0.0) as EdgeInsetsGeometry,
+                                          (activeFocused
+                                              ? const EdgeInsets.all(
+                                                  CoreChipTheme.borderWidth)
+                                              : EdgeInsets.zero)
+                                      as EdgeInsetsGeometry,
                                   decoration: BoxDecoration(
                                     color: CoreChipTheme.background(
                                       size: widget.size,
@@ -244,7 +246,8 @@ class _CoreChipState extends State<CoreChip> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                if (widget.label case final label?)
+                                                if (widget.label
+                                                    case final label?)
                                                   Flexible(
                                                     child: Text(
                                                       label,
@@ -263,7 +266,8 @@ class _CoreChipState extends State<CoreChip> {
                                                   const SizedBox(
                                                       width:
                                                           CoreSpacing.space1),
-                                                if (widget.value case final value?)
+                                                if (widget.value
+                                                    case final value?)
                                                   Flexible(
                                                     child: Text(
                                                       value,
@@ -276,7 +280,8 @@ class _CoreChipState extends State<CoreChip> {
                                                           TextOverflow.ellipsis,
                                                     ),
                                                   ),
-                                                if (widget.unit case final unit?)
+                                                if (widget.unit
+                                                    case final unit?)
                                                   Flexible(
                                                     child: Text(
                                                       unit,

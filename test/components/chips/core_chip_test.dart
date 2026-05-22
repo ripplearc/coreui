@@ -125,10 +125,9 @@ void main() {
       expect(wasPressed, isFalse);
 
       await tester.tap(find.byType(CoreChip));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
       expect(selected.value, isFalse);
       expect(wasPressed, isTrue);
-      await tester.pump(const Duration(seconds: 1));
     });
 
     testWidgets('calls onTap callback when tapped',
