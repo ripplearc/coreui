@@ -221,7 +221,8 @@ class CorePrimitiveColors {
   static const Color transparent = _CoreColorPalette.transparent;
 }
 
-// Accents color tokens
+/// Accent colour tokens used for branded UI elements.
 class CoreAccentsColors {
+  /// The indigo accent colour, used for the AI toggle gradient.
   static const Color indigo = _CoreColorPalette.indigo;
 }

@@ -32,7 +32,8 @@ class CoreSuggestionArea extends StatefulWidget {
   /// ```
   final String suggestionAreaPlaceholder;
 
-  // todo delete it CA-665 [Suggestion Area] Add Chips List https://ripplearc.youtrack.cloud/issue/CA-665/Suggestion-Area-Add-Chips-List
+  // TODO: [CA-665] Delete isEmpty once chips list is implemented.
+  // https://ripplearc.youtrack.cloud/issue/CA-665
   final bool isEmpty;
 
   @override
@@ -70,7 +71,8 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
                   },
                 ),
                 const SizedBox(width: CoreSpacing.space3),
-                // todo replace it with chips' lists CA-665 [Suggestion Area] Add Chips List https://ripplearc.youtrack.cloud/issue/CA-665/Suggestion-Area-Add-Chips-List
+                // TODO: [CA-665] Replace placeholder text with chips list.
+                // https://ripplearc.youtrack.cloud/issue/CA-665
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),

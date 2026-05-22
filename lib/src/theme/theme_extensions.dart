@@ -98,7 +98,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color shadowGrey10;
   final Color shadowGrey18;
 
-  // Accents
+  /// The indigo accent colour. Used by [_AIToggle] for the gradient fill.
   final Color indigo;
 
   const AppColorsExtension({
