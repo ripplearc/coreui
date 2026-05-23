@@ -98,8 +98,35 @@ class _SuggestionAreaShowcaseScreenState
                       ),
                     ),
                   ),
-                  const CoreSuggestionArea(
-                    isEmpty: false,
+                  CoreSuggestionArea(
+                    aiSuggestions: [
+                      SuggestionData(
+                        label: 'Length:',
+                        value: '27',
+                        unit: 'ft',
+                        onTap: () {},
+                      ),
+                      SuggestionData(
+                        label: 'Area:',
+                        value: '90',
+                        unit: 'sq ft',
+                        onTap: () {},
+                      ),
+                    ],
+                    conversionSuggestions: [
+                      SuggestionData(
+                        label: 'M:',
+                        value: '3.048',
+                        unit: 'm',
+                        onTap: () {},
+                      ),
+                      SuggestionData(
+                        label: 'CM:',
+                        value: '304.8',
+                        unit: 'cm',
+                        onTap: () {},
+                      ),
+                    ],
                   ),
                   TweenAnimationBuilder<double>(
                     tween: Tween<double>(

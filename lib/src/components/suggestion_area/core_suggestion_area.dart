@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 part 'parts/ai_toggle.dart';
+part 'parts/suggestion_list.dart';
 
 /// A component that displays AI and unit conversion suggestions.
 ///
@@ -14,10 +15,12 @@ part 'parts/ai_toggle.dart';
 // TODO: [CA-692] Add core_suggestion_area.md documentation file.
 // https://ripplearc.youtrack.cloud/issue/CA-692/Suggestion-Area-ADD-md-file
 class CoreSuggestionArea extends StatefulWidget {
-  const CoreSuggestionArea(
-      {super.key,
-      this.suggestionAreaPlaceholder = defaultSuggestionAreaPlaceholder,
-      this.isEmpty = true});
+  const CoreSuggestionArea({
+    super.key,
+    this.suggestionAreaPlaceholder = defaultSuggestionAreaPlaceholder,
+    this.aiSuggestions,
+    this.conversionSuggestions,
+  });
 
   /// The default placeholder text shown when no suggestions are provided.
   static const String defaultSuggestionAreaPlaceholder =
@@ -32,27 +35,39 @@ class CoreSuggestionArea extends StatefulWidget {
   /// ```
   final String suggestionAreaPlaceholder;
 
-  // TODO: [CA-665] Delete isEmpty once chips list is implemented.
-  // https://ripplearc.youtrack.cloud/issue/CA-665
-  final bool isEmpty;
+  /// The list of AI recommendations to display. Nullable.
+  final List<SuggestionData>? aiSuggestions;
+
+  /// The list of conversion metrics to display. Nullable.
+  final List<SuggestionData>? conversionSuggestions;
 
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
 
 class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
-  bool _isAiMode = true;
+  SuggestionMode _mode = SuggestionMode.ai;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    return Container(
+    final bool hasAi = widget.aiSuggestions?.isNotEmpty ?? false;
+    final bool hasConv = widget.conversionSuggestions?.isNotEmpty ?? false;
+    final bool hasBothLists = hasAi && hasConv;
+    final bool hasAny = hasAi || hasConv;
+
+    final activeList = hasBothLists
+        ? (_mode == SuggestionMode.ai ? widget.aiSuggestions : widget.conversionSuggestions)
+        : (hasAi ? widget.aiSuggestions : widget.conversionSuggestions);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       width: double.infinity,
       height: CoreSpacing.space16,
       alignment: AlignmentDirectional.centerStart,
       margin: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
-      child: widget.isEmpty
+      child: !hasAny
           ? Text(
               widget.suggestionAreaPlaceholder,
               style: typography.bodyMediumRegular.copyWith(
@@ -60,27 +75,30 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
               ),
             )
           : Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _AIToggle(
-                  isAiMode: _isAiMode,
-                  onChanged: (value) {
-                    setState(() {
-                      _isAiMode = value;
-                    });
-                  },
-                ),
-                const SizedBox(width: CoreSpacing.space3),
-                // TODO: [CA-665] Replace placeholder text with chips list.
-                // https://ripplearc.youtrack.cloud/issue/CA-665
+                if (hasBothLists) ...[
+                  Container(
+                    height: CoreSpacing.space16,
+                    alignment: Alignment.center,
+                    child: _AIToggle(
+                      mode: _mode,
+                      onChanged: (value) {
+                        setState(() {
+                          _mode = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: CoreSpacing.space1),
+                ],
                 Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: Text(
-                      widget.suggestionAreaPlaceholder,
-                      key: ValueKey<bool>(_isAiMode),
-                      style: typography.bodyMediumRegular.copyWith(
-                        color: colors.textDark,
+                  child: ClipRect(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: SuggestionList(
+                        key: ValueKey(hasBothLists ? _mode : (hasAi ? SuggestionMode.ai : SuggestionMode.conversion)),
+                        suggestions: activeList,
                       ),
                     ),
                   ),

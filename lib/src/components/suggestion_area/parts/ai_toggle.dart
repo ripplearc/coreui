@@ -2,23 +2,25 @@ part of '../core_suggestion_area.dart';
 
 class _AIToggle extends StatelessWidget {
   const _AIToggle({
-    required this.isAiMode,
+    required this.mode,
     required this.onChanged,
   });
 
-  final bool isAiMode;
-  final ValueChanged<bool> onChanged;
+  final SuggestionMode mode;
+  final ValueChanged<SuggestionMode> onChanged;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
+    final isAiMode = mode == SuggestionMode.ai;
 
     return Semantics(
       label: 'Toggle suggestion mode',
       button: true,
       toggled: isAiMode,
       child: GestureDetector(
-        onTap: () => onChanged(!isAiMode),
+        onTap: () =>
+            onChanged(isAiMode ? SuggestionMode.conversion : SuggestionMode.ai),
         behavior: HitTestBehavior.opaque,
         child: Container(
           height: CoreSpacing.space12,
