@@ -14,7 +14,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
   @override
   void initState() {
     super.initState();
-    _selected = List.generate(7, (_) => ValueNotifier(false));
+    _selected = List.generate(8, (_) => ValueNotifier(false));
   }
 
   @override
@@ -94,6 +94,23 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
                   selected: _selected[5],
                   size: CoreChipSize.large,
                   icon: CoreIcons.checkCircle,
+                ),
+              ],
+            ),
+            const SizedBox(height: CoreSpacing.space8),
+            Text('Multi-part Chips', style: typography.bodyMediumRegular),
+            const SizedBox(height: CoreSpacing.space3),
+            Wrap(
+              spacing: CoreSpacing.space3,
+              runSpacing: CoreSpacing.space3,
+              children: [
+                CoreChip(
+                  label: 'Volume:',
+                  value: '2700',
+                  unit: 'ft³',
+                  selected: _selected[7],
+                  isSmartChip: true,
+                  size: CoreChipSize.large,
                 ),
               ],
             ),
