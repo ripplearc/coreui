@@ -43,4 +43,8 @@ class CoreSvgIcons {
   static const String splashFirstState = '$_basePath/splash_first_state.svg';
   static const String splashSecondState = '$_basePath/splash_second_state.svg';
   static const String splashThirdState = '$_basePath/splash_third_state.svg';
+
+  /// AI Toggle Icons
+  static const String stars = '$_basePath/stars.svg';
+  static const String ruler = '$_basePath/ruler.svg';
 }

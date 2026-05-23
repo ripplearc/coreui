@@ -110,5 +110,133 @@ void main() {
       expect(textWidget.style!.fontWeight,
           typography.bodyMediumRegular.fontWeight);
     });
+
+    testWidgets('shows placeholder only when isEmpty is true',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreSuggestionArea(isEmpty: true),
+          ),
+        ),
+      );
+
+      expect(find.byType(Row), findsNothing);
+      expect(find.byType(GestureDetector), findsNothing);
+      expect(
+        find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows AI toggle and placeholder row when isEmpty is false',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreSuggestionArea(isEmpty: false),
+          ),
+        ),
+      );
+
+      expect(
+        find.ancestor(
+          of: find.descendant(
+            of: find.byType(CoreSuggestionArea),
+            matching: find.byType(GestureDetector),
+          ),
+          matching: find.byType(Row),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(CoreSuggestionArea),
+          matching: find.byType(AnimatedSwitcher),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('AI toggle shows stars and ruler icons',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreSuggestionArea(isEmpty: false),
+          ),
+        ),
+      );
+
+      final iconWidgets = tester.widgetList<CoreIconWidget>(
+        find.descendant(
+          of: find.byType(CoreSuggestionArea),
+          matching: find.byType(CoreIconWidget),
+        ),
+      );
+
+      expect(iconWidgets.length, 2);
+      expect(
+        iconWidgets.map((w) => w.icon).toList(),
+        [CoreIcons.stars, CoreIcons.ruler],
+      );
+    });
+
+    testWidgets('AI toggle starts in AI mode with thumb on the left',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreSuggestionArea(isEmpty: false),
+          ),
+        ),
+      );
+
+      final animatedAlign = tester.widget<AnimatedAlign>(
+        find.descendant(
+          of: find.byType(CoreSuggestionArea),
+          matching: find.byType(AnimatedAlign),
+        ),
+      );
+
+      expect(animatedAlign.alignment, Alignment.centerLeft);
+    });
+
+    testWidgets('tapping AI toggle switches to manual mode',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreSuggestionArea(isEmpty: false),
+          ),
+        ),
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(CoreSuggestionArea),
+          matching: find.byType(GestureDetector),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final animatedAlign = tester.widget<AnimatedAlign>(
+        find.descendant(
+          of: find.byType(CoreSuggestionArea),
+          matching: find.byType(AnimatedAlign),
+        ),
+      );
+
+      expect(animatedAlign.alignment, Alignment.centerRight);
+    });
   });
 }

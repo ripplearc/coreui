@@ -46,4 +46,41 @@ void main() {
       matchesGoldenFile('goldens/suggestion_area_component.png'),
     );
   });
+
+  testWidgets('SuggestionArea AI Toggle Golden Test',
+      (WidgetTester tester) async {
+    final colors = AppColorsExtension.create();
+
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: const Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text('Suggestion Area - AI toggle'),
+            SizedBox(height: CoreSpacing.space8),
+            CoreSuggestionArea(isEmpty: false),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_ai_toggle_component.png'),
+    );
+  });
 }

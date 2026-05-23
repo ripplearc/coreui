@@ -75,8 +75,8 @@ class CoreIcons {
   static const camera = CoreMaterialIcons.camera;
 
   // Interface
-  static const home =  CoreIconData.svg(CoreSvgIcons.home);
-  static const calculation =  CoreIconData.svg(CoreSvgIcons.calculation);
+  static const home = CoreIconData.svg(CoreSvgIcons.home);
+  static const calculation = CoreIconData.svg(CoreSvgIcons.calculation);
   static const list = CoreMaterialIcons.list;
   static const placeholder = CoreIconData.svg(CoreSvgIcons.placeholder);
   static const emptyEstimation = CoreIconData.svg(CoreSvgIcons.emptyEstimation);
@@ -131,7 +131,14 @@ class CoreIcons {
   static const docs = CoreIconData.svg(CoreSvgIcons.docs);
 
   // Splash & Animation
-  static const splashFirstState = CoreIconData.svg(CoreSvgIcons.splashFirstState);
-  static const splashSecondState = CoreIconData.svg(CoreSvgIcons.splashSecondState);
-  static const splashThirdState = CoreIconData.svg(CoreSvgIcons.splashThirdState);
+  static const splashFirstState =
+      CoreIconData.svg(CoreSvgIcons.splashFirstState);
+  static const splashSecondState =
+      CoreIconData.svg(CoreSvgIcons.splashSecondState);
+  static const splashThirdState =
+      CoreIconData.svg(CoreSvgIcons.splashThirdState);
+
+  // AI Toggle Icons
+  static const stars = CoreIconData.svg(CoreSvgIcons.stars);
+  static const ruler = CoreIconData.svg(CoreSvgIcons.ruler);
 }
