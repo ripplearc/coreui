@@ -3,6 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+import 'suggestion_area_test_helpers.dart';
+
+final _expandToggleFinder = find.bySemanticsLabel(
+  RegExp(r'Show \d+ more suggestions'),
+);
 
 void main() {
   setUpAll(() async {
@@ -26,13 +31,13 @@ void main() {
       ),
       home: Scaffold(
         backgroundColor: colors.pageBackground,
-        body: const Column(
+        body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Suggestion Area - empty state'),
-            SizedBox(height: CoreSpacing.space8),
-            CoreSuggestionArea(),
+            const Text('Suggestion Area - empty state'),
+            const SizedBox(height: CoreSpacing.space8),
+            testCoreSuggestionArea(),
           ],
         ),
       ),
@@ -69,7 +74,7 @@ void main() {
           children: [
             const Text('Suggestion Area - AI List'),
             const SizedBox(height: CoreSpacing.space8),
-            CoreSuggestionArea(
+            testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(
                     label: 'Volume:', value: '2700', unit: 'ft³', onTap: () {}),
@@ -113,7 +118,7 @@ void main() {
           children: [
             const Text('Suggestion Area - Conversion List'),
             const SizedBox(height: CoreSpacing.space8),
-            CoreSuggestionArea(
+            testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(
                     label: 'Volume:', value: '2700', unit: 'ft³', onTap: () {}),
@@ -164,7 +169,7 @@ void main() {
           children: [
             const Text('Suggestion Area - Conversion List Only'),
             const SizedBox(height: CoreSpacing.space8),
-            CoreSuggestionArea(
+            testCoreSuggestionArea(
               conversionSuggestions: [
                 SuggestionData(
                     label: 'Meters:', value: '3.048', unit: 'm', onTap: () {}),
@@ -184,6 +189,102 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile(
           'goldens/suggestion_area_conversion_list_only_component.png'),
+    );
+  });
+
+  testWidgets('SuggestionArea overflow collapsed Golden Test',
+      (WidgetTester tester) async {
+    final colors = AppColorsExtension.create();
+
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Suggestion List - Collapsed'),
+            const SizedBox(height: CoreSpacing.space8),
+            testCoreSuggestionArea(
+              aiSuggestions: List.generate(
+                10,
+                (index) => SuggestionData(
+                  label: 'Item $index',
+                  value: '${index * 10}',
+                  unit: 'U',
+                  onTap: () {},
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_list_collapsed_component.png'),
+    );
+  });
+
+  testWidgets('SuggestionArea overflow expanded Golden Test',
+      (WidgetTester tester) async {
+    final colors = AppColorsExtension.create();
+
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Suggestion List - Expanded'),
+            const SizedBox(height: CoreSpacing.space8),
+            testCoreSuggestionArea(
+              aiSuggestions: List.generate(
+                10,
+                (index) => SuggestionData(
+                  label: 'Item $index',
+                  value: '${index * 10}',
+                  unit: 'U',
+                  onTap: () {},
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+    await tester.tap(_expandToggleFinder);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_list_expanded_component.png'),
     );
   });
 }
