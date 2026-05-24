@@ -355,6 +355,27 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       expect(tapped, isTrue);
     });
+
+    testWidgets('renders duplicate suggestions without duplicate key exception',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'Dup', value: '1', onTap: () {}),
+                SuggestionData(label: 'Dup', value: '1', onTap: () {}),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chips = tester.widgetList<CoreChip>(find.byType(CoreChip)).toList();
+      expect(chips.length, 2);
+      expect(chips[0].key, isNot(equals(chips[1].key)));
+    });
   });
 
   group('CoreSuggestionArea overflow toggle', () {

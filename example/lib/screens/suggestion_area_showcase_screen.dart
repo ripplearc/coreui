@@ -86,23 +86,22 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                 child: Column(
                   children: [
                     CoreDisplayArea(
-                      label: 'Length',
-                      value: '10ft',
+                      label: state.resultLabel ?? state.activeInputLabel,
+                      value: state.resultValue ?? state.currentInputValue,
                       hasError: false,
-                      isTyping: false,
-                      onClose: () {},
+                      isTyping: state.isTyping,
+                      onClose: () => bloc.add(const ResetRequested()),
                       onStageChanged: (stage) {},
                       chipsList: [
-                        const CoreCalculatorChip(
-                          type: CoreCalculatorChipType.disabled,
-                          label: 'Length',
-                          value: '10 ft',
-                        ),
-                        const CoreCalculatorChip(
-                          type: CoreCalculatorChipType.disabled,
-                          label: 'Width',
-                          value: '12 ft',
-                        ),
+                        ...state.completedChips,
+                        if (state.isTyping)
+                          if (state.activeInputLabel case final label?)
+                            CoreCalculatorChip(
+                              label: label,
+                              value: state.currentInputValue,
+                              type: CoreCalculatorChipType.active,
+                            ),
+                        if (state.resultChip case final resultChip?) resultChip,
                       ],
                     ),
                     AnimatedContainer(
@@ -135,14 +134,28 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                                       ._basicGeometryGroup,
                                   allGroups:
                                       SuggestionAreaShowcaseScreen._groups,
-                                  onDigitPressed: (_) {},
-                                  onUnitSelected: (_) {},
-                                  onOperatorPressed: (_) {},
-                                  onControlAction: (_) {},
-                                  onResultTapped: () {},
+                                  onDigitPressed: (key) {
+                                    bloc.add(DigitPressed(key.label));
+                                  },
+                                  onUnitSelected: (key) {
+                                    bloc.add(UnitSelected(key.label));
+                                  },
+                                  onOperatorPressed: (key) {
+                                    bloc.add(OperatorPressed(key.symbol));
+                                  },
+                                  onControlAction: (key) {
+                                    if (key == ControlAction.clearAll) {
+                                      bloc.add(const ResetRequested());
+                                    }
+                                  },
+                                  onResultTapped: () {
+                                    bloc.add(const OperatorPressed('='));
+                                  },
                                   onGroupSelected: (_) {},
                                   currentUnitSystem: UnitSystem.imperial,
-                                  onKeyTapped: (_) {},
+                                  onKeyTapped: (key) {
+                                    bloc.add(KeySelected(key.label));
+                                  },
                                   onUnitSystemChanged: (_) {},
                                   groupAccentColors: groupAccentColors,
                                   result: const ResultType(label: '='),
