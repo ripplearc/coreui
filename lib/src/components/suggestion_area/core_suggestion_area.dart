@@ -13,8 +13,6 @@ part 'parts/toggle_button.dart';
 ///
 /// Displays [suggestionAreaPlaceholder] when both [aiSuggestions] and
 /// [conversionSuggestions] are null or empty.
-// TODO: [CA-692] Add core_suggestion_area.md documentation file.
-// https://ripplearc.youtrack.cloud/issue/CA-692/Suggestion-Area-ADD-md-file
 class CoreSuggestionArea extends StatefulWidget {
   const CoreSuggestionArea({
     super.key,
