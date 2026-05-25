@@ -111,13 +111,13 @@ void main() {
           typography.bodyMediumRegular.fontWeight);
     });
 
-    testWidgets('shows placeholder only when isEmpty is true',
+    testWidgets('shows placeholder only when lists are empty',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreSuggestionArea(isEmpty: true),
+            body: CoreSuggestionArea(),
           ),
         ),
       );
@@ -130,27 +130,25 @@ void main() {
       );
     });
 
-    testWidgets('shows AI toggle and placeholder row when isEmpty is false',
+    testWidgets('shows AI toggle and lists row when data is provided',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(isEmpty: false),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
           ),
         ),
       );
 
-      expect(
-        find.ancestor(
-          of: find.descendant(
-            of: find.byType(CoreSuggestionArea),
-            matching: find.byType(GestureDetector),
-          ),
-          matching: find.byType(Row),
-        ),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(CoreSuggestionArea),
@@ -160,7 +158,7 @@ void main() {
       );
       expect(
         find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
-        findsOneWidget,
+        findsNothing,
       );
     });
 
@@ -169,8 +167,15 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(isEmpty: false),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
           ),
         ),
       );
@@ -194,8 +199,15 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(isEmpty: false),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
           ),
         ),
       );
@@ -210,23 +222,25 @@ void main() {
       expect(animatedAlign.alignment, Alignment.centerLeft);
     });
 
-    testWidgets('tapping AI toggle switches to manual mode',
+    testWidgets('tapping AI toggle switches to conversion mode',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(isEmpty: false),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
           ),
         ),
       );
 
-      await tester.tap(
-        find.descendant(
-          of: find.byType(CoreSuggestionArea),
-          matching: find.byType(GestureDetector),
-        ),
-      );
+      await tester.tap(find.bySemanticsLabel('Toggle suggestion mode'));
       await tester.pumpAndSettle();
 
       final animatedAlign = tester.widget<AnimatedAlign>(
@@ -237,6 +251,108 @@ void main() {
       );
 
       expect(animatedAlign.alignment, Alignment.centerRight);
+    });
+
+    testWidgets('renders AI and conversion chips based on toggle',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('AI'), findsOneWidget);
+      expect(find.text('Conv'), findsNothing);
+
+      await tester.tap(find.bySemanticsLabel('Toggle suggestion mode'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('AI'), findsNothing);
+      expect(find.text('Conv'), findsOneWidget);
+    });
+
+    testWidgets(
+        'shows only AI list without toggle when only aiSuggestions provided',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(label: 'AI', value: '1', onTap: () {})
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsNothing);
+      expect(find.text('AI'), findsOneWidget);
+    });
+
+    testWidgets(
+        'shows only Conversion list without toggle when only conversionSuggestions provided',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              conversionSuggestions: [
+                SuggestionData(label: 'Conv', value: '1', onTap: () {})
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsNothing);
+      expect(find.text('Conv'), findsOneWidget);
+    });
+
+    testWidgets('tapping a suggestion chip calls onTap and has semantics',
+        (WidgetTester tester) async {
+      bool tapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSuggestionArea(
+              aiSuggestions: [
+                SuggestionData(
+                  label: 'AI',
+                  value: '1',
+                  onTap: () {
+                    tapped = true;
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final chipFinder = find.descendant(
+        of: find.byType(CoreSuggestionArea),
+        matching: find.byType(Semantics),
+      );
+      expect(chipFinder, findsWidgets);
+
+      await tester.tap(find.text('AI'));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      expect(tapped, isTrue);
     });
   });
 }
