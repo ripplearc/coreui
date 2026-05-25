@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 part 'suggestion_area_showcase_event.dart';
+
 part 'suggestion_area_showcase_state.dart';
 
 /// A BLoC that manages the logic for the suggestion area showcase.
@@ -9,19 +10,12 @@ part 'suggestion_area_showcase_state.dart';
 /// It handles key selections, digit presses, unit selections, and operators,
 /// automatically computes Area suggestions when both "Length" and "Width" are
 /// provided, and generates unit conversion chips dynamically.
-
 class SuggestionAreaShowcaseBloc
     extends Bloc<SuggestionAreaShowcaseEvent, SuggestionAreaShowcaseState> {
   /// Creates a [SuggestionAreaShowcaseBloc].
-  SuggestionAreaShowcaseBloc() : super(SuggestionAreaShowcaseState.empty()) {
+  SuggestionAreaShowcaseBloc() : super(SuggestionAreaShowcaseState.initial()) {
     on<_InitializeEvent>((event, emit) {
-      emit(SuggestionAreaShowcaseState.initial((label, value, unit) {
-        add(SuggestionChipTapped(label, value, unit));
-      }));
-    });
-
-    on<SuggestionAreaExpanded>((event, emit) {
-      emit(state.copyWith(isSuggestionExpanded: event.isExpanded));
+      emit(SuggestionAreaShowcaseState.initial());
     });
 
     on<SuggestionChipTapped>((event, emit) {
@@ -38,11 +32,11 @@ class SuggestionAreaShowcaseBloc
         );
 
         final updatedChips =
-            List<CoreCalculatorChip>.from(finalizedState.completedChips)
-              ..add(areaChip);
+        List<CoreCalculatorChip>.from(finalizedState.completedChips)
+          ..add(areaChip);
         final updatedValues =
-            Map<String, double>.from(finalizedState.finalizedValues)
-              ..['Area'] = double.tryParse(event.value) ?? 0.0;
+        Map<String, double>.from(finalizedState.finalizedValues)
+          ..['Area'] = double.tryParse(event.value) ?? 0.0;
 
         final newState = finalizedState.copyWith(
           activeInputLabel: () => 'Area',
@@ -71,8 +65,8 @@ class SuggestionAreaShowcaseBloc
     add(const _InitializeEvent());
   }
 
-  void _onKeySelected(
-      KeySelected event, Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onKeySelected(KeySelected event,
+      Emitter<SuggestionAreaShowcaseState> emit) {
     final finalizedState = _finalizeCurrentInput(state);
     final newState = finalizedState.copyWith(
       activeInputLabel: () => event.label,
@@ -88,8 +82,8 @@ class SuggestionAreaShowcaseBloc
     _updateSuggestions(newState, emit);
   }
 
-  void _onDigitPressed(
-      DigitPressed event, Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onDigitPressed(DigitPressed event,
+      Emitter<SuggestionAreaShowcaseState> emit) {
     if (!state.isTyping) return;
     final newValue = state.currentInputValue + event.digit;
     final newNumericValue = state.currentNumericValue + event.digit;
@@ -100,8 +94,8 @@ class SuggestionAreaShowcaseBloc
     _updateSuggestions(newState, emit);
   }
 
-  void _onUnitSelected(
-      UnitSelected event, Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onUnitSelected(UnitSelected event,
+      Emitter<SuggestionAreaShowcaseState> emit) {
     if (!state.isTyping) return;
     final unit = event.unit.toLowerCase() == 'feet' ? 'ft' : event.unit;
     final newValue = state.currentInputValue.isEmpty
@@ -111,19 +105,17 @@ class SuggestionAreaShowcaseBloc
     _updateSuggestions(newState, emit);
   }
 
-  void _onOperatorPressed(
-      OperatorPressed event, Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onOperatorPressed(OperatorPressed event,
+      Emitter<SuggestionAreaShowcaseState> emit) {
     if (event.operator == '=') {
       final newState = _finalizeCurrentInput(state);
       _updateSuggestions(newState, emit);
     }
   }
 
-  void _onResetRequested(
-      ResetRequested event, Emitter<SuggestionAreaShowcaseState> emit) {
-    emit(SuggestionAreaShowcaseState.initial((label, value, unit) {
-      add(SuggestionChipTapped(label, value, unit));
-    }));
+  void _onResetRequested(ResetRequested event,
+      Emitter<SuggestionAreaShowcaseState> emit) {
+    emit(SuggestionAreaShowcaseState.initial());
   }
 
   SuggestionAreaShowcaseState _finalizeCurrentInput(
@@ -139,12 +131,12 @@ class SuggestionAreaShowcaseBloc
       );
 
       final updatedChips =
-          List<CoreCalculatorChip>.from(currentState.completedChips)
-            ..add(newChip);
+      List<CoreCalculatorChip>.from(currentState.completedChips)
+        ..add(newChip);
       final updatedNumericValues =
-          Map<String, double>.from(currentState.finalizedValues)
-            ..[activeInputLabel] =
-                double.tryParse(currentState.currentNumericValue) ?? 0.0;
+      Map<String, double>.from(currentState.finalizedValues)
+        ..[activeInputLabel] =
+            double.tryParse(currentState.currentNumericValue) ?? 0.0;
 
       return currentState.copyWith(
         isTyping: false,
@@ -157,83 +149,90 @@ class SuggestionAreaShowcaseBloc
 
   void _updateSuggestions(SuggestionAreaShowcaseState newState,
       Emitter<SuggestionAreaShowcaseState> emit) {
+    if (!newState.isTyping || newState.activeInputLabel == null) {
+      emit(newState); // chip taps, resets, finalizations
+      return;
+    }
+
     // Preserve existing lists instead of clearing them
     List<SuggestionData> conv = List.from(newState.conversionSuggestions);
     List<SuggestionData> ai = List.from(newState.aiSuggestions);
 
-    if (newState.isTyping && newState.activeInputLabel != null) {
-      final match = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
-          .firstMatch(newState.currentInputValue);
-      if (match != null) {
-        final numberStr = match.group(1);
-        final unitStr = match.group(2);
-        if (numberStr != null && unitStr != null) {
-          final number = double.tryParse(numberStr);
-          if (number != null && unitStr.toLowerCase() == 'ft') {
-            final convIn = number * 12;
-            final convYd = number / 3;
-            conv = [
-              SuggestionData(
-                label: 'Conv:',
-                value: convIn.toStringAsFixed(0),
-                unit: 'in',
-                onTap: () => add(SuggestionChipTapped(
-                    'Conv:', convIn.toStringAsFixed(0), 'in')),
-              ),
-              SuggestionData(
-                label: 'Conv:',
-                value: convYd.toStringAsFixed(2),
-                unit: 'yd',
-                onTap: () => add(SuggestionChipTapped(
-                    'Conv:', convYd.toStringAsFixed(2), 'yd')),
-              ),
-            ];
-          }
+    final match = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
+        .firstMatch(newState.currentInputValue);
+    if (match != null) {
+      final numberStr = match.group(1);
+      final unitStr = match.group(2);
+      if (numberStr != null && unitStr != null) {
+        final number = double.tryParse(numberStr);
+        if (number != null && unitStr.toLowerCase() == 'ft') {
+          final convIn = number * 12;
+          final convYd = number / 3;
+          conv = [
+            SuggestionData(
+              label: 'Conv:',
+              value: convIn.toStringAsFixed(0),
+              unit: 'in',
+              onTap: () =>
+                  add(SuggestionChipTapped(
+                      'Conv:', convIn.toStringAsFixed(0), 'in')),
+            ),
+            SuggestionData(
+              label: 'Conv:',
+              value: convYd.toStringAsFixed(2),
+              unit: 'yd',
+              onTap: () =>
+                  add(SuggestionChipTapped(
+                      'Conv:', convYd.toStringAsFixed(2), 'yd')),
+            ),
+          ];
         }
       }
-
-      final lengthVal = newState.finalizedValues['Length'];
-      final widthVal = newState.finalizedValues['Width'];
-      final isTypingWidthWithUnit = newState.isTyping &&
-          newState.activeInputLabel == 'Width' &&
-          RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
-              .hasMatch(newState.currentInputValue);
-
-      if (lengthVal != null && (widthVal != null || isTypingWidthWithUnit)) {
-        double currentWidth = widthVal ?? 0.0;
-        if (isTypingWidthWithUnit) {
-          final match = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
-              .firstMatch(newState.currentInputValue);
-          if (match != null) {
-            final widthStr = match.group(1);
-            if (widthStr != null) {
-              currentWidth = double.tryParse(widthStr) ?? 0.0;
-            }
-          }
-        }
-        final areaSqFt = lengthVal * currentWidth;
-        ai = [
-          SuggestionData(
-            label: 'Area:',
-            value: areaSqFt.toStringAsFixed(2),
-            unit: 'sq ft',
-            onTap: () => add(SuggestionChipTapped(
-                'Area:', areaSqFt.toStringAsFixed(2), 'sq ft')),
-          ),
-          SuggestionData(
-            label: 'Area:',
-            value: (areaSqFt / 9.0).toStringAsFixed(2),
-            unit: 'sq yd',
-            onTap: () => add(SuggestionChipTapped(
-                'Area:', (areaSqFt / 9.0).toStringAsFixed(2), 'sq yd')),
-          ),
-        ];
-      }
-
-      emit(newState.copyWith(
-        conversionSuggestions: conv,
-        aiSuggestions: ai,
-      ));
     }
+
+    final lengthVal = newState.finalizedValues['Length'];
+    final widthVal = newState.finalizedValues['Width'];
+    final isTypingWidthWithUnit = newState.isTyping &&
+        newState.activeInputLabel == 'Width' &&
+        RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
+            .hasMatch(newState.currentInputValue);
+
+    if (lengthVal != null && (widthVal != null || isTypingWidthWithUnit)) {
+      double currentWidth = widthVal ?? 0.0;
+      if (isTypingWidthWithUnit) {
+        final match = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
+            .firstMatch(newState.currentInputValue);
+        if (match != null) {
+          final widthStr = match.group(1);
+          if (widthStr != null) {
+            currentWidth = double.tryParse(widthStr) ?? 0.0;
+          }
+        }
+      }
+      final areaSqFt = lengthVal * currentWidth;
+      ai = [
+        SuggestionData(
+          label: 'Area:',
+          value: areaSqFt.toStringAsFixed(2),
+          unit: 'sq ft',
+          onTap: () =>
+              add(SuggestionChipTapped(
+                  'Area:', areaSqFt.toStringAsFixed(2), 'sq ft')),
+        ),
+        SuggestionData(
+          label: 'Area:',
+          value: (areaSqFt / 9.0).toStringAsFixed(2),
+          unit: 'sq yd',
+          onTap: () =>
+              add(SuggestionChipTapped(
+                  'Area:', (areaSqFt / 9.0).toStringAsFixed(2), 'sq yd')),
+        ),
+      ];
+    }
+
+    emit(newState.copyWith(
+      conversionSuggestions: conv,
+      aiSuggestions: ai,
+    ));
   }
 }

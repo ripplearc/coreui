@@ -9,11 +9,11 @@ class SuggestionAreaShowcaseScreen extends StatelessWidget {
   const SuggestionAreaShowcaseScreen({super.key});
 
   static const GroupNameType _basicGeometryGroup =
-      GroupNameType(label: 'Basic Geometry');
+  GroupNameType(label: 'Basic Geometry');
   static const GroupNameType _materialsGroup =
-      GroupNameType(label: 'Materials');
+  GroupNameType(label: 'Materials');
   static const GroupNameType _trigonometryGroup =
-      GroupNameType(label: 'Trigonometry');
+  GroupNameType(label: 'Trigonometry');
 
   static final List<FunctionGroup> _groups = [
     FunctionGroup(
@@ -66,7 +66,7 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final Map<GroupNameType, Color> groupAccentColors = {
       SuggestionAreaShowcaseScreen._basicGeometryGroup:
-          colors.keyboardFunctions,
+      colors.keyboardFunctions,
       SuggestionAreaShowcaseScreen._materialsGroup: colors.keyboardUnits,
       SuggestionAreaShowcaseScreen._trigonometryGroup: colors.textSuccess,
     };
@@ -114,17 +114,14 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               CoreSuggestionArea(
-                                onExpandedChanged: (expanded) {
-                                  bloc.add(SuggestionAreaExpanded(expanded));
-                                },
                                 aiSuggestions: state.aiSuggestions,
                                 conversionSuggestions:
-                                    state.conversionSuggestions,
+                                state.conversionSuggestions,
                                 hiddenChipsTextBuilder: (count) => '+$count',
                                 expandToggleSemanticsLabelBuilder: (count) =>
-                                    'Show $count more suggestions',
+                                'Show $count more suggestions',
                                 collapseToggleSemanticsLabel:
-                                    'Show fewer suggestions',
+                                'Show fewer suggestions',
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(
@@ -133,7 +130,7 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                                   currentGroup: SuggestionAreaShowcaseScreen
                                       ._basicGeometryGroup,
                                   allGroups:
-                                      SuggestionAreaShowcaseScreen._groups,
+                                  SuggestionAreaShowcaseScreen._groups,
                                   onDigitPressed: (key) {
                                     bloc.add(DigitPressed(key.label));
                                   },

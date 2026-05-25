@@ -6,15 +6,6 @@ sealed class SuggestionAreaShowcaseEvent {
   const SuggestionAreaShowcaseEvent();
 }
 
-/// Fired when the suggestion area is expanded or collapsed.
-class SuggestionAreaExpanded extends SuggestionAreaShowcaseEvent {
-  /// Whether the suggestion area is currently expanded.
-  final bool isExpanded;
-
-  /// Creates a [SuggestionAreaExpanded] event.
-  const SuggestionAreaExpanded(this.isExpanded);
-}
-
 /// Fired when the user taps on an AI or conversion suggestion chip.
 class SuggestionChipTapped extends SuggestionAreaShowcaseEvent {
   /// The label of the tapped suggestion chip.
@@ -72,7 +63,6 @@ class ResetRequested extends SuggestionAreaShowcaseEvent {
   const ResetRequested();
 }
 
-/// Internal event fired on bloc initialization to populate initial suggestions.
 class _InitializeEvent extends SuggestionAreaShowcaseEvent {
   const _InitializeEvent();
 }

@@ -2,9 +2,6 @@ part of 'suggestion_area_showcase_bloc.dart';
 
 /// Represents the current state of the suggestion area showcase calculator.
 class SuggestionAreaShowcaseState {
-  /// Whether the suggestion area is currently expanded.
-  final bool isSuggestionExpanded;
-
   /// The label of the input currently being entered, or `null` if idle.
   final String? activeInputLabel;
 
@@ -40,7 +37,6 @@ class SuggestionAreaShowcaseState {
 
   /// Creates a [SuggestionAreaShowcaseState].
   const SuggestionAreaShowcaseState({
-    this.isSuggestionExpanded = false,
     this.activeInputLabel,
     this.currentInputValue = '',
     this.currentNumericValue = '',
@@ -54,17 +50,8 @@ class SuggestionAreaShowcaseState {
     required this.conversionSuggestions,
   });
 
-  /// Returns an empty [SuggestionAreaShowcaseState] with zero state properties.
-  factory SuggestionAreaShowcaseState.empty() {
-    return const SuggestionAreaShowcaseState(
-      aiSuggestions: [],
-      conversionSuggestions: [],
-    );
-  }
-
   /// Returns the initial [SuggestionAreaShowcaseState] with default configuration.
-  factory SuggestionAreaShowcaseState.initial(
-      void Function(String label, String value, String? unit) onChipTap) {
+  factory SuggestionAreaShowcaseState.initial() {
     return const SuggestionAreaShowcaseState(
       aiSuggestions: [],
       conversionSuggestions: [],
@@ -77,7 +64,6 @@ class SuggestionAreaShowcaseState {
   /// [resultChip]) use a `Function()?` wrapper to distinguish `null`
   /// (clear the field) from an absent argument (keep the current value).
   SuggestionAreaShowcaseState copyWith({
-    bool? isSuggestionExpanded,
     String? Function()? activeInputLabel,
     String? currentInputValue,
     String? currentNumericValue,
@@ -91,9 +77,8 @@ class SuggestionAreaShowcaseState {
     List<SuggestionData>? conversionSuggestions,
   }) {
     return SuggestionAreaShowcaseState(
-      isSuggestionExpanded: isSuggestionExpanded ?? this.isSuggestionExpanded,
       activeInputLabel:
-          activeInputLabel != null ? activeInputLabel() : this.activeInputLabel,
+      activeInputLabel != null ? activeInputLabel() : this.activeInputLabel,
       currentInputValue: currentInputValue ?? this.currentInputValue,
       currentNumericValue: currentNumericValue ?? this.currentNumericValue,
       isTyping: isTyping ?? this.isTyping,
@@ -104,7 +89,7 @@ class SuggestionAreaShowcaseState {
       resultChip: resultChip != null ? resultChip() : this.resultChip,
       aiSuggestions: aiSuggestions ?? this.aiSuggestions,
       conversionSuggestions:
-          conversionSuggestions ?? this.conversionSuggestions,
+      conversionSuggestions ?? this.conversionSuggestions,
     );
   }
 }
