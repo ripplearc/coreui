@@ -281,7 +281,8 @@ void main() {
       expect(find.text('Conv'), findsOneWidget);
     });
 
-    testWidgets('shows only AI list without toggle when only aiSuggestions provided',
+    testWidgets(
+        'shows only AI list without toggle when only aiSuggestions provided',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -300,7 +301,8 @@ void main() {
       expect(find.text('AI'), findsOneWidget);
     });
 
-    testWidgets('shows only Conversion list without toggle when only conversionSuggestions provided',
+    testWidgets(
+        'shows only Conversion list without toggle when only conversionSuggestions provided',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -349,9 +351,7 @@ void main() {
 
       await tester.tap(find.text('AI'));
       await tester.pumpAndSettle();
-      await tester
-          .pump(const Duration(seconds: 2));
-
+      await tester.pump(const Duration(seconds: 1));
       expect(tapped, isTrue);
     });
   });

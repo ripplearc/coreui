@@ -96,7 +96,7 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
                   child: ClipRect(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
-                      child: SuggestionList(
+                      child: _SuggestionList(
                         key: ValueKey(hasBothLists ? _mode : (hasAi ? SuggestionMode.ai : SuggestionMode.conversion)),
                         suggestions: activeList,
                       ),
