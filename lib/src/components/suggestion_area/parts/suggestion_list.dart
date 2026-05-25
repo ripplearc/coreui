@@ -32,8 +32,6 @@ class SuggestionData {
   });
 }
 
-final ValueNotifier<bool> _smartChipUnselected = ValueNotifier<bool>(false);
-
 class _SuggestionList extends StatefulWidget {
   final List<SuggestionData>? suggestions;
   final bool isExpanded;
@@ -76,6 +74,14 @@ class _SuggestionListState extends State<_SuggestionList> {
         _isToggleVisible = isToggleVisible;
       });
     });
+  }
+
+  final ValueNotifier<bool> _smartChipUnselected = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _smartChipUnselected.dispose();
+    super.dispose();
   }
 
   @override
