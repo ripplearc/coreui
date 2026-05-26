@@ -5,16 +5,37 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// - [zero] through [nine]: Numeric digits 0-9
 /// - [decimal]: Decimal point symbol (.)
 enum DigitType {
+  /// Numeric digit 0
   zero,
+
+  /// Numeric digit 1
   one,
+
+  /// Numeric digit 2
   two,
+
+  /// Numeric digit 3
   three,
+
+  /// Numeric digit 4
   four,
+
+  /// Numeric digit 5
   five,
+
+  /// Numeric digit 6
   six,
+
+  /// Numeric digit 7
   seven,
+
+  /// Numeric digit 8
   eight,
+
+  /// Numeric digit 9
   nine,
+
+  /// Decimal point symbol (.)
   decimal,
 }
 
@@ -56,10 +77,19 @@ extension DigitTypeX on DigitType {
 /// - [divide]: Division operator (÷)
 /// - [percent]: Percentage operator (%)
 enum OperatorType {
+  /// Addition operator (+)
   add,
+
+  /// Subtraction operator (−)
   subtract,
+
+  /// Multiplication operator (×)
   multiply,
+
+  /// Division operator (÷)
   divide,
+
+  /// Percentage operator (%)
   percent,
 }
 
@@ -107,12 +137,25 @@ extension OperatorTypeX on OperatorType {
 /// - [millimeter]: Millimeter unit
 /// - [divideSymbol]: Division symbol (/) for compound units
 enum UnitType {
+  /// Yards unit
   yards,
+
+  /// Feet unit
   feet,
+
+  /// Inch unit
   inch,
+
+  /// Meter unit
   meter,
+
+  /// Centimeter unit
   centimeter,
+
+  /// Millimeter unit
   millimeter,
+
+  /// Division symbol (/) for compound units
   divideSymbol,
 }
 
@@ -144,8 +187,13 @@ extension UnitTypeX on UnitType {
 /// - [clearAll]: Clear all input action
 /// - [moreOptions]: Show additional options
 enum ControlAction {
+  /// Backspace/delete action
   delete,
+
+  /// Clear all input action
   clearAll,
+
+  /// Show additional options
   moreOptions,
 }
 
@@ -192,7 +240,13 @@ class ResultType {
 /// Defines the unit system types available on the keyboard.
 /// - [imperial]: Imperial unit system
 /// - [metric]: Metric unit system
-enum UnitSystem { imperial, metric }
+enum UnitSystem {
+  /// Imperial unit system
+  imperial,
+
+  /// Metric unit system
+  metric,
+}
 
 /// Extension providing label strings for [UnitSystem] enum values.
 extension UnitSystemX on UnitSystem {

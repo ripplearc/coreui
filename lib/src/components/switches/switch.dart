@@ -7,8 +7,13 @@ import '../../../ripplearc_coreui.dart';
 /// - [lock]: Security-focused switch with red colors for lock/unlock states (width: 71px).
 /// - [imperial]: Unit system switch with green colors for imperial/metric toggle (width: 77px).
 enum CoreSwitchType {
+  /// Standard switch with grey colors.
   normal,
+
+  /// Security-focused switch with red colors for lock/unlock states.
   lock,
+
+  /// Unit system switch with green colors for imperial/metric toggle.
   imperial,
 }
 

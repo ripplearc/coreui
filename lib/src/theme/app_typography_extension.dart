@@ -240,7 +240,9 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   }
 }
 
+/// Extension on [ThemeData] to easily access the [AppTypographyExtension].
 extension TypographyTheme on ThemeData {
+  /// Gets the core typography styles.
   AppTypographyExtension get coreTypography =>
       extension<AppTypographyExtension>() ?? AppTypographyExtension.create();
 }

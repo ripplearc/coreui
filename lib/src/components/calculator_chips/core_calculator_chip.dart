@@ -9,8 +9,13 @@ import 'core_calculator_chip_theme.dart';
 /// non-interactive states, and [active] is for highlighted or currently
 /// selected states.
 enum CoreCalculatorChipType {
+  /// Interactive state that can be edited.
   editable,
+
+  /// Non-interactive state.
   disabled,
+
+  /// Highlighted or currently selected state.
   active,
 }
 

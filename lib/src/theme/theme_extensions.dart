@@ -581,7 +581,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   }
 }
 
+/// Extension on [ThemeData] to easily access the [AppColorsExtension].
 extension AppColorsTheme on ThemeData {
+  /// Gets the core color styles.
   AppColorsExtension get coreColors =>
       extension<AppColorsExtension>() ?? AppColorsExtension.create();
 }

@@ -11,7 +11,22 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// - [bottom]: Arrow points down, tooltip appears above the child
 /// - [left]: Arrow points left, tooltip appears to the right of the child
 /// - [right]: Arrow points right, tooltip appears to the left of the child
-enum TooltipArrowPosition { none, top, bottom, left, right }
+enum TooltipArrowPosition {
+  /// No arrow is displayed
+  none,
+
+  /// Arrow points up
+  top,
+
+  /// Arrow points down
+  bottom,
+
+  /// Arrow points left
+  left,
+
+  /// Arrow points right
+  right,
+}
 
 /// A tooltip widget that displays contextual information when users
 /// interact with the child widget.

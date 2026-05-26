@@ -2,40 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Defines the size of the button.
-/// - [large]: 48px height.
-/// - [medium]: 40px height.
-/// - [small]: 36px height.
 enum CoreButtonSize {
+  /// 48px height.
   large,
+
+  /// 40px height.
   medium,
+
+  /// 36px height.
   small,
 }
 
 /// Determines the presentation style of the button.
-/// - [primary]: Default button style with a solid background.
-/// - [secondary]: Button with a white background and border.
-/// - [social]: Button styled for social media actions.
-enum CoreButtonVariant { primary, secondary, social }
+enum CoreButtonVariant {
+  /// Default button style with a solid background.
+  primary,
+
+  /// Button with a white background and border.
+  secondary,
+
+  /// Button styled for social media actions.
+  social,
+}
 
 /// A customizable button widget that supports flexible content.
-/// Either [label] or [child] must be provided.
 ///
-/// - [label] is the text displayed on the button.
-/// - [child] is an optional custom widget displayed in place of the label.
-/// - [onPressed] is the callback function when the button is pressed.
-/// - [size] determines the height of the button.
-/// - [variant] determines the button's style.
-/// - [icon] is an optional icon displayed on the button.
-/// - [isDisabled] indicates whether the button is disabled.
-/// - [fullWidth] makes the button take the full width of its parent.
-/// - [borderRadius] sets the button's border radius.
-/// - [centerAlign] aligns the content in the center.
-/// - [spaceOut] adds spacing between the icon and text.
-/// - [trailing] places the icon at the end of the button.
-/// - [shadows] is an optional list of box shadows applied to the button.
-/// - [semanticsLabel] overrides the accessible label; defaults to [label].
-/// - [focusNode] used to control button focus state.
-/// - [autofocus] determines whether the button should be auto focused.
+/// Either [label] or [child] must be provided.
 class CoreButton extends StatefulWidget {
   final String? label;
   final Widget? child;
