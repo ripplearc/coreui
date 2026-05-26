@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Defines the size of the button.
-/// - [large]: 48px height.
-/// - [medium]: 40px height.
-/// - [small]: 36px height.
 enum CoreButtonSize {
   /// 48px height.
   large,
@@ -17,9 +14,6 @@ enum CoreButtonSize {
 }
 
 /// Determines the presentation style of the button.
-/// - [primary]: Default button style with a solid background.
-/// - [secondary]: Button with a white background and border.
-/// - [social]: Button styled for social media actions.
 enum CoreButtonVariant {
   /// Default button style with a solid background.
   primary,
@@ -31,6 +25,9 @@ enum CoreButtonVariant {
   social,
 }
 
+/// A customizable button widget that supports flexible content.
+///
+/// Either [label] or [child] must be provided.
 class CoreButton extends StatefulWidget {
   final String? label;
   final Widget? child;

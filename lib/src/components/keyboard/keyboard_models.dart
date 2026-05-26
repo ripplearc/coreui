@@ -7,24 +7,34 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 enum DigitType {
   /// Numeric digit 0
   zero,
+
   /// Numeric digit 1
   one,
+
   /// Numeric digit 2
   two,
+
   /// Numeric digit 3
   three,
+
   /// Numeric digit 4
   four,
+
   /// Numeric digit 5
   five,
+
   /// Numeric digit 6
   six,
+
   /// Numeric digit 7
   seven,
+
   /// Numeric digit 8
   eight,
+
   /// Numeric digit 9
   nine,
+
   /// Decimal point symbol (.)
   decimal,
 }
@@ -69,12 +79,16 @@ extension DigitTypeX on DigitType {
 enum OperatorType {
   /// Addition operator (+)
   add,
+
   /// Subtraction operator (−)
   subtract,
+
   /// Multiplication operator (×)
   multiply,
+
   /// Division operator (÷)
   divide,
+
   /// Percentage operator (%)
   percent,
 }
@@ -125,16 +139,22 @@ extension OperatorTypeX on OperatorType {
 enum UnitType {
   /// Yards unit
   yards,
+
   /// Feet unit
   feet,
+
   /// Inch unit
   inch,
+
   /// Meter unit
   meter,
+
   /// Centimeter unit
   centimeter,
+
   /// Millimeter unit
   millimeter,
+
   /// Division symbol (/) for compound units
   divideSymbol,
 }
@@ -169,8 +189,10 @@ extension UnitTypeX on UnitType {
 enum ControlAction {
   /// Backspace/delete action
   delete,
+
   /// Clear all input action
   clearAll,
+
   /// Show additional options
   moreOptions,
 }

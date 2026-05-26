@@ -9,10 +9,6 @@ import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
 /// Defines the type of toast notification and its visual styling.
-/// - [error]: Error toast with red background and icon for critical issues.
-/// - [warning]: Warning toast with orange background and icon for cautionary messages.
-/// - [info]: Information toast with blue background and icon for general notifications.
-/// - [success]: Success toast with green background and icon for positive confirmations.
 enum _ToastType {
   /// Error toast with red background and icon for critical issues.
   error,
@@ -27,6 +23,10 @@ enum _ToastType {
   success,
 }
 
+/// A notification widget that displays temporary messages to users.
+///
+/// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
+/// factory constructors to create a toast with the appropriate visual style.
 class Toast extends StatelessWidget {
   final String? title;
   final String description;
