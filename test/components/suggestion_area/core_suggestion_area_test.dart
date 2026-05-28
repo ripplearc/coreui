@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import 'suggestion_area_test_helpers.dart';
+
 void main() {
   group('CoreSuggestionArea Widget Tests', () {
     testWidgets('renders CoreSuggestionArea with correct dimensions and margin',
@@ -16,8 +18,8 @@ void main() {
           theme: CoreTheme.light().copyWith(
             textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
           ),
-          home: const Scaffold(
-            body: CoreSuggestionArea(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(),
           ),
         ),
       );
@@ -25,17 +27,15 @@ void main() {
       final suggestionAreaFinder = find.byType(CoreSuggestionArea);
       expect(suggestionAreaFinder, findsOneWidget);
 
-      final container = tester.widget<Container>(
+      final animatedContainer = tester.widget<AnimatedContainer>(
         find
             .descendant(
               of: suggestionAreaFinder,
-              matching: find.byType(Container),
+              matching: find.byType(AnimatedContainer),
             )
             .first,
       );
-
-      expect(container.alignment, AlignmentDirectional.centerStart);
-      expect(container.margin,
+      expect(animatedContainer.margin,
           const EdgeInsets.symmetric(horizontal: CoreSpacing.space4));
 
       final size = tester.getSize(suggestionAreaFinder);
@@ -49,8 +49,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(),
           ),
         ),
       );
@@ -67,8 +67,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(
+          home: Scaffold(
+            body: testCoreSuggestionArea(
               suggestionAreaPlaceholder: customPlaceholder,
             ),
           ),
@@ -87,8 +87,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(),
           ),
         ),
       );
@@ -116,8 +116,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreSuggestionArea(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(),
           ),
         ),
       );
@@ -136,7 +136,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -152,7 +152,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(CoreSuggestionArea),
-          matching: find.byType(AnimatedSwitcher),
+          matching: find.byType(AnimatedSize),
         ),
         findsOneWidget,
       );
@@ -168,7 +168,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -180,9 +180,10 @@ void main() {
         ),
       );
 
+      final toggleFinder = find.bySemanticsLabel('Toggle suggestion mode');
       final iconWidgets = tester.widgetList<CoreIconWidget>(
         find.descendant(
-          of: find.byType(CoreSuggestionArea),
+          of: toggleFinder,
           matching: find.byType(CoreIconWidget),
         ),
       );
@@ -200,7 +201,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -228,7 +229,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -259,7 +260,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -288,7 +289,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(label: 'AI', value: '1', onTap: () {})
               ],
@@ -308,7 +309,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               conversionSuggestions: [
                 SuggestionData(label: 'Conv', value: '1', onTap: () {})
               ],
@@ -328,7 +329,7 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreSuggestionArea(
+            body: testCoreSuggestionArea(
               aiSuggestions: [
                 SuggestionData(
                   label: 'AI',
@@ -355,4 +356,145 @@ void main() {
       expect(tapped, isTrue);
     });
   });
+
+  group('CoreSuggestionArea overflow toggle', () {
+    testWidgets('expand toggle calls onExpandedChanged when collapsed',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      bool expandedChanged = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(
+              aiSuggestions: List.generate(
+                5,
+                (index) => SuggestionData(
+                  label: 'Item $index',
+                  value: '$index',
+                  onTap: () {},
+                ),
+              ),
+              onExpandedChanged: (val) => expandedChanged = val,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.pump();
+
+      expect(_expandToggleFinder, findsOneWidget);
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      expect(expandedChanged, isTrue);
+    });
+
+    testWidgets('collapse toggle calls onExpandedChanged when expanded',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      bool expandedChanged = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: testCoreSuggestionArea(
+              aiSuggestions: List.generate(
+                5,
+                (index) => SuggestionData(
+                  label: 'Item $index',
+                  value: '$index',
+                  onTap: () {},
+                ),
+              ),
+              onExpandedChanged: (val) => expandedChanged = val,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.pump();
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      expect(expandedChanged, isTrue);
+
+      await tester.tap(
+        find.bySemanticsLabel(testCollapseToggleSemantics),
+      );
+      await tester.pumpAndSettle();
+      expect(expandedChanged, isFalse);
+    });
+
+    testWidgets(
+        'notifies onExpandedChanged when suggestions change while expanded',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const _SuggestionAreaHost(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+
+      final host = tester
+          .state<_SuggestionAreaHostState>(find.byType(_SuggestionAreaHost));
+      expect(host.lastExpanded, isTrue);
+
+      host.updateSuggestions([
+        SuggestionData(label: 'New', value: '1', onTap: () {}),
+      ]);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isFalse);
+    });
+  });
+}
+
+final _expandToggleFinder = find.bySemanticsLabel(
+  RegExp(r'Show \d+ more suggestions'),
+);
+
+class _SuggestionAreaHost extends StatefulWidget {
+  const _SuggestionAreaHost();
+
+  @override
+  State<_SuggestionAreaHost> createState() => _SuggestionAreaHostState();
+}
+
+class _SuggestionAreaHostState extends State<_SuggestionAreaHost> {
+  List<SuggestionData> suggestions = List.generate(
+    5,
+    (index) => SuggestionData(
+      label: 'Item $index',
+      value: '$index',
+      onTap: () {},
+    ),
+  );
+
+  bool? lastExpanded;
+
+  void updateSuggestions(List<SuggestionData> next) {
+    setState(() => suggestions = next);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: testCoreSuggestionArea(
+        aiSuggestions: suggestions,
+        onExpandedChanged: (expanded) => lastExpanded = expanded,
+      ),
+    );
+  }
 }

@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../blocs/suggestion_area_showcase_bloc.dart';
+
 /// A showcase screen demonstrating [CoreSuggestionArea]
-class SuggestionAreaShowcaseScreen extends StatefulWidget {
+class SuggestionAreaShowcaseScreen extends StatelessWidget {
   const SuggestionAreaShowcaseScreen({super.key});
-
-  @override
-  State<SuggestionAreaShowcaseScreen> createState() =>
-      _SuggestionAreaShowcaseScreenState();
-}
-
-class _SuggestionAreaShowcaseScreenState
-    extends State<SuggestionAreaShowcaseScreen> {
-  final DisplayAreaStage _currentStage = DisplayAreaStage.collapsed;
 
   static const GroupNameType _basicGeometryGroup =
       GroupNameType(label: 'Basic Geometry');
@@ -57,119 +51,115 @@ class _SuggestionAreaShowcaseScreenState
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SuggestionAreaShowcaseBloc(),
+      child: const _SuggestionAreaShowcaseView(),
+    );
+  }
+}
+
+class _SuggestionAreaShowcaseView extends StatelessWidget {
+  const _SuggestionAreaShowcaseView();
+
+  @override
+  Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final Map<GroupNameType, Color> groupAccentColors = {
-      _basicGeometryGroup: colors.keyboardFunctions,
-      _materialsGroup: colors.keyboardUnits,
-      _trigonometryGroup: colors.textSuccess,
+      SuggestionAreaShowcaseScreen._basicGeometryGroup:
+          colors.keyboardFunctions,
+      SuggestionAreaShowcaseScreen._materialsGroup: colors.keyboardUnits,
+      SuggestionAreaShowcaseScreen._trigonometryGroup: colors.textSuccess,
     };
 
     return Scaffold(
-        backgroundColor: colors.backgroundBlueLight,
-        body: SafeArea(
-          child: DecoratedBox(
-              decoration: BoxDecoration(color: colors.pageBackground),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: _currentStage != DisplayAreaStage.collapsed
-                          ? const NeverScrollableScrollPhysics()
-                          : const AlwaysScrollableScrollPhysics(),
-                      child: CoreDisplayArea(
-                        label: 'Length',
-                        value: '10ft',
-                        hasError: false,
-                        isTyping: false,
-                        onClose: () {},
-                        onStageChanged: (stage) {},
-                        chipsList: [
-                          const CoreCalculatorChip(
-                            type: CoreCalculatorChipType.disabled,
-                            label: 'Length',
-                            value: '10 ft',
-                          ),
-                          const CoreCalculatorChip(
-                            type: CoreCalculatorChipType.disabled,
-                            label: 'Width',
-                            value: '12 ft',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  CoreSuggestionArea(
-                    aiSuggestions: [
-                      SuggestionData(
-                        label: 'Length:',
-                        value: '27',
-                        unit: 'ft',
-                        onTap: () {},
-                      ),
-                      SuggestionData(
-                        label: 'Area:',
-                        value: '90',
-                        unit: 'sq ft',
-                        onTap: () {},
-                      ),
-                    ],
-                    conversionSuggestions: [
-                      SuggestionData(
-                        label: 'M:',
-                        value: '3.048',
-                        unit: 'm',
-                        onTap: () {},
-                      ),
-                      SuggestionData(
-                        label: 'CM:',
-                        value: '304.8',
-                        unit: 'cm',
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                  TweenAnimationBuilder<double>(
-                    tween: Tween<double>(
-                      begin: 0.95,
-                      end: switch (_currentStage) {
-                        DisplayAreaStage.collapsed => 0.95,
-                        DisplayAreaStage.expandedCurrent => 0.95,
-                        DisplayAreaStage.expandedPrevious => 0.75,
-                        DisplayAreaStage.fullScreen => 0.0,
-                      },
-                    ),
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    builder: (context, factor, child) {
-                      return ClipRect(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          heightFactor: factor,
-                          child: child,
+      backgroundColor: colors.backgroundBlueLight,
+      body: SafeArea(
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: colors.pageBackground),
+          child: BlocBuilder<SuggestionAreaShowcaseBloc,
+              SuggestionAreaShowcaseState>(
+            builder: (context, state) {
+              final bloc = context.read<SuggestionAreaShowcaseBloc>();
+
+              return SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    CoreDisplayArea(
+                      label: 'Length',
+                      value: '10ft',
+                      hasError: false,
+                      isTyping: false,
+                      onClose: () {},
+                      onStageChanged: (stage) {},
+                      chipsList: [
+                        const CoreCalculatorChip(
+                          type: CoreCalculatorChipType.disabled,
+                          label: 'Length',
+                          value: '10 ft',
                         ),
-                      );
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(top: CoreSpacing.space1),
-                      child: CoreKeyboard(
-                        currentGroup: _basicGeometryGroup,
-                        allGroups: _groups,
-                        onDigitPressed: (_) {},
-                        onUnitSelected: (_) {},
-                        onOperatorPressed: (_) {},
-                        onControlAction: (_) {},
-                        onResultTapped: () {},
-                        onGroupSelected: (_) {},
-                        currentUnitSystem: UnitSystem.imperial,
-                        onKeyTapped: (_) {},
-                        onUnitSystemChanged: (_) {},
-                        groupAccentColors: groupAccentColors,
-                        result: const ResultType(label: '='),
+                        const CoreCalculatorChip(
+                          type: CoreCalculatorChipType.disabled,
+                          label: 'Width',
+                          value: '12 ft',
+                        ),
+                      ],
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: ClipRect(
+                        child: SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CoreSuggestionArea(
+                                onExpandedChanged: (expanded) {
+                                  bloc.add(SuggestionAreaExpanded(expanded));
+                                },
+                                aiSuggestions: state.aiSuggestions,
+                                conversionSuggestions:
+                                    state.conversionSuggestions,
+                                hiddenChipsTextBuilder: (count) => '+$count',
+                                expandToggleSemanticsLabelBuilder: (count) =>
+                                    'Show $count more suggestions',
+                                collapseToggleSemanticsLabel:
+                                    'Show fewer suggestions',
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: CoreSpacing.space1),
+                                child: CoreKeyboard(
+                                  currentGroup: SuggestionAreaShowcaseScreen
+                                      ._basicGeometryGroup,
+                                  allGroups:
+                                      SuggestionAreaShowcaseScreen._groups,
+                                  onDigitPressed: (_) {},
+                                  onUnitSelected: (_) {},
+                                  onOperatorPressed: (_) {},
+                                  onControlAction: (_) {},
+                                  onResultTapped: () {},
+                                  onGroupSelected: (_) {},
+                                  currentUnitSystem: UnitSystem.imperial,
+                                  onKeyTapped: (_) {},
+                                  onUnitSystemChanged: (_) {},
+                                  groupAccentColors: groupAccentColors,
+                                  result: const ResultType(label: '='),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              )),
-        ));
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

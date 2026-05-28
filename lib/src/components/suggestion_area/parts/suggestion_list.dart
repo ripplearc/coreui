@@ -34,10 +34,21 @@ class SuggestionData {
 
 class _SuggestionList extends StatefulWidget {
   final List<SuggestionData>? suggestions;
+  final bool isExpanded;
+  final ValueChanged<bool>? onExpandedChanged;
+  final String Function(int) hiddenChipsTextBuilder;
+  final String Function(int hiddenCount) expandToggleSemanticsLabelBuilder;
+  final String collapseToggleSemanticsLabel;
+  final Widget? leadingWidget;
 
   const _SuggestionList({
-    super.key,
     this.suggestions,
+    required this.isExpanded,
+    this.onExpandedChanged,
+    required this.hiddenChipsTextBuilder,
+    required this.expandToggleSemanticsLabelBuilder,
+    required this.collapseToggleSemanticsLabel,
+    this.leadingWidget,
   });
 
   @override
@@ -45,64 +56,568 @@ class _SuggestionList extends StatefulWidget {
 }
 
 class _SuggestionListState extends State<_SuggestionList> {
-  late List<ValueNotifier<bool>> _notifiers;
+  int _layoutHiddenCount = 0;
+  bool _isToggleVisible = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _initNotifiers();
-  }
-
-  @override
-  void didUpdateWidget(_SuggestionList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.suggestions != oldWidget.suggestions) {
-      _disposeNotifiers();
-      _initNotifiers();
+  void _onLayoutMetrics({
+    required int hiddenCount,
+    required bool isToggleVisible,
+  }) {
+    if (_layoutHiddenCount == hiddenCount &&
+        _isToggleVisible == isToggleVisible) {
+      return;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _layoutHiddenCount = hiddenCount;
+        _isToggleVisible = isToggleVisible;
+      });
+    });
   }
 
-  void _initNotifiers() {
-    _notifiers = widget.suggestions?.map((_) => ValueNotifier(false)).toList() ?? [];
-  }
-
-  void _disposeNotifiers() {
-    for (var notifier in _notifiers) {
-      notifier.dispose();
-    }
-  }
+  final ValueNotifier<bool> _smartChipUnselected = ValueNotifier<bool>(false);
 
   @override
   void dispose() {
-    _disposeNotifiers();
+    _smartChipUnselected.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final suggestions = widget.suggestions;
+
     if (suggestions == null || suggestions.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Wrap(
-        spacing: CoreSpacing.space2,
-        alignment: WrapAlignment.start,
-        children: List.generate(suggestions.length, (index) {
-          final data = suggestions[index];
-          return CoreChip(
+    final toggleHiddenCount =
+        _layoutHiddenCount > 0 ? _layoutHiddenCount : suggestions.length;
+
+    final leadingWidget = widget.leadingWidget;
+
+    return _SuggestionWrap(
+      isExpanded: widget.isExpanded,
+      hasLeading: leadingWidget != null,
+      spacing: CoreSpacing.space2,
+      runSpacing: -CoreSpacing.space2,
+      maxRows: 3,
+      onLayoutMetrics: _onLayoutMetrics,
+      children: [
+        if (leadingWidget != null) leadingWidget,
+        ...suggestions.map(
+          (data) => CoreChip(
             label: data.label,
             value: data.value,
             unit: data.unit,
-            selected: _notifiers[index],
+            selected: _smartChipUnselected,
             onTap: data.onTap,
             isSmartChip: true,
             size: CoreChipSize.large,
-          );
-        }),
-      ),
+          ),
+        ),
+        _ToggleButton(
+          hiddenCount: toggleHiddenCount,
+          isExpanded: widget.isExpanded,
+          onTap: () => widget.onExpandedChanged?.call(!widget.isExpanded),
+          textBuilder: widget.hiddenChipsTextBuilder,
+          expandSemanticsLabelBuilder: widget.expandToggleSemanticsLabelBuilder,
+          collapseSemanticsLabel: widget.collapseToggleSemanticsLabel,
+          excludeFromSemantics: !_isToggleVisible,
+        ),
+      ],
     );
+  }
+}
+
+class _SuggestionWrap extends MultiChildRenderObjectWidget {
+  final bool isExpanded;
+  final bool hasLeading;
+  final double spacing;
+  final double runSpacing;
+  final int maxRows;
+  final void Function(
+      {required int hiddenCount,
+      required bool isToggleVisible})? onLayoutMetrics;
+
+  const _SuggestionWrap({
+    required this.isExpanded,
+    required this.hasLeading,
+    this.spacing = CoreSpacing.space1,
+    this.runSpacing = 0,
+    this.maxRows = 3,
+    this.onLayoutMetrics,
+    required super.children,
+  });
+
+  @override
+  _RenderSuggestionWrap createRenderObject(BuildContext context) {
+    return _RenderSuggestionWrap(
+      isExpanded: isExpanded,
+      hasLeading: hasLeading,
+      spacing: spacing,
+      runSpacing: runSpacing,
+      maxRows: maxRows,
+      textDirection: Directionality.of(context),
+      onLayoutMetrics: onLayoutMetrics,
+    );
+  }
+
+  @override
+  void updateRenderObject(
+      BuildContext context, _RenderSuggestionWrap renderObject) {
+    renderObject
+      ..isExpanded = isExpanded
+      ..hasLeading = hasLeading
+      ..spacing = spacing
+      ..runSpacing = runSpacing
+      ..maxRows = maxRows
+      ..textDirection = Directionality.of(context)
+      ..onLayoutMetrics = onLayoutMetrics;
+  }
+}
+
+class _SuggestionWrapParentData extends ContainerBoxParentData<RenderBox> {}
+
+class _RowLayoutBuffer {
+  final List<RenderBox> children = [];
+  final List<double> xOffsets = [];
+  double height = 0.0;
+
+  void add(RenderBox child, double x) {
+    children.add(child);
+    xOffsets.add(x);
+    if (child.size.height > height) {
+      height = child.size.height;
+    }
+  }
+
+  void clear() {
+    children.clear();
+    xOffsets.clear();
+    height = 0.0;
+  }
+}
+
+class _RenderSuggestionWrap extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, _SuggestionWrapParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _SuggestionWrapParentData> {
+  _RenderSuggestionWrap({
+    required bool isExpanded,
+    required bool hasLeading,
+    required double spacing,
+    required double runSpacing,
+    required int maxRows,
+    required TextDirection textDirection,
+    void Function({required int hiddenCount, required bool isToggleVisible})?
+        onLayoutMetrics,
+  })  : _isExpanded = isExpanded,
+        _hasLeading = hasLeading,
+        _spacing = spacing,
+        _runSpacing = runSpacing,
+        _maxRows = maxRows,
+        _textDirection = textDirection,
+        _onLayoutMetrics = onLayoutMetrics;
+
+  bool _isExpanded;
+
+  bool get isExpanded => _isExpanded;
+
+  set isExpanded(bool value) {
+    if (_isExpanded == value) return;
+    _isExpanded = value;
+    markNeedsLayout();
+  }
+
+  bool _hasLeading;
+
+  bool get hasLeading => _hasLeading;
+
+  set hasLeading(bool value) {
+    if (_hasLeading == value) return;
+    _hasLeading = value;
+    markNeedsLayout();
+  }
+
+  double _spacing;
+
+  double get spacing => _spacing;
+
+  set spacing(double value) {
+    if (_spacing == value) return;
+    _spacing = value;
+    markNeedsLayout();
+  }
+
+  double _runSpacing;
+
+  double get runSpacing => _runSpacing;
+
+  set runSpacing(double value) {
+    if (_runSpacing == value) return;
+    _runSpacing = value;
+    markNeedsLayout();
+  }
+
+  int _maxRows;
+
+  int get maxRows => _maxRows;
+
+  set maxRows(int value) {
+    if (_maxRows == value) return;
+    _maxRows = value;
+    markNeedsLayout();
+  }
+
+  TextDirection _textDirection;
+
+  TextDirection get textDirection => _textDirection;
+
+  set textDirection(TextDirection value) {
+    if (_textDirection == value) return;
+    _textDirection = value;
+    markNeedsLayout();
+  }
+
+  void Function({required int hiddenCount, required bool isToggleVisible})?
+      _onLayoutMetrics;
+
+  void Function({required int hiddenCount, required bool isToggleVisible})?
+      get onLayoutMetrics => _onLayoutMetrics;
+
+  set onLayoutMetrics(
+    void Function({required int hiddenCount, required bool isToggleVisible})?
+        value,
+  ) {
+    if (_onLayoutMetrics == value) return;
+    _onLayoutMetrics = value;
+  }
+
+  int _lastReportedHiddenCount = -1;
+  bool _lastReportedToggleVisible = false;
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! _SuggestionWrapParentData) {
+      child.parentData = _SuggestionWrapParentData();
+    }
+  }
+
+  @override
+  void performLayout() {
+    final constraints = this.constraints;
+    final double maxWidth = constraints.maxWidth;
+
+    if (childCount == 0) {
+      size = constraints.constrain(Size(maxWidth, 0.0));
+      _reportLayoutMetrics(hiddenCount: 0, isToggleVisible: false);
+      return;
+    }
+
+    final (:leading, :items, :overflowToggle) = _measureChildren(constraints);
+
+    _resetOffsets();
+
+    final Size leadingSize = leading?.size ?? Size.zero;
+    final (:needsToggle, :firstRowLimit, :hiddenCount) =
+        _computeOverflowMetrics(
+      leadingSize: leadingSize,
+      items: items,
+      overflowToggle: overflowToggle,
+      maxWidth: maxWidth,
+    );
+
+    final TextDirection dir = textDirection;
+    double layoutHeight;
+
+    if (!isExpanded) {
+      layoutHeight = _layoutCollapsed(
+        leading: leading,
+        items: items,
+        overflowToggle: overflowToggle,
+        maxWidth: maxWidth,
+        firstRowLimit: firstRowLimit,
+        hiddenCount: hiddenCount,
+        textDirection: dir,
+      );
+    } else {
+      layoutHeight = _layoutExpanded(
+        leading: leading,
+        items: items,
+        overflowToggle: overflowToggle,
+        maxWidth: maxWidth,
+        needsToggle: needsToggle,
+        textDirection: dir,
+      );
+    }
+
+    if (layoutHeight < 0.0) {
+      layoutHeight = 0.0;
+    }
+    size = constraints.constrain(Size(maxWidth, layoutHeight));
+
+    _reportLayoutMetrics(
+      hiddenCount: hiddenCount,
+      isToggleVisible: _isToggleVisible(overflowToggle),
+    );
+  }
+
+  bool _isToggleVisible(RenderBox? overflowToggle) {
+    if (overflowToggle == null) return false;
+    final parentData = overflowToggle.parentData as _SuggestionWrapParentData;
+    return parentData.offset.dx > -5000 && parentData.offset.dy > -5000;
+  }
+
+  void _reportLayoutMetrics({
+    required int hiddenCount,
+    required bool isToggleVisible,
+  }) {
+    if (_lastReportedHiddenCount == hiddenCount &&
+        _lastReportedToggleVisible == isToggleVisible) {
+      return;
+    }
+    _lastReportedHiddenCount = hiddenCount;
+    _lastReportedToggleVisible = isToggleVisible;
+    onLayoutMetrics?.call(
+      hiddenCount: hiddenCount,
+      isToggleVisible: isToggleVisible,
+    );
+  }
+
+  ({
+    RenderBox? leading,
+    List<RenderBox> items,
+    RenderBox? overflowToggle,
+  }) _measureChildren(
+    BoxConstraints constraints,
+  ) {
+    RenderBox? leading;
+    final List<RenderBox> items = [];
+    RenderBox? overflowToggle;
+
+    RenderBox? child = firstChild;
+    final childConstraints = constraints.loosen();
+
+    if (hasLeading && child != null) {
+      leading = child;
+      leading.layout(childConstraints, parentUsesSize: true);
+      child = childAfter(child);
+    }
+
+    final int leadingOffset = leading != null ? 1 : 0;
+    final int itemCount = childCount - leadingOffset - 1;
+
+    for (int i = 0; i < itemCount; i++) {
+      if (child != null) {
+        child.layout(childConstraints, parentUsesSize: true);
+        items.add(child);
+        child = childAfter(child);
+      }
+    }
+
+    if (child != null) {
+      child.layout(childConstraints, parentUsesSize: true);
+      overflowToggle = child;
+    }
+
+    return (
+      leading: leading,
+      items: items,
+      overflowToggle: overflowToggle,
+    );
+  }
+
+  void _resetOffsets() {
+    RenderBox? child = firstChild;
+    while (child != null) {
+      final parentData = child.parentData as _SuggestionWrapParentData;
+      parentData.offset = const Offset(-10000.0, -10000.0);
+      child = childAfter(child);
+    }
+  }
+
+  ({bool needsToggle, int firstRowLimit, int hiddenCount})
+      _computeOverflowMetrics({
+    required Size leadingSize,
+    required List<RenderBox> items,
+    required RenderBox? overflowToggle,
+    required double maxWidth,
+  }) {
+    final int itemsCount = items.length;
+    double x = hasLeading ? leadingSize.width + spacing : 0.0;
+    bool needsToggle = false;
+    int firstRowLimit = itemsCount;
+
+    for (int i = 0; i < itemsCount; i++) {
+      final double itemWidth = items[i].size.width;
+      if (x + itemWidth > maxWidth) {
+        needsToggle = true;
+        break;
+      }
+      x += itemWidth + spacing;
+    }
+
+    final double toggleWidth = overflowToggle?.size.width ?? 0.0;
+
+    if (needsToggle) {
+      x = hasLeading ? leadingSize.width + spacing : 0.0;
+      firstRowLimit = 0;
+      for (int i = 0; i < itemsCount; i++) {
+        final double spaceForToggle = spacing + toggleWidth;
+
+        if (x + items[i].size.width + spaceForToggle > maxWidth) {
+          break;
+        }
+        x += items[i].size.width + spacing;
+        firstRowLimit = i + 1;
+      }
+    }
+
+    final int hiddenCount = itemsCount - firstRowLimit;
+    return (
+      needsToggle: needsToggle,
+      firstRowLimit: firstRowLimit,
+      hiddenCount: hiddenCount,
+    );
+  }
+
+  double _layoutCollapsed({
+    required RenderBox? leading,
+    required List<RenderBox> items,
+    required RenderBox? overflowToggle,
+    required double maxWidth,
+    required int firstRowLimit,
+    required int hiddenCount,
+    required TextDirection textDirection,
+  }) {
+    final rowBuffer = _RowLayoutBuffer();
+    final double currentY = 0.0;
+    double x = 0.0;
+
+    if (leading != null) {
+      rowBuffer.add(leading, 0.0);
+      x = leading.size.width + spacing;
+    }
+
+    for (int i = 0; i < firstRowLimit; i++) {
+      rowBuffer.add(items[i], x);
+      x += items[i].size.width + spacing;
+    }
+
+    if (hiddenCount > 0 && overflowToggle != null) {
+      rowBuffer.add(overflowToggle, x);
+    }
+
+    _commitRow(
+      rowBuffer: rowBuffer,
+      currentY: currentY,
+      maxWidth: maxWidth,
+      textDirection: textDirection,
+    );
+
+    return rowBuffer.height;
+  }
+
+  double _layoutExpanded({
+    required RenderBox? leading,
+    required List<RenderBox> items,
+    required RenderBox? overflowToggle,
+    required double maxWidth,
+    required bool needsToggle,
+    required TextDirection textDirection,
+  }) {
+    final rowBuffer = _RowLayoutBuffer();
+    double currentY = 0.0;
+    double x = 0.0;
+    int currentRowIdx = 0;
+    int lastVisibleItem = -1;
+
+    if (leading != null) {
+      rowBuffer.add(leading, 0.0);
+      x = leading.size.width + spacing;
+    }
+
+    final double toggleWidth = overflowToggle?.size.width ?? 0.0;
+
+    for (int i = 0; i < items.length; i++) {
+      final itemWidth = items[i].size.width;
+      final bool overflow = x + itemWidth > maxWidth;
+
+      if (overflow) {
+        currentRowIdx++;
+        if (currentRowIdx >= maxRows) {
+          break;
+        }
+        _commitRow(
+          rowBuffer: rowBuffer,
+          currentY: currentY,
+          maxWidth: maxWidth,
+          textDirection: textDirection,
+        );
+        currentY += rowBuffer.height + runSpacing;
+        rowBuffer.clear();
+        x = 0.0;
+      }
+
+      final bool isLastRow = currentRowIdx == maxRows - 1;
+      final double spaceForToggle =
+          (needsToggle && (isLastRow || i == items.length - 1))
+              ? (spacing + toggleWidth)
+              : 0.0;
+
+      if (isLastRow && x + itemWidth + spaceForToggle > maxWidth) {
+        break;
+      }
+
+      rowBuffer.add(items[i], x);
+      lastVisibleItem = i;
+      x += itemWidth + spacing;
+    }
+
+    if (needsToggle && lastVisibleItem >= 0 && overflowToggle != null) {
+      rowBuffer.add(overflowToggle, x);
+    }
+
+    _commitRow(
+      rowBuffer: rowBuffer,
+      currentY: currentY,
+      maxWidth: maxWidth,
+      textDirection: textDirection,
+    );
+    currentY += rowBuffer.height;
+
+    return currentY;
+  }
+
+  void _commitRow({
+    required _RowLayoutBuffer rowBuffer,
+    required double currentY,
+    required double maxWidth,
+    required TextDirection textDirection,
+  }) {
+    for (int i = 0; i < rowBuffer.children.length; i++) {
+      final child = rowBuffer.children[i];
+      final xOffset = rowBuffer.xOffsets[i];
+      final parentData = child.parentData as _SuggestionWrapParentData;
+
+      final dy = currentY + (rowBuffer.height - child.size.height) / 2;
+      final dx = textDirection == TextDirection.rtl
+          ? maxWidth - xOffset - child.size.width
+          : xOffset;
+
+      parentData.offset = Offset(dx, dy);
+    }
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    defaultPaint(context, offset);
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    return defaultHitTestChildren(result, position: position);
   }
 }
