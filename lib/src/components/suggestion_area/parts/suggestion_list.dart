@@ -106,17 +106,24 @@ class _SuggestionListState extends State<_SuggestionList> {
       onLayoutMetrics: _onLayoutMetrics,
       children: [
         if (leadingWidget != null) leadingWidget,
-        ...suggestions.map(
-          (data) => CoreChip(
-            label: data.label,
-            value: data.value,
-            unit: data.unit,
-            selected: _smartChipUnselected,
-            onTap: data.onTap,
-            isSmartChip: true,
-            size: CoreChipSize.large,
-          ),
-        ),
+        ...suggestions.asMap().entries.map(
+              (entry) => CoreChip(
+                key: ValueKey(
+                    '${entry.value.label}_${entry.value.value}_${entry.value.unit}_${entry.key}'),
+                label: entry.value.label,
+                value: entry.value.value,
+                unit: entry.value.unit,
+                selected: _smartChipUnselected,
+                onTap: () {
+                  entry.value.onTap();
+                  if (widget.isExpanded) {
+                    widget.onExpandedChanged?.call(false);
+                  }
+                },
+                isSmartChip: true,
+                size: CoreChipSize.large,
+              ),
+            ),
         _ToggleButton(
           hiddenCount: toggleHiddenCount,
           isExpanded: widget.isExpanded,

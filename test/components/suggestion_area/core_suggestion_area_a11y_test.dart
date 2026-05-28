@@ -162,6 +162,31 @@ void main() {
     });
   });
 
+  group('CoreSuggestionArea with duplicate chips – accessibility', () {
+    final suggestionAreaWithDuplicates = testCoreSuggestionArea(
+      aiSuggestions: [
+        SuggestionData(label: 'AI', value: '1', onTap: () {}),
+        SuggestionData(label: 'AI', value: '1', onTap: () {}),
+      ],
+    );
+
+    testWidgets('duplicate list meets basic accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => suggestionAreaWithDuplicates,
+        find.byType(CoreSuggestionArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: false,
+      );
+    });
+  });
+
   group('CoreSuggestionArea overflow toggle – accessibility', () {
     List<SuggestionData> overflowSuggestions() => List.generate(
           8,
