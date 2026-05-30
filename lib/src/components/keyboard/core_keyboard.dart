@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-
 /// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
 ///
 /// [currentGroup] is the currently active function group.
@@ -100,24 +99,26 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             final double idealTotalWidth = (maxButtonSize * columnCount) +
                 (minSpacing * (columnCount - 1));
 
-            double finalButtonSize;
+            double finalButtonWidth;
             double finalSpacing;
 
             if (widthForContent > idealTotalWidth) {
-              finalButtonSize = maxButtonSize;
+              finalButtonWidth = maxButtonSize;
               finalSpacing =
-                  (widthForContent - (finalButtonSize * columnCount)) /
+                  (widthForContent - (finalButtonWidth * columnCount)) /
                       (columnCount - 1);
             } else {
               finalSpacing = minSpacing;
-              finalButtonSize =
+              finalButtonWidth =
                   (widthForContent - (finalSpacing * (columnCount - 1))) /
                       columnCount;
 
-              if (finalButtonSize < minButtonSize) {
-                finalButtonSize = minButtonSize;
+              if (finalButtonWidth < minButtonSize) {
+                finalButtonWidth = minButtonSize;
               }
             }
+
+            const double finalButtonHeight = CoreSpacing.space14;
 
             return Container(
               padding: const EdgeInsets.fromLTRB(horizontalPadding,
@@ -147,7 +148,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                   SizedBox(height: functionStripSpacing),
                   _buildColumnLayout(
                     context,
-                    buttonSize: finalButtonSize,
+                    buttonWidth: finalButtonWidth,
+                    buttonHeight: finalButtonHeight,
                     buttonSpacing: finalSpacing,
                     heightSpacing: min(finalSpacing, maxHeightSpacing),
                   ),
@@ -162,7 +164,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
 
   Widget _buildColumnLayout(
     BuildContext context, {
-    required double buttonSize,
+    required double buttonWidth,
+    required double buttonHeight,
     required double buttonSpacing,
     required double heightSpacing,
   }) {
@@ -183,32 +186,32 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreUnitButton(
               unit: UnitType.divideSymbol,
               onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.percent,
               onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.divide,
               onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreControlButton(
               action: ControlAction.delete,
               onControlAction: widget.onControlAction,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
           ],
           spacing: buttonSpacing,
@@ -219,32 +222,32 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             CoreUnitButton(
               unit: activeUnits[0],
               onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.seven,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.eight,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.nine,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.multiply,
               onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
           ],
           spacing: buttonSpacing,
@@ -255,32 +258,32 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             CoreUnitButton(
               unit: activeUnits[1],
               onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.four,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.five,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.six,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.subtract,
               onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
           ],
           spacing: buttonSpacing,
@@ -291,39 +294,40 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             CoreUnitButton(
               unit: activeUnits[2],
               onUnitSelected: widget.onUnitSelected,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.one,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.two,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.three,
               onDigitPressed: widget.onDigitPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.add,
               onOperatorPressed: widget.onOperatorPressed,
-              width: buttonSize,
-              height: buttonSize,
+              width: buttonWidth,
+              height: buttonHeight,
             ),
           ],
           spacing: buttonSpacing,
         ),
         SizedBox(height: heightSpacing),
         _buildBottomRow(
-          buttonSize: buttonSize,
+          buttonWidth: buttonWidth,
+          buttonHeight: buttonHeight,
           buttonSpacing: buttonSpacing,
         ),
       ],
@@ -345,7 +349,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
   }
 
   Widget _buildBottomRow({
-    required double buttonSize,
+    required double buttonWidth,
+    required double buttonHeight,
     required double buttonSpacing,
   }) {
     return Row(
@@ -353,30 +358,30 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
         CoreControlButton(
           action: ControlAction.moreOptions,
           onControlAction: widget.onControlAction,
-          width: buttonSize,
-          height: buttonSize,
+          width: buttonWidth,
+          height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: widget.onDigitPressed,
-          width: buttonSize,
-          height: buttonSize,
+          width: buttonWidth,
+          height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreDigitInput(
           digit: DigitType.decimal,
           onDigitPressed: widget.onDigitPressed,
-          width: buttonSize,
-          height: buttonSize,
+          width: buttonWidth,
+          height: buttonHeight,
         ),
         SizedBox(width: buttonSpacing),
         CoreResultButton(
           resultType: widget.result,
           customLabel: widget.customResultLabel,
           onTap: widget.onResultTapped,
-          width: buttonSize + buttonSize + buttonSpacing,
-          height: buttonSize,
+          width: buttonWidth + buttonWidth + buttonSpacing,
+          height: buttonHeight,
         ),
       ],
     );

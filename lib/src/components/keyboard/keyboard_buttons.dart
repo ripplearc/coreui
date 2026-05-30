@@ -499,12 +499,14 @@ class _KeyboardButtonState extends State<_KeyboardButton>
                 fit: StackFit.expand,
                 children: [
                   child ?? const SizedBox.shrink(),
-                  Opacity(
-                    opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colors.iconGrayLight,
-                        borderRadius: currentBorderRadius,
+                  IgnorePointer(
+                    child: Opacity(
+                      opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: colors.iconGrayLight,
+                          borderRadius: currentBorderRadius,
+                        ),
                       ),
                     ),
                   ),
