@@ -246,5 +246,44 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CoreKeyboard), findsOneWidget);
     });
+
+    testWidgets('toggles collapsed state when drag handle is tapped',
+        (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              allGroups: testGroups,
+              onDigitPressed: (_) {},
+              onUnitSelected: (_) {},
+              onOperatorPressed: (_) {},
+              onControlAction: (_) {},
+              onResultTapped: () {},
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onUnitSystemChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreDigitInput), findsWidgets);
+
+      await tester.drag(
+          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, 50));
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreDigitInput), findsNothing);
+
+      await tester.drag(
+          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, -50));
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreDigitInput), findsWidgets);
+    });
   });
 }

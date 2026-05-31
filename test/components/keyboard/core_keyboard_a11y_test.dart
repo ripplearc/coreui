@@ -17,7 +17,10 @@ void main() {
         keys: [
           KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
           KeyType(
-              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
+            groupName: 'Basic Geometry',
+            label: 'Perimeter',
+            action: () {},
+          ),
         ],
       ),
     ];
@@ -46,16 +49,37 @@ void main() {
     };
 
     for (final entry in keyTypesToTest.entries) {
-      testWidgets('${entry.key} keys meet tap target and label guidelines',
-          (tester) async {
-        await setupA11yTest(tester, screenSize: const Size(1100, 1600));
+      testWidgets(
+        '${entry.key} keys meet tap target and label guidelines',
+        (tester) async {
+          await setupA11yTest(
+            tester,
+            screenSize: const Size(1100, 1600),
+          );
+
+          await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+            tester,
+            (_) => buildTestKeyboard(),
+            find.byType(entry.value).first,
+          );
+        },
+      );
+    }
+
+    testWidgets(
+      'drag handle meets tap target and label guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
 
         await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
           tester,
           (_) => buildTestKeyboard(),
-          find.byType(entry.value).first,
+          find.bySemanticsLabel('Keyboard drag handle'),
         );
-      });
-    }
+      },
+    );
   });
 }
