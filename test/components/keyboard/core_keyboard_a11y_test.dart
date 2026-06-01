@@ -37,59 +37,25 @@ void main() {
       );
     }
 
-    testWidgets('digit keys meet tap target and label guidelines',
-        (tester) async {
-      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
+    final keyTypesToTest = {
+      'digit': CoreDigitInput,
+      'operator': CoreOperatorButton,
+      'unit': CoreUnitButton,
+      'control': CoreControlButton,
+      'result': CoreResultButton,
+    };
 
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (_) => buildTestKeyboard(),
-        find.byType(CoreDigitInput).first,
-      );
-    });
+    for (final entry in keyTypesToTest.entries) {
+      testWidgets('${entry.key} keys meet tap target and label guidelines',
+          (tester) async {
+        await setupA11yTest(tester, screenSize: const Size(1100, 1600));
 
-    testWidgets('operator keys meet tap target and label guidelines',
-        (tester) async {
-      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (_) => buildTestKeyboard(),
-        find.byType(CoreOperatorButton).first,
-      );
-    });
-
-    testWidgets('unit keys meet tap target and label guidelines',
-        (tester) async {
-      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (_) => buildTestKeyboard(),
-        find.byType(CoreUnitButton).first,
-      );
-    });
-
-    testWidgets('control keys meet tap target and label guidelines',
-        (tester) async {
-      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (_) => buildTestKeyboard(),
-        find.byType(CoreControlButton).first,
-      );
-    });
-
-    testWidgets('result key meets tap target and label guidelines',
-        (tester) async {
-      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (_) => buildTestKeyboard(),
-        find.byType(CoreResultButton).first,
-      );
-    });
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(),
+          find.byType(entry.value).first,
+        );
+      });
+    }
   });
 }

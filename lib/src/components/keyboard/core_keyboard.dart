@@ -118,7 +118,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
               }
             }
 
-            const double finalButtonHeight = CoreSpacing.space14;
+            // Fixed at design-token value until PR-116 makes height dynamic.
+            final double finalButtonHeight = CoreSpacing.space14;
 
             return Container(
               padding: const EdgeInsets.fromLTRB(horizontalPadding,
