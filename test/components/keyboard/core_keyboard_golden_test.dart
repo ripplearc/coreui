@@ -98,4 +98,53 @@ void main() {
       matchesGoldenFile('goldens/core_keyboard_full_ui_large.png'),
     );
   });
+
+  testWidgets('CoreKeyboard Collapsed UI Golden Test', (tester) async {
+    final testGroups = [
+      FunctionGroup(
+        name: basicGeometry,
+        keys: [],
+      ),
+    ];
+
+    final widget = MaterialApp(
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: Column(
+          children: [
+            const Spacer(),
+            CoreKeyboard(
+              currentGroup: basicGeometry,
+              allGroups: testGroups,
+              onDigitPressed: (_) {},
+              onUnitSelected: (_) {},
+              onOperatorPressed: (_) {},
+              onControlAction: (_) {},
+              onResultTapped: () {},
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onUnitSystemChanged: (_) {},
+              groupAccentColors: const {},
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.binding.setSurfaceSize(const Size(350, 550));
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
+    await tester.pumpAndSettle();
+    await tester.awaitImages();
+
+    await expectLater(
+      find.byType(CoreKeyboard),
+      matchesGoldenFile('goldens/core_keyboard_collapsed_ui_small.png'),
+    );
+  });
 }

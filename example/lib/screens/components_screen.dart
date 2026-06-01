@@ -3,6 +3,7 @@ import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/calculator_chip_showcase_screen.dart';
 import 'package:example/screens/chip_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
+import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
@@ -99,6 +100,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Success Modal Components',
                 const SuccessModalShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Geometry Area Component',
+                const GeometryAreaShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

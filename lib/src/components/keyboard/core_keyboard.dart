@@ -61,6 +61,9 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
   static const double _dragIndicatorHeight = CoreSpacing.space2;
   static const double _dragIndicatorWidth = CoreSpacing.space8;
 
+  bool _isCollapsed = false;
+  static const double _verticalThreshold = 2.0;
+
   @override
   Widget build(BuildContext context) {
     final group = widget.allGroups.firstWhere(
@@ -92,7 +95,6 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
             const double maxButtonSize = CoreSpacing.space20;
             const double minButtonSize = CoreSpacing.space10;
             const double minSpacing = CoreSpacing.space1;
-
             final availableWidth = constraints.maxWidth;
             final widthForContent = availableWidth - (horizontalPadding * 2);
 
@@ -129,30 +131,65 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                 children: [
                   Semantics(
                     label: 'Keyboard drag handle',
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: CoreSpacing.space1),
-                      child: CustomPaint(
-                        size: const Size(
-                            _dragIndicatorWidth, _dragIndicatorHeight),
-                        painter: _CurvedDragHandlePainter(
-                          color: colors.lineDarkOutline,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onVerticalDragUpdate: (details) {
+                        if (details.delta.dy > _verticalThreshold) {
+                          if (!_isCollapsed) {
+                            setState(() => _isCollapsed = true);
+                          }
+                        } else if (details.delta.dy < -_verticalThreshold) {
+                          if (_isCollapsed) {
+                            setState(() => _isCollapsed = false);
+                          }
+                        }
+                      },
+                      onTap: () {
+                        setState(() => _isCollapsed = !_isCollapsed);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.only(
+                            top: CoreSpacing.space1,
+                            bottom: _isCollapsed ? CoreSpacing.space1 : 0),
+                        child: Center(
+                          child: CustomPaint(
+                            size: const Size(
+                                _dragIndicatorWidth, _dragIndicatorHeight),
+                            painter: _CurvedDragHandlePainter(
+                              color: colors.lineDarkOutline,
+                              isCollapsed: _isCollapsed,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  _FunctionKeyStrip(
-                    group: group,
-                    onKeyTapped: widget.onKeyTapped,
-                    accentColor: accent,
-                    onViewAll: () => _showFunctionsSheet(context),
-                  ),
-                  SizedBox(height: functionStripSpacing),
-                  _buildColumnLayout(
-                    context,
-                    buttonWidth: finalButtonWidth,
-                    buttonHeight: finalButtonHeight,
-                    buttonSpacing: finalSpacing,
-                    heightSpacing: min(finalSpacing, maxHeightSpacing),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutCubic,
+                    child: _isCollapsed
+                        ? const SizedBox.shrink()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _FunctionKeyStrip(
+                                group: group,
+                                onKeyTapped: widget.onKeyTapped,
+                                accentColor: accent,
+                                onViewAll: () => _showFunctionsSheet(context),
+                              ),
+                              SizedBox(height: functionStripSpacing),
+                              _buildColumnLayout(
+                                context,
+                                buttonWidth: finalButtonWidth,
+                                buttonHeight: finalButtonHeight,
+                                buttonSpacing: finalSpacing,
+                                heightSpacing:
+                                    min(finalSpacing, maxHeightSpacing),
+                              ),
+                            ],
+                          ),
                   ),
                 ],
               ),
@@ -548,8 +585,12 @@ class _FunctionKeyStrip extends StatelessWidget {
 /// Custom painter that draws a curved drag handle indicator.
 class _CurvedDragHandlePainter extends CustomPainter {
   final Color color;
+  final bool isCollapsed;
 
-  _CurvedDragHandlePainter({required this.color});
+  _CurvedDragHandlePainter({
+    required this.color,
+    this.isCollapsed = false,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -560,19 +601,29 @@ class _CurvedDragHandlePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    path.moveTo(0, size.height * 0.2);
-    path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
-      size.width,
-      size.height * 0.2,
-    );
+    if (isCollapsed) {
+      path.moveTo(0, size.height * 0.8);
+      path.quadraticBezierTo(
+        size.width / 2,
+        0,
+        size.width,
+        size.height * 0.8,
+      );
+    } else {
+      path.moveTo(0, size.height * 0.2);
+      path.quadraticBezierTo(
+        size.width / 2,
+        size.height,
+        size.width,
+        size.height * 0.2,
+      );
+    }
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
-    return oldDelegate.color != color;
+    return oldDelegate.color != color || oldDelegate.isCollapsed != isCollapsed;
   }
 }
