@@ -285,5 +285,46 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CoreDigitInput), findsWidgets);
     });
+
+    testWidgets('sub-threshold drag does not collapse keyboard',
+        (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              allGroups: testGroups,
+              onDigitPressed: (_) {},
+              onUnitSelected: (_) {},
+              onOperatorPressed: (_) {},
+              onControlAction: (_) {},
+              onResultTapped: () {},
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onUnitSystemChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreDigitInput), findsWidgets);
+
+      // _verticalThreshold is 2.0. To test sub-threshold drags without triggering a tap,
+      // we must break the touch slop (18.0) using small increments.
+      final TestGesture gesture = await tester.startGesture(
+          tester.getCenter(find.bySemanticsLabel('Keyboard drag handle')));
+      for (int i = 0; i < 30; i++) {
+        await gesture.moveBy(const Offset(0, 1.0));
+        await tester.pump();
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreDigitInput), findsWidgets);
+    });
   });
 }

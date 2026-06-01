@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+/// it would be for CoreGeometryArea component
 class GeometryAreaShowcaseScreen extends StatefulWidget {
   const GeometryAreaShowcaseScreen({super.key});
 
@@ -18,7 +19,7 @@ class _GeometryAreaShowcaseScreenState
   static const GroupNameType _trigonometryGroup =
       GroupNameType(label: 'Trigonometry');
 
-  static final List<FunctionGroup> _groups = [
+  static final List<FunctionGroup> _groups = List.unmodifiable([
     FunctionGroup(
       name: _basicGeometryGroup,
       keys: [
@@ -50,7 +51,7 @@ class _GeometryAreaShowcaseScreenState
         KeyType(groupName: 'Trigonometry', label: 'TAN'),
       ],
     ),
-  ];
+  ]);
 
   String _currentInputValue = '';
 

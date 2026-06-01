@@ -135,11 +135,13 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                       behavior: HitTestBehavior.opaque,
                       onVerticalDragUpdate: (details) {
                         if (details.delta.dy > _verticalThreshold) {
-                          if (!_isCollapsed)
+                          if (!_isCollapsed) {
                             setState(() => _isCollapsed = true);
+                          }
                         } else if (details.delta.dy < -_verticalThreshold) {
-                          if (_isCollapsed)
+                          if (_isCollapsed) {
                             setState(() => _isCollapsed = false);
+                          }
                         }
                       },
                       onTap: () {
