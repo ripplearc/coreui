@@ -4,6 +4,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 import '../../utils/a11y_guidelines.dart';
+import '../../utils/test_harness.dart';
 
 void main() {
   setUpAll(() async {
@@ -79,6 +80,34 @@ void main() {
           (_) => buildTestKeyboard(),
           find.bySemanticsLabel('Keyboard drag handle'),
         );
+      },
+    );
+
+    testWidgets(
+      'collapsed drag handle meets tap target and label guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(
+            buildTestApp(
+              buildTestKeyboard(),
+              theme: theme,
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
+          await tester.pumpAndSettle();
+
+          await expectMeetsTapTargetAndLabelGuidelines(
+            tester,
+            find.bySemanticsLabel('Keyboard drag handle'),
+          );
+        }
       },
     );
   });
