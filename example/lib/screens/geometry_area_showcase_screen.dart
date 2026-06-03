@@ -108,7 +108,17 @@ class _GeometryAreaShowcaseScreenState
                             'Expand $count more suggestions',
                         collapseToggleSemanticsLabel: 'Collapse suggestions',
                       ),
-                      if (_isKeyboardCollapsed) const CoreGeometryArea(),
+                      if (_isKeyboardCollapsed)
+                        const CoreGeometryArea(
+                          isCollapsed: true,
+                          dimensions: [
+                            CoreDimensionData(label: 'Area', value: '50.27ft²'),
+                            CoreDimensionData(label: 'Diameter', value: '8ft'),
+                            CoreDimensionData(label: 'Radius', value: '4ft'),
+                            CoreDimensionData(
+                                label: 'Circumference', value: '25.13ft'),
+                          ],
+                        ),
                     ],
                   ),
                 ),

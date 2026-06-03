@@ -20,7 +20,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreGeometryArea(),
+        (theme) => const CoreGeometryArea(
+          dimensions: [
+            CoreDimensionData(label: 'Area', value: '50.27ft²'),
+          ],
+        ),
         find.byType(CoreGeometryArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -37,7 +41,11 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreGeometryArea(),
+            body: CoreGeometryArea(
+              dimensions: [
+                CoreDimensionData(label: 'Area', value: '50.27ft²'),
+              ],
+            ),
           ),
         ),
       );
@@ -54,10 +62,20 @@ void main() {
       final expSemantics = tester.getSemantics(expandText);
       expect(expSemantics.label, CoreGeometryArea.defaultExpandLabel);
 
-      final iconFinder = find.byType(CoreIconWidget);
-      expect(iconFinder, findsOneWidget);
+      final iconFinder =
+          find.byType(CoreIconWidget).first;
+      expect(iconFinder, findsWidgets);
       final iconSemantics = tester.getSemantics(iconFinder);
       expect(iconSemantics.label, CoreGeometryArea.defaultExpandLabel);
+
+      final areaLabelFinder = find.text('Area');
+      final areaValueFinder = find.text('50.27ft²');
+      expect(areaLabelFinder, findsOneWidget);
+      expect(areaValueFinder, findsOneWidget);
+
+      final areaSemantics = tester.getSemantics(areaLabelFinder);
+      expect(areaSemantics.label, contains('Area'));
+      expect(areaSemantics.label, contains('50.27ft²'));
     });
   });
 }

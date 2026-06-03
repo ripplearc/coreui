@@ -29,7 +29,15 @@ void main() {
           children: [
             Text('Geometry Area'),
             SizedBox(height: CoreSpacing.space8),
-            CoreGeometryArea(),
+            CoreGeometryArea(
+              isCollapsed: true,
+              dimensions: [
+                CoreDimensionData(label: 'Area', value: '50.27ft²'),
+                CoreDimensionData(label: 'Diameter', value: '8ft'),
+                CoreDimensionData(label: 'Radius', value: '4ft'),
+                CoreDimensionData(label: 'Circumference', value: '25.13ft'),
+              ],
+            ),
           ],
         ),
       ),

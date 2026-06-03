@@ -2,7 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
+part 'parts/dimension_card.dart';
+
 part 'parts/dimensions_section.dart';
+
+/// Data class for a single dimension to display in the [CoreGeometryArea].
+class CoreDimensionData {
+  const CoreDimensionData({
+    required this.label,
+    required this.value,
+  });
+
+  /// The name or title of the dimension (e.g., 'Area').
+  final String label;
+
+  /// The formatted value of the dimension (e.g., '50.27ft²').
+  final String value;
+}
 
 /// A component that displays geometry-related details and inputs.
 ///
@@ -19,6 +35,8 @@ class CoreGeometryArea extends StatelessWidget {
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
     this.expandLabel = defaultExpandLabel,
+    this.dimensions = const [],
+    this.isCollapsed = true,
   });
 
   /// The text displayed in the dimensions section.
@@ -39,6 +57,12 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String expandLabel;
 
+  /// The list of dimensions to display.
+  final List<CoreDimensionData> dimensions;
+
+  /// Whether the dimensions section is collapsed.
+  final bool isCollapsed;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -52,6 +76,8 @@ class CoreGeometryArea extends StatelessWidget {
           _DimensionsSection(
             dimensionsLabel: dimensionsLabel,
             expandLabel: expandLabel,
+            dimensions: dimensions,
+            isCollapsed: isCollapsed,
           ),
         ],
       ),
