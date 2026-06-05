@@ -70,13 +70,13 @@ class _DimensionsSectionState extends State<_DimensionsSection> {
                   color: colors.textHeadline,
                 ),
               ),
-              GestureDetector(
-                onTap: _toggleCollapse,
-                behavior: HitTestBehavior.opaque,
-                child: Semantics(
-                  label: actionLabel,
-                  button: false,
-                  excludeSemantics: true,
+              Semantics(
+                button: true,
+                label: actionLabel,
+                excludeSemantics: true,
+                child: GestureDetector(
+                  onTap: _toggleCollapse,
+                  behavior: HitTestBehavior.opaque,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
