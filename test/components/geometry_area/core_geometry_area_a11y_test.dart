@@ -62,20 +62,21 @@ void main() {
       final expSemantics = tester.getSemantics(expandText);
       expect(expSemantics.label, CoreGeometryArea.defaultExpandLabel);
 
-      final iconFinder =
-          find.byType(CoreIconWidget).first;
-      expect(iconFinder, findsWidgets);
-      final iconSemantics = tester.getSemantics(iconFinder);
-      expect(iconSemantics.label, CoreGeometryArea.defaultExpandLabel);
+      final allIconsFinder = find.byType(CoreIconWidget);
+      expect(allIconsFinder, findsNWidgets(2));
+
+      final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
+      expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
 
       final areaLabelFinder = find.text('Area');
       final areaValueFinder = find.text('50.27ft²');
       expect(areaLabelFinder, findsOneWidget);
       expect(areaValueFinder, findsOneWidget);
 
-      final areaSemantics = tester.getSemantics(areaLabelFinder);
-      expect(areaSemantics.label, contains('Area'));
-      expect(areaSemantics.label, contains('50.27ft²'));
+      final cardSemantics = tester.getSemantics(find
+          .byWidgetPredicate((w) => '${w.runtimeType}' == '_DimensionCard')
+          .first);
+      expect(cardSemantics.label, 'Area: 50.27ft²');
     });
   });
 }

@@ -89,6 +89,9 @@ class _DimensionsGrid extends StatelessWidget {
     const double cardHeight = CoreSpacing.space16;
     const double mainAxisSpacing = CoreSpacing.space2;
     const double topPadding = CoreSpacing.space2;
+
+    // Collapsed peek: show first row fully + half of the second row
+    // so the user can see more items are available below.
     const double collapsedHeight =
         topPadding + cardHeight + mainAxisSpacing + (cardHeight / 2);
 

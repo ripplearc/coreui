@@ -67,7 +67,5 @@ void main() {
       expect(find.text('8ft'), findsOneWidget);
       expect(find.byType(GridView), findsOneWidget);
     });
-
-
   });
 }
