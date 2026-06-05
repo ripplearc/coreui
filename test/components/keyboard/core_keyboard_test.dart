@@ -326,5 +326,55 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CoreDigitInput), findsWidgets);
     });
+
+    testWidgets('calls onCollapseChanged when keyboard collapse status changes',
+        (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      bool? isCollapsed;
+      int callCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              allGroups: testGroups,
+              onDigitPressed: (_) {},
+              onUnitSelected: (_) {},
+              onOperatorPressed: (_) {},
+              onControlAction: (_) {},
+              onResultTapped: () {},
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onUnitSystemChanged: (_) {},
+              onCollapseChanged: (val) {
+                isCollapsed = val;
+                callCount++;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(isCollapsed, isNull);
+
+      await tester.drag(
+          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, 50));
+      await tester.pumpAndSettle();
+
+      expect(isCollapsed, isTrue);
+      expect(callCount, equals(1));
+
+      await tester.drag(
+          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, -50));
+      await tester.pumpAndSettle();
+
+      expect(isCollapsed, isFalse);
+      expect(callCount, equals(2));
+    });
   });
 }

@@ -36,6 +36,7 @@ class CoreKeyboard extends StatefulWidget {
     this.currentUnitSystem = UnitSystem.imperial,
     this.groupAccentColors = const {},
     this.customResultLabel,
+    this.onCollapseChanged,
   });
 
   final GroupNameType currentGroup;
@@ -52,6 +53,7 @@ class CoreKeyboard extends StatefulWidget {
   final ValueChanged<UnitSystem> onUnitSystemChanged;
   final Map<GroupNameType, Color> groupAccentColors;
   final String? customResultLabel;
+  final ValueChanged<bool>? onCollapseChanged;
 
   @override
   State<CoreKeyboard> createState() => _CoreKeyboardState();
@@ -137,15 +139,20 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                         if (details.delta.dy > _verticalThreshold) {
                           if (!_isCollapsed) {
                             setState(() => _isCollapsed = true);
+                            widget.onCollapseChanged?.call(true);
                           }
                         } else if (details.delta.dy < -_verticalThreshold) {
                           if (_isCollapsed) {
                             setState(() => _isCollapsed = false);
+                            widget.onCollapseChanged?.call(false);
                           }
                         }
                       },
                       onTap: () {
-                        setState(() => _isCollapsed = !_isCollapsed);
+                        setState(() {
+                          _isCollapsed = !_isCollapsed;
+                          widget.onCollapseChanged?.call(_isCollapsed);
+                        });
                       },
                       child: Container(
                         width: double.infinity,

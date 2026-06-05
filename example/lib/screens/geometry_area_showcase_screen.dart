@@ -54,6 +54,7 @@ class _GeometryAreaShowcaseScreenState
   ]);
 
   String _currentInputValue = '';
+  bool _isKeyboardCollapsed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +108,7 @@ class _GeometryAreaShowcaseScreenState
                             'Expand $count more suggestions',
                         collapseToggleSemanticsLabel: 'Collapse suggestions',
                       ),
+                      if (_isKeyboardCollapsed) const CoreGeometryArea(),
                     ],
                   ),
                 ),
@@ -141,6 +143,11 @@ class _GeometryAreaShowcaseScreenState
                 onUnitSystemChanged: (_) {},
                 groupAccentColors: groupAccentColors,
                 result: const ResultType(label: '='),
+                onCollapseChanged: (collapsed) {
+                  setState(() {
+                    _isKeyboardCollapsed = collapsed;
+                  });
+                },
               ),
             ],
           ),
