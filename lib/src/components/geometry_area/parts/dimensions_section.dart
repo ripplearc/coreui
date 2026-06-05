@@ -28,22 +28,28 @@ class _DimensionsSection extends StatelessWidget {
               color: colors.textHeadline,
             ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CoreIconWidget(
-                icon: CoreIcons.unfoldMore,
-                color: colors.iconDark,
-                size: CoreIconSize.size24,
-                semanticLabel: expandLabel,
-              ),
-              Text(
-                expandLabel,
-                style: typography.bodyMediumSemiBold.copyWith(
-                  color: colors.textLink,
+          Semantics(
+            label: expandLabel,
+            button: false,
+            excludeSemantics: true,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ExcludeSemantics(
+                  child: CoreIconWidget(
+                    icon: CoreIcons.unfoldMore,
+                    color: colors.iconDark,
+                    size: CoreIconSize.size24,
+                  ),
                 ),
-              ),
-            ],
+                Text(
+                  expandLabel,
+                  style: typography.bodyMediumSemiBold.copyWith(
+                    color: colors.textLink,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
