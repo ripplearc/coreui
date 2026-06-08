@@ -42,5 +42,30 @@ void main() {
       expect(find.text(CoreGeometryArea.defaultDimensionsLabel), findsNothing);
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsNothing);
     });
+
+    testWidgets('renders dimensions when provided', (tester) async {
+      const dimensions = [
+        CoreDimensionData(label: 'Area', value: '50.27ft²'),
+        CoreDimensionData(label: 'Diameter', value: '8ft'),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(
+              dimensions: dimensions,
+              isCollapsed: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Area'), findsOneWidget);
+      expect(find.text('50.27ft²'), findsOneWidget);
+      expect(find.text('Diameter'), findsOneWidget);
+      expect(find.text('8ft'), findsOneWidget);
+      expect(find.byType(GridView), findsOneWidget);
+    });
   });
 }
