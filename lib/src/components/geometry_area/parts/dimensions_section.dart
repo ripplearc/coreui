@@ -1,22 +1,56 @@
 part of '../core_geometry_area.dart';
 
-class _DimensionsSection extends StatelessWidget {
+class _DimensionsSection extends StatefulWidget {
   const _DimensionsSection({
     required this.dimensionsLabel,
     required this.expandLabel,
+    required this.collapseLabel,
     required this.dimensions,
     required this.isCollapsed,
   });
 
   final String dimensionsLabel;
   final String expandLabel;
+  final String collapseLabel;
   final List<CoreDimensionData> dimensions;
   final bool isCollapsed;
+
+  @override
+  State<_DimensionsSection> createState() => _DimensionsSectionState();
+}
+
+class _DimensionsSectionState extends State<_DimensionsSection> {
+  late bool _isCollapsed;
+
+  @override
+  void initState() {
+    super.initState();
+    _isCollapsed = widget.isCollapsed;
+  }
+
+  @override
+  void didUpdateWidget(covariant _DimensionsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isCollapsed != widget.isCollapsed) {
+      _isCollapsed = widget.isCollapsed;
+    }
+  }
+
+  void _toggleCollapse() {
+    setState(() {
+      _isCollapsed = !_isCollapsed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+
+    final actionLabel =
+        _isCollapsed ? widget.expandLabel : widget.collapseLabel;
+    final actionIcon =
+        _isCollapsed ? CoreIcons.unfoldMore : CoreIcons.unfoldLess;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -31,41 +65,45 @@ class _DimensionsSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                dimensionsLabel,
+                widget.dimensionsLabel,
                 style: typography.bodyLargeSemiBold.copyWith(
                   color: colors.textHeadline,
                 ),
               ),
               Semantics(
-                label: expandLabel,
-                button: false,
+                button: true,
+                label: actionLabel,
                 excludeSemantics: true,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ExcludeSemantics(
-                      child: CoreIconWidget(
-                        icon: CoreIcons.unfoldMore,
-                        color: colors.iconDark,
-                        size: CoreIconSize.size24,
+                child: GestureDetector(
+                  onTap: _toggleCollapse,
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ExcludeSemantics(
+                        child: CoreIconWidget(
+                          icon: actionIcon,
+                          color: colors.iconDark,
+                          size: CoreIconSize.size24,
+                        ),
                       ),
-                    ),
-                    Text(
-                      expandLabel,
-                      style: typography.bodyMediumSemiBold.copyWith(
-                        color: colors.textLink,
+                      Text(
+                        actionLabel,
+                        style: typography.bodyMediumSemiBold.copyWith(
+                          color: colors.textLink,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        if (dimensions.isNotEmpty)
+        if (widget.dimensions.isNotEmpty)
           _DimensionsGrid(
-            dimensions: dimensions,
-            isCollapsed: isCollapsed,
+            dimensions: widget.dimensions,
+            isCollapsed: _isCollapsed,
           ),
       ],
     );

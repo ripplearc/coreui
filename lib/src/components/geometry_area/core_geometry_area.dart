@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../ripplearc_coreui.dart';
 
 part 'parts/dimension_card.dart';
-
 part 'parts/dimensions_section.dart';
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].
@@ -24,6 +23,7 @@ class CoreDimensionData {
 ///
 /// [dimensionsLabel] is the label for the dimensions header.
 /// [expandLabel] is the label for the expand action button.
+/// [collapseLabel] is the label for the collapse action button.
 class CoreGeometryArea extends StatelessWidget {
   /// The default label text shown in the dimensions section.
   static const String defaultDimensionsLabel = 'Dimensions';
@@ -31,10 +31,14 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the expand button.
   static const String defaultExpandLabel = 'Expand';
 
+  /// The default text shown for the collapse button.
+  static const String defaultCollapseLabel = 'Collapse';
+
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
     this.expandLabel = defaultExpandLabel,
+    this.collapseLabel = defaultCollapseLabel,
     this.dimensions = const [],
     this.isCollapsed = true,
   });
@@ -57,6 +61,15 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String expandLabel;
 
+  /// The text displayed for the collapse action button.
+  ///
+  /// Defaults to [defaultCollapseLabel]. Pass a localised string from
+  /// the app layer:
+  /// ```dart
+  /// collapseLabel: AppLocalizations.of(context).collapseLabel,
+  /// ```
+  final String collapseLabel;
+
   /// The list of dimensions to display.
   final List<CoreDimensionData> dimensions;
 
@@ -76,6 +89,7 @@ class CoreGeometryArea extends StatelessWidget {
           _DimensionsSection(
             dimensionsLabel: dimensionsLabel,
             expandLabel: expandLabel,
+            collapseLabel: collapseLabel,
             dimensions: dimensions,
             isCollapsed: isCollapsed,
           ),

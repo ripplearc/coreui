@@ -51,4 +51,46 @@ void main() {
       matchesGoldenFile('goldens/core_geometry_area_component.png'),
     );
   });
+
+  testWidgets('CoreGeometryArea Component Visual Regression Test (Expanded)',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: const Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text('Geometry Area (Expanded)'),
+            SizedBox(height: CoreSpacing.space8),
+            CoreGeometryArea(
+              isCollapsed: false,
+              dimensions: [
+                CoreDimensionData(label: 'Area', value: '50.27ft²'),
+                CoreDimensionData(label: 'Diameter', value: '8ft'),
+                CoreDimensionData(label: 'Radius', value: '4ft'),
+                CoreDimensionData(label: 'Circumference', value: '25.13ft'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_geometry_area_component_expanded.png'),
+    );
+  });
 }
