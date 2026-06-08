@@ -18,11 +18,16 @@ void main() {
       expect(
           find.text(CoreGeometryArea.defaultDimensionsLabel), findsOneWidget);
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsOneWidget);
+      expect(
+          find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
+      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsOneWidget);
     });
 
     testWidgets('renders geometry area with custom labels', (tester) async {
       const customDimensions = 'Custom Dimensions';
       const customExpand = 'Custom Expand';
+      const customSizesTitle = 'Custom Sizes';
+      const customAddSize = 'Custom Add Size';
 
       await tester.pumpWidget(
         MaterialApp(
@@ -31,6 +36,8 @@ void main() {
             body: CoreGeometryArea(
               dimensionsLabel: customDimensions,
               expandLabel: customExpand,
+              sizesTitleLabel: customSizesTitle,
+              addSizeLabel: customAddSize,
             ),
           ),
         ),
@@ -39,8 +46,12 @@ void main() {
       expect(find.byType(CoreGeometryArea), findsOneWidget);
       expect(find.text(customDimensions), findsOneWidget);
       expect(find.text(customExpand), findsOneWidget);
+      expect(find.text(customSizesTitle), findsOneWidget);
+      expect(find.text(customAddSize), findsOneWidget);
       expect(find.text(CoreGeometryArea.defaultDimensionsLabel), findsNothing);
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsNothing);
+      expect(find.text(CoreGeometryArea.defaultSizesTitleLabel), findsNothing);
+      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
     });
 
     testWidgets('renders dimensions when provided', (tester) async {

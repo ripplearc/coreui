@@ -109,9 +109,11 @@ class _GeometryAreaShowcaseScreenState
                         collapseToggleSemanticsLabel: 'Collapse suggestions',
                       ),
                       if (_isKeyboardCollapsed)
-                        const CoreGeometryArea(
+                        CoreGeometryArea(
                           isCollapsed: true,
-                          dimensions: [
+                          sizesTitleLabel: 'Concrete volumes for 70ft',
+                          addSizeLabel: 'Add size',
+                          dimensions: const [
                             CoreDimensionData(label: 'Area', value: '50.27ft²'),
                             CoreDimensionData(label: 'Diameter', value: '8ft'),
                             CoreDimensionData(label: 'Radius', value: '4ft'),

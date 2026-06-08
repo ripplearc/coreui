@@ -31,6 +31,7 @@ void main() {
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               isCollapsed: true,
+              sizesTitleLabel: 'Concrete volumes for 70ft',
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -73,6 +74,7 @@ void main() {
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               isCollapsed: false,
+              sizesTitleLabel: 'Concrete volumes for 70ft',
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),

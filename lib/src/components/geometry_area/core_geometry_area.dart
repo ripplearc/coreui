@@ -4,6 +4,8 @@ import '../../../ripplearc_coreui.dart';
 
 part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
+part 'parts/table_sizes/sizes_header.dart';
+part 'parts/table_sizes/sizes_table.dart';
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].
 class CoreDimensionData {
@@ -34,11 +36,19 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the collapse button.
   static const String defaultCollapseLabel = 'Collapse';
 
+  /// The default text shown for the sizes table title.
+  static const String defaultSizesTitleLabel = 'Concrete volumes';
+
+  /// The default text shown for the add size button.
+  static const String defaultAddSizeLabel = 'Add size';
+
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
     this.expandLabel = defaultExpandLabel,
     this.collapseLabel = defaultCollapseLabel,
+    this.sizesTitleLabel = defaultSizesTitleLabel,
+    this.addSizeLabel = defaultAddSizeLabel,
     this.dimensions = const [],
     this.isCollapsed = true,
   });
@@ -70,6 +80,24 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String collapseLabel;
 
+  /// The text displayed for the sizes table title.
+  ///
+  /// Defaults to [defaultSizesTitleLabel]. Pass a localised string from
+  /// the app layer:
+  /// ```dart
+  /// sizesTitleLabel: AppLocalizations.of(context).sizesTitleLabel,
+  /// ```
+  final String sizesTitleLabel;
+
+  /// The text displayed for the add size button.
+  ///
+  /// Defaults to [defaultAddSizeLabel]. Pass a localised string from
+  /// the app layer:
+  /// ```dart
+  /// addSizeLabel: AppLocalizations.of(context).addSizeLabel,
+  /// ```
+  final String addSizeLabel;
+
   /// The list of dimensions to display.
   final List<CoreDimensionData> dimensions;
 
@@ -92,6 +120,11 @@ class CoreGeometryArea extends StatelessWidget {
             collapseLabel: collapseLabel,
             dimensions: dimensions,
             isCollapsed: isCollapsed,
+          ),
+          const SizedBox(height: CoreSpacing.space2),
+          _SizesTable(
+            sizesTitleLabel: sizesTitleLabel,
+            addSizeLabel: addSizeLabel,
           ),
         ],
       ),
