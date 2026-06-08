@@ -73,10 +73,7 @@ void main() {
       expect(areaLabelFinder, findsOneWidget);
       expect(areaValueFinder, findsOneWidget);
 
-      final cardSemantics = tester.getSemantics(find
-          .byWidgetPredicate((w) => '${w.runtimeType}' == '_DimensionCard')
-          .first);
-      expect(cardSemantics.label, 'Area: 50.27ft²');
+      expect(find.bySemanticsLabel('Area: 50.27ft²'), findsOneWidget);
     });
   });
 }

@@ -126,6 +126,8 @@ class _DimensionsGrid extends StatelessWidget {
 
     if (isCollapsed && dimensions.length > maxVisibleCollapsedItems) {
       return SizedBox(
+        // Extra space2 gives breathing room below the half-visible
+        // second row before the ShaderMask fade begins.
         height: collapsedHeight + CoreSpacing.space2,
         child: ShaderMask(
           shaderCallback: (Rect bounds) {
