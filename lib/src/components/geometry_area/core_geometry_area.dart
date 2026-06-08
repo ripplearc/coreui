@@ -23,6 +23,7 @@ class CoreDimensionData {
 ///
 /// [dimensionsLabel] is the label for the dimensions header.
 /// [expandLabel] is the label for the expand action button.
+/// [collapseLabel] is the label for the collapse action button.
 class CoreGeometryArea extends StatelessWidget {
   /// The default label text shown in the dimensions section.
   static const String defaultDimensionsLabel = 'Dimensions';

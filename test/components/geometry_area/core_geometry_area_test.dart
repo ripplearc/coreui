@@ -93,5 +93,28 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsOneWidget);
     });
+
+    testWidgets('syncs when parent changes isCollapsed prop', (tester) async {
+      bool collapsed = true;
+      late StateSetter outerSetState;
+      await tester.pumpWidget(StatefulBuilder(
+        builder: (context, setState) {
+          outerSetState = setState;
+          return MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreGeometryArea(
+                isCollapsed: collapsed,
+                dimensions: const [CoreDimensionData(label: 'A', value: '1')],
+              ),
+            ),
+          );
+        },
+      ));
+      expect(find.text(CoreGeometryArea.defaultExpandLabel), findsOneWidget);
+      outerSetState(() => collapsed = false);
+      await tester.pumpAndSettle();
+      expect(find.text(CoreGeometryArea.defaultCollapseLabel), findsOneWidget);
+    });
   });
 }

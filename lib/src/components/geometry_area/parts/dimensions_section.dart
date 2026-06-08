@@ -96,7 +96,7 @@ class _DimensionsSectionState extends State<_DimensionsSection> {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
