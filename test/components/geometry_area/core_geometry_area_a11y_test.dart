@@ -45,6 +45,7 @@ void main() {
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
               ],
+              sizesTableTitles: ['area', 'volume'],
             ),
           ),
         ),
@@ -85,6 +86,11 @@ void main() {
       expect(areaValueFinder, findsOneWidget);
 
       expect(find.bySemanticsLabel('Area: 50.27ft²'), findsOneWidget);
+
+      final sizesTableTitlesText1 = find.text('area');
+      final sizesTableTitlesText2 = find.text('volume');
+      expect(sizesTableTitlesText1, findsOneWidget);
+      expect(sizesTableTitlesText2, findsOneWidget);
     });
   });
 }

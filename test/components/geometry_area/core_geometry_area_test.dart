@@ -127,5 +127,23 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(CoreGeometryArea.defaultCollapseLabel), findsOneWidget);
     });
+
+    testWidgets('renders sizesTableTitles when provided', (tester) async {
+      const titles = ['Area Header', 'Volume Header'];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(
+              sizesTableTitles: titles,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Area Header'), findsOneWidget);
+      expect(find.text('Volume Header'), findsOneWidget);
+    });
   });
 }

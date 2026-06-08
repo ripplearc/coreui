@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -6,6 +8,7 @@ part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
 part 'parts/table_sizes/sizes_header.dart';
 part 'parts/table_sizes/sizes_table.dart';
+part 'parts/table_sizes/sizes_table_header.dart';
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].
 class CoreDimensionData {
@@ -50,6 +53,7 @@ class CoreGeometryArea extends StatelessWidget {
     this.sizesTitleLabel = defaultSizesTitleLabel,
     this.addSizeLabel = defaultAddSizeLabel,
     this.dimensions = const [],
+    this.sizesTableTitles = const [],
     this.isCollapsed = true,
   });
 
@@ -98,6 +102,9 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String addSizeLabel;
 
+  /// The titles for the columns in the sizes table.
+  final List<String> sizesTableTitles;
+
   /// The list of dimensions to display.
   final List<CoreDimensionData> dimensions;
 
@@ -125,6 +132,7 @@ class CoreGeometryArea extends StatelessWidget {
           _SizesTable(
             sizesTitleLabel: sizesTitleLabel,
             addSizeLabel: addSizeLabel,
+            titles: sizesTableTitles,
           ),
         ],
       ),
