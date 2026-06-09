@@ -52,18 +52,29 @@ void main() {
 
       final dimensionsText = find.text(CoreGeometryArea.defaultDimensionsLabel);
       final expandText = find.text(CoreGeometryArea.defaultExpandLabel);
+      final sizesTitleText = find.text(CoreGeometryArea.defaultSizesTitleLabel);
+      final addSizeText = find.text(CoreGeometryArea.defaultAddSizeLabel);
 
       expect(dimensionsText, findsOneWidget);
       expect(expandText, findsOneWidget);
+      expect(sizesTitleText, findsOneWidget);
+      expect(addSizeText, findsOneWidget);
 
       final dimSemantics = tester.getSemantics(dimensionsText);
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
 
+      final sizesTitleSemantics = tester.getSemantics(sizesTitleText);
+      expect(
+          sizesTitleSemantics.label, CoreGeometryArea.defaultSizesTitleLabel);
+
       final expSemantics = tester.getSemantics(expandText);
       expect(expSemantics.label, CoreGeometryArea.defaultExpandLabel);
 
+      final addSizeSemantics = tester.getSemantics(addSizeText);
+      expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
+
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(2));
+      expect(allIconsFinder, findsNWidgets(3));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
