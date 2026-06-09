@@ -9,7 +9,9 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreGeometryArea(),
+            body: CoreGeometryArea(
+              sizesTableTitles: ['dummy'],
+            ),
           ),
         ),
       );
@@ -38,6 +40,7 @@ void main() {
               expandLabel: customExpand,
               sizesTitleLabel: customSizesTitle,
               addSizeLabel: customAddSize,
+              sizesTableTitles: const ['dummy'],
             ),
           ),
         ),
@@ -144,6 +147,23 @@ void main() {
 
       expect(find.text('Area Header'), findsOneWidget);
       expect(find.text('Volume Header'), findsOneWidget);
+    });
+
+    testWidgets('does not render header row when sizesTableTitles is empty',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(
+              sizesTableTitles: const [],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text(CoreGeometryArea.defaultSizesTitleLabel), findsNothing);
+      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
     });
   });
 }

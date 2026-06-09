@@ -1,7 +1,7 @@
 part of '../../core_geometry_area.dart';
 
-class TableLayout {
-  const TableLayout({
+class _TableLayout {
+  const _TableLayout({
     required this.leadingSpace,
     required this.trailingSpace,
     required this.columnWidths,
@@ -31,15 +31,15 @@ class _SizesTable extends StatelessWidget {
       builder: (context, constraints) {
         const leadingSpace = CoreSpacing.space12;
         const trailingSpace = CoreSpacing.space4;
-        final columnWidth = CoreSpacing.space16;
-        final endMargin = CoreSpacing.space1;
+        const columnWidth = CoreSpacing.space16;
+        const endMargin = CoreSpacing.space1;
 
         final totalWidth = leadingSpace +
             trailingSpace +
             ((columnWidth + endMargin) * titles.length);
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
 
-        final layout = TableLayout(
+        final layout = _TableLayout(
           leadingSpace: leadingSpace,
           trailingSpace: trailingSpace,
           endMargin: endMargin,

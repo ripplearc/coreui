@@ -6,7 +6,7 @@ class _SizesTableHeader extends StatelessWidget {
     required this.titles,
   });
 
-  final TableLayout layout;
+  final _TableLayout layout;
   final List<String> titles;
 
   @override
@@ -32,6 +32,7 @@ class _SizesTableHeader extends StatelessWidget {
                 ),
               ),
           SizedBox(width: layout.trailingSpace),
+          // right-edge guard so last column isn't flush
         ],
       ),
     );

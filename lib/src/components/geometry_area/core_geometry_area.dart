@@ -102,7 +102,13 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String addSizeLabel;
 
-  /// The titles for the columns in the sizes table.
+  /// The column header titles displayed in the sizes table.
+  ///
+  /// Defaults to an empty list (no header row rendered). Pass localised
+  /// strings from the app layer:
+  /// ```dart
+  /// sizesTableTitles: AppLocalizations.of(context).sizeColumnTitles,
+  /// ```
   final List<String> sizesTableTitles;
 
   /// The list of dimensions to display.
@@ -128,12 +134,14 @@ class CoreGeometryArea extends StatelessWidget {
             dimensions: dimensions,
             isCollapsed: isCollapsed,
           ),
-          const SizedBox(height: CoreSpacing.space2),
-          _SizesTable(
-            sizesTitleLabel: sizesTitleLabel,
-            addSizeLabel: addSizeLabel,
-            titles: sizesTableTitles,
-          ),
+          if (sizesTableTitles.isNotEmpty) ...[
+            const SizedBox(height: CoreSpacing.space2),
+            _SizesTable(
+              sizesTitleLabel: sizesTitleLabel,
+              addSizeLabel: addSizeLabel,
+              titles: sizesTableTitles,
+            ),
+          ],
         ],
       ),
     );

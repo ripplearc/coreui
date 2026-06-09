@@ -87,10 +87,8 @@ void main() {
 
       expect(find.bySemanticsLabel('Area: 50.27ft²'), findsOneWidget);
 
-      final sizesTableTitlesText1 = find.text('area');
-      final sizesTableTitlesText2 = find.text('volume');
-      expect(sizesTableTitlesText1, findsOneWidget);
-      expect(sizesTableTitlesText2, findsOneWidget);
+      expect(find.bySemanticsLabel('area'), findsOneWidget);
+      expect(find.bySemanticsLabel('volume'), findsOneWidget);
     });
   });
 }
