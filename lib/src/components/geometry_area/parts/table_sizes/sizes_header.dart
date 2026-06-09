@@ -37,7 +37,7 @@ class _SizesHeader extends StatelessWidget {
             excludeSemantics: true,
             child: GestureDetector(
               onTap: () {
-                // TODO: [CA-682] [Geometry Area] Size Bottom Sheet (Add/Edit). https://ripplearc.youtrack.cloud/agiles/176-9/179-52?issue=CA-682
+                // TODO: [CA-682] [Geometry Area] Size Bottom Sheet (Add/Edit). https://ripplearc.youtrack.cloud/issue/CA-682
               },
               behavior: HitTestBehavior.opaque,
               child: Row(
