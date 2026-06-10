@@ -113,6 +113,12 @@ class _GeometryAreaShowcaseScreenState
                           isCollapsed: true,
                           sizesTitleLabel: 'Concrete volumes for 70ft',
                           addSizeLabel: 'Add size',
+                          sizesTableTitles: const [
+                            'Rails /section',
+                            'O.C.',
+                            'No. of posts',
+                            'No. of rails',
+                          ],
                           dimensions: const [
                             CoreDimensionData(label: 'Area', value: '50.27ft²'),
                             CoreDimensionData(label: 'Diameter', value: '8ft'),
