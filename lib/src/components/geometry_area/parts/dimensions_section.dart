@@ -128,8 +128,6 @@ class _DimensionsGrid extends StatelessWidget {
     const double mainAxisSpacing = CoreSpacing.space2;
     const double topPadding = CoreSpacing.space2;
 
-    // Collapsed peek: show first row fully + half of the second row
-    // so the user can see more items are available below.
     const double collapsedHeight =
         topPadding + cardHeight + mainAxisSpacing + (cardHeight / 2);
 
@@ -164,8 +162,6 @@ class _DimensionsGrid extends StatelessWidget {
 
     if (isCollapsed && dimensions.length > maxVisibleCollapsedItems) {
       return SizedBox(
-        // Extra space2 gives breathing room below the half-visible
-        // second row before the ShaderMask fade begins.
         height: collapsedHeight + CoreSpacing.space2,
         child: ShaderMask(
           shaderCallback: (Rect bounds) {

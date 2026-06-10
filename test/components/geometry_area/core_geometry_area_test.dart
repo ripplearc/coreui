@@ -209,6 +209,7 @@ void main() {
       expect(find.text('Val 4'), findsOneWidget);
     });
 
+
     testWidgets('onReorder fires with adjusted index when dragging downward',
         (WidgetTester tester) async {
       final reorderCalls = <(int, int)>[];
@@ -307,5 +308,37 @@ void main() {
       expect(highlightedCardFinder, findsNothing,
           reason: 'Highlight should be cleared after 500ms');
     });
+
+
+    testWidgets('swiping a size card triggers onSizeDeleted', (tester) async {
+      String? deletedId;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              sizesTableTitles: const ['Col A'],
+              sizesTableData: const [
+                CoreSizeCardData(id: '1', values: ['Val 1']),
+                CoreSizeCardData(id: '2', values: ['Val 2']),
+              ],
+              onSizeDeleted: (id) {
+                deletedId = id;
+              },
+            ),
+          ),
+        ),
+      );
+
+      final itemToSwipe = find.text('Val 1');
+      expect(itemToSwipe, findsOneWidget);
+
+      await tester.drag(itemToSwipe, const Offset(-500.0, 0.0));
+      await tester.pumpAndSettle();
+
+      expect(deletedId, '1');
+    });
+
   });
 }

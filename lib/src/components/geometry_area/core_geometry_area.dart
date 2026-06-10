@@ -89,11 +89,16 @@ class CoreGeometryArea extends StatelessWidget {
     this.isCollapsed = true,
     this.dragHandleLabel = defaultDragHandleLabel,
     this.onSizesReordered,
+    this.onSizeDeleted,
   });
 
   /// Optional callback invoked when the user drags and drops a size card to reorder it.
   /// The parent should update its data list to reflect the new order.
   final void Function(int oldIndex, int newIndex)? onSizesReordered;
+
+  /// Optional callback invoked when the user swipes a size card to delete it.
+  /// The parent should update its data list to remove the item with the given ID.
+  final void Function(String id)? onSizeDeleted;
 
   /// The text displayed in the dimensions section.
   ///
@@ -196,6 +201,7 @@ class CoreGeometryArea extends StatelessWidget {
               titles: sizesTableTitles,
               sizesTableData: sizesTableData,
               onSizesReordered: onSizesReordered,
+              onSizeDeleted: onSizeDeleted,
             ),
           ],
         ],

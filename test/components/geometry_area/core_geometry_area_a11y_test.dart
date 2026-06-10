@@ -97,6 +97,7 @@ void main() {
       expect(find.text('10'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
 
+
       final semanticsWidgets = tester.widgetList<Semantics>(
         find.byWidgetPredicate((w) {
           if (w is Semantics) {
@@ -124,6 +125,15 @@ void main() {
       );
       expect(tester.getSemantics(dragHandleFinder.first).label,
           startsWith(CoreGeometryArea.defaultDragHandleLabel));
+
+      final semanticsWidget1 = tester.widget<Semantics>(find.byKey(const ValueKey('1')));
+      expect(semanticsWidget1.properties.customSemanticsActions, isNotNull);
+      expect(semanticsWidget1.properties.customSemanticsActions!.isNotEmpty, isTrue);
+
+      final semanticsWidget2 = tester.widget<Semantics>(find.byKey(const ValueKey('2')));
+      expect(semanticsWidget2.properties.customSemanticsActions, isNotNull);
+      expect(semanticsWidget2.properties.customSemanticsActions!.isNotEmpty, isTrue);
+
     });
   });
 }
