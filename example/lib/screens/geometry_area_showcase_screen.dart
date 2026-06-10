@@ -123,12 +123,15 @@ class _GeometryAreaShowcaseScreenState
                           ],
                           sizesTableData: const [
                             CoreSizeCardData(
+                              id: 'row1',
                               values: ['3', '8ft', '4', '12', '120', '12'],
                             ),
                             CoreSizeCardData(
+                              id: 'row2',
                               values: ['3', '8ft', '4', '12', '120', '12'],
                             ),
                             CoreSizeCardData(
+                              id: 'row3',
                               values: ['3', '8ft', '4', '12', '120', '12'],
                             ),
                           ],

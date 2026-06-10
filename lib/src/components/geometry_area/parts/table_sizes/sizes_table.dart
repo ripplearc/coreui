@@ -16,18 +16,63 @@ class _TableLayout {
   final bool isScrollable;
 }
 
-class _SizesTable extends StatelessWidget {
+class _SizesTable extends StatefulWidget {
   const _SizesTable({
     required this.sizesTitleLabel,
     required this.addSizeLabel,
+    required this.dragHandleLabel,
     required this.titles,
     required this.sizesTableData,
+    this.onSizesReordered,
   });
 
   final String sizesTitleLabel;
   final String addSizeLabel;
+  final String dragHandleLabel;
   final List<String> titles;
   final List<CoreSizeCardData> sizesTableData;
+  final void Function(int oldIndex, int newIndex)? onSizesReordered;
+
+  @override
+  State<_SizesTable> createState() => _SizesTableState();
+}
+
+class _SizesTableState extends State<_SizesTable> {
+  int? _recentlyDroppedIndex;
+
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
+      BuildContext context, _TableLayout layout) {
+    final colors = AppColorsExtension.of(context);
+    final row = widget.sizesTableData[index];
+
+    final draggingCard = _SizeCard(
+      index: index,
+      layout: layout,
+      values: row.values,
+      dragHandleLabel: widget.dragHandleLabel,
+      isHighlighted: true,
+    );
+
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? _) {
+        final double animValue = Curves.easeInOut.transform(animation.value);
+        final double scale = ui.lerpDouble(1, 1.02, animValue) ?? 1.0;
+        final double elevation = ui.lerpDouble(0, 6, animValue) ?? 0.0;
+        return Transform.scale(
+          scale: scale,
+          child: Material(
+            elevation: elevation,
+            color: colors.transparent,
+            shadowColor: colors.shadowGrey10,
+            child: draggingCard,
+          ),
+        );
+      },
+    );
+  }
+
+  static const _highlightDuration = 500;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +85,7 @@ class _SizesTable extends StatelessWidget {
 
         final totalWidth = leadingSpace +
             trailingSpace +
-            ((columnWidth + endMargin) * titles.length);
+            ((columnWidth + endMargin) * widget.titles.length);
         final bool isScrollable = constraints.maxWidth < totalWidth;
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
 
@@ -49,7 +94,7 @@ class _SizesTable extends StatelessWidget {
           trailingSpace: trailingSpace,
           endMargin: endMargin,
           columnWidths: List.filled(
-            titles.length,
+            widget.titles.length,
             columnWidth,
           ),
           isScrollable: isScrollable,
@@ -60,8 +105,8 @@ class _SizesTable extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _SizesHeader(
-              titleLabel: sizesTitleLabel,
-              addSizeLabel: addSizeLabel,
+              titleLabel: widget.sizesTitleLabel,
+              addSizeLabel: widget.addSizeLabel,
             ),
             const SizedBox(height: CoreSpacing.space1),
             SingleChildScrollView(
@@ -77,12 +122,68 @@ class _SizesTable extends StatelessWidget {
                   children: [
                     _SizesTableHeader(
                       layout: layout,
-                      titles: titles,
+                      titles: widget.titles,
                     ),
-                    ...sizesTableData.map(
-                      (row) => _SizeCard(
-                        layout: layout,
-                        values: row.values,
+                    SizedBox(
+                      width: containerWidth,
+                      child: ReorderableListView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        buildDefaultDragHandles: false,
+                        proxyDecorator: (child, index, animation) =>
+                            _proxyDecorator(
+                                child, index, animation, context, layout),
+                        onReorder: (oldIndex, newIndex) {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          HapticFeedback.lightImpact();
+                          setState(() {
+                            _recentlyDroppedIndex = newIndex;
+                          });
+                          Future.delayed(
+                              const Duration(milliseconds: _highlightDuration),
+                              () {
+                            if (mounted && _recentlyDroppedIndex == newIndex) {
+                              setState(() {
+                                _recentlyDroppedIndex = null;
+                              });
+                            }
+                          });
+                          widget.onSizesReordered?.call(oldIndex, newIndex);
+                        },
+                        children:
+                            widget.sizesTableData.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final localizations =
+                              MaterialLocalizations.of(context);
+
+                          return Semantics(
+                            key: ValueKey(entry.value.id),
+                            customSemanticsActions: {
+                              if (index > 0)
+                                CustomSemanticsAction(
+                                    label: localizations.reorderItemUp): () {
+                                  widget.onSizesReordered
+                                      ?.call(index, index - 1);
+                                },
+                              if (index < widget.sizesTableData.length - 1)
+                                CustomSemanticsAction(
+                                    label: localizations.reorderItemDown): () {
+                                  // Emulate ReorderableListView's drop index logic where newIndex includes the removed item
+                                  widget.onSizesReordered
+                                      ?.call(index, index + 2);
+                                },
+                            },
+                            child: _SizeCard(
+                              index: entry.key,
+                              layout: layout,
+                              values: entry.value.values,
+                              dragHandleLabel: widget.dragHandleLabel,
+                              isHighlighted: entry.key == _recentlyDroppedIndex,
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                   ],

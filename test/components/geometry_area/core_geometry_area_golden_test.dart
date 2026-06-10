@@ -39,8 +39,8 @@ void main() {
                 'No. of rails',
               ],
               sizesTableData: const [
-                CoreSizeCardData(values: ['2', '6', '14', '26']),
-                CoreSizeCardData(values: ['3', '6', '14', '39']),
+                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
+                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
               ],
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
@@ -92,8 +92,8 @@ void main() {
                 'No. of rails',
               ],
               sizesTableData: const [
-                CoreSizeCardData(values: ['2', '6', '14', '26']),
-                CoreSizeCardData(values: ['3', '6', '14', '39']),
+                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
+                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
               ],
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),

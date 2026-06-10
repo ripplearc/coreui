@@ -47,7 +47,8 @@ void main() {
               ],
               sizesTableTitles: const ['area', 'volume'],
               sizesTableData: const [
-                CoreSizeCardData(values: ['10', '20']),
+                CoreSizeCardData(id: '1', values: ['10', '20']),
+                CoreSizeCardData(id: '2', values: ['30', '40']),
               ],
             ),
           ),
@@ -78,7 +79,7 @@ void main() {
       expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(4));
+      expect(allIconsFinder, findsNWidgets(5));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
@@ -95,6 +96,17 @@ void main() {
 
       expect(find.text('10'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
+
+      expect(
+        find.byWidgetPredicate((widget) {
+          if (widget is Semantics) {
+            final actions = widget.properties.customSemanticsActions;
+            return actions != null && actions.isNotEmpty;
+          }
+          return false;
+        }),
+        findsWidgets,
+      );
     });
   });
 }

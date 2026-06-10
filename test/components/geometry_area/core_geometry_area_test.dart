@@ -187,8 +187,8 @@ void main() {
           find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
 
       const data = [
-        CoreSizeCardData(values: ['Val 1', 'Val 2']),
-        CoreSizeCardData(values: ['Val 3', 'Val 4']),
+        CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+        CoreSizeCardData(id: '2', values: ['Val 3', 'Val 4']),
       ];
 
       await tester.pumpWidget(
