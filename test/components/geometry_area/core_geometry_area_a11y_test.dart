@@ -97,6 +97,7 @@ void main() {
       expect(find.text('10'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
 
+
       final semanticsWidgets = tester.widgetList<Semantics>(
         find.byWidgetPredicate((w) {
           if (w is Semantics) {
@@ -128,6 +129,8 @@ void main() {
       );
       expect(tester.getSemantics(dragHandleFinder.first).label,
           startsWith(CoreGeometryArea.defaultDragHandleLabel));
+
+
     });
   });
 }

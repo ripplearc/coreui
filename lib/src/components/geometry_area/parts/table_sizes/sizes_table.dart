@@ -24,6 +24,7 @@ class _SizesTable extends StatefulWidget {
     required this.titles,
     required this.sizesTableData,
     this.onSizesReordered,
+    this.onSizeDeleted,
   });
 
   final String sizesTitleLabel;
@@ -32,6 +33,7 @@ class _SizesTable extends StatefulWidget {
   final List<String> titles;
   final List<CoreSizeCardData> sizesTableData;
   final void Function(int oldIndex, int newIndex)? onSizesReordered;
+  final void Function(String id)? onSizeDeleted;
 
   @override
   State<_SizesTable> createState() => _SizesTableState();
@@ -76,6 +78,8 @@ class _SizesTableState extends State<_SizesTable> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         const leadingSpace = CoreSpacing.space12;
@@ -154,17 +158,24 @@ class _SizesTableState extends State<_SizesTable> {
                         },
                         children:
                             widget.sizesTableData.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final localizations =
-                              MaterialLocalizations.of(context);
+                          MaterialLocalizations.of(context);
 
-                          return _SizeCard(
+                          return Semantics(
                             key: ValueKey(entry.value.id),
-                            index: entry.key,
-                            layout: layout,
-                            values: entry.value.values,
-                            dragHandleLabel: widget.dragHandleLabel,
-                            isHighlighted: entry.key == _recentlyDroppedIndex,
+                            child: Dismissible(
+                              key: ValueKey('dismiss_${entry.value.id}'),
+                              direction: DismissDirection.endToStart,
+                              onDismissed: (_) {
+                                widget.onSizeDeleted?.call(entry.value.id);
+                              },
+                              child: _SizeCard(
+                                index: entry.key,
+                                layout: layout,
+                                values: entry.value.values,
+                                dragHandleLabel: widget.dragHandleLabel,
+                                isHighlighted: entry.key == _recentlyDroppedIndex,
+                              ),
+                            ),
                           );
                         }).toList(),
                       ),
