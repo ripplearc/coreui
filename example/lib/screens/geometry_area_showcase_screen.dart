@@ -118,6 +118,19 @@ class _GeometryAreaShowcaseScreenState
                             'O.C.',
                             'No. of posts',
                             'No. of rails',
+                            'No. of rails',
+                            'No. of rails',
+                          ],
+                          sizesTableData: const [
+                            CoreSizeCardData(
+                              values: ['3', '8ft', '4', '12', '120', '12'],
+                            ),
+                            CoreSizeCardData(
+                              values: ['3', '8ft', '4', '12', '120', '12'],
+                            ),
+                            CoreSizeCardData(
+                              values: ['3', '8ft', '4', '12', '120', '12'],
+                            ),
                           ],
                           dimensions: const [
                             CoreDimensionData(label: 'Area', value: '50.27ft²'),

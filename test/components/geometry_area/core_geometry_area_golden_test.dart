@@ -32,11 +32,15 @@ void main() {
             CoreGeometryArea(
               isCollapsed: true,
               sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
+              sizesTableTitles: [
                 'Rails /section',
                 'O.C.',
                 'No. of posts',
                 'No. of rails',
+              ],
+              sizesTableData: [
+                CoreSizeCardData(values: ['2', '6', '14', '26']),
+                CoreSizeCardData(values: ['3', '6', '14', '39']),
               ],
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
@@ -81,11 +85,15 @@ void main() {
             CoreGeometryArea(
               isCollapsed: false,
               sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
+              sizesTableTitles: [
                 'Rails /section',
                 'O.C.',
                 'No. of posts',
                 'No. of rails',
+              ],
+              sizesTableData: [
+                CoreSizeCardData(values: ['2', '6', '14', '26']),
+                CoreSizeCardData(values: ['3', '6', '14', '39']),
               ],
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),

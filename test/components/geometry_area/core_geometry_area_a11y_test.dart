@@ -45,7 +45,10 @@ void main() {
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
               ],
-              sizesTableTitles: ['area', 'volume'],
+              sizesTableTitles: const ['area', 'volume'],
+              sizesTableData: const [
+                CoreSizeCardData(values: ['10', '20']),
+              ],
             ),
           ),
         ),
@@ -75,7 +78,7 @@ void main() {
       expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(3));
+      expect(allIconsFinder, findsNWidgets(4));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
@@ -89,6 +92,9 @@ void main() {
 
       expect(find.bySemanticsLabel('area'), findsOneWidget);
       expect(find.bySemanticsLabel('volume'), findsOneWidget);
+
+      expect(find.text('10'), findsOneWidget);
+      expect(find.text('20'), findsOneWidget);
     });
   });
 }

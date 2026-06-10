@@ -165,5 +165,27 @@ void main() {
       expect(find.text(CoreGeometryArea.defaultSizesTitleLabel), findsNothing);
       expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
     });
+
+    testWidgets('renders sizesTableData when provided', (tester) async {
+      const titles = ['Col A', 'Col B'];
+      const data = [
+        CoreSizeCardData(values: ['Val 1', 'Val 2']),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(
+              sizesTableTitles: titles,
+              sizesTableData: data,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Val 1'), findsOneWidget);
+      expect(find.text('Val 2'), findsOneWidget);
+    });
   });
 }
