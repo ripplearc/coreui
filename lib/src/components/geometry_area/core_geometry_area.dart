@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -19,6 +20,15 @@ class CoreSizeCardData {
 
   /// The list of string values for each column in the row.
   final List<String> values;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CoreSizeCardData && listEquals(other.values, values);
+  }
+
+  @override
+  int get hashCode => Object.hashAll(values);
 }
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].

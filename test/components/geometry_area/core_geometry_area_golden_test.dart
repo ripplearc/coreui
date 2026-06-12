@@ -32,7 +32,7 @@ void main() {
             CoreGeometryArea(
               isCollapsed: true,
               sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: [
+              sizesTableTitles: const [
                 'Rails /section',
                 'O.C.',
                 'No. of posts',
@@ -85,7 +85,7 @@ void main() {
             CoreGeometryArea(
               isCollapsed: false,
               sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: [
+              sizesTableTitles: const [
                 'Rails /section',
                 'O.C.',
                 'No. of posts',

@@ -166,10 +166,29 @@ void main() {
       expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
     });
 
-    testWidgets('renders sizesTableData when provided', (tester) async {
+    testWidgets('renders sizesTableData correctly and handles edge cases',
+        (tester) async {
       const titles = ['Col A', 'Col B'];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(
+              sizesTableTitles: titles,
+              sizesTableData: [],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Val 1'), findsNothing);
+      expect(
+          find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
+
       const data = [
         CoreSizeCardData(values: ['Val 1', 'Val 2']),
+        CoreSizeCardData(values: ['Val 3', 'Val 4']),
       ];
 
       await tester.pumpWidget(
@@ -186,6 +205,8 @@ void main() {
 
       expect(find.text('Val 1'), findsOneWidget);
       expect(find.text('Val 2'), findsOneWidget);
+      expect(find.text('Val 3'), findsOneWidget);
+      expect(find.text('Val 4'), findsOneWidget);
     });
   });
 }

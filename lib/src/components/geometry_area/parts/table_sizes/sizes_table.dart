@@ -41,9 +41,8 @@ class _SizesTable extends StatelessWidget {
         final totalWidth = leadingSpace +
             trailingSpace +
             ((columnWidth + endMargin) * titles.length);
+        final bool isScrollable = constraints.maxWidth < totalWidth;
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
-
-        final bool isScrollable = containerWidth < totalWidth;
 
         final layout = _TableLayout(
           leadingSpace: leadingSpace,

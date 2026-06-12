@@ -118,8 +118,8 @@ class _GeometryAreaShowcaseScreenState
                             'O.C.',
                             'No. of posts',
                             'No. of rails',
-                            'No. of rails',
-                            'No. of rails',
+                            'No. of brackets',
+                            'No. of screws',
                           ],
                           sizesTableData: const [
                             CoreSizeCardData(

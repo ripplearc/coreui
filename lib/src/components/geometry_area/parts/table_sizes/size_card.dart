@@ -1,10 +1,14 @@
 part of '../../core_geometry_area.dart';
 
 class _SizeCard extends StatelessWidget {
-  const _SizeCard({
+  _SizeCard({
     required this.layout,
     required this.values,
-  });
+  }) : assert(
+          values.length == layout.columnWidths.length,
+          '_SizeCard: values.length (${values.length}) must equal '
+          'columnWidths.length (${layout.columnWidths.length})',
+        );
 
   final _TableLayout layout;
   final List<String> values;
@@ -13,7 +17,6 @@ class _SizeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: CoreSpacing.space3,
@@ -41,20 +44,22 @@ class _SizeCard extends StatelessWidget {
             )),
           ),
           ...values.asMap().entries.map(
-                (entry) => SizedBox(
-                  width: layout.columnWidths[entry.key],
-                  child: Text(
-                    entry.value,
-                    style: typography.bodyMediumMedium.copyWith(
-                      color: colors.textDark,
+                (entry) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(
+                        start: CoreSpacing.space1),
+                    child: Text(
+                      entry.value,
+                      style: typography.bodyMediumMedium.copyWith(
+                        color: colors.textDark,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
                 ),
               ),
           SizedBox(width: layout.isScrollable ? 0 : CoreSpacing.space3),
-          // end-edge guard so last column isn't flush
         ],
       ),
     );
