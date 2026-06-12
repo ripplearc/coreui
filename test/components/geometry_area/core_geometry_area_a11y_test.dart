@@ -97,16 +97,46 @@ void main() {
       expect(find.text('10'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
 
-      expect(
-        find.byWidgetPredicate((widget) {
-          if (widget is Semantics) {
-            final actions = widget.properties.customSemanticsActions;
+      final semanticsWidgets = tester.widgetList<Semantics>(
+        find.byWidgetPredicate((w) {
+          if (w is Semantics && w.key != null) {
+            final actions = w.properties.customSemanticsActions;
             return actions != null && actions.isNotEmpty;
           }
           return false;
         }),
-        findsWidgets,
+      ).toList();
+
+      expect(semanticsWidgets, hasLength(2));
+      expect(
+          semanticsWidgets[0]
+              .properties
+              .customSemanticsActions!
+              .keys
+              .map((a) => a.label),
+          containsAll([
+            MaterialLocalizations.of(
+                    tester.element(find.byType(CoreGeometryArea)))
+                .reorderItemDown
+          ]));
+      expect(
+          semanticsWidgets[1]
+              .properties
+              .customSemanticsActions!
+              .keys
+              .map((a) => a.label),
+          containsAll([
+            MaterialLocalizations.of(
+                    tester.element(find.byType(CoreGeometryArea)))
+                .reorderItemUp
+          ]));
+
+      final dragHandleFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
       );
+      expect(tester.getSemantics(dragHandleFinder.first).label,
+          startsWith(CoreGeometryArea.defaultDragHandleLabel));
     });
   });
 }

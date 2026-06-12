@@ -133,6 +133,7 @@ class _SizesTableState extends State<_SizesTable> {
                         proxyDecorator: (child, index, animation) =>
                             _proxyDecorator(
                                 child, index, animation, context, layout),
+                        onReorderStart: (_) => HapticFeedback.lightImpact(),
                         onReorder: (oldIndex, newIndex) {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
@@ -170,7 +171,6 @@ class _SizesTableState extends State<_SizesTable> {
                               if (index < widget.sizesTableData.length - 1)
                                 CustomSemanticsAction(
                                     label: localizations.reorderItemDown): () {
-                                  // Emulate ReorderableListView's drop index logic where newIndex includes the removed item
                                   widget.onSizesReordered
                                       ?.call(index, index + 2);
                                 },

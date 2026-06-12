@@ -48,21 +48,18 @@ class _SizeCard extends StatelessWidget {
         children: [
           ReorderableDragStartListener(
             index: index,
-            child: Listener(
-              onPointerDown: (_) => HapticFeedback.lightImpact(),
-              child: MouseRegion(
-                cursor: SystemMouseCursors.grab,
-                child: SizedBox(
-                  width: layout.leadingSpace - CoreSpacing.space4,
-                  child: Center(
-                    child: RotatedBox(
-                      quarterTurns: 1,
-                      child: CoreIconWidget(
-                        icon: CoreIcons.dragIndicator,
-                        size: CoreIconSize.size20,
-                        color: colors.lineDarkOutline,
-                        semanticLabel: dragHandleLabel,
-                      ),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.grab,
+              child: SizedBox(
+                width: layout.leadingSpace - CoreSpacing.space4,
+                child: Center(
+                  child: RotatedBox(
+                    quarterTurns: 1,
+                    child: CoreIconWidget(
+                      icon: CoreIcons.dragIndicator,
+                      size: CoreIconSize.size20,
+                      color: colors.lineDarkOutline,
+                      semanticLabel: dragHandleLabel,
                     ),
                   ),
                 ),

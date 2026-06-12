@@ -115,4 +115,62 @@ void main() {
       matchesGoldenFile('goldens/core_geometry_area_component_expanded.png'),
     );
   });
+
+  testWidgets(
+      'CoreGeometryArea Component Visual Regression Test (Dragging/Highlighted)',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: const Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text('Geometry Area (Dragging)'),
+            SizedBox(height: CoreSpacing.space8),
+            CoreGeometryArea(
+              isCollapsed: true,
+              sizesTitleLabel: 'Concrete volumes for 70ft',
+              sizesTableTitles: const [
+                'Rails /section',
+                'O.C.',
+              ],
+              sizesTableData: [
+                CoreSizeCardData(id: '1', values: ['2', '6']),
+                CoreSizeCardData(id: '2', values: ['3', '6']),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    final dragHandles = find.byWidgetPredicate(
+      (widget) =>
+          widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+    );
+    final gesture =
+        await tester.startGesture(tester.getCenter(dragHandles.first));
+    await tester.pump();
+
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_geometry_area_component_dragging.png'),
+    );
+
+    await gesture.up();
+  });
 }
