@@ -56,6 +56,21 @@ class _GeometryAreaShowcaseScreenState
   String _currentInputValue = '';
   bool _isKeyboardCollapsed = false;
 
+  final List<CoreSizeCardData> _sizesTableData = [
+    const CoreSizeCardData(
+      id: 'row1',
+      values: ['3', '8ft', '4', '12', '120', '12'],
+    ),
+    const CoreSizeCardData(
+      id: 'row2',
+      values: ['3', '8ft', '4', '12', '120', '12'],
+    ),
+    const CoreSizeCardData(
+      id: 'row3',
+      values: ['3', '8ft', '4', '12', '120', '12'],
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -121,20 +136,18 @@ class _GeometryAreaShowcaseScreenState
                             'No. of brackets',
                             'No. of screws',
                           ],
-                          sizesTableData: const [
-                            CoreSizeCardData(
-                              id: 'row1',
-                              values: ['3', '8ft', '4', '12', '120', '12'],
-                            ),
-                            CoreSizeCardData(
-                              id: 'row2',
-                              values: ['3', '8ft', '4', '12', '120', '12'],
-                            ),
-                            CoreSizeCardData(
-                              id: 'row3',
-                              values: ['3', '8ft', '4', '12', '120', '12'],
-                            ),
-                          ],
+                          sizesTableData: _sizesTableData,
+                          onSizeDeleted: (id) {
+                            setState(() {
+                              _sizesTableData.removeWhere((item) => item.id == id);
+                            });
+                          },
+                          onSizesReordered: (oldIndex, newIndex) {
+                            setState(() {
+                              final item = _sizesTableData.removeAt(oldIndex);
+                              _sizesTableData.insert(newIndex, item);
+                            });
+                          },
                           dimensions: const [
                             CoreDimensionData(label: 'Area', value: '50.27ft²'),
                             CoreDimensionData(label: 'Diameter', value: '8ft'),
