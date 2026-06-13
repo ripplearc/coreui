@@ -133,7 +133,6 @@ class _SizesTableState extends State<_SizesTable> {
                         proxyDecorator: (child, index, animation) =>
                             _proxyDecorator(
                                 child, index, animation, context, layout),
-                        onReorderStart: (_) => HapticFeedback.lightImpact(),
                         onReorder: (oldIndex, newIndex) {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
@@ -159,29 +158,13 @@ class _SizesTableState extends State<_SizesTable> {
                           final localizations =
                               MaterialLocalizations.of(context);
 
-                          return Semantics(
+                          return _SizeCard(
                             key: ValueKey(entry.value.id),
-                            customSemanticsActions: {
-                              if (index > 0)
-                                CustomSemanticsAction(
-                                    label: localizations.reorderItemUp): () {
-                                  widget.onSizesReordered
-                                      ?.call(index, index - 1);
-                                },
-                              if (index < widget.sizesTableData.length - 1)
-                                CustomSemanticsAction(
-                                    label: localizations.reorderItemDown): () {
-                                  widget.onSizesReordered
-                                      ?.call(index, index + 2);
-                                },
-                            },
-                            child: _SizeCard(
-                              index: entry.key,
-                              layout: layout,
-                              values: entry.value.values,
-                              dragHandleLabel: widget.dragHandleLabel,
-                              isHighlighted: entry.key == _recentlyDroppedIndex,
-                            ),
+                            index: entry.key,
+                            layout: layout,
+                            values: entry.value.values,
+                            dragHandleLabel: widget.dragHandleLabel,
+                            isHighlighted: entry.key == _recentlyDroppedIndex,
                           );
                         }).toList(),
                       ),
