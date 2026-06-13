@@ -176,7 +176,7 @@ void main() {
           home: const Scaffold(
             body: CoreGeometryArea(
               sizesTableTitles: titles,
-              sizesTableData: [],
+              sizesTableData: const [],
             ),
           ),
         ),
