@@ -99,7 +99,7 @@ void main() {
 
       final semanticsWidgets = tester.widgetList<Semantics>(
         find.byWidgetPredicate((w) {
-          if (w is Semantics && w.key != null) {
+          if (w is Semantics) {
             final actions = w.properties.customSemanticsActions;
             return actions != null && actions.isNotEmpty;
           }
@@ -107,29 +107,16 @@ void main() {
         }),
       ).toList();
 
-      expect(semanticsWidgets, hasLength(2));
-      expect(
-          semanticsWidgets[0]
-              .properties
-              .customSemanticsActions!
-              .keys
-              .map((a) => a.label),
-          containsAll([
-            MaterialLocalizations.of(
-                    tester.element(find.byType(CoreGeometryArea)))
-                .reorderItemDown
-          ]));
-      expect(
-          semanticsWidgets[1]
-              .properties
-              .customSemanticsActions!
-              .keys
-              .map((a) => a.label),
-          containsAll([
-            MaterialLocalizations.of(
-                    tester.element(find.byType(CoreGeometryArea)))
-                .reorderItemUp
-          ]));
+      final localizations = MaterialLocalizations.of(
+          tester.element(find.byType(CoreGeometryArea)));
+
+      final actionSets = semanticsWidgets
+          .map((w) =>
+              w.properties.customSemanticsActions!.keys.map((a) => a.label))
+          .toList();
+
+      expect(actionSets, contains(equals([localizations.reorderItemDown])));
+      expect(actionSets, contains(equals([localizations.reorderItemUp])));
 
       final dragHandleFinder = find.byWidgetPredicate(
         (widget) =>

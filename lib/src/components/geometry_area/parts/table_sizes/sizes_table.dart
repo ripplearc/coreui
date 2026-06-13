@@ -133,7 +133,6 @@ class _SizesTableState extends State<_SizesTable> {
                         proxyDecorator: (child, index, animation) =>
                             _proxyDecorator(
                                 child, index, animation, context, layout),
-                        onReorderStart: (_) => HapticFeedback.lightImpact(),
                         onReorder: (oldIndex, newIndex) {
                           if (oldIndex < newIndex) {
                             newIndex -= 1;
@@ -172,7 +171,7 @@ class _SizesTableState extends State<_SizesTable> {
                                 CustomSemanticsAction(
                                     label: localizations.reorderItemDown): () {
                                   widget.onSizesReordered
-                                      ?.call(index, index + 2);
+                                      ?.call(index, index + 1);
                                 },
                             },
                             child: _SizeCard(
