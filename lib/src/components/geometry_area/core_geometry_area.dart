@@ -1,7 +1,10 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 
 import '../../../ripplearc_coreui.dart';
 
@@ -15,8 +18,12 @@ part 'parts/table_sizes/sizes_table_header.dart';
 /// Data class for a single row in the sizes table in the [CoreGeometryArea].
 class CoreSizeCardData {
   const CoreSizeCardData({
+    required this.id,
     required this.values,
   });
+
+  /// A unique identifier for this row, required for drag-and-drop reordering.
+  final String id;
 
   /// The list of string values for each column in the row.
   final List<String> values;
@@ -66,6 +73,9 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the add size button.
   static const String defaultAddSizeLabel = 'Add size';
 
+  /// The default text shown for the drag handle semantic label.
+  static const String defaultDragHandleLabel = 'Reorder';
+
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
@@ -77,7 +87,13 @@ class CoreGeometryArea extends StatelessWidget {
     this.sizesTableTitles = const [],
     this.sizesTableData = const [],
     this.isCollapsed = true,
+    this.dragHandleLabel = defaultDragHandleLabel,
+    this.onSizesReordered,
   });
+
+  /// Optional callback invoked when the user drags and drops a size card to reorder it.
+  /// The parent should update its data list to reflect the new order.
+  final void Function(int oldIndex, int newIndex)? onSizesReordered;
 
   /// The text displayed in the dimensions section.
   ///
@@ -133,6 +149,15 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final List<String> sizesTableTitles;
 
+  /// The text displayed for the drag handle's semantic label.
+  ///
+  /// Defaults to [defaultDragHandleLabel]. Pass a localised string from
+  /// the app layer:
+  /// ```dart
+  /// dragHandleLabel: AppLocalizations.of(context).dragHandleLabel,
+  /// ```
+  final String dragHandleLabel;
+
   /// The data rows displayed within the sizes table.
   ///
   /// Defaults to an empty list (no data rows rendered). Each entry creates
@@ -167,8 +192,10 @@ class CoreGeometryArea extends StatelessWidget {
             _SizesTable(
               sizesTitleLabel: sizesTitleLabel,
               addSizeLabel: addSizeLabel,
+              dragHandleLabel: dragHandleLabel,
               titles: sizesTableTitles,
               sizesTableData: sizesTableData,
+              onSizesReordered: onSizesReordered,
             ),
           ],
         ],

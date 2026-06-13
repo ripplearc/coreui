@@ -187,8 +187,8 @@ void main() {
           find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
 
       const data = [
-        CoreSizeCardData(values: ['Val 1', 'Val 2']),
-        CoreSizeCardData(values: ['Val 3', 'Val 4']),
+        CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+        CoreSizeCardData(id: '2', values: ['Val 3', 'Val 4']),
       ];
 
       await tester.pumpWidget(
@@ -207,6 +207,105 @@ void main() {
       expect(find.text('Val 2'), findsOneWidget);
       expect(find.text('Val 3'), findsOneWidget);
       expect(find.text('Val 4'), findsOneWidget);
+    });
+
+    testWidgets('onReorder fires with adjusted index when dragging downward',
+        (WidgetTester tester) async {
+      final reorderCalls = <(int, int)>[];
+      var data = [
+        const CoreSizeCardData(id: '1', values: ['A']),
+        const CoreSizeCardData(id: '2', values: ['B']),
+        const CoreSizeCardData(id: '3', values: ['C']),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return CoreGeometryArea(
+                  sizesTableTitles: const ['Col'],
+                  sizesTableData: data,
+                  onSizesReordered: (oldIndex, newIndex) {
+                    reorderCalls.add((oldIndex, newIndex));
+                    setState(() {
+                      final item = data.removeAt(oldIndex);
+                      data.insert(newIndex, item);
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final dragHandles = find.byWidgetPredicate(
+        (widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+      );
+      expect(dragHandles, findsNWidgets(3));
+
+      await tester.drag(dragHandles.first, const Offset(0, 100));
+      await tester.pumpAndSettle();
+
+      expect(reorderCalls.length, 1);
+      expect(reorderCalls.first, (0, 1));
+      await tester.pump(const Duration(milliseconds: 500));
+    });
+
+    testWidgets('highlights the dropped card and clears it after 500ms',
+        (WidgetTester tester) async {
+      var data = [
+        const CoreSizeCardData(id: '1', values: ['A']),
+        const CoreSizeCardData(id: '2', values: ['B']),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return CoreGeometryArea(
+                  sizesTableTitles: const ['Col'],
+                  sizesTableData: data,
+                  onSizesReordered: (oldIndex, newIndex) {
+                    setState(() {
+                      final item = data.removeAt(oldIndex);
+                      data.insert(newIndex, item);
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final dragHandles = find.byWidgetPredicate(
+        (widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+      );
+
+      await tester.drag(dragHandles.first, const Offset(0, 100));
+      await tester.pumpAndSettle();
+
+      final highlightedCardFinder = find.byWidgetPredicate((w) {
+        return w is DecoratedBox &&
+            w.decoration is BoxDecoration &&
+            (w.decoration as BoxDecoration).border != null;
+      });
+
+      expect(highlightedCardFinder, findsOneWidget,
+          reason: 'Card should be highlighted immediately after drop');
+
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+
+      expect(highlightedCardFinder, findsNothing,
+          reason: 'Highlight should be cleared after 500ms');
     });
   });
 }
