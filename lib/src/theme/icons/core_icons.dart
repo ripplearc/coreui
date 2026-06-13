@@ -78,6 +78,7 @@ class CoreIcons {
   static const home = CoreIconData.svg(CoreSvgIcons.home);
   static const calculation = CoreIconData.svg(CoreSvgIcons.calculation);
   static const list = CoreMaterialIcons.list;
+  static const dragIndicator = CoreMaterialIcons.dragIndicator;
   static const placeholder = CoreIconData.svg(CoreSvgIcons.placeholder);
   static const emptyEstimation = CoreIconData.svg(CoreSvgIcons.emptyEstimation);
 

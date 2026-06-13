@@ -6,12 +6,14 @@ class _TableLayout {
     required this.trailingSpace,
     required this.columnWidths,
     required this.endMargin,
+    required this.isScrollable,
   });
 
   final double leadingSpace;
   final double trailingSpace;
   final double endMargin;
   final List<double> columnWidths;
+  final bool isScrollable;
 }
 
 class _SizesTable extends StatelessWidget {
@@ -19,11 +21,13 @@ class _SizesTable extends StatelessWidget {
     required this.sizesTitleLabel,
     required this.addSizeLabel,
     required this.titles,
+    required this.sizesTableData,
   });
 
   final String sizesTitleLabel;
   final String addSizeLabel;
   final List<String> titles;
+  final List<CoreSizeCardData> sizesTableData;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +41,7 @@ class _SizesTable extends StatelessWidget {
         final totalWidth = leadingSpace +
             trailingSpace +
             ((columnWidth + endMargin) * titles.length);
+        final bool isScrollable = constraints.maxWidth < totalWidth;
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
 
         final layout = _TableLayout(
@@ -47,6 +52,7 @@ class _SizesTable extends StatelessWidget {
             titles.length,
             columnWidth,
           ),
+          isScrollable: isScrollable,
         );
 
         return Column(
@@ -73,7 +79,12 @@ class _SizesTable extends StatelessWidget {
                       layout: layout,
                       titles: titles,
                     ),
-                    // TODO: [CA-679] [Geometry Area] Sizes table Row Card. https://ripplearc.youtrack.cloud/agiles/176-9/179-52?issue=CA-679
+                    ...sizesTableData.map(
+                      (row) => _SizeCard(
+                        layout: layout,
+                        values: row.values,
+                      ),
+                    ),
                   ],
                 ),
               ),

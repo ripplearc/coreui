@@ -1,14 +1,35 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
 part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
+part 'parts/table_sizes/size_card.dart';
 part 'parts/table_sizes/sizes_header.dart';
 part 'parts/table_sizes/sizes_table.dart';
 part 'parts/table_sizes/sizes_table_header.dart';
+
+/// Data class for a single row in the sizes table in the [CoreGeometryArea].
+class CoreSizeCardData {
+  const CoreSizeCardData({
+    required this.values,
+  });
+
+  /// The list of string values for each column in the row.
+  final List<String> values;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CoreSizeCardData && listEquals(other.values, values);
+  }
+
+  @override
+  int get hashCode => Object.hashAll(values);
+}
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].
 class CoreDimensionData {
@@ -54,6 +75,7 @@ class CoreGeometryArea extends StatelessWidget {
     this.addSizeLabel = defaultAddSizeLabel,
     this.dimensions = const [],
     this.sizesTableTitles = const [],
+    this.sizesTableData = const [],
     this.isCollapsed = true,
   });
 
@@ -111,6 +133,12 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final List<String> sizesTableTitles;
 
+  /// The data rows displayed within the sizes table.
+  ///
+  /// Defaults to an empty list (no data rows rendered). Each entry creates
+  /// a draggable size card under the table header.
+  final List<CoreSizeCardData> sizesTableData;
+
   /// The list of dimensions to display.
   final List<CoreDimensionData> dimensions;
 
@@ -140,6 +168,7 @@ class CoreGeometryArea extends StatelessWidget {
               sizesTitleLabel: sizesTitleLabel,
               addSizeLabel: addSizeLabel,
               titles: sizesTableTitles,
+              sizesTableData: sizesTableData,
             ),
           ],
         ],
