@@ -158,13 +158,42 @@ class _SizesTableState extends State<_SizesTable> {
                         },
                         children:
                             widget.sizesTableData.asMap().entries.map((entry) {
-                          MaterialLocalizations.of(context);
+                          final localizations =
+                              MaterialLocalizations.of(context);
 
                           return Semantics(
                             key: ValueKey(entry.value.id),
+                            customSemanticsActions: {
+                              CustomSemanticsAction(
+                                      label: localizations.deleteButtonTooltip):
+                                  () {
+                                widget.onSizeDeleted?.call(entry.value.id);
+                              },
+                            },
                             child: Dismissible(
+                              // 'dismiss_' prefix distinguishes Dismissible's key from the inner
+                              // Semantics key; ReorderableListView uses the Dismissible key for
+                              // drag identity, so it must be unique at that level.
                               key: ValueKey('dismiss_${entry.value.id}'),
                               direction: DismissDirection.endToStart,
+                              background: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: CoreSpacing.space3,
+                                  vertical: CoreSpacing.space1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.statusError,
+                                  borderRadius:
+                                      BorderRadius.circular(CoreSpacing.space2),
+                                ),
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(
+                                    right: CoreSpacing.space6),
+                                child: CoreIconWidget(
+                                  icon: CoreIcons.delete,
+                                  color: colors.iconWhite,
+                                ),
+                              ),
                               onDismissed: (_) {
                                 widget.onSizeDeleted?.call(entry.value.id);
                               },
@@ -173,7 +202,8 @@ class _SizesTableState extends State<_SizesTable> {
                                 layout: layout,
                                 values: entry.value.values,
                                 dragHandleLabel: widget.dragHandleLabel,
-                                isHighlighted: entry.key == _recentlyDroppedIndex,
+                                isHighlighted:
+                                    entry.key == _recentlyDroppedIndex,
                               ),
                             ),
                           );

@@ -116,7 +116,6 @@ void main() {
     );
   });
 
-
   testWidgets(
       'CoreGeometryArea Component Visual Regression Test (Dragging/Highlighted)',
       (WidgetTester tester) async {
@@ -221,13 +220,10 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pump();
-
-    // Find the first row to swipe (using text '26')
     final itemToSwipe = find.text('26');
     final gesture = await tester.startGesture(tester.getCenter(itemToSwipe));
     await tester.pump(const Duration(milliseconds: 100));
-    
-    // Swipe left by 150 pixels to reveal the delete background, but do not release the pointer
+
     await gesture.moveBy(const Offset(-150.0, 0.0));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -236,6 +232,7 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_geometry_area_component_deleting.png'),
     );
-  });
 
+    await gesture.cancel();
+  });
 }
