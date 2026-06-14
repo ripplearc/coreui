@@ -221,10 +221,7 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pump();
     final itemToSwipe = find.text('26');
-    final gesture = await tester.startGesture(tester.getCenter(itemToSwipe));
-    await tester.pump(const Duration(milliseconds: 100));
-
-    await gesture.moveBy(const Offset(-150.0, 0.0));
+    await tester.drag(itemToSwipe, const Offset(-168.0, 0.0));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
@@ -232,7 +229,5 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_geometry_area_component_deleting.png'),
     );
-
-    await gesture.cancel();
   });
 }

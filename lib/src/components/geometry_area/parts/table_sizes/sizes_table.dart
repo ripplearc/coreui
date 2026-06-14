@@ -20,20 +20,24 @@ class _SizesTable extends StatefulWidget {
   const _SizesTable({
     required this.sizesTitleLabel,
     required this.addSizeLabel,
+    required this.editSizeLabel,
     required this.dragHandleLabel,
     required this.titles,
     required this.sizesTableData,
     this.onSizesReordered,
     this.onSizeDeleted,
+    this.onSizeSaved,
   });
 
   final String sizesTitleLabel;
   final String addSizeLabel;
+  final String editSizeLabel;
   final String dragHandleLabel;
   final List<String> titles;
   final List<CoreSizeCardData> sizesTableData;
   final void Function(int oldIndex, int newIndex)? onSizesReordered;
   final void Function(String id)? onSizeDeleted;
+  final void Function(SizeEntryResult result)? onSizeSaved;
 
   @override
   State<_SizesTable> createState() => _SizesTableState();
@@ -111,6 +115,17 @@ class _SizesTableState extends State<_SizesTable> {
             _SizesHeader(
               titleLabel: widget.sizesTitleLabel,
               addSizeLabel: widget.addSizeLabel,
+              onAddTap: () async {
+                final result = await SizeEntryBottomSheet.show(
+                  context: context,
+                  addSizeTitle: widget.addSizeLabel,
+                  editSizeTitle: widget.editSizeLabel,
+                  titles: widget.titles,
+                );
+                if (result != null) {
+                  widget.onSizeSaved?.call(result);
+                }
+              },
             ),
             const SizedBox(height: CoreSpacing.space1),
             SingleChildScrollView(
@@ -197,13 +212,29 @@ class _SizesTableState extends State<_SizesTable> {
                               onDismissed: (_) {
                                 widget.onSizeDeleted?.call(entry.value.id);
                               },
-                              child: _SizeCard(
-                                index: entry.key,
-                                layout: layout,
-                                values: entry.value.values,
-                                dragHandleLabel: widget.dragHandleLabel,
-                                isHighlighted:
-                                    entry.key == _recentlyDroppedIndex,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final result =
+                                      await SizeEntryBottomSheet.show(
+                                    context: context,
+                                    addSizeTitle: widget.addSizeLabel,
+                                    editSizeTitle: widget.editSizeLabel,
+                                    initialData: entry.value,
+                                    initialIndex: entry.key,
+                                    titles: widget.titles,
+                                  );
+                                  if (result != null) {
+                                    widget.onSizeSaved?.call(result);
+                                  }
+                                },
+                                child: _SizeCard(
+                                  index: entry.key,
+                                  layout: layout,
+                                  values: entry.value.values,
+                                  dragHandleLabel: widget.dragHandleLabel,
+                                  isHighlighted:
+                                      entry.key == _recentlyDroppedIndex,
+                                ),
                               ),
                             ),
                           );
