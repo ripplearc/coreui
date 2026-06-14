@@ -107,9 +107,9 @@ void main() {
         }),
       ).toList();
 
-      expect(semanticsWidgets, hasLength(2),
+      expect(semanticsWidgets, hasLength(4),
           reason:
-              'A 2-row list produces exactly 2 action-bearing Semantics widgets');
+              'A 2-row list produces 4 action-bearing Semantics widgets (2 for reorder, 2 for delete)');
 
       final localizations = MaterialLocalizations.of(
           tester.element(find.byType(CoreGeometryArea)));
@@ -119,8 +119,10 @@ void main() {
               w.properties.customSemanticsActions!.keys.map((a) => a.label))
           .toList();
 
-      expect(actionSets, contains(contains(localizations.reorderItemDown)));
-      expect(actionSets, contains(contains(localizations.reorderItemUp)));
+      expect(actionSets[0], contains(localizations.reorderItemDown));
+      expect(actionSets[1], contains(localizations.deleteButtonTooltip));
+      expect(actionSets[2], contains(localizations.reorderItemUp));
+      expect(actionSets[3], contains(localizations.deleteButtonTooltip));
 
       final dragHandleFinder = find.byWidgetPredicate(
         (widget) =>
