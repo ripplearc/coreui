@@ -47,7 +47,8 @@ void main() {
               ],
               sizesTableTitles: const ['area', 'volume'],
               sizesTableData: const [
-                CoreSizeCardData(values: ['10', '20']),
+                CoreSizeCardData(id: '1', values: ['10', '20']),
+                CoreSizeCardData(id: '2', values: ['30', '40']),
               ],
             ),
           ),
@@ -78,7 +79,7 @@ void main() {
       expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(4));
+      expect(allIconsFinder, findsNWidgets(5));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
@@ -95,6 +96,38 @@ void main() {
 
       expect(find.text('10'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
+
+      final semanticsWidgets = tester.widgetList<Semantics>(
+        find.byWidgetPredicate((w) {
+          if (w is Semantics) {
+            final actions = w.properties.customSemanticsActions;
+            return actions != null && actions.isNotEmpty;
+          }
+          return false;
+        }),
+      ).toList();
+
+      expect(semanticsWidgets, hasLength(2),
+          reason:
+              'A 2-row list produces exactly 2 action-bearing Semantics widgets');
+
+      final localizations = MaterialLocalizations.of(
+          tester.element(find.byType(CoreGeometryArea)));
+
+      final actionSets = semanticsWidgets
+          .map((w) =>
+              w.properties.customSemanticsActions!.keys.map((a) => a.label))
+          .toList();
+
+      expect(actionSets, contains(contains(localizations.reorderItemDown)));
+      expect(actionSets, contains(contains(localizations.reorderItemUp)));
+
+      final dragHandleFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+      );
+      expect(tester.getSemantics(dragHandleFinder.first).label,
+          startsWith(CoreGeometryArea.defaultDragHandleLabel));
     });
   });
 }
