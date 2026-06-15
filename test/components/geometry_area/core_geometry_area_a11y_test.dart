@@ -40,9 +40,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
-              dimensions: [
+              dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
               ],
               sizesTableTitles: const ['area', 'volume'],
@@ -50,6 +50,7 @@ void main() {
                 CoreSizeCardData(id: '1', values: ['10', '20']),
                 CoreSizeCardData(id: '2', values: ['30', '40']),
               ],
+              onViewAllAttachmentsPressed: () {},
             ),
           ),
         ),
@@ -59,11 +60,27 @@ void main() {
       final expandText = find.text(CoreGeometryArea.defaultExpandLabel);
       final sizesTitleText = find.text(CoreGeometryArea.defaultSizesTitleLabel);
       final addSizeText = find.text(CoreGeometryArea.defaultAddSizeLabel);
+      final attachmentsText =
+          find.text(CoreGeometryArea.defaultAttachmentsTitleLabel);
+      final viewAllText =
+          find.text(CoreGeometryArea.defaultViewAllAttachmentsLabel);
 
       expect(dimensionsText, findsOneWidget);
       expect(expandText, findsOneWidget);
       expect(sizesTitleText, findsOneWidget);
       expect(addSizeText, findsOneWidget);
+      expect(attachmentsText, findsOneWidget);
+      expect(viewAllText, findsOneWidget);
+
+      final attachmentsSemantics = tester.getSemantics(attachmentsText);
+      expect(attachmentsSemantics.label,
+          CoreGeometryArea.defaultAttachmentsTitleLabel);
+
+      final viewAllFinder = find
+          .bySemanticsLabel(CoreGeometryArea.defaultViewAllAttachmentsLabel);
+      expect(viewAllFinder, findsOneWidget);
+      final viewAllSemantics = tester.getSemantics(viewAllFinder);
+      expect(viewAllSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
 
       final dimSemantics = tester.getSemantics(dimensionsText);
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
@@ -79,7 +96,7 @@ void main() {
       expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(5));
+      expect(allIconsFinder, findsNWidgets(6));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);

@@ -209,7 +209,6 @@ void main() {
       expect(find.text('Val 4'), findsOneWidget);
     });
 
-
     testWidgets('onReorder fires with adjusted index when dragging downward',
         (WidgetTester tester) async {
       final reorderCalls = <(int, int)>[];
@@ -309,7 +308,6 @@ void main() {
           reason: 'Highlight should be cleared after 500ms');
     });
 
-
     testWidgets('swiping a size card triggers onSizeDeleted', (tester) async {
       String? deletedId;
 
@@ -340,5 +338,52 @@ void main() {
       expect(deletedId, '1');
     });
 
+    testWidgets('renders attachments section by default', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(),
+          ),
+        ),
+      );
+
+      expect(find.text(CoreGeometryArea.defaultAttachmentsTitleLabel),
+          findsOneWidget);
+      expect(find.text(CoreGeometryArea.defaultViewAllAttachmentsLabel),
+          findsNothing);
+    });
+
+    testWidgets('renders attachments button when callback is provided',
+        (tester) async {
+      bool wasPressed = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onViewAllAttachmentsPressed: () {
+                wasPressed = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text(CoreGeometryArea.defaultViewAllAttachmentsLabel),
+          findsOneWidget);
+      expect(
+        find.byWidgetPredicate((widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.arrowRight),
+        findsOneWidget,
+      );
+
+      await tester
+          .tap(find.text(CoreGeometryArea.defaultViewAllAttachmentsLabel));
+      await tester.pumpAndSettle();
+
+      expect(wasPressed, isTrue);
+    });
   });
 }
