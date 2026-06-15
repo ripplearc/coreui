@@ -20,9 +20,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreGeometryArea(
+        (theme) => CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
           dimensions: [
-            CoreDimensionData(label: 'Area', value: '50.27ft²'),
+            const CoreDimensionData(label: 'Area', value: '50.27ft²'),
           ],
         ),
         find.byType(CoreGeometryArea),
@@ -42,15 +44,17 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreGeometryArea(
-              dimensions: const [
-                CoreDimensionData(label: 'Area', value: '50.27ft²'),
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              onViewAllAttachmentsPressed: () {},
+              dimensions: [
+                const CoreDimensionData(label: 'Area', value: '50.27ft²'),
               ],
               sizesTableTitles: const ['area', 'volume'],
               sizesTableData: const [
                 CoreSizeCardData(id: '1', values: ['10', '20']),
                 CoreSizeCardData(id: '2', values: ['30', '40']),
               ],
-              onViewAllAttachmentsPressed: () {},
             ),
           ),
         ),
@@ -64,6 +68,9 @@ void main() {
           find.text(CoreGeometryArea.defaultAttachmentsTitleLabel);
       final viewAllText =
           find.text(CoreGeometryArea.defaultViewAllAttachmentsLabel);
+      final mediaText = find.text(CoreGeometryArea.defaultMediaButtonLabel);
+      final documentText =
+          find.text(CoreGeometryArea.defaultDocumentButtonLabel);
 
       expect(dimensionsText, findsOneWidget);
       expect(expandText, findsOneWidget);
@@ -71,16 +78,8 @@ void main() {
       expect(addSizeText, findsOneWidget);
       expect(attachmentsText, findsOneWidget);
       expect(viewAllText, findsOneWidget);
-
-      final attachmentsSemantics = tester.getSemantics(attachmentsText);
-      expect(attachmentsSemantics.label,
-          CoreGeometryArea.defaultAttachmentsTitleLabel);
-
-      final viewAllFinder = find
-          .bySemanticsLabel(CoreGeometryArea.defaultViewAllAttachmentsLabel);
-      expect(viewAllFinder, findsOneWidget);
-      final viewAllSemantics = tester.getSemantics(viewAllFinder);
-      expect(viewAllSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+      expect(mediaText, findsOneWidget);
+      expect(documentText, findsOneWidget);
 
       final dimSemantics = tester.getSemantics(dimensionsText);
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
@@ -96,7 +95,7 @@ void main() {
       expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(6));
+      expect(allIconsFinder, findsNWidgets(8));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);

@@ -77,92 +77,87 @@ class _GeometryAreaShowcaseScreenState
             decoration: BoxDecoration(color: colors.pageBackground),
             child: Column(
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        CoreDisplayArea(
-                          label: 'Length',
-                          value: _currentInputValue.isEmpty
-                              ? '0'
-                              : _currentInputValue,
-                          hasError: false,
-                          isTyping: _currentInputValue.isNotEmpty,
-                          onClose: () {
-                            setState(() {
-                              _currentInputValue = '';
-                            });
-                          },
-                          onStageChanged: (stage) {},
-                          dependentKeyLabel: null,
-                          dependentKeyValue: null,
-                          onPressedDependentKey: () {},
-                          chipsList: const [],
-                          previousSessions: const [],
-                        ),
-                        CoreSuggestionArea(
-                          conversionSuggestions: [
-                            SuggestionData(
-                                label: 'Metric Area',
-                                value: '13.3',
-                                unit: 'sq m',
-                                onTap: () {}),
-                          ],
-                          hiddenChipsTextBuilder: (count) => '+$count',
-                          expandToggleSemanticsLabelBuilder: (count) =>
-                              'Expand $count more suggestions',
-                          collapseToggleSemanticsLabel: 'Collapse suggestions',
-                        ),
-                        if (_isKeyboardCollapsed)
-                          BlocBuilder<GeometryAreaBloc, GeometryAreaState>(
-                            builder: (context, state) {
-                              return CoreGeometryArea(
-                                isCollapsed: true,
-                                sizesTitleLabel: 'Concrete volumes for 70ft',
-                                addSizeLabel: 'Add size',
-                                editSizeLabel: 'Edit size',
-                                sizesTableTitles: const [
-                                  'Rails /section',
-                                  'O.C.',
-                                  'No. of posts',
-                                  'No. of rails',
-                                  'No. of brackets',
-                                  'No. of screws',
-                                ],
-                                sizesTableData: state.sizesTableData,
-                                onSizeDeleted: (id) {
-                                  context
-                                      .read<GeometryAreaBloc>()
-                                      .add(SizeDeleted(id));
-                                },
-                                onSizesReordered: (oldIndex, newIndex) {
-                                  context
-                                      .read<GeometryAreaBloc>()
-                                      .add(SizesReordered(oldIndex, newIndex));
-                                },
-                                onSizeSaved: (result) {
-                                  context
-                                      .read<GeometryAreaBloc>()
-                                      .add(SizeSaved(result));
-                                },
-                                dimensions: const [
-                                  CoreDimensionData(
-                                      label: 'Area', value: '50.27ft²'),
-                                  CoreDimensionData(
-                                      label: 'Diameter', value: '8ft'),
-                                  CoreDimensionData(
-                                      label: 'Radius', value: '4ft'),
-                                  CoreDimensionData(
-                                      label: 'Circumference', value: '25.13ft'),
-                                ],
-                                onViewAllAttachmentsPressed: () {},
-                              );
+                CoreDisplayArea(
+                  label: 'Length',
+                  value: _currentInputValue.isEmpty ? '0' : _currentInputValue,
+                  hasError: false,
+                  isTyping: _currentInputValue.isNotEmpty,
+                  onClose: () {
+                    setState(() {
+                      _currentInputValue = '';
+                    });
+                  },
+                  onStageChanged: (stage) {},
+                  dependentKeyLabel: null,
+                  dependentKeyValue: null,
+                  onPressedDependentKey: () {},
+                  chipsList: const [],
+                  previousSessions: const [],
+                ),
+                CoreSuggestionArea(
+                  conversionSuggestions: [
+                    SuggestionData(
+                        label: 'Metric Area',
+                        value: '13.3',
+                        unit: 'sq m',
+                        onTap: () {}),
+                  ],
+                  hiddenChipsTextBuilder: (count) => '+$count',
+                  expandToggleSemanticsLabelBuilder: (count) =>
+                      'Expand $count more suggestions',
+                  collapseToggleSemanticsLabel: 'Collapse suggestions',
+                ),
+                if (_isKeyboardCollapsed)
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: BlocBuilder<GeometryAreaBloc, GeometryAreaState>(
+                        builder: (context, state) {
+                          return CoreGeometryArea(
+                            isCollapsed: true,
+                            sizesTitleLabel: 'Concrete volumes for 70ft',
+                            addSizeLabel: 'Add size',
+                            editSizeLabel: 'Edit size',
+                            sizesTableTitles: const [
+                              'Rails /section',
+                              'O.C.',
+                              'No. of posts',
+                              'No. of rails',
+                              'No. of brackets',
+                              'No. of screws',
+                            ],
+                            sizesTableData: state.sizesTableData,
+                            onSizeDeleted: (id) {
+                              context
+                                  .read<GeometryAreaBloc>()
+                                  .add(SizeDeleted(id));
                             },
-                          ),
-                      ],
+                            onSizesReordered: (oldIndex, newIndex) {
+                              context
+                                  .read<GeometryAreaBloc>()
+                                  .add(SizesReordered(oldIndex, newIndex));
+                            },
+                            onSizeSaved: (result) {
+                              context
+                                  .read<GeometryAreaBloc>()
+                                  .add(SizeSaved(result));
+                            },
+                            dimensions: const [
+                              CoreDimensionData(
+                                  label: 'Area', value: '50.27ft²'),
+                              CoreDimensionData(
+                                  label: 'Diameter', value: '8ft'),
+                              CoreDimensionData(label: 'Radius', value: '4ft'),
+                              CoreDimensionData(
+                                  label: 'Circumference', value: '25.13ft'),
+                            ],
+                            onViewAllAttachmentsPressed: () {},
+                            onMediaButtonPressed: () {},
+                            onDocumentButtonPressed: () {},
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
                 CoreKeyboard(
                   currentGroup: _basicGeometryGroup,
                   allGroups: _groups,
