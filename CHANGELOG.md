@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0] - CoreInitialAvatar & CoreCheckRowItem
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreInitialAvatar**: New circular avatar showing a single name initial, built as a thin wrapper over `CoreAvatar`.
+    - Derives the initial from the first whitespace-delimited token of `name`, uppercased (`"John Doe"` → `"J"`); a single first-name initial, not first+last
+    - Defaults to a 24×24 circle (`radius` 12), parameterized for other sizes
+    - Theme-driven default colours (`backgroundBlueMid` background, `iconOrient` initial) so dark mode is handled automatically
+    - Fully overridable `backgroundColor`, `textColor`, and `textStyle` so callers can theme the avatar independently; `textColor` is applied last and remains the single source of truth for the glyph colour
+    - Localizable `semanticLabel` param (defaults to `"Avatar for {name}"`)
+    - Blank `name` renders an empty circle (no crash)
+  - **CoreCheckRowItem**: New selectable list row — leading widget, title (+ optional subtitle), and a trailing checkbox.
+    - Whole row is tappable; tapping toggles `selected` via `onChanged`
+    - Defaults the leading widget to a `CoreInitialAvatar` built from `title`; `avatarBackgroundColor`/`avatarTextColor` pass through to it (ignored when a custom `leading` is supplied)
+    - Trailing checkbox swaps between `CoreIcons.check` and `CoreIcons.checkBlank` based on `selected`
+    - Optional `subtitle` for a second line (e.g. an email address)
+    - Localizable `semanticLabel` param (defaults to `title`); exposed as a `Semantics(button: true, checked: selected)` node
+
 ## [0.5.0] - Search components
 
 ### ✨ Features

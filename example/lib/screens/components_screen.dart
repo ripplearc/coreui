@@ -1,9 +1,11 @@
 import 'package:example/screens/bottom_navigation_showcase_screen.dart';
 import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/calculator_chip_showcase_screen.dart';
+import 'package:example/screens/check_row_item_showcase_screen.dart';
 import 'package:example/screens/chip_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
+import 'package:example/screens/initial_avatar_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
@@ -166,6 +168,18 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Search Row Item Component',
                 const SearchRowItemShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Initial Avatar Component',
+                const InitialAvatarShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Check Row Item Component',
+                const CheckRowItemShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
