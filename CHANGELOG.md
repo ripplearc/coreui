@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0] - CoreCheckRowItem
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreCheckRowItem**: New selectable list row — leading widget, title (+ optional subtitle), and a trailing checkbox.
+    - Whole row is tappable; tapping toggles `selected` via `onChanged`
+    - Defaults the leading widget to a 24×24 circle showing the first initial of `title` (derived from the first whitespace-delimited token, uppercased, e.g. `"John Doe"` → `"J"`; blank `title` renders an empty circle, no crash); `avatarBackgroundColor`/`avatarTextColor`/`avatarTextStyle` theme it (ignored when a custom `leading` is supplied); `avatarTextColor` is applied last and remains the single source of truth for the glyph colour
+    - Trailing checkbox swaps between `CoreIcons.check` and `CoreIcons.checkBlank` based on `selected`
+    - Optional `subtitle` for a second line (e.g. an email address)
+    - Localizable `semanticLabel` param (defaults to `title`); exposed as a `Semantics(button: true, checked: selected)` node
+
 ## [0.5.0] - Search components
 
 ### ✨ Features
