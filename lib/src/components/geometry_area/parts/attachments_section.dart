@@ -6,8 +6,8 @@ class _AttachmentsSection extends StatelessWidget {
     required this.viewAllAttachmentsLabel,
     required this.mediaButtonLabel,
     required this.documentButtonLabel,
-    required this.onMediaButtonPressed,
-    required this.onDocumentButtonPressed,
+    this.onMediaButtonPressed,
+    this.onDocumentButtonPressed,
     this.onViewAllAttachmentsPressed,
   });
 
@@ -15,14 +15,17 @@ class _AttachmentsSection extends StatelessWidget {
   final String viewAllAttachmentsLabel;
   final String mediaButtonLabel;
   final String documentButtonLabel;
-  final VoidCallback onMediaButtonPressed;
-  final VoidCallback onDocumentButtonPressed;
+  final VoidCallback? onMediaButtonPressed;
+  final VoidCallback? onDocumentButtonPressed;
   final VoidCallback? onViewAllAttachmentsPressed;
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+
+    final mediaPressed = onMediaButtonPressed;
+    final documentPressed = onDocumentButtonPressed;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -68,32 +71,37 @@ class _AttachmentsSection extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: CoreSpacing.space4),
-          Row(
-            children: [
-              Expanded(
-                child: CoreButton(
-                  label: mediaButtonLabel,
-                  variant: CoreButtonVariant.secondary,
-                  icon: const CoreIconWidget(
-                    icon: CoreIcons.image,
+          if (mediaPressed != null || documentPressed != null) ...[
+            const SizedBox(height: CoreSpacing.space4),
+            Row(
+              children: [
+                if (mediaPressed != null)
+                  Expanded(
+                    child: CoreButton(
+                      label: mediaButtonLabel,
+                      variant: CoreButtonVariant.secondary,
+                      icon: const CoreIconWidget(
+                        icon: CoreIcons.image,
+                      ),
+                      onPressed: mediaPressed,
+                    ),
                   ),
-                  onPressed: onMediaButtonPressed,
-                ),
-              ),
-              const SizedBox(width: CoreSpacing.space4),
-              Expanded(
-                child: CoreButton(
-                  label: documentButtonLabel,
-                  variant: CoreButtonVariant.secondary,
-                  icon: const CoreIconWidget(
-                    icon: CoreIcons.file,
+                if (mediaPressed != null && documentPressed != null)
+                  const SizedBox(width: CoreSpacing.space4),
+                if (documentPressed != null)
+                  Expanded(
+                    child: CoreButton(
+                      label: documentButtonLabel,
+                      variant: CoreButtonVariant.secondary,
+                      icon: const CoreIconWidget(
+                        icon: CoreIcons.file,
+                      ),
+                      onPressed: documentPressed,
+                    ),
                   ),
-                  onPressed: onDocumentButtonPressed,
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

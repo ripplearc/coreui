@@ -114,8 +114,8 @@ class CoreGeometryArea extends StatelessWidget {
     this.onSizeDeleted,
     this.onSizeSaved,
     this.onViewAllAttachmentsPressed,
-    required this.onMediaButtonPressed,
-    required this.onDocumentButtonPressed,
+    this.onMediaButtonPressed,
+    this.onDocumentButtonPressed,
   });
 
   /// Optional callback invoked when the user drags and drops a size card to reorder it.
@@ -212,10 +212,10 @@ class CoreGeometryArea extends StatelessWidget {
   final VoidCallback? onViewAllAttachmentsPressed;
 
   /// Callback invoked when the user taps on the "Media" button.
-  final VoidCallback onMediaButtonPressed;
+  final VoidCallback? onMediaButtonPressed;
 
   /// Callback invoked when the user taps on the "Document" button.
-  final VoidCallback onDocumentButtonPressed;
+  final VoidCallback? onDocumentButtonPressed;
 
   /// The column header titles displayed in the sizes table.
   ///

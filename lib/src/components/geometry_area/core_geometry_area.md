@@ -50,9 +50,7 @@ CoreGeometryArea(
     CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
   ],
   
-  onToggleCollapse: () {
-    // Handle manual collapse toggle
-  },
+
   onSizesReordered: (oldIndex, newIndex) {
     // Dispatch reorder event to BLoC
   },
@@ -110,13 +108,12 @@ CoreGeometryArea(
 ### Callbacks
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `onToggleCollapse` | `VoidCallback?` | `null` | Fired when the user interacts with the expand/collapse icon. |
 | `onSizesReordered` | `void Function(int, int)?` | `null` | Invoked on completion of a drag-to-reorder gesture. |
 | `onSizeDeleted` | `void Function(String)?` | `null` | Fired when a swipe-to-delete gesture completes. Receives the `id` of the deleted item. |
-| `onSizeSaved` | `void Function(Map<String, String>)?`| `null` | Triggered when saving modifications or new sizes. |
+| `onSizeSaved` | `void Function(SizeEntryResult)?` | `null` | Triggered when saving modifications or new sizes. |
 | `onViewAllAttachmentsPressed` | `VoidCallback?` | `null` | If provided, displays the "View all" action. |
-| `onMediaButtonPressed` | `VoidCallback` | **Required** | Action fired when the Media button is tapped. |
-| `onDocumentButtonPressed` | `VoidCallback` | **Required** | Action fired when the Document button is tapped. |
+| `onMediaButtonPressed` | `VoidCallback?` | `null` | If provided, renders the Media button. Omit to hide it. |
+| `onDocumentButtonPressed` | `VoidCallback?` | `null` | If provided, renders the Document button. Omit to hide it. |
 
 ---
 
@@ -126,5 +123,3 @@ CoreGeometryArea(
 - **Semantic Grouping**: The widget hierarchy explicitly merges and announces logical groups of data (e.g. Dimensions lists) so screen readers present them cohesively.
 - **Interactive Semantics**: The toggle, view all text, and add buttons specify `button: true` semantics, ensuring talkback accurately announces their interaction capability.
 - **Action Exclusions**: Purely visual decorative elements like the expand chevron explicitly declare `excludeFromSemantics: true` to minimize auditory clutter.
-
-*Architectural Note: `CoreGeometryArea` employs slivers inside its scrollable regions internally to maintain a smooth 60fps frame rate even when sizesTableData is deeply nested or highly populated.*

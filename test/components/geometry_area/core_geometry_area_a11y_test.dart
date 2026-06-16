@@ -81,6 +81,11 @@ void main() {
       expect(mediaText, findsOneWidget);
       expect(documentText, findsOneWidget);
 
+      final viewAllFinder = find.bySemanticsLabel(CoreGeometryArea.defaultViewAllAttachmentsLabel);
+      expect(viewAllFinder, findsOneWidget);
+      final viewAllSemantics = tester.getSemantics(viewAllFinder);
+      expect(viewAllSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+
       final dimSemantics = tester.getSemantics(dimensionsText);
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
 

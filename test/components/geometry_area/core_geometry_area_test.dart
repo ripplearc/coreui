@@ -454,5 +454,69 @@ void main() {
       await tester.pumpAndSettle();
       expect(documentPressed, isTrue);
     });
+
+    testWidgets('hides media and document buttons when both callbacks are null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsNothing);
+      expect(documentFinder, findsNothing);
+    });
+
+    testWidgets('renders only media button when document callback is null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsOneWidget);
+      expect(documentFinder, findsNothing);
+    });
+
+    testWidgets('renders only document button when media callback is null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onDocumentButtonPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsNothing);
+      expect(documentFinder, findsOneWidget);
+    });
   });
 }
