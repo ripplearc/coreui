@@ -9,8 +9,13 @@ class SizeEntryResult {
     this.index,
   });
 
+  /// The list of string values entered for each size dimension.
   final List<String> values;
+
+  /// The operation intent indicating whether this is an addition or an edit.
   final SizeOperationIntent intent;
+
+  /// The index of the size entry being edited, if applicable.
   final int? index;
 }
 
@@ -24,10 +29,19 @@ class SizeEntryBottomSheet extends StatefulWidget {
     required this.editSizeTitle,
   });
 
+  /// The initial size data to populate the form with if editing an existing entry.
   final CoreSizeCardData? initialData;
+
+  /// The index of the size data being edited, if applicable.
   final int? initialIndex;
+
+  /// The titles for each input field column.
   final List<String> titles;
+
+  /// The title text displayed when adding a new size.
   final String addSizeTitle;
+
+  /// The title text displayed when editing an existing size.
   final String editSizeTitle;
 
   static Future<SizeEntryResult?> show({
