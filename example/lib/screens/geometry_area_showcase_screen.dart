@@ -155,6 +155,7 @@ class _GeometryAreaShowcaseScreenState
                                   CoreDimensionData(
                                       label: 'Circumference', value: '25.13ft'),
                                 ],
+                                onViewAllAttachmentsPressed: () {},
                               );
                             },
                           ),

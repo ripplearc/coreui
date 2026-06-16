@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../../../ripplearc_coreui.dart';
 
+part 'parts/attachments_section.dart';
 part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
 part 'parts/table_sizes/size_card.dart';
@@ -80,6 +81,12 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the drag handle semantic label.
   static const String defaultDragHandleLabel = 'Reorder';
 
+  /// The default text shown for the attachments section title.
+  static const String defaultAttachmentsTitleLabel = 'Attachments';
+
+  /// The default text shown for the view all attachments button.
+  static const String defaultViewAllAttachmentsLabel = 'View all';
+
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
@@ -88,6 +95,8 @@ class CoreGeometryArea extends StatelessWidget {
     this.sizesTitleLabel = defaultSizesTitleLabel,
     this.addSizeLabel = defaultAddSizeLabel,
     this.editSizeLabel = defaultEditSizeLabel,
+    this.attachmentsTitleLabel = defaultAttachmentsTitleLabel,
+    this.viewAllAttachmentsLabel = defaultViewAllAttachmentsLabel,
     this.dimensions = const [],
     this.sizesTableTitles = const [],
     this.sizesTableData = const [],
@@ -96,6 +105,7 @@ class CoreGeometryArea extends StatelessWidget {
     this.onSizesReordered,
     this.onSizeDeleted,
     this.onSizeSaved,
+    this.onViewAllAttachmentsPressed,
   });
 
   /// Optional callback invoked when the user drags and drops a size card to reorder it.
@@ -164,6 +174,21 @@ class CoreGeometryArea extends StatelessWidget {
   /// ```
   final String editSizeLabel;
 
+  /// The text displayed for the attachments section title.
+  ///
+  /// Defaults to [defaultAttachmentsTitleLabel]. Pass a localised string from
+  /// the app layer.
+  final String attachmentsTitleLabel;
+
+  /// The text displayed for the view all attachments button.
+  ///
+  /// Defaults to [defaultViewAllAttachmentsLabel]. Pass a localised string from
+  /// the app layer.
+  final String viewAllAttachmentsLabel;
+
+  /// Optional callback invoked when the user taps on "View all" attachments.
+  final VoidCallback? onViewAllAttachmentsPressed;
+
   /// The column header titles displayed in the sizes table.
   ///
   /// Defaults to an empty list (no header row rendered). Pass localised
@@ -225,6 +250,12 @@ class CoreGeometryArea extends StatelessWidget {
               onSizeSaved: onSizeSaved,
             ),
           ],
+          const SizedBox(height: CoreSpacing.space2),
+          _AttachmentsSection(
+            attachmentsTitleLabel: attachmentsTitleLabel,
+            viewAllAttachmentsLabel: viewAllAttachmentsLabel,
+            onViewAllAttachmentsPressed: onViewAllAttachmentsPressed,
+          ),
         ],
       ),
     );
