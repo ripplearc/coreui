@@ -4,10 +4,12 @@ class _SizesHeader extends StatelessWidget {
   const _SizesHeader({
     required this.titleLabel,
     required this.addSizeLabel,
+    this.onAddTap,
   });
 
   final String titleLabel;
   final String addSizeLabel;
+  final VoidCallback? onAddTap;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +38,7 @@ class _SizesHeader extends StatelessWidget {
             label: addSizeLabel,
             excludeSemantics: true,
             child: GestureDetector(
-              onTap: () {
-                // TODO: [CA-682] [Geometry Area] Size Bottom Sheet (Add/Edit). https://ripplearc.youtrack.cloud/issue/CA-682
-              },
+              onTap: onAddTap,
               behavior: HitTestBehavior.opaque,
               child: Row(
                 mainAxisSize: MainAxisSize.min,

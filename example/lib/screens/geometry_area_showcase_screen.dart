@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+import '../blocs/geometry_area_bloc.dart';
 
 /// it would be for CoreGeometryArea component
 class GeometryAreaShowcaseScreen extends StatefulWidget {
@@ -56,21 +59,6 @@ class _GeometryAreaShowcaseScreenState
   String _currentInputValue = '';
   bool _isKeyboardCollapsed = false;
 
-  final List<CoreSizeCardData> _sizesTableData = [
-    const CoreSizeCardData(
-      id: 'row1',
-      values: ['3', '8ft', '4', '12', '120', '12'],
-    ),
-    const CoreSizeCardData(
-      id: 'row2',
-      values: ['3', '8ft', '4', '12', '120', '12'],
-    ),
-    const CoreSizeCardData(
-      id: 'row3',
-      values: ['3', '8ft', '4', '12', '120', '12'],
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -80,123 +68,138 @@ class _GeometryAreaShowcaseScreenState
       _trigonometryGroup: colors.textSuccess,
     };
 
-    return Scaffold(
-      backgroundColor: colors.backgroundBlueLight,
-      body: SafeArea(
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: colors.pageBackground),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      CoreDisplayArea(
-                        label: 'Length',
-                        value: _currentInputValue.isEmpty
-                            ? '0'
-                            : _currentInputValue,
-                        hasError: false,
-                        isTyping: _currentInputValue.isNotEmpty,
-                        onClose: () {
-                          setState(() {
-                            _currentInputValue = '';
-                          });
-                        },
-                        onStageChanged: (stage) {},
-                        dependentKeyLabel: null,
-                        dependentKeyValue: null,
-                        onPressedDependentKey: () {},
-                        chipsList: const [],
-                        previousSessions: const [],
-                      ),
-                      CoreSuggestionArea(
-                        conversionSuggestions: [
-                          SuggestionData(
-                              label: 'Metric Area',
-                              value: '13.3',
-                              unit: 'sq m',
-                              onTap: () {}),
-                        ],
-                        hiddenChipsTextBuilder: (count) => '+$count',
-                        expandToggleSemanticsLabelBuilder: (count) =>
-                            'Expand $count more suggestions',
-                        collapseToggleSemanticsLabel: 'Collapse suggestions',
-                      ),
-                      if (_isKeyboardCollapsed)
-                        CoreGeometryArea(
-                          isCollapsed: true,
-                          sizesTitleLabel: 'Concrete volumes for 70ft',
-                          addSizeLabel: 'Add size',
-                          sizesTableTitles: const [
-                            'Rails /section',
-                            'O.C.',
-                            'No. of posts',
-                            'No. of rails',
-                            'No. of brackets',
-                            'No. of screws',
-                          ],
-                          sizesTableData: _sizesTableData,
-                          onSizeDeleted: (id) {
+    return BlocProvider(
+      create: (context) => GeometryAreaBloc(),
+      child: Scaffold(
+        backgroundColor: colors.backgroundBlueLight,
+        body: SafeArea(
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: colors.pageBackground),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        CoreDisplayArea(
+                          label: 'Length',
+                          value: _currentInputValue.isEmpty
+                              ? '0'
+                              : _currentInputValue,
+                          hasError: false,
+                          isTyping: _currentInputValue.isNotEmpty,
+                          onClose: () {
                             setState(() {
-                              _sizesTableData.removeWhere((item) => item.id == id);
+                              _currentInputValue = '';
                             });
                           },
-                          onSizesReordered: (oldIndex, newIndex) {
-                            setState(() {
-                              final item = _sizesTableData.removeAt(oldIndex);
-                              _sizesTableData.insert(newIndex, item);
-                            });
-                          },
-                          dimensions: const [
-                            CoreDimensionData(label: 'Area', value: '50.27ft²'),
-                            CoreDimensionData(label: 'Diameter', value: '8ft'),
-                            CoreDimensionData(label: 'Radius', value: '4ft'),
-                            CoreDimensionData(
-                                label: 'Circumference', value: '25.13ft'),
-                          ],
+                          onStageChanged: (stage) {},
+                          dependentKeyLabel: null,
+                          dependentKeyValue: null,
+                          onPressedDependentKey: () {},
+                          chipsList: const [],
+                          previousSessions: const [],
                         ),
-                    ],
+                        CoreSuggestionArea(
+                          conversionSuggestions: [
+                            SuggestionData(
+                                label: 'Metric Area',
+                                value: '13.3',
+                                unit: 'sq m',
+                                onTap: () {}),
+                          ],
+                          hiddenChipsTextBuilder: (count) => '+$count',
+                          expandToggleSemanticsLabelBuilder: (count) =>
+                              'Expand $count more suggestions',
+                          collapseToggleSemanticsLabel: 'Collapse suggestions',
+                        ),
+                        if (_isKeyboardCollapsed)
+                          BlocBuilder<GeometryAreaBloc, GeometryAreaState>(
+                            builder: (context, state) {
+                              return CoreGeometryArea(
+                                isCollapsed: true,
+                                sizesTitleLabel: 'Concrete volumes for 70ft',
+                                addSizeLabel: 'Add size',
+                                editSizeLabel: 'Edit size',
+                                sizesTableTitles: const [
+                                  'Rails /section',
+                                  'O.C.',
+                                  'No. of posts',
+                                  'No. of rails',
+                                  'No. of brackets',
+                                  'No. of screws',
+                                ],
+                                sizesTableData: state.sizesTableData,
+                                onSizeDeleted: (id) {
+                                  context
+                                      .read<GeometryAreaBloc>()
+                                      .add(SizeDeleted(id));
+                                },
+                                onSizesReordered: (oldIndex, newIndex) {
+                                  context
+                                      .read<GeometryAreaBloc>()
+                                      .add(SizesReordered(oldIndex, newIndex));
+                                },
+                                onSizeSaved: (result) {
+                                  context
+                                      .read<GeometryAreaBloc>()
+                                      .add(SizeSaved(result));
+                                },
+                                dimensions: const [
+                                  CoreDimensionData(
+                                      label: 'Area', value: '50.27ft²'),
+                                  CoreDimensionData(
+                                      label: 'Diameter', value: '8ft'),
+                                  CoreDimensionData(
+                                      label: 'Radius', value: '4ft'),
+                                  CoreDimensionData(
+                                      label: 'Circumference', value: '25.13ft'),
+                                ],
+                              );
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              CoreKeyboard(
-                currentGroup: _basicGeometryGroup,
-                allGroups: _groups,
-                onDigitPressed: (digit) {
-                  setState(() {
-                    _currentInputValue += digit.label;
-                  });
-                },
-                onUnitSelected: (unit) {},
-                onOperatorPressed: (op) {},
-                onControlAction: (action) {
-                  if (action == ControlAction.delete &&
-                      _currentInputValue.isNotEmpty) {
+                CoreKeyboard(
+                  currentGroup: _basicGeometryGroup,
+                  allGroups: _groups,
+                  onDigitPressed: (digit) {
                     setState(() {
-                      _currentInputValue = _currentInputValue.substring(
-                          0, _currentInputValue.length - 1);
+                      _currentInputValue += digit.label;
                     });
-                  } else if (action == ControlAction.clearAll) {
+                  },
+                  onUnitSelected: (unit) {},
+                  onOperatorPressed: (op) {},
+                  onControlAction: (action) {
+                    if (action == ControlAction.delete &&
+                        _currentInputValue.isNotEmpty) {
+                      setState(() {
+                        _currentInputValue = _currentInputValue.substring(
+                            0, _currentInputValue.length - 1);
+                      });
+                    } else if (action == ControlAction.clearAll) {
+                      setState(() {
+                        _currentInputValue = '';
+                      });
+                    }
+                  },
+                  onResultTapped: () {},
+                  onGroupSelected: (_) {},
+                  currentUnitSystem: UnitSystem.imperial,
+                  onKeyTapped: (key) {},
+                  onUnitSystemChanged: (_) {},
+                  groupAccentColors: groupAccentColors,
+                  result: const ResultType(label: '='),
+                  onCollapseChanged: (collapsed) {
                     setState(() {
-                      _currentInputValue = '';
+                      _isKeyboardCollapsed = collapsed;
                     });
-                  }
-                },
-                onResultTapped: () {},
-                onGroupSelected: (_) {},
-                currentUnitSystem: UnitSystem.imperial,
-                onKeyTapped: (key) {},
-                onUnitSystemChanged: (_) {},
-                groupAccentColors: groupAccentColors,
-                result: const ResultType(label: '='),
-                onCollapseChanged: (collapsed) {
-                  setState(() {
-                    _isKeyboardCollapsed = collapsed;
-                  });
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

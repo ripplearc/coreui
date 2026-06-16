@@ -11,6 +11,7 @@ import '../../../ripplearc_coreui.dart';
 part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
 part 'parts/table_sizes/size_card.dart';
+part 'parts/table_sizes/size_entry_bottom_sheet.dart';
 part 'parts/table_sizes/sizes_header.dart';
 part 'parts/table_sizes/sizes_table.dart';
 part 'parts/table_sizes/sizes_table_header.dart';
@@ -73,6 +74,9 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the add size button.
   static const String defaultAddSizeLabel = 'Add size';
 
+  /// The default text shown for the edit size bottom sheet title.
+  static const String defaultEditSizeLabel = 'Edit size';
+
   /// The default text shown for the drag handle semantic label.
   static const String defaultDragHandleLabel = 'Reorder';
 
@@ -83,6 +87,7 @@ class CoreGeometryArea extends StatelessWidget {
     this.collapseLabel = defaultCollapseLabel,
     this.sizesTitleLabel = defaultSizesTitleLabel,
     this.addSizeLabel = defaultAddSizeLabel,
+    this.editSizeLabel = defaultEditSizeLabel,
     this.dimensions = const [],
     this.sizesTableTitles = const [],
     this.sizesTableData = const [],
@@ -90,6 +95,7 @@ class CoreGeometryArea extends StatelessWidget {
     this.dragHandleLabel = defaultDragHandleLabel,
     this.onSizesReordered,
     this.onSizeDeleted,
+    this.onSizeSaved,
   });
 
   /// Optional callback invoked when the user drags and drops a size card to reorder it.
@@ -99,6 +105,10 @@ class CoreGeometryArea extends StatelessWidget {
   /// Optional callback invoked when the user swipes a size card to delete it.
   /// The parent should update its data list to remove the item with the given ID.
   final void Function(String id)? onSizeDeleted;
+
+  /// Optional callback invoked when the user saves a size from the bottom sheet.
+  /// The parent should update its data list by adding a new item or editing an existing one.
+  final void Function(SizeEntryResult result)? onSizeSaved;
 
   /// The text displayed in the dimensions section.
   ///
@@ -144,6 +154,15 @@ class CoreGeometryArea extends StatelessWidget {
   /// addSizeLabel: AppLocalizations.of(context).addSizeLabel,
   /// ```
   final String addSizeLabel;
+
+  /// The text displayed for the edit size bottom sheet title.
+  ///
+  /// Defaults to [defaultEditSizeLabel]. Pass a localised string from
+  /// the app layer:
+  /// ```dart
+  /// editSizeLabel: AppLocalizations.of(context).editSizeLabel,
+  /// ```
+  final String editSizeLabel;
 
   /// The column header titles displayed in the sizes table.
   ///
@@ -197,11 +216,13 @@ class CoreGeometryArea extends StatelessWidget {
             _SizesTable(
               sizesTitleLabel: sizesTitleLabel,
               addSizeLabel: addSizeLabel,
+              editSizeLabel: editSizeLabel,
               dragHandleLabel: dragHandleLabel,
               titles: sizesTableTitles,
               sizesTableData: sizesTableData,
               onSizesReordered: onSizesReordered,
               onSizeDeleted: onSizeDeleted,
+              onSizeSaved: onSizeSaved,
             ),
           ],
         ],
