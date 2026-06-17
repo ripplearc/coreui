@@ -22,7 +22,7 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -30,6 +30,8 @@ void main() {
             Text('Geometry Area'),
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               isCollapsed: true,
               sizesTitleLabel: 'Concrete volumes for 70ft',
               sizesTableTitles: const [
@@ -75,7 +77,7 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -83,6 +85,8 @@ void main() {
             Text('Geometry Area (Expanded)'),
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               isCollapsed: false,
               sizesTitleLabel: 'Concrete volumes for 70ft',
               sizesTableTitles: const [
@@ -129,7 +133,7 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -137,6 +141,8 @@ void main() {
             Text('Geometry Area (Dragging)'),
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               isCollapsed: true,
               sizesTitleLabel: 'Concrete volumes for 70ft',
               sizesTableTitles: const [
@@ -186,7 +192,7 @@ void main() {
       theme: CoreTheme.light().copyWith(
         textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -194,6 +200,8 @@ void main() {
             Text('Geometry Area (Deleting)'),
             SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               isCollapsed: false,
               sizesTitleLabel: 'Concrete volumes for 70ft',
               sizesTableTitles: [
@@ -252,6 +260,8 @@ void main() {
             const Text('Geometry Area (With Attachments)'),
             const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               isCollapsed: true,
               sizesTitleLabel: 'Concrete volumes for 70ft',
               sizesTableTitles: const [

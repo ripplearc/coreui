@@ -8,8 +8,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: ['dummy'],
             ),
           ),
@@ -34,8 +36,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               dimensionsLabel: customDimensions,
               expandLabel: customExpand,
               sizesTitleLabel: customSizesTitle,
@@ -66,8 +70,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               dimensions: dimensions,
               isCollapsed: false,
             ),
@@ -86,8 +92,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               dimensions: [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -118,6 +126,8 @@ void main() {
             theme: CoreTheme.light(),
             home: Scaffold(
               body: CoreGeometryArea(
+                onMediaButtonPressed: () {},
+                onDocumentButtonPressed: () {},
                 isCollapsed: collapsed,
                 dimensions: const [CoreDimensionData(label: 'A', value: '1')],
               ),
@@ -137,8 +147,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: titles,
             ),
           ),
@@ -154,8 +166,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: const [],
             ),
           ),
@@ -173,8 +187,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: titles,
               sizesTableData: const [],
             ),
@@ -194,8 +210,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
+          home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: titles,
               sizesTableData: data,
             ),
@@ -225,6 +243,8 @@ void main() {
             body: StatefulBuilder(
               builder: (context, setState) {
                 return CoreGeometryArea(
+                  onMediaButtonPressed: () {},
+                  onDocumentButtonPressed: () {},
                   sizesTableTitles: const ['Col'],
                   sizesTableData: data,
                   onSizesReordered: (oldIndex, newIndex) {
@@ -269,6 +289,8 @@ void main() {
             body: StatefulBuilder(
               builder: (context, setState) {
                 return CoreGeometryArea(
+                  onMediaButtonPressed: () {},
+                  onDocumentButtonPressed: () {},
                   sizesTableTitles: const ['Col'],
                   sizesTableData: data,
                   onSizesReordered: (oldIndex, newIndex) {
@@ -295,7 +317,9 @@ void main() {
       final highlightedCardFinder = find.byWidgetPredicate((w) {
         return w is DecoratedBox &&
             w.decoration is BoxDecoration &&
-            (w.decoration as BoxDecoration).border != null;
+            (w.decoration as BoxDecoration).border != null &&
+            (w.decoration as BoxDecoration).borderRadius ==
+                BorderRadius.circular(CoreSpacing.space2);
       });
 
       expect(highlightedCardFinder, findsOneWidget,
@@ -316,6 +340,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               sizesTableTitles: const ['Col A'],
               sizesTableData: const [
                 CoreSizeCardData(id: '1', values: ['Val 1']),
@@ -342,8 +368,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
-          home: const Scaffold(
-            body: CoreGeometryArea(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+            ),
           ),
         ),
       );
@@ -363,6 +392,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
               onViewAllAttachmentsPressed: () {
                 wasPressed = true;
               },
@@ -384,6 +415,108 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(wasPressed, isTrue);
+    });
+
+    testWidgets('media and document buttons render and fire callbacks',
+        (tester) async {
+      bool mediaPressed = false;
+      bool documentPressed = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {
+                mediaPressed = true;
+              },
+              onDocumentButtonPressed: () {
+                documentPressed = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsOneWidget);
+      expect(documentFinder, findsOneWidget);
+
+      await tester.tap(mediaFinder);
+      await tester.pumpAndSettle();
+      expect(mediaPressed, isTrue);
+
+      await tester.tap(documentFinder);
+      await tester.pumpAndSettle();
+      expect(documentPressed, isTrue);
+    });
+
+    testWidgets('hides media and document buttons when both callbacks are null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreGeometryArea(),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsNothing);
+      expect(documentFinder, findsNothing);
+    });
+
+    testWidgets('renders only media button when document callback is null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsOneWidget);
+      expect(documentFinder, findsNothing);
+    });
+
+    testWidgets('renders only document button when media callback is null',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onDocumentButtonPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final mediaFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultMediaButtonLabel);
+      final documentFinder = find.widgetWithText(
+          CoreButton, CoreGeometryArea.defaultDocumentButtonLabel);
+
+      expect(mediaFinder, findsNothing);
+      expect(documentFinder, findsOneWidget);
     });
   });
 }

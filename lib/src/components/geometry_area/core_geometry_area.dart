@@ -87,6 +87,12 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the view all attachments button.
   static const String defaultViewAllAttachmentsLabel = 'View all';
 
+  /// The default text shown for the media button.
+  static const String defaultMediaButtonLabel = 'Media';
+
+  /// The default text shown for the document button.
+  static const String defaultDocumentButtonLabel = 'Document';
+
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,
@@ -97,6 +103,8 @@ class CoreGeometryArea extends StatelessWidget {
     this.editSizeLabel = defaultEditSizeLabel,
     this.attachmentsTitleLabel = defaultAttachmentsTitleLabel,
     this.viewAllAttachmentsLabel = defaultViewAllAttachmentsLabel,
+    this.mediaButtonLabel = defaultMediaButtonLabel,
+    this.documentButtonLabel = defaultDocumentButtonLabel,
     this.dimensions = const [],
     this.sizesTableTitles = const [],
     this.sizesTableData = const [],
@@ -106,6 +114,8 @@ class CoreGeometryArea extends StatelessWidget {
     this.onSizeDeleted,
     this.onSizeSaved,
     this.onViewAllAttachmentsPressed,
+    this.onMediaButtonPressed,
+    this.onDocumentButtonPressed,
   });
 
   /// Optional callback invoked when the user drags and drops a size card to reorder it.
@@ -186,8 +196,26 @@ class CoreGeometryArea extends StatelessWidget {
   /// the app layer.
   final String viewAllAttachmentsLabel;
 
+  /// The text displayed for the media button.
+  ///
+  /// Defaults to [defaultMediaButtonLabel]. Pass a localised string from
+  /// the app layer.
+  final String mediaButtonLabel;
+
+  /// The text displayed for the document button.
+  ///
+  /// Defaults to [defaultDocumentButtonLabel]. Pass a localised string from
+  /// the app layer.
+  final String documentButtonLabel;
+
   /// Optional callback invoked when the user taps on "View all" attachments.
   final VoidCallback? onViewAllAttachmentsPressed;
+
+  /// Callback invoked when the user taps on the "Media" button.
+  final VoidCallback? onMediaButtonPressed;
+
+  /// Callback invoked when the user taps on the "Document" button.
+  final VoidCallback? onDocumentButtonPressed;
 
   /// The column header titles displayed in the sizes table.
   ///
@@ -254,7 +282,11 @@ class CoreGeometryArea extends StatelessWidget {
           _AttachmentsSection(
             attachmentsTitleLabel: attachmentsTitleLabel,
             viewAllAttachmentsLabel: viewAllAttachmentsLabel,
+            mediaButtonLabel: mediaButtonLabel,
+            documentButtonLabel: documentButtonLabel,
             onViewAllAttachmentsPressed: onViewAllAttachmentsPressed,
+            onMediaButtonPressed: onMediaButtonPressed,
+            onDocumentButtonPressed: onDocumentButtonPressed,
           ),
         ],
       ),
