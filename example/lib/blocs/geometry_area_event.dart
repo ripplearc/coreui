@@ -84,6 +84,11 @@ class GeometryResetRequested extends GeometryAreaEvent {
   const GeometryResetRequested();
 }
 
+/// Fired when the user taps the backspace key.
+class GeometryDeletePressed extends GeometryAreaEvent {
+  const GeometryDeletePressed();
+}
+
 /// Fired when the user taps on an AI or conversion suggestion chip.
 class GeometrySuggestionChipTapped extends GeometryAreaEvent {
   final String label;

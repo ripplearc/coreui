@@ -28,12 +28,12 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
 
   GeometryAreaBloc()
       : super(const GeometryAreaState(
-          sizesTableData: [
-            CoreSizeCardData(id: 'row1', values: ['8ft', '8ft']),
-            CoreSizeCardData(id: 'row2', values: ['6ft', '6ft']),
-            CoreSizeCardData(id: 'row3', values: ['10ft', '10ft']),
-          ],
-        )) {
+    sizesTableData: [
+      CoreSizeCardData(id: 'row1', values: ['8ft', '8ft']),
+      CoreSizeCardData(id: 'row2', values: ['6ft', '6ft']),
+      CoreSizeCardData(id: 'row3', values: ['10ft', '10ft']),
+    ],
+  )) {
     on<SizeSaved>(_onSizeSaved);
     on<SizeDeleted>(_onSizeDeleted);
     on<SizesReordered>(_onSizesReordered);
@@ -43,6 +43,7 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     on<GeometryOperatorPressed>(_onOperatorPressed);
     on<GeometryResetRequested>(_onResetRequested);
     on<GeometrySuggestionChipTapped>(_onSuggestionChipTapped);
+    on<GeometryDeletePressed>(_onDeletePressed);
   }
 
   // ── Sizes-table CRUD ────────────────────────────────────────────────────
@@ -73,8 +74,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     emit(state.copyWith(sizesTableData: updatedList));
   }
 
-  void _onSizesReordered(
-      SizesReordered event, Emitter<GeometryAreaState> emit) {
+  void _onSizesReordered(SizesReordered event,
+      Emitter<GeometryAreaState> emit) {
     final updatedList = List<CoreSizeCardData>.from(state.sizesTableData);
     final item = updatedList.removeAt(event.oldIndex);
     updatedList.insert(event.newIndex, item);
@@ -83,8 +84,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
 
   // ── Keyboard flow ────────────────────────────────────────────────────────
 
-  void _onSuggestionChipTapped(
-      GeometrySuggestionChipTapped event, Emitter<GeometryAreaState> emit) {
+  void _onSuggestionChipTapped(GeometrySuggestionChipTapped event,
+      Emitter<GeometryAreaState> emit) {
     final unitStr = event.unit != null ? ' ${event.unit}' : '';
     final chipValueStr = '${event.value}$unitStr';
 
@@ -98,11 +99,11 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
       );
 
       final updatedChips =
-          List<CoreCalculatorChip>.from(finalizedState.completedChips)
-            ..add(areaChip);
+      List<CoreCalculatorChip>.from(finalizedState.completedChips)
+        ..add(areaChip);
       final updatedValues =
-          Map<String, double>.from(finalizedState.finalizedValues)
-            ..['Area'] = double.tryParse(event.value) ?? 0.0;
+      Map<String, double>.from(finalizedState.finalizedValues)
+        ..['Area'] = double.tryParse(event.value) ?? 0.0;
 
       final newState = finalizedState.copyWith(
         activeInputLabel: () => 'Area',
@@ -122,8 +123,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     }
   }
 
-  void _onKeySelected(
-      GeometryKeySelected event, Emitter<GeometryAreaState> emit) {
+  void _onKeySelected(GeometryKeySelected event,
+      Emitter<GeometryAreaState> emit) {
     final finalizedState = _finalizeCurrentInput(state);
     final newState = finalizedState.copyWith(
       activeInputLabel: () => event.label,
@@ -137,8 +138,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     _updateSuggestions(newState, emit);
   }
 
-  void _onDigitPressed(
-      GeometryDigitPressed event, Emitter<GeometryAreaState> emit) {
+  void _onDigitPressed(GeometryDigitPressed event,
+      Emitter<GeometryAreaState> emit) {
     if (!state.isTyping) return;
     final newValue = state.currentInputValue + event.digit;
     final newNumericValue = state.currentNumericValue + event.digit;
@@ -149,8 +150,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     _updateSuggestions(newState, emit);
   }
 
-  void _onUnitSelected(
-      GeometryUnitSelected event, Emitter<GeometryAreaState> emit) {
+  void _onUnitSelected(GeometryUnitSelected event,
+      Emitter<GeometryAreaState> emit) {
     if (!state.isTyping) return;
     final unit = event.unit.toLowerCase() == 'feet' ? 'ft' : event.unit;
     final newValue = state.currentInputValue.isEmpty
@@ -160,24 +161,39 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     _updateSuggestions(newState, emit);
   }
 
-  void _onOperatorPressed(
-      GeometryOperatorPressed event, Emitter<GeometryAreaState> emit) {
+  void _onOperatorPressed(GeometryOperatorPressed event,
+      Emitter<GeometryAreaState> emit) {
     if (event.operator == '=') {
       final newState = _finalizeCurrentInput(state);
       _updateSuggestions(newState, emit);
     }
   }
 
-  // Resets the calculator state to its initial values, preserving the
-  // current contents of the saved sizes table.
-  void _onResetRequested(
-      GeometryResetRequested event, Emitter<GeometryAreaState> emit) {
+  void _onDeletePressed(GeometryDeletePressed event,
+      Emitter<GeometryAreaState> emit) {
+    if (!state.isTyping || state.currentInputValue.isEmpty) return;
+    final newValue = state.currentInputValue
+        .substring(0, state.currentInputValue.length - 1);
+    final newNumericValue = state.currentNumericValue.isEmpty
+        ? ''
+        : state.currentNumericValue
+        .substring(0, state.currentNumericValue.length - 1);
+    _updateSuggestions(
+      state.copyWith(
+        currentInputValue: newValue,
+        currentNumericValue: newNumericValue,
+      ),
+      emit,
+    );
+  }
+
+  void _onResetRequested(GeometryResetRequested event,
+      Emitter<GeometryAreaState> emit) {
     emit(GeometryAreaState(sizesTableData: state.sizesTableData));
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  // Seals the current active input into [completedChips] and [finalizedValues].
   GeometryAreaState _finalizeCurrentInput(GeometryAreaState currentState) {
     final activeInputLabel = currentState.activeInputLabel;
     if (currentState.isTyping &&
@@ -190,12 +206,12 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
       );
 
       final updatedChips =
-          List<CoreCalculatorChip>.from(currentState.completedChips)
-            ..add(newChip);
+      List<CoreCalculatorChip>.from(currentState.completedChips)
+        ..add(newChip);
       final updatedNumericValues =
-          Map<String, double>.from(currentState.finalizedValues)
-            ..[activeInputLabel] =
-                double.tryParse(currentState.currentNumericValue) ?? 0.0;
+      Map<String, double>.from(currentState.finalizedValues)
+        ..[activeInputLabel] =
+            double.tryParse(currentState.currentNumericValue) ?? 0.0;
 
       return currentState.copyWith(
         isTyping: false,
@@ -206,10 +222,8 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     return currentState;
   }
 
-  // Recomputes [aiSuggestions] and [conversionSuggestions] based on the
-  // current state and emits.
-  void _updateSuggestions(
-      GeometryAreaState newState, Emitter<GeometryAreaState> emit) {
+  void _updateSuggestions(GeometryAreaState newState,
+      Emitter<GeometryAreaState> emit) {
     if (!newState.isTyping || newState.activeInputLabel == null) {
       emit(newState);
       return;
@@ -233,7 +247,6 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     ));
   }
 
-  // Generates unit conversions based on the current input value.
   List<SuggestionData> _generateUnitConversions(GeometryAreaState state) {
     final unitMatch = _unitRegExp.firstMatch(state.currentInputValue);
     if (unitMatch == null) return List.from(state.conversionSuggestions);
@@ -251,15 +264,17 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
             label: 'Conv:',
             value: convIn.toStringAsFixed(0),
             unit: 'in',
-            onTap: () => add(GeometrySuggestionChipTapped(
-                'Conv:', convIn.toStringAsFixed(0), 'in')),
+            onTap: () =>
+                add(GeometrySuggestionChipTapped(
+                    'Conv:', convIn.toStringAsFixed(0), 'in')),
           ),
           SuggestionData(
             label: 'Conv:',
             value: convYd.toStringAsFixed(2),
             unit: 'yd',
-            onTap: () => add(GeometrySuggestionChipTapped(
-                'Conv:', convYd.toStringAsFixed(2), 'yd')),
+            onTap: () =>
+                add(GeometrySuggestionChipTapped(
+                    'Conv:', convYd.toStringAsFixed(2), 'yd')),
           ),
         ];
       }
@@ -267,8 +282,6 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
     return List.from(state.conversionSuggestions);
   }
 
-  // Generates circle-related suggestions and dimensions if both 'Length'
-  // and 'Width' are known or currently being entered.
   _CircleSuggestionResult? _generateCircleSuggestions(GeometryAreaState state) {
     final lengthVal = state.finalizedValues['Length'];
     final widthVal = state.finalizedValues['Width'];
@@ -301,29 +314,33 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
         label: 'Area:',
         value: area.toStringAsFixed(2),
         unit: 'ft²',
-        onTap: () => add(GeometrySuggestionChipTapped(
-            'Area:', area.toStringAsFixed(2), 'ft²')),
+        onTap: () =>
+            add(GeometrySuggestionChipTapped(
+                'Area:', area.toStringAsFixed(2), 'ft²')),
       ),
       SuggestionData(
         label: 'Radius:',
         value: radius.toStringAsFixed(2),
         unit: 'ft',
-        onTap: () => add(GeometrySuggestionChipTapped(
-            'Radius:', radius.toStringAsFixed(2), 'ft')),
+        onTap: () =>
+            add(GeometrySuggestionChipTapped(
+                'Radius:', radius.toStringAsFixed(2), 'ft')),
       ),
       SuggestionData(
         label: 'Diameter:',
         value: diameter.toStringAsFixed(0),
         unit: 'ft',
-        onTap: () => add(GeometrySuggestionChipTapped(
-            'Diameter:', diameter.toStringAsFixed(0), 'ft')),
+        onTap: () =>
+            add(GeometrySuggestionChipTapped(
+                'Diameter:', diameter.toStringAsFixed(0), 'ft')),
       ),
       SuggestionData(
         label: 'Circumference:',
         value: circumference.toStringAsFixed(2),
         unit: 'ft',
-        onTap: () => add(GeometrySuggestionChipTapped(
-            'Circumference:', circumference.toStringAsFixed(2), 'ft')),
+        onTap: () =>
+            add(GeometrySuggestionChipTapped(
+                'Circumference:', circumference.toStringAsFixed(2), 'ft')),
       ),
     ];
 

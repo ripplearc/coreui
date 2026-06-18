@@ -20,11 +20,11 @@ class GeometryAreaShowcaseScreen extends StatefulWidget {
 class _GeometryAreaShowcaseScreenState
     extends State<GeometryAreaShowcaseScreen> {
   static const GroupNameType _basicGeometryGroup =
-      GroupNameType(label: 'Basic Geometry');
+  GroupNameType(label: 'Basic Geometry');
   static const GroupNameType _materialsGroup =
-      GroupNameType(label: 'Materials');
+  GroupNameType(label: 'Materials');
   static const GroupNameType _trigonometryGroup =
-      GroupNameType(label: 'Trigonometry');
+  GroupNameType(label: 'Trigonometry');
 
   static final List<FunctionGroup> _groups = List.unmodifiable([
     FunctionGroup(
@@ -115,12 +115,12 @@ class _GeometryAreaShowcaseScreenState
                             CoreSuggestionArea(
                               aiSuggestions: state.aiSuggestions,
                               conversionSuggestions:
-                                  state.conversionSuggestions,
+                              state.conversionSuggestions,
                               hiddenChipsTextBuilder: (count) => '+$count',
                               expandToggleSemanticsLabelBuilder: (count) =>
-                                  'Expand $count more suggestions',
+                              'Expand $count more suggestions',
                               collapseToggleSemanticsLabel:
-                                  'Collapse suggestions',
+                              'Collapse suggestions',
                             ),
                             if (_isKeyboardCollapsed)
                               CoreGeometryArea(
@@ -132,8 +132,10 @@ class _GeometryAreaShowcaseScreenState
                                 sizesTableData: state.sizesTableData,
                                 onSizeDeleted: (id) =>
                                     bloc.add(SizeDeleted(id)),
-                                onSizesReordered: (oldIndex, newIndex) => bloc
-                                    .add(SizesReordered(oldIndex, newIndex)),
+                                onSizesReordered: (oldIndex, newIndex) =>
+                                    bloc
+                                        .add(
+                                        SizesReordered(oldIndex, newIndex)),
                                 onSizeSaved: (result) =>
                                     bloc.add(SizeSaved(result)),
                                 dimensions: state.dimensions,
@@ -155,7 +157,9 @@ class _GeometryAreaShowcaseScreenState
                       onOperatorPressed: (op) =>
                           bloc.add(GeometryOperatorPressed(op.symbol)),
                       onControlAction: (action) {
-                        if (action == ControlAction.clearAll) {
+                        if (action == ControlAction.delete) {
+                          bloc.add(const GeometryDeletePressed());
+                        } else if (action == ControlAction.clearAll) {
                           bloc.add(const GeometryResetRequested());
                         }
                       },
