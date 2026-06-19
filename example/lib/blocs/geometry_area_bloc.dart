@@ -172,12 +172,24 @@ class GeometryAreaBloc extends Bloc<GeometryAreaEvent, GeometryAreaState> {
   void _onDeletePressed(GeometryDeletePressed event,
       Emitter<GeometryAreaState> emit) {
     if (!state.isTyping || state.currentInputValue.isEmpty) return;
+
+    // When a unit suffix is present, strip it entirely rather than
+    // removing one character — prevents an invalid "8 f" display state.
+    final unitMatch = _unitRegExp.firstMatch(state.currentInputValue);
+    if (unitMatch != null) {
+      _updateSuggestions(
+        state.copyWith(currentInputValue: unitMatch.group(1) ?? ''),
+        emit,
+      );
+      return;
+    }
+
     final newValue = state.currentInputValue
         .substring(0, state.currentInputValue.length - 1);
     final newNumericValue = state.currentNumericValue.isEmpty
         ? ''
         : state.currentNumericValue
-        .substring(0, state.currentNumericValue.length - 1);
+            .substring(0, state.currentNumericValue.length - 1);
     _updateSuggestions(
       state.copyWith(
         currentInputValue: newValue,
