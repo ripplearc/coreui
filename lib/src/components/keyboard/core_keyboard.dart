@@ -148,24 +148,26 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                           }
                         }
                       },
-                      onTap: () {
-                        setState(() {
-                          _isCollapsed = !_isCollapsed;
-                          widget.onCollapseChanged?.call(_isCollapsed);
-                        });
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(
-                            top: CoreSpacing.space1,
-                            bottom: _isCollapsed ? CoreSpacing.space1 : 0),
-                        child: Center(
-                          child: CustomPaint(
-                            size: const Size(
-                                _dragIndicatorWidth, _dragIndicatorHeight),
-                            painter: _CurvedDragHandlePainter(
-                              color: colors.lineDarkOutline,
-                              isCollapsed: _isCollapsed,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isCollapsed = !_isCollapsed;
+                            widget.onCollapseChanged?.call(_isCollapsed);
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.only(
+                              top: CoreSpacing.space1,
+                              bottom: _isCollapsed ? CoreSpacing.space1 : 0),
+                          child: Center(
+                            child: CustomPaint(
+                              size: const Size(
+                                  _dragIndicatorWidth, _dragIndicatorHeight),
+                              painter: _CurvedDragHandlePainter(
+                                color: colors.lineDarkOutline,
+                                isCollapsed: _isCollapsed,
+                              ),
                             ),
                           ),
                         ),
