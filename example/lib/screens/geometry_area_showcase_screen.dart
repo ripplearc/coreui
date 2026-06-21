@@ -108,75 +108,84 @@ class _GeometryAreaShowcaseScreenState
                       previousSessions: const [],
                     ),
                     Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CoreSuggestionArea(
-                              aiSuggestions: state.aiSuggestions,
-                              conversionSuggestions:
-                              state.conversionSuggestions,
-                              hiddenChipsTextBuilder: (count) => '+$count',
-                              expandToggleSemanticsLabelBuilder: (count) =>
-                              'Expand $count more suggestions',
-                              collapseToggleSemanticsLabel:
-                              'Collapse suggestions',
-                            ),
-                            if (_isKeyboardCollapsed)
-                              CoreGeometryArea(
-                                isCollapsed: true,
-                                sizesTitleLabel: 'Circle measurements',
-                                addSizeLabel: 'Add size',
-                                editSizeLabel: 'Edit size',
-                                sizesTableTitles: const ['Length', 'Width'],
-                                sizesTableData: state.sizesTableData,
-                                onSizeDeleted: (id) =>
-                                    bloc.add(SizeDeleted(id)),
-                                onSizesReordered: (oldIndex, newIndex) =>
-                                    bloc
-                                        .add(
-                                        SizesReordered(oldIndex, newIndex)),
-                                onSizeSaved: (result) =>
-                                    bloc.add(SizeSaved(result)),
-                                dimensions: state.dimensions,
-                                onViewAllAttachmentsPressed: () {},
-                                onMediaButtonPressed: () {},
-                                onDocumentButtonPressed: () {},
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CoreSuggestionArea(
+                                    aiSuggestions: state.aiSuggestions,
+                                    conversionSuggestions:
+                                    state.conversionSuggestions,
+                                    hiddenChipsTextBuilder: (count) => '+$count',
+                                    expandToggleSemanticsLabelBuilder: (count) =>
+                                    'Expand $count more suggestions',
+                                    collapseToggleSemanticsLabel:
+                                    'Collapse suggestions',
+                                  ),
+                                  CoreGeometryArea(
+                                    isCollapsed: false,
+                                    sizesTitleLabel: 'Circle measurements',
+                                    addSizeLabel: 'Add size',
+                                    editSizeLabel: 'Edit size',
+                                    sizesTableTitles: const ['Length', 'Width'],
+                                    sizesTableData: state.sizesTableData,
+                                    onSizeDeleted: (id) =>
+                                        bloc.add(SizeDeleted(id)),
+                                    onSizesReordered: (oldIndex, newIndex) =>
+                                        bloc
+                                            .add(
+                                            SizesReordered(oldIndex, newIndex)),
+                                    onSizeSaved: (result) =>
+                                        bloc.add(SizeSaved(result)),
+                                    dimensions: state.dimensions,
+                                    onViewAllAttachmentsPressed: () {},
+                                    onMediaButtonPressed: () {},
+                                    onDocumentButtonPressed: () {},
+                                  ),
+                                  const SizedBox(height: 350), // Allows scrolling content above keyboard
+                                ],
                               ),
-                          ],
-                        ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: CoreKeyboard(
+                              currentGroup: _basicGeometryGroup,
+                              allGroups: _groups,
+                              onDigitPressed: (digit) =>
+                                  bloc.add(GeometryDigitPressed(digit.label)),
+                              onUnitSelected: (unit) =>
+                                  bloc.add(GeometryUnitSelected(unit.label)),
+                              onOperatorPressed: (op) =>
+                                  bloc.add(GeometryOperatorPressed(op.symbol)),
+                              onControlAction: (action) {
+                                if (action == ControlAction.delete) {
+                                  bloc.add(const GeometryDeletePressed());
+                                } else if (action == ControlAction.clearAll) {
+                                  bloc.add(const GeometryResetRequested());
+                                }
+                              },
+                              onResultTapped: () =>
+                                  bloc.add(const GeometryOperatorPressed('=')),
+                              onGroupSelected: (_) {},
+                              currentUnitSystem: UnitSystem.imperial,
+                              onKeyTapped: (key) =>
+                                  bloc.add(GeometryKeySelected(key.label)),
+                              onUnitSystemChanged: (_) {},
+                              groupAccentColors: groupAccentColors,
+                              result: const ResultType(label: '='),
+                              onCollapseChanged: (collapsed) {
+                                setState(() {
+                                  _isKeyboardCollapsed = collapsed;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    CoreKeyboard(
-                      currentGroup: _basicGeometryGroup,
-                      allGroups: _groups,
-                      onDigitPressed: (digit) =>
-                          bloc.add(GeometryDigitPressed(digit.label)),
-                      onUnitSelected: (unit) =>
-                          bloc.add(GeometryUnitSelected(unit.label)),
-                      onOperatorPressed: (op) =>
-                          bloc.add(GeometryOperatorPressed(op.symbol)),
-                      onControlAction: (action) {
-                        if (action == ControlAction.delete) {
-                          bloc.add(const GeometryDeletePressed());
-                        } else if (action == ControlAction.clearAll) {
-                          bloc.add(const GeometryResetRequested());
-                        }
-                      },
-                      onResultTapped: () =>
-                          bloc.add(const GeometryOperatorPressed('=')),
-                      onGroupSelected: (_) {},
-                      currentUnitSystem: UnitSystem.imperial,
-                      onKeyTapped: (key) =>
-                          bloc.add(GeometryKeySelected(key.label)),
-                      onUnitSystemChanged: (_) {},
-                      groupAccentColors: groupAccentColors,
-                      result: const ResultType(label: '='),
-                      onCollapseChanged: (collapsed) {
-                        setState(() {
-                          _isKeyboardCollapsed = collapsed;
-                        });
-                      },
                     ),
                   ],
                 );

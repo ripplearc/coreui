@@ -59,12 +59,54 @@ class CoreKeyboard extends StatefulWidget {
   State<CoreKeyboard> createState() => _CoreKeyboardState();
 }
 
-class _CoreKeyboardState extends State<CoreKeyboard> {
+class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderStateMixin {
   static const double _dragIndicatorHeight = CoreSpacing.space2;
   static const double _dragIndicatorWidth = CoreSpacing.space8;
 
   bool _isCollapsed = false;
-  static const double _verticalThreshold = 2.0;
+
+  late final AnimationController _controller;
+  final GlobalKey _contentKey = GlobalKey();
+  double _contentHeight = 300.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+      value: 1.0,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _updateContentHeight() {
+    final RenderBox? renderBox = _contentKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null && renderBox.size.height > 0) {
+      _contentHeight = renderBox.size.height;
+    }
+  }
+
+  void _collapse() {
+    _controller.animateTo(0.0, curve: Curves.easeOutCubic);
+    if (!_isCollapsed) {
+      setState(() => _isCollapsed = true);
+      widget.onCollapseChanged?.call(true);
+    }
+  }
+
+  void _expand() {
+    _controller.animateTo(1.0, curve: Curves.easeOutCubic);
+    if (_isCollapsed) {
+      setState(() => _isCollapsed = false);
+      widget.onCollapseChanged?.call(false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,70 +177,82 @@ class _CoreKeyboardState extends State<CoreKeyboard> {
                     label: 'Keyboard drag handle',
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
+                      onVerticalDragStart: (details) {
+                        _updateContentHeight();
+                      },
                       onVerticalDragUpdate: (details) {
-                        if (details.delta.dy > _verticalThreshold) {
-                          if (!_isCollapsed) {
-                            setState(() => _isCollapsed = true);
-                            widget.onCollapseChanged?.call(true);
-                          }
-                        } else if (details.delta.dy < -_verticalThreshold) {
-                          if (_isCollapsed) {
-                            setState(() => _isCollapsed = false);
-                            widget.onCollapseChanged?.call(false);
-                          }
+                        _controller.value -= details.delta.dy / _contentHeight;
+                      },
+                      onVerticalDragEnd: (details) {
+                        final velocity = details.primaryVelocity ?? 0;
+                        if (velocity > 300) {
+                          _collapse();
+                        } else if (velocity < -300) {
+                          _expand();
+                        } else if (_controller.value < 0.5) {
+                          _collapse();
+                        } else {
+                          _expand();
                         }
                       },
                       child: InkWell(
                         onTap: () {
-                          setState(() {
-                            _isCollapsed = !_isCollapsed;
-                            widget.onCollapseChanged?.call(_isCollapsed);
-                          });
+                          if (_isCollapsed) {
+                            _expand();
+                          } else {
+                            _collapse();
+                          }
                         },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.only(
-                              top: CoreSpacing.space1,
-                              bottom: _isCollapsed ? CoreSpacing.space1 : 0),
-                          child: Center(
-                            child: CustomPaint(
-                              size: const Size(
-                                  _dragIndicatorWidth, _dragIndicatorHeight),
-                              painter: _CurvedDragHandlePainter(
-                                color: colors.lineDarkOutline,
-                                isCollapsed: _isCollapsed,
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            return Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.only(
+                                  top: CoreSpacing.space1,
+                                  bottom: CoreSpacing.space1 * (1.0 - _controller.value)),
+                              child: Center(
+                                child: CustomPaint(
+                                  size: const Size(
+                                      _dragIndicatorWidth, _dragIndicatorHeight),
+                                  painter: _CurvedDragHandlePainter(
+                                    color: colors.lineDarkOutline,
+                                    collapseProgress: 1.0 - _controller.value,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    child: _isCollapsed
-                        ? const SizedBox.shrink()
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _FunctionKeyStrip(
-                                group: group,
-                                onKeyTapped: widget.onKeyTapped,
-                                accentColor: accent,
-                                onViewAll: () => _showFunctionsSheet(context),
-                              ),
-                              SizedBox(height: functionStripSpacing),
-                              _buildColumnLayout(
-                                context,
-                                buttonWidth: finalButtonWidth,
-                                buttonHeight: finalButtonHeight,
-                                buttonSpacing: finalSpacing,
-                                heightSpacing:
-                                    min(finalSpacing, maxHeightSpacing),
-                              ),
-                            ],
+                  SizeTransition(
+                    sizeFactor: _controller,
+                    axisAlignment: -1.0,
+                    child: Container(
+                      key: _contentKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _FunctionKeyStrip(
+                            group: group,
+                            onKeyTapped: widget.onKeyTapped,
+                            accentColor: accent,
+                            onViewAll: () => _showFunctionsSheet(context),
                           ),
+                          SizedBox(height: functionStripSpacing),
+                          _buildColumnLayout(
+                            context,
+                            buttonWidth: finalButtonWidth,
+                            buttonHeight: finalButtonHeight,
+                            buttonSpacing: finalSpacing,
+                            heightSpacing:
+                                min(finalSpacing, maxHeightSpacing),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -594,11 +648,11 @@ class _FunctionKeyStrip extends StatelessWidget {
 /// Custom painter that draws a curved drag handle indicator.
 class _CurvedDragHandlePainter extends CustomPainter {
   final Color color;
-  final bool isCollapsed;
+  final double collapseProgress;
 
   _CurvedDragHandlePainter({
     required this.color,
-    this.isCollapsed = false,
+    this.collapseProgress = 0.0,
   });
 
   @override
@@ -610,29 +664,23 @@ class _CurvedDragHandlePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    if (isCollapsed) {
-      path.moveTo(0, size.height * 0.8);
-      path.quadraticBezierTo(
-        size.width / 2,
-        0,
-        size.width,
-        size.height * 0.8,
-      );
-    } else {
-      path.moveTo(0, size.height * 0.2);
-      path.quadraticBezierTo(
-        size.width / 2,
-        size.height,
-        size.width,
-        size.height * 0.2,
-      );
-    }
+    
+    final startY = size.height * 0.2 + (size.height * 0.6 * collapseProgress);
+    final controlY = size.height - (size.height * collapseProgress);
+
+    path.moveTo(0, startY);
+    path.quadraticBezierTo(
+      size.width / 2,
+      controlY,
+      size.width,
+      startY,
+    );
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.isCollapsed != isCollapsed;
+    return oldDelegate.color != color || oldDelegate.collapseProgress != collapseProgress;
   }
 }

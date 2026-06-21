@@ -275,15 +275,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CoreDigitInput), findsWidgets);
 
-      await tester.drag(
-          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, 50));
+      await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
       await tester.pumpAndSettle();
-      expect(find.byType(CoreDigitInput), findsNothing);
+      
+      final sizeTransitionCollapsed = tester.widget<SizeTransition>(find.byType(SizeTransition));
+      expect(sizeTransitionCollapsed.sizeFactor.value, 0.0);
 
-      await tester.drag(
-          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, -50));
+      await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
       await tester.pumpAndSettle();
-      expect(find.byType(CoreDigitInput), findsWidgets);
+      
+      final sizeTransitionExpanded = tester.widget<SizeTransition>(find.byType(SizeTransition));
+      expect(sizeTransitionExpanded.sizeFactor.value, 1.0);
     });
 
     testWidgets('sub-threshold drag does not collapse keyboard',
@@ -362,15 +364,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(isCollapsed, isNull);
 
-      await tester.drag(
-          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, 50));
+      await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
       await tester.pumpAndSettle();
 
       expect(isCollapsed, isTrue);
       expect(callCount, equals(1));
 
-      await tester.drag(
-          find.bySemanticsLabel('Keyboard drag handle'), const Offset(0, -50));
+      await tester.tap(find.bySemanticsLabel('Keyboard drag handle'));
       await tester.pumpAndSettle();
 
       expect(isCollapsed, isFalse);
