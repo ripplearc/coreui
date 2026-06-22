@@ -27,6 +27,7 @@ class _DayCell extends StatelessWidget {
     if (dayValue == null) {
       return const SizedBox(width: _cellSize, height: _cellSize);
     }
+    // dayValue is non-null past this point.
 
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
