@@ -34,7 +34,8 @@ class _MonthSelectorRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ExcludeSemantics(
+          Semantics(
+            header: true,
             child: Text(
               monthLabel,
               style: typography.bodyMediumRegular.copyWith(

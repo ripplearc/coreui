@@ -175,6 +175,7 @@ class _CoreDatePickerState extends State<CoreDatePicker> {
     }
   }
 
+  // English-only default; callers localise via [CoreDatePicker.dateLabelBuilder].
   String _defaultDateLabel(DateTime date) {
     const weekdays = [
       'Mon',
@@ -204,6 +205,7 @@ class _CoreDatePickerState extends State<CoreDatePicker> {
     return '$weekday, $month ${date.day}';
   }
 
+  // English-only default; callers localise via [CoreDatePicker.monthLabelBuilder].
   String _defaultMonthLabel(DateTime month) {
     const months = [
       'January',
@@ -225,6 +227,8 @@ class _CoreDatePickerState extends State<CoreDatePicker> {
   bool get _canGoToPreviousMonth {
     final first = widget.firstDate;
     if (first == null) return true;
+    // day: 0 underflows to the last day of the preceding month (Dart
+    // normalises out-of-range day values).
     final previousMonthEnd =
         DateTime(_displayedMonth.year, _displayedMonth.month, 0);
     return !previousMonthEnd.isBefore(_dateOnly(first));
