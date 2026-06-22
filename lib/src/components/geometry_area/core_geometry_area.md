@@ -85,18 +85,18 @@ CoreGeometryArea(
 ## API Reference
 
 ### Layout & Text Properties
-| Property | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `isCollapsed` | `bool` | `true` | When true, hides the sizes table and attachments section. |
-| `dimensionsLabel` | `String` | `'Dimensions'` | Title for the top dimensions summary section. |
-| `expandLabel` | `String` | `'Expand'` | Semantic label applied to the expand/collapse toggle icon. |
-| `sizesTitleLabel` | `String` | `'Sizes'` | The header title for the table section. |
-| `addSizeLabel` | `String` | `'Add size'` | Text applied to the floating Add button semantics and tooltips. |
-| `editSizeLabel` | `String` | `'Edit size'` | Text used contextually during size editing. |
+| Property | Type | Default         | Description |
+| :--- | :--- |:----------------| :--- |
+| `isCollapsed` | `bool` | `false`         | When true, hides the sizes table and attachments section. |
+| `dimensionsLabel` | `String` | `'Dimensions'`  | Title for the top dimensions summary section. |
+| `expandLabel` | `String` | `'Expand'`      | Semantic label applied to the expand/collapse toggle icon. |
+| `sizesTitleLabel` | `String` | `'Sizes'`       | The header title for the table section. |
+| `addSizeLabel` | `String` | `'Add size'`    | Text applied to the floating Add button semantics and tooltips. |
+| `editSizeLabel` | `String` | `'Edit size'`   | Text used contextually during size editing. |
 | `attachmentsTitleLabel` | `String` | `'Attachments'` | Header text for the attachments block. |
-| `viewAllAttachmentsLabel` | `String` | `'View all'` | Action text to view all attachments. |
-| `mediaButtonLabel` | `String` | `'Media'` | Text inside the Media attachment button. |
-| `documentButtonLabel` | `String` | `'Document'` | Text inside the Document attachment button. |
+| `viewAllAttachmentsLabel` | `String` | `'View all'`    | Action text to view all attachments. |
+| `mediaButtonLabel` | `String` | `'Media'`       | Text inside the Media attachment button. |
+| `documentButtonLabel` | `String` | `'Document'`    | Text inside the Document attachment button. |
 
 ### Data Properties
 | Property | Type | Default | Description |
