@@ -2,24 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
-import '../../utils/test_harness.dart';
 
 void main() {
   group('CoreCheckRowItem – accessibility', () {
     testWidgets('unselected row meets tap target and label guidelines',
         (tester) async {
       await setupA11yTest(tester);
-
-      await tester.pumpWidget(
-        buildTestApp(
-          CoreCheckRowItem(
-            title: 'John Doe',
-            selected: false,
-            onChanged: (_) {},
-          ),
-          theme: CoreTheme.light(),
-        ),
-      );
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -29,6 +17,8 @@ void main() {
           onChanged: (_) {},
         ),
         find.byType(CoreCheckRowItem),
+        // The single Semantics node on the row covers both label and tap
+        // target; there is no separately-labeled tap target to check.
         checkLabeledTapTarget: false,
       );
     });
@@ -36,17 +26,6 @@ void main() {
     testWidgets('selected row meets tap target and label guidelines',
         (tester) async {
       await setupA11yTest(tester);
-
-      await tester.pumpWidget(
-        buildTestApp(
-          CoreCheckRowItem(
-            title: 'John Doe',
-            selected: true,
-            onChanged: (_) {},
-          ),
-          theme: CoreTheme.light(),
-        ),
-      );
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -56,6 +35,8 @@ void main() {
           onChanged: (_) {},
         ),
         find.byType(CoreCheckRowItem),
+        // The single Semantics node on the row covers both label and tap
+        // target; there is no separately-labeled tap target to check.
         checkLabeledTapTarget: false,
       );
     });
