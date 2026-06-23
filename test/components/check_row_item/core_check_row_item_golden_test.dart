@@ -63,7 +63,7 @@ void main() {
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump();
   }
 
   testWidgets('CoreCheckRowItem Visual Regression - Light',

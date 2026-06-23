@@ -89,9 +89,7 @@ class CoreCheckRowItem extends StatelessWidget {
       backgroundColor: effectiveBackground,
       child: initial.isEmpty
           ? null
-          : Center(
-              child: Text(initial, style: effectiveStyle),
-            ),
+          : Text(initial, style: effectiveStyle),
     );
   }
 
@@ -138,7 +136,6 @@ class CoreCheckRowItem extends StatelessWidget {
         child: InkWell(
           onTap: () => onChanged(!selected),
           splashFactory: NoSplash.splashFactory,
-          overlayColor: WidgetStateProperty.all(colors.transparent),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: CoreSpacing.space4,
