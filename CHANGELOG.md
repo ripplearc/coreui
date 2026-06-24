@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0] - CoreCheckRowItem & CoreDatePicker
+## [0.7.0] - CoreCheckRowItem & CoreDatePicker
 
 ### ✨ Features
 
