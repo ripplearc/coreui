@@ -7,6 +7,7 @@ export 'src/components/check_row_item/core_check_row_item.dart';
 export 'src/components/chips/core_chip.dart';
 export 'src/components/chips/core_filter_chip.dart';
 export 'src/components/core_icon.dart';
+export 'src/components/date_picker/core_date_picker.dart';
 export 'src/components/display_area/core_display_area.dart';
 export 'src/components/display_area/core_history_session_data.dart';
 export 'src/components/display_area/display_area_stage.dart';

@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0] - CoreCheckRowItem
+## [0.7.0] - CoreCheckRowItem & CoreDatePicker
 
 ### ✨ Features
 
@@ -11,6 +11,13 @@
     - Trailing checkbox swaps between `CoreIcons.check` and `CoreIcons.checkBlank` based on `selected`
     - Optional `subtitle` for a second line (e.g. an email address)
     - Localizable `semanticLabel` param (defaults to `title`); exposed as a `Semantics(button: true, checked: selected)` node
+  - **CoreDatePicker**: New modal calendar widget for picking a single date (CA-220).
+    - Header with a localizable label and a large spelled-out selected date (`"Mon, Aug 17"`-style by default, fully overridable via `dateLabelBuilder`)
+    - Month selector row with previous/next navigation; arrows disable themselves once an adjacent month would be entirely out of the optional `firstDate`/`lastDate` range
+    - Day grid with selected (filled), "today" (outlined), and disabled (out-of-range) states
+    - `CoreDatePicker.show` static helper presents the picker in a themed dialog and resolves with the confirmed `DateTime`, or `null` on cancel/dismiss
+    - `monthLabelBuilder` and `weekdayLabels` allow full localization of all date text without subclassing
+    - Each day cell exposes a `Semantics(button: true, selected: ...)` node with a full date label via `MaterialLocalizations.formatFullDate`
 
 ## [0.5.0] - Search components
 

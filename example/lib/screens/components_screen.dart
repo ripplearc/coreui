@@ -3,6 +3,7 @@ import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/calculator_chip_showcase_screen.dart';
 import 'package:example/screens/check_row_item_showcase_screen.dart';
 import 'package:example/screens/chip_showcase_screen.dart';
+import 'package:example/screens/date_picker_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
@@ -173,6 +174,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Check Row Item Component',
                 const CheckRowItemShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Date Picker Component',
+                const DatePickerShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
