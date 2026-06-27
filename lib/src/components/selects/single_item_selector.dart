@@ -133,7 +133,8 @@ class SingleItemSelector<T> extends StatelessWidget {
                   children: [
                     Text(
                       modalTitle,
-                      style: typography.headlineMediumSemiBold,
+                      style: typography.headlineMediumSemiBold
+                          .copyWith(color: colors.textHeadline),
                     ),
                   ],
                 ),
@@ -166,7 +167,8 @@ class SingleItemSelector<T> extends StatelessWidget {
                           children: [
                             Text(
                               itemToString?.call(item) ?? item.toString(),
-                              style: typography.bodyMediumRegular,
+                              style: typography.bodyMediumRegular
+                                  .copyWith(color: colors.textBody),
                             ),
                             const SizedBox(width: CoreSpacing.space2),
                             if (isSelected)
