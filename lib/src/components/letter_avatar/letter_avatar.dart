@@ -20,12 +20,17 @@ class CoreLetterAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePath = CoreLetterAvatarPaths.getLetterAvatarPath(name);
-    final imageWidget = Image.asset(
-      imagePath,
-      package: CoreConstants.packageName,
-      semanticLabel: semanticLabel ?? 'Letter avatar for $name',
+    return Semantics(
+      label: semanticLabel ?? 'Letter avatar for $name',
+      image: true,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath, package: CoreConstants.packageName),
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
     );
-    
-    return imageWidget;
   }
 }
