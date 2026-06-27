@@ -226,3 +226,104 @@ class CoreAccentsColors {
   /// The indigo accent colour, used for the AI toggle gradient.
   static const Color indigo = _CoreColorPalette.indigo;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dark theme semantic tokens
+// Mirrors every light-mode token class; values are the inverted palette steps.
+// Figma source: "Dark Theme Tokens" collection, 2026-06-24 audit.
+// Note: Figma's Orient/400 (#00dfff) maps to code orient300; the palette
+// numbering diverges by one step for Orient and Blue families.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class CoreDarkTextColors {
+  static const Color headline = _CoreColorPalette.gray25;
+  static const Color dark = _CoreColorPalette.gray100;
+  static const Color body = _CoreColorPalette.gray300;
+  static const Color disable = _CoreColorPalette.gray500;
+  static const Color inverse = _CoreColorPalette.gray900;
+  static const Color link = _CoreColorPalette.orient300;
+  static const Color info = _CoreColorPalette.blue300;
+  static const Color warning = _CoreColorPalette.orange300;
+  static const Color error = _CoreColorPalette.red300;
+  static const Color success = _CoreColorPalette.green300;
+}
+
+class CoreDarkBackgroundColors {
+  static const Color pageBackground = _CoreColorPalette.gray900;
+  static const Color backgroundGrayLight = _CoreColorPalette.gray800;
+  static const Color backgroundGrayMid = _CoreColorPalette.gray700;
+  static const Color backgroundBlueLight = _CoreColorPalette.blue900;
+  static const Color backgroundBlueMid = _CoreColorPalette.blue800;
+  static const Color backgroundGreenLight = _CoreColorPalette.green900;
+  static const Color backgroundGreenMid = _CoreColorPalette.green800;
+  static const Color backgroundRedLight = _CoreColorPalette.red900;
+  static const Color backgroundRedMid = _CoreColorPalette.red800;
+  static const Color backgroundOrangeLight = _CoreColorPalette.orange900;
+  static const Color backgroundOrangeMid = _CoreColorPalette.orange800;
+  static const Color backgroundDarkGray = _CoreColorPalette.gray900;
+  static const Color backgroundDarkOrient = _CoreColorPalette.orient700;
+  static const Color backgroundOrientLight = _CoreColorPalette.orient900;
+  static const Color backgroundOrientMid = _CoreColorPalette.orient800;
+}
+
+class CoreDarkBorderColors {
+  static const Color lineLight = _CoreColorPalette.gray700;
+  static const Color lineMid = _CoreColorPalette.gray600;
+  static const Color lineDarkOutline = _CoreColorPalette.gray500;
+  static const Color lineHighlight = _CoreColorPalette.blue400;
+  static const Color outlineHover = _CoreColorPalette.orient300;
+  static const Color outlineFocus = _CoreColorPalette.orient200;
+  static const Color tabsHighlight = _CoreColorPalette.orient300;
+}
+
+class CoreDarkStatusColors {
+  static const Color error = _CoreColorPalette.red400;
+  static const Color success = _CoreColorPalette.green400;
+}
+
+class CoreDarkKeyboardColors {
+  static const Color numbers = _CoreColorPalette.gray700;
+  static const Color calculate = _CoreColorPalette.blue800;
+  static const Color units = _CoreColorPalette.blue700;
+  static const Color functions = _CoreColorPalette.gray800;
+  static const Color actions = _CoreColorPalette.blue300;
+  static const Color main = _CoreColorPalette.orient400;
+  static const Color transparent = _CoreColorPalette.transparent;
+}
+
+class CoreDarkIconColors {
+  static const Color dark = _CoreColorPalette.orient300;
+  static const Color grayDark = _CoreColorPalette.gray100;
+  static const Color grayMid = _CoreColorPalette.gray400;
+  static const Color grayLight = _CoreColorPalette.gray500;
+  static const Color white = _CoreColorPalette.gray25;
+  static const Color red = _CoreColorPalette.red300;
+  static const Color green = _CoreColorPalette.green300;
+  static const Color orange = _CoreColorPalette.orange300;
+  static const Color blue = _CoreColorPalette.blue300;
+  static const Color orient = _CoreColorPalette.orient300;
+}
+
+class CoreDarkChipColors {
+  static const Color gray = _CoreColorPalette.gray700;
+  static const Color primary = _CoreColorPalette.orient800;
+  static const Color red = _CoreColorPalette.red800;
+  static const Color orange = _CoreColorPalette.orange800;
+  static const Color blue = _CoreColorPalette.blue800;
+  static const Color green = _CoreColorPalette.green800;
+}
+
+class CoreDarkButtonColors {
+  static const Color inverse = _CoreColorPalette.gray25;
+  static const Color surface = _CoreColorPalette.orient400;
+  static const Color hover = _CoreColorPalette.orient300;
+  static const Color disable = _CoreColorPalette.gray700;
+  static const Color press = _CoreColorPalette.orient200;
+}
+
+class CoreDarkAlertColors {
+  static const Color red = _CoreColorPalette.red800;
+  static const Color orange = _CoreColorPalette.orange800;
+  static const Color blue = _CoreColorPalette.blue800;
+  static const Color green = _CoreColorPalette.green800;
+}
