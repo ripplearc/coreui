@@ -14,9 +14,11 @@ void main() {
       await tester.pumpWidget(
         buildTestApp(const CoreLetterAvatar(name: name), theme: CoreTheme.light()),
       );
+      await tester.pumpAndSettle();
 
       final semantics = tester.getSemantics(find.byType(CoreLetterAvatar));
       expect(semantics.label, 'Letter avatar for $name');
+
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -28,4 +30,3 @@ void main() {
     });
   });
 }
-
