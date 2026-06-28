@@ -220,7 +220,7 @@ class CoreTheme {
           : CoreBackgroundColors.pageBackground,
       extensions: [
         isDark ? _getDarkAppColors() : _getLightAppColors(),
-        AppTypographyExtension.create(),
+        isDark ? AppTypographyExtension.createDark() : AppTypographyExtension.create(),
       ],
     );
   }

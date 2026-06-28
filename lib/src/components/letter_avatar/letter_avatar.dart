@@ -23,11 +23,14 @@ class CoreLetterAvatar extends StatelessWidget {
     return Semantics(
       label: semanticLabel ?? 'Letter avatar for $name',
       image: true,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(imagePath, package: CoreConstants.packageName),
-            fit: BoxFit.contain,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(imagePath, package: CoreConstants.packageName),
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),

@@ -56,4 +56,14 @@ void main() {
       matchesGoldenFile('goldens/core_date_picker_light.png'),
     );
   });
+
+  testWidgets('CoreDatePicker Visual Regression - Dark',
+      (WidgetTester tester) async {
+    await pumpVariant(tester, _withRoboto(CoreTheme.dark()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_date_picker_dark.png'),
+    );
+  });
 }
