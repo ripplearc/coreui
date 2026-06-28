@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'color_tokens.dart';
 import 'typography.dart';
 
 /// Extension for the Typography system that provides all text styles
@@ -236,6 +237,43 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
       bodySmallRegular: CoreTypography.bodySmallRegular(),
       bodySmallMedium: CoreTypography.bodySmallMedium(),
       bodySmallSemiBold: CoreTypography.bodySmallSemiBold(),
+    );
+  }
+
+  static AppTypographyExtension createDark() {
+    return AppTypographyExtension(
+      // Headline Large - 32/40
+      headlineLargeRegular: CoreTypography.headlineLargeRegular(color: CoreDarkTextColors.headline),
+      headlineLargeSemiBold: CoreTypography.headlineLargeSemiBold(color: CoreDarkTextColors.headline),
+
+      // Headline Medium - 24/32
+      headlineMediumRegular: CoreTypography.headlineMediumRegular(color: CoreDarkTextColors.headline),
+      headlineMediumSemiBold: CoreTypography.headlineMediumSemiBold(color: CoreDarkTextColors.headline),
+
+      // Title Large - 20/28
+      titleLargeRegular: CoreTypography.titleLargeRegular(color: CoreDarkTextColors.dark),
+      titleLargeMedium: CoreTypography.titleLargeMedium(color: CoreDarkTextColors.dark),
+      titleLargeSemiBold: CoreTypography.titleLargeSemiBold(color: CoreDarkTextColors.dark),
+
+      // Title Medium - 18/26
+      titleMediumRegular: CoreTypography.titleMediumRegular(color: CoreDarkTextColors.dark),
+      titleMediumMedium: CoreTypography.titleMediumMedium(color: CoreDarkTextColors.dark),
+      titleMediumSemiBold: CoreTypography.titleMediumSemiBold(color: CoreDarkTextColors.dark),
+
+      // Body Large - 16/24
+      bodyLargeRegular: CoreTypography.bodyLargeRegular(color: CoreDarkTextColors.body),
+      bodyLargeMedium: CoreTypography.bodyLargeMedium(color: CoreDarkTextColors.body),
+      bodyLargeSemiBold: CoreTypography.bodyLargeSemiBold(color: CoreDarkTextColors.body),
+
+      // Body Medium - 14/20
+      bodyMediumRegular: CoreTypography.bodyMediumRegular(color: CoreDarkTextColors.body),
+      bodyMediumMedium: CoreTypography.bodyMediumMedium(color: CoreDarkTextColors.body),
+      bodyMediumSemiBold: CoreTypography.bodyMediumSemiBold(color: CoreDarkTextColors.body),
+
+      // Body Small - 12/16
+      bodySmallRegular: CoreTypography.bodySmallRegular(color: CoreDarkTextColors.body),
+      bodySmallMedium: CoreTypography.bodySmallMedium(color: CoreDarkTextColors.body),
+      bodySmallSemiBold: CoreTypography.bodySmallSemiBold(color: CoreDarkTextColors.body),
     );
   }
 }
