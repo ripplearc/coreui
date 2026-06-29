@@ -63,8 +63,8 @@ void main() {
       expect(selectedDayFinder, findsOneWidget);
 
       final selectedSemantics = tester.getSemantics(selectedDayFinder);
-      expect(selectedSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
-      expect(selectedSemantics.hasFlag(ui.SemanticsFlag.isSelected), isTrue);
+      expect(selectedSemantics.flagsCollection.isButton, isTrue);
+      expect(selectedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
     });
 
     testWidgets('month navigation controls expose accessible labels',
@@ -118,8 +118,8 @@ void main() {
       expect(previousMonthFinder, findsOneWidget);
 
       final semantics = tester.getSemantics(previousMonthFinder);
-      expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
-      expect(semantics.hasFlag(ui.SemanticsFlag.isEnabled), isFalse);
+      expect(semantics.flagsCollection.isButton, isTrue);
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
 
     testWidgets('disabled out-of-range days are excluded from focus order',
@@ -152,7 +152,7 @@ void main() {
       expect(disabledDayFinder, findsOneWidget);
 
       final disabledSemantics = tester.getSemantics(disabledDayFinder);
-      expect(disabledSemantics.hasFlag(ui.SemanticsFlag.isEnabled), isFalse);
+      expect(disabledSemantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
   });
 }

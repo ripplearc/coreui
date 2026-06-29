@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -198,7 +196,7 @@ void main() {
 
       final semantics = tester.getSemantics(chipFinder);
       expect(semantics.label, '$label, $value');
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,

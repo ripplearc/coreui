@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///
 /// [groups] is the list of function groups to display.
@@ -61,9 +60,6 @@ class _CoreFunctionKeyBottomSheetState
     }
 
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final FunctionGroup item = _groups.removeAt(oldIndex);
       _groups.insert(newIndex, item);
     });
@@ -109,7 +105,7 @@ class _CoreFunctionKeyBottomSheetState
                 child: ReorderableListView.builder(
                   buildDefaultDragHandles: false,
                   itemCount: _groups.length,
-                  onReorder: _handleGroupReorder,
+                  onReorderItem: _handleGroupReorder,
                   proxyDecorator:
                       (Widget child, int index, Animation<double> animation) {
                     return Material(

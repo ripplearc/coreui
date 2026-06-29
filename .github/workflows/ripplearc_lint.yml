@@ -28,20 +28,20 @@ jobs:
           git config --global user.name "GitHub Action"
           git fetch origin "$BASE_REF"
           echo "Attempting to rebase on origin/$BASE_REF..."
-          
+
           if ! git rebase "origin/$BASE_REF"; then
             echo "::error::Merge conflict detected! The PR cannot be rebased onto $BASE_REF."
             echo "::error::Please resolve conflicts locally and push again."
             git rebase --abort || true
             exit 1
           fi
-          
+
           echo "Rebase successful! Code is now up-to-date with $BASE_REF."
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2'
+          flutter-version: "3.44.4"
           channel: stable
 
       - name: Install dependencies

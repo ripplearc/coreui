@@ -229,7 +229,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                   ),
                   SizeTransition(
                     sizeFactor: _controller,
-                    axisAlignment: -1.0,
+                    alignment: AlignmentDirectional.topStart,
                     child: Container(
                       key: _contentKey,
                       child: Column(

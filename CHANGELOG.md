@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.7.2] - CoreCheckRowItem & CoreDatePicker
+
+### Upgraded
+- Flutter SDK bumped from `3.32.0` to `3.44.4`; Dart SDK constraint raised to `>=3.12.0 <4.0.0`.
+- Gradle wrapper `8.13` → `8.14`.
+- Android Gradle Plugin (AGP) `8.7.0` → `8.11.1`.
+- Kotlin Gradle Plugin `2.1.0` → `2.2.20`.
+- `flutter_lints` `^5.0.0` → `^6.0.0`.
+- `flutter_svg` `^2.2.2` → `^2.3.0`, `lottie` `^3.3.1` → `^3.4.0`, `ripplearc_linter` `^0.4.0` → `^0.4.1`.
+- Minimum supported iOS deployment target raised from `12.0` to `13.0` (example app).
+
+### Fixed
+- Fixed a drag-reorder regression in `CoreFunctionKeyBottomSheet` where migrating to Flutter's new `onReorderItem` callback (which now performs index correction internally) had left the widget's own manual index-correction logic in place, causing dropped items to land one position off from where the user released them.
+
+### Changed
+- Migrated `ReorderableListView`/`ReorderableListView.builder` usages (`_SizesTable`, `CoreFunctionKeyBottomSheet`) from the deprecated `onReorder` callback to `onReorderItem`, ahead of Flutter's planned removal of `onReorder`.
+- Migrated widget tests off the deprecated `SemanticsNode.hasFlag`/`SemanticsData.flags` API to the new `flagsCollection` API, including the `isSelected`/`isEnabled` flags moving from `bool` to the new `Tristate` enum.
+- `SingleItemSelector`'s bottom sheet item now wraps its `ListTile` in a `Material` widget with `Clip.antiAlias`, fixing the tap ripple/ink effect rendering outside the intended bounds.
+- `CoreKeyboard`'s reveal/collapse `SizeTransition` migrated from `axisAlignment: -1.0` to `alignment: Alignment.topCenter`.
+
+### Tests
+- Added a regression test for `SingleItemSelector` verifying the selected-item bottom sheet opens without framework exceptions.
+
 ## [0.7.0] - CoreCheckRowItem & CoreDatePicker
 
 ### ✨ Features
