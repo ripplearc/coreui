@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,8 +82,8 @@ void main() {
       final tab1Semantics = tester.getSemantics(find.text('Tab 1'));
       final tab2Semantics = tester.getSemantics(find.text('Tab 2'));
 
-      expect(tab1Semantics.hasFlag(SemanticsFlag.isSelected), isFalse);
-      expect(tab2Semantics.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(tab1Semantics.flagsCollection.isSelected, ui.Tristate.isFalse);
+      expect(tab2Semantics.flagsCollection.isSelected, ui.Tristate.isTrue);
     });
 
     testWidgets('calls onChanged when tab is tapped',
@@ -272,12 +272,13 @@ void main() {
       // CoreSelectButton's Semantics node does not set label explicitly.
       final selectedSemantics = tester.getSemantics(find.text('Tab 1'));
       expect(selectedSemantics.label, contains('Tab 1'));
-      expect(selectedSemantics.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(selectedSemantics.flagsCollection.isSelected, ui.Tristate.isTrue);
 
       final unselectedSemantics = tester.getSemantics(find.text('Tab 2'));
       expect(unselectedSemantics.label, contains('Tab 2'));
-      expect(unselectedSemantics.hasFlag(SemanticsFlag.isSelected), isFalse);
-      expect(unselectedSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(
+          unselectedSemantics.flagsCollection.isSelected, ui.Tristate.isFalse);
+      expect(unselectedSemantics.flagsCollection.isButton, isTrue);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => CoreSelectButton(

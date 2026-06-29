@@ -60,7 +60,7 @@ void main() {
 
       final firstChipSemantics = tester.getSemantics(chipFinder.first);
       expect(firstChipSemantics.label, 'Length, 16ft 14in');
-      expect(firstChipSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+      expect(firstChipSemantics.flagsCollection.isButton, isTrue);
     });
 
     testWidgets('history chips meet accessibility guidelines',
@@ -272,7 +272,7 @@ void main() {
 
       final semantics = tester.getSemantics(buttonFinder);
       expect(semantics.label, contains('O.C: 16in'));
-      expect(semantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
     });
 
     testWidgets('expandedPrevious state meets accessibility guidelines',

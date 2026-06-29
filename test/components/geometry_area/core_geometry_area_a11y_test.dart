@@ -81,10 +81,11 @@ void main() {
       expect(mediaText, findsOneWidget);
       expect(documentText, findsOneWidget);
 
-      final viewAllFinder = find.bySemanticsLabel(CoreGeometryArea.defaultViewAllAttachmentsLabel);
+      final viewAllFinder = find
+          .bySemanticsLabel(CoreGeometryArea.defaultViewAllAttachmentsLabel);
       expect(viewAllFinder, findsOneWidget);
       final viewAllSemantics = tester.getSemantics(viewAllFinder);
-      expect(viewAllSemantics.hasFlag(ui.SemanticsFlag.isButton), isTrue);
+      expect(viewAllSemantics.flagsCollection.isButton, isTrue);
 
       final dimSemantics = tester.getSemantics(dimensionsText);
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
@@ -142,9 +143,11 @@ void main() {
           .toList();
 
       expect(actionSets[0], contains(widgetsLocalizations.reorderItemDown));
-      expect(actionSets[1], contains(materialLocalizations.deleteButtonTooltip));
+      expect(
+          actionSets[1], contains(materialLocalizations.deleteButtonTooltip));
       expect(actionSets[2], contains(widgetsLocalizations.reorderItemUp));
-      expect(actionSets[3], contains(materialLocalizations.deleteButtonTooltip));
+      expect(
+          actionSets[3], contains(materialLocalizations.deleteButtonTooltip));
 
       final dragHandleFinder = find.byWidgetPredicate(
         (widget) =>
