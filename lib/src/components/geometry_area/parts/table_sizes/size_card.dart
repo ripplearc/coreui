@@ -1,8 +1,10 @@
 part of '../../core_geometry_area.dart';
 
 class _SizeCard extends StatelessWidget {
+  // No `key` param: always constructed without one internally. If this
+  // widget is ever promoted to public, restore `super.key` so callers can
+  // control identity in the reorderable list.
   _SizeCard({
-    super.key,
     required this.index,
     required this.layout,
     required this.values,
@@ -37,10 +39,7 @@ class _SizeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoreSpacing.space2),
         boxShadow: CoreShadows.small,
         border: isHighlighted
-            ? Border.all(
-                color: colors.lineHighlight,
-                width: _borderWidth,
-              )
+            ? Border.all(color: colors.lineHighlight, width: _borderWidth)
             : null,
       ),
       child: Row(
@@ -70,7 +69,8 @@ class _SizeCard extends StatelessWidget {
                 (entry) => Expanded(
                   child: Padding(
                     padding: const EdgeInsetsDirectional.only(
-                        start: CoreSpacing.space1),
+                      start: CoreSpacing.space1,
+                    ),
                     child: Text(
                       entry.value,
                       style: typography.bodyMediumMedium.copyWith(
