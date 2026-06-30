@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
-import '../core_icon.dart';
 
 /// A single-row item used in search screens for both recent searches and
 /// search suggestions.
@@ -39,8 +38,8 @@ class CoreSearchRowItem extends StatelessWidget {
     this.onTrailingTap,
     this.semanticLabel,
     this.trailingSemanticLabel,
-  }) : _text = null,
-       _query = null;
+  })  : _text = null,
+        _query = null;
 
   const CoreSearchRowItem._recentSearch({
     super.key,
@@ -48,12 +47,12 @@ class CoreSearchRowItem extends StatelessWidget {
     required this.onTap,
     this.onTrailingTap,
     this.trailingSemanticLabel,
-  }) : leadingIcon = CoreIcons.history,
-       label = null,
-       showTrailingIcon = true,
-       semanticLabel = text,
-       _text = text,
-       _query = null;
+  })  : leadingIcon = CoreIcons.history,
+        label = null,
+        showTrailingIcon = true,
+        semanticLabel = text,
+        _text = text,
+        _query = null;
 
   const CoreSearchRowItem._suggestion({
     super.key,
@@ -62,12 +61,12 @@ class CoreSearchRowItem extends StatelessWidget {
     required this.onTap,
     this.onTrailingTap,
     this.trailingSemanticLabel,
-  }) : leadingIcon = CoreIcons.search,
-       label = null,
-       showTrailingIcon = true,
-       semanticLabel = text,
-       _text = text,
-       _query = query;
+  })  : leadingIcon = CoreIcons.search,
+        label = null,
+        showTrailingIcon = true,
+        semanticLabel = text,
+        _text = text,
+        _query = query;
 
   /// Recent search variant: history icon on the left, plain text label.
   ///
@@ -146,7 +145,8 @@ class CoreSearchRowItem extends StatelessWidget {
 
     final typography = AppTypographyExtension.of(context);
     final colors = AppColorsExtension.of(context);
-    final regular = typography.bodyLargeRegular.copyWith(color: colors.textDark);
+    final regular =
+        typography.bodyLargeRegular.copyWith(color: colors.textDark);
 
     final query = _query;
     if (query == null || query.isEmpty || query.length > text.length) {
