@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -32,7 +30,7 @@ void main() {
 
       final semantics = tester.getSemantics(chipFinder);
       expect(semantics.label, chipLabel);
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
@@ -93,7 +91,7 @@ void main() {
       final semantics =
           tester.getSemantics(find.byKey(const Key('close_icon')));
 
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
       expect(semantics.label, contains('Remove Filter'));
     });
   });

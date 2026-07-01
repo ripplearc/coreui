@@ -72,6 +72,30 @@ void main() {
       expect(selected, 'Engineer');
     });
 
+    testWidgets('opens selected item bottom sheet without framework errors',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleItemSelector<String>(
+              labelText: 'Role',
+              hintText: 'Select your role',
+              modalTitle: 'Select Role',
+              items: const ['Engineer', 'Designer'],
+              selectedItem: 'Designer',
+              onItemSelected: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(SingleItemSelector<String>));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Role'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('displays selected item when default is passed', (tester) async {
       await tester.pumpWidget(
         MaterialApp(

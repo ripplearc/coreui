@@ -152,10 +152,7 @@ class _SizesTableState extends State<_SizesTable> {
                         proxyDecorator: (child, index, animation) =>
                             _proxyDecorator(
                                 child, index, animation, context, layout),
-                        onReorder: (oldIndex, newIndex) {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
+                        onReorderItem: (oldIndex, newIndex) {
                           HapticFeedback.lightImpact();
                           setState(() {
                             _recentlyDroppedIndex = newIndex;
