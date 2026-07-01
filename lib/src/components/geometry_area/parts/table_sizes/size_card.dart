@@ -2,7 +2,6 @@ part of '../../core_geometry_area.dart';
 
 class _SizeCard extends StatelessWidget {
   _SizeCard({
-    super.key,
     required this.index,
     required this.layout,
     required this.values,

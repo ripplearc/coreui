@@ -1,6 +1,14 @@
 part of '../../core_geometry_area.dart';
 
-enum SizeOperationIntent { add, edit }
+/// Describes whether a size entry operation is adding a new entry or editing
+/// an existing one.
+enum SizeOperationIntent {
+  /// The user is creating a new size entry.
+  add,
+
+  /// The user is modifying an existing size entry.
+  edit,
+}
 
 class SizeEntryResult {
   const SizeEntryResult({

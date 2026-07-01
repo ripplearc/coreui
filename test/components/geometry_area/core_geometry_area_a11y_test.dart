@@ -132,18 +132,19 @@ void main() {
           reason:
               'A 2-row list produces 4 action-bearing Semantics widgets (2 for reorder, 2 for delete)');
 
-      final localizations = MaterialLocalizations.of(
-          tester.element(find.byType(CoreGeometryArea)));
+      final element = tester.element(find.byType(CoreGeometryArea));
+      final materialLocalizations = MaterialLocalizations.of(element);
+      final widgetsLocalizations = WidgetsLocalizations.of(element);
 
       final actionSets = semanticsWidgets
           .map((w) =>
               w.properties.customSemanticsActions!.keys.map((a) => a.label))
           .toList();
 
-      expect(actionSets[0], contains(localizations.reorderItemDown));
-      expect(actionSets[1], contains(localizations.deleteButtonTooltip));
-      expect(actionSets[2], contains(localizations.reorderItemUp));
-      expect(actionSets[3], contains(localizations.deleteButtonTooltip));
+      expect(actionSets[0], contains(widgetsLocalizations.reorderItemDown));
+      expect(actionSets[1], contains(materialLocalizations.deleteButtonTooltip));
+      expect(actionSets[2], contains(widgetsLocalizations.reorderItemUp));
+      expect(actionSets[3], contains(materialLocalizations.deleteButtonTooltip));
 
       final dragHandleFinder = find.byWidgetPredicate(
         (widget) =>
