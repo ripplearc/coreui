@@ -22,10 +22,8 @@ void main() {
 
     final colors = AppColorsExtension.create();
     final testAccentColors = {
-      const GroupNameType(label: 'Trigonomety'):
-          colors.backgroundDarkGray,
-      const GroupNameType(label: 'Materials'):
-          colors.orientMid,
+      const GroupNameType(label: 'Trigonomety'): colors.backgroundDarkGray,
+      const GroupNameType(label: 'Materials'): colors.orientMid,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {
@@ -173,6 +171,57 @@ void main() {
       final semantics = tester.getSemantics(find.text('sin'));
       expect(semantics.label, contains('Function key sin'));
       expect(semantics.hint, contains('Tap to use sin function'));
+    });
+
+    testWidgets(
+        'dragging a group to a later, non-adjacent position drops it at '
+        'the correct final index', (tester) async {
+      final reorderGroups = [
+        FunctionGroup(
+          name: const GroupNameType(label: 'Group A'),
+          keys: [KeyType(groupName: 'Group A', label: 'A1', action: () {})],
+        ),
+        FunctionGroup(
+          name: const GroupNameType(label: 'Group B'),
+          keys: [KeyType(groupName: 'Group B', label: 'B1', action: () {})],
+        ),
+        FunctionGroup(
+          name: const GroupNameType(label: 'Group C'),
+          keys: [KeyType(groupName: 'Group C', label: 'C1', action: () {})],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: reorderGroups,
+              groupAccentColors: testAccentColors,
+              selectedGroup: const GroupNameType(label: 'Group A'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              showUnitToggle: false,
+            ),
+          ),
+        ),
+      );
+
+      final dragHandles = find.byWidgetPredicate(
+        (widget) => widget is Icon && widget.icon == Icons.drag_indicator,
+      );
+      expect(dragHandles, findsNWidgets(3));
+
+      // Drag the first group past the second so it lands on the last slot,
+      // not just the adjacent one.
+      await tester.drag(dragHandles.first, const Offset(0, 220));
+      await tester.pumpAndSettle();
+
+      final groupHeaders = tester
+          .widgetList<Text>(find.textContaining(' group'))
+          .map((t) => t.data)
+          .toList();
+      expect(groupHeaders, ['Group B group', 'Group C group', 'Group A group']);
     });
 
     testWidgets('has proper semantics for unit toggle', (tester) async {

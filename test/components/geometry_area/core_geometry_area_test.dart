@@ -275,6 +275,59 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     });
 
+    testWidgets(
+        'dragging an item to a later, non-adjacent position drops it at the '
+        'correct final index', (WidgetTester tester) async {
+      final reorderCalls = <(int, int)>[];
+      var data = [
+        const CoreSizeCardData(id: '1', values: ['A']),
+        const CoreSizeCardData(id: '2', values: ['B']),
+        const CoreSizeCardData(id: '3', values: ['C']),
+        const CoreSizeCardData(id: '4', values: ['D']),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return CoreGeometryArea(
+                  onMediaButtonPressed: () {},
+                  onDocumentButtonPressed: () {},
+                  sizesTableTitles: const ['Col'],
+                  sizesTableData: data,
+                  onSizesReordered: (oldIndex, newIndex) {
+                    reorderCalls.add((oldIndex, newIndex));
+                    setState(() {
+                      final item = data.removeAt(oldIndex);
+                      data.insert(newIndex, item);
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final dragHandles = find.byWidgetPredicate(
+        (widget) =>
+            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+      );
+      expect(dragHandles, findsNWidgets(4));
+
+      // Drag the first card past two other rows so it lands at index 2,
+      // not just the adjacent slot.
+      await tester.drag(dragHandles.first, const Offset(0, 150));
+      await tester.pumpAndSettle();
+
+      expect(reorderCalls.length, 1);
+      expect(reorderCalls.first, (0, 2));
+      expect(data.map((e) => e.id).toList(), ['2', '3', '1', '4']);
+      await tester.pump(const Duration(milliseconds: 500));
+    });
+
     testWidgets('highlights the dropped card and clears it after 500ms',
         (WidgetTester tester) async {
       var data = [

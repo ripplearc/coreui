@@ -58,19 +58,13 @@ class SingleItemSelector<T> extends StatelessWidget {
           hintText: hintText,
           enabled: !isDisabled,
           labelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled
-                ? colors.textDisable
-                : colors.outlineFocus,
+            color: isDisabled ? colors.textDisable : colors.outlineFocus,
           ),
           hintStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled
-                ? colors.textDisable
-                : colors.outlineFocus,
+            color: isDisabled ? colors.textDisable : colors.outlineFocus,
           ),
           floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled
-                ? colors.textDisable
-                : colors.outlineFocus,
+            color: isDisabled ? colors.textDisable : colors.outlineFocus,
           ),
           border: const OutlineInputBorder(),
           suffixIcon: suffixIcon ?? const Icon(Icons.arrow_drop_down),
@@ -85,10 +79,10 @@ class SingleItemSelector<T> extends StatelessWidget {
               child: Text(
                 _getDisplayText(),
                 style: typography.bodyLargeRegular.copyWith(
-                      color: (selectedItem == null || isDisabled)
-                          ? Theme.of(context).hintColor
-                          : null,
-                    ),
+                  color: (selectedItem == null || isDisabled)
+                      ? Theme.of(context).hintColor
+                      : null,
+                ),
               ),
             ),
           ],
@@ -152,34 +146,37 @@ class SingleItemSelector<T> extends StatelessWidget {
                         horizontal: 16,
                         vertical: 4,
                       ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? effectiveSelectedBackgroundColor : null,
+                      child: Material(
+                        color: isSelected
+                            ? effectiveSelectedBackgroundColor
+                            : colors.transparent,
                         borderRadius: BorderRadius.circular(
                           CoreSpacing.space12,
                         ),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                        ),
-                        title: Row(
-                          children: [
-                            Text(
-                              itemToString?.call(item) ?? item.toString(),
-                              style: typography.bodyMediumRegular,
-                            ),
-                            const SizedBox(width: CoreSpacing.space2),
-                            if (isSelected)
-                              CoreIconWidget(
-                                icon: CoreIcons.checkMark,
-                                color: effectiveSelectedColor,
+                        clipBehavior: Clip.antiAlias,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                          ),
+                          title: Row(
+                            children: [
+                              Text(
+                                itemToString?.call(item) ?? item.toString(),
+                                style: typography.bodyMediumRegular,
                               ),
-                          ],
+                              const SizedBox(width: CoreSpacing.space2),
+                              if (isSelected)
+                                CoreIconWidget(
+                                  icon: CoreIcons.checkMark,
+                                  color: effectiveSelectedColor,
+                                ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            onItemSelected(item);
+                          },
                         ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          onItemSelected(item);
-                        },
                       ),
                     );
                   },

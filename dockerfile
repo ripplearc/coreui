@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN groupadd --system flutter && \
     useradd --system --create-home --gid flutter flutter
 
-# 4. Install Flutter 3.32.0 to match GitHub Actions
-ENV FLUTTER_VERSION="3.32.0"
+# 4. Install Flutter 3.44.4 to match GitHub Actions
+ENV FLUTTER_VERSION="3.44.4"
 RUN curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o flutter.tar.xz && \
     tar -xf flutter.tar.xz -C /opt && \
     rm flutter.tar.xz && \
