@@ -19,12 +19,18 @@ class GeometryAreaShowcaseScreen extends StatefulWidget {
 
 class _GeometryAreaShowcaseScreenState
     extends State<GeometryAreaShowcaseScreen> {
-  static const GroupNameType _basicGeometryGroup =
-  GroupNameType(label: 'Basic Geometry');
-  static const GroupNameType _materialsGroup =
-  GroupNameType(label: 'Materials');
-  static const GroupNameType _trigonometryGroup =
-  GroupNameType(label: 'Trigonometry');
+  /// Extra scroll space reserved so content isn't hidden behind [CoreKeyboard].
+  static const double _keyboardScrollBuffer = 350;
+
+  static const GroupNameType _basicGeometryGroup = GroupNameType(
+    label: 'Basic Geometry',
+  );
+  static const GroupNameType _materialsGroup = GroupNameType(
+    label: 'Materials',
+  );
+  static const GroupNameType _trigonometryGroup = GroupNameType(
+    label: 'Trigonometry',
+  );
 
   static final List<FunctionGroup> _groups = List.unmodifiable([
     FunctionGroup(
@@ -59,8 +65,6 @@ class _GeometryAreaShowcaseScreenState
       ],
     ),
   ]);
-
-  bool _isKeyboardCollapsed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -118,12 +122,14 @@ class _GeometryAreaShowcaseScreenState
                                   CoreSuggestionArea(
                                     aiSuggestions: state.aiSuggestions,
                                     conversionSuggestions:
-                                    state.conversionSuggestions,
-                                    hiddenChipsTextBuilder: (count) => '+$count',
-                                    expandToggleSemanticsLabelBuilder: (count) =>
-                                    'Expand $count more suggestions',
+                                        state.conversionSuggestions,
+                                    hiddenChipsTextBuilder: (count) =>
+                                        '+$count',
+                                    expandToggleSemanticsLabelBuilder:
+                                        (count) =>
+                                            'Expand $count more suggestions',
                                     collapseToggleSemanticsLabel:
-                                    'Collapse suggestions',
+                                        'Collapse suggestions',
                                   ),
                                   CoreGeometryArea(
                                     isCollapsed: false,
@@ -135,9 +141,9 @@ class _GeometryAreaShowcaseScreenState
                                     onSizeDeleted: (id) =>
                                         bloc.add(SizeDeleted(id)),
                                     onSizesReordered: (oldIndex, newIndex) =>
-                                        bloc
-                                            .add(
-                                            SizesReordered(oldIndex, newIndex)),
+                                        bloc.add(
+                                          SizesReordered(oldIndex, newIndex),
+                                        ),
                                     onSizeSaved: (result) =>
                                         bloc.add(SizeSaved(result)),
                                     dimensions: state.dimensions,
@@ -145,7 +151,7 @@ class _GeometryAreaShowcaseScreenState
                                     onMediaButtonPressed: () {},
                                     onDocumentButtonPressed: () {},
                                   ),
-                                  const SizedBox(height: 350), // Allows scrolling content above keyboard
+                                  const SizedBox(height: _keyboardScrollBuffer),
                                 ],
                               ),
                             ),
@@ -177,11 +183,6 @@ class _GeometryAreaShowcaseScreenState
                               onUnitSystemChanged: (_) {},
                               groupAccentColors: groupAccentColors,
                               result: const ResultType(label: '='),
-                              onCollapseChanged: (collapsed) {
-                                setState(() {
-                                  _isKeyboardCollapsed = collapsed;
-                                });
-                              },
                             ),
                           ),
                         ],
