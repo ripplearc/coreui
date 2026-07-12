@@ -29,7 +29,7 @@ void main() {
     Future<void> pumpChip({
       required WidgetTester tester,
       required String label,
-      ThemeData? theme,
+      required ThemeData theme,
     }) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = ratio;
@@ -37,7 +37,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: theme ?? _createTestTheme(),
+          theme: theme,
           home: Material(
             child: Center(
               child: CoreInputChip(
@@ -52,7 +52,7 @@ void main() {
     }
 
     testWidgets('renders chip with short label', (tester) async {
-      await pumpChip(tester: tester, label: 'Tag');
+      await pumpChip(tester: tester, label: 'Tag', theme: _createTestTheme());
 
       await expectLater(
         find.byType(CoreInputChip),
@@ -61,7 +61,11 @@ void main() {
     });
 
     testWidgets('renders chip with email label', (tester) async {
-      await pumpChip(tester: tester, label: 'alice@example.com');
+      await pumpChip(
+        tester: tester,
+        label: 'alice@example.com',
+        theme: _createTestTheme(),
+      );
 
       await expectLater(
         find.byType(CoreInputChip),
