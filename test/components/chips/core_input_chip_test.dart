@@ -19,7 +19,7 @@ void main() {
         expect(find.text('alice@example.com'), findsOneWidget);
       });
 
-      testWidgets('renders close icon', (tester) async {
+      testWidgets('renders close icon when onRemove is provided', (tester) async {
         await tester.pumpWidget(
           buildTestApp(
             CoreInputChip(label: 'alice@example.com', onRemove: () {}),
@@ -28,6 +28,19 @@ void main() {
         );
 
         expect(find.byKey(CoreInputChip.removeButtonKey), findsOneWidget);
+      });
+
+      testWidgets('does not render remove button when onRemove is null', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const CoreInputChip(label: 'alice@example.com'),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(find.byKey(CoreInputChip.removeButtonKey), findsNothing);
       });
     });
 

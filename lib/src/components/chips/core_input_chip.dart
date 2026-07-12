@@ -20,14 +20,17 @@ class CoreInputChip extends StatelessWidget {
   const CoreInputChip({
     super.key,
     required this.label,
-    required this.onRemove,
+    this.onRemove,
   });
 
   /// The text token displayed inside the chip.
   final String label;
 
   /// Called when the user taps the close (×) button.
-  final VoidCallback onRemove;
+  ///
+  /// When null, the remove button is not rendered and the chip becomes
+  /// display-only (e.g. a locked token in a viewer role).
+  final VoidCallback? onRemove;
 
   /// Key used for the remove button inside the chip.
   ///
@@ -53,39 +56,44 @@ class CoreInputChip extends StatelessWidget {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ExcludeSemantics(
-              child: Text(
-                label,
-                style: typography.bodyMediumSemiBold.copyWith(
-                  color: colors.textDark,
+            Flexible(
+              child: ExcludeSemantics(
+                child: Text(
+                  label,
+                  style: typography.bodyMediumSemiBold.copyWith(
+                    color: colors.textDark,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ),
-            const SizedBox(width: CoreSpacing.space2),
-            Semantics(
-              label: 'Remove $label',
-              button: true,
-              child: GestureDetector(
-                key: removeButtonKey,
-                behavior: HitTestBehavior.opaque,
-                onTap: onRemove,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: CoreSpacing.space12,
-                    minHeight: CoreSpacing.space12,
-                  ),
-                  child: Center(
-                    child: CoreIconWidget(
-                      icon: CoreIcons.close,
-                      color: colors.iconGrayMid,
-                      size: CoreIconSize.size20,
+            if (onRemove != null) ...[
+              const SizedBox(width: CoreSpacing.space2),
+              Semantics(
+                label: 'Remove $label',
+                button: true,
+                child: GestureDetector(
+                  key: removeButtonKey,
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onRemove,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: CoreSpacing.space12,
+                      minHeight: CoreSpacing.space12,
+                    ),
+                    child: Center(
+                      child: CoreIconWidget(
+                        icon: CoreIcons.close,
+                        color: colors.iconGrayMid,
+                        size: CoreIconSize.size20,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -10,6 +10,12 @@ ThemeData _createTestTheme() {
   );
 }
 
+ThemeData _createDarkTestTheme() {
+  return CoreTheme.dark().copyWith(
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +29,7 @@ void main() {
     Future<void> pumpChip({
       required WidgetTester tester,
       required String label,
+      ThemeData? theme,
     }) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = ratio;
@@ -30,7 +37,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: _createTestTheme(),
+          theme: theme ?? _createTestTheme(),
           home: Material(
             child: Center(
               child: CoreInputChip(
@@ -59,6 +66,32 @@ void main() {
       await expectLater(
         find.byType(CoreInputChip),
         matchesGoldenFile('goldens/core_input_chip_email_label.png'),
+      );
+    });
+
+    testWidgets('renders chip with short label – dark theme', (tester) async {
+      await pumpChip(
+        tester: tester,
+        label: 'Tag',
+        theme: _createDarkTestTheme(),
+      );
+
+      await expectLater(
+        find.byType(CoreInputChip),
+        matchesGoldenFile('goldens/core_input_chip_short_label_dark.png'),
+      );
+    });
+
+    testWidgets('renders chip with email label – dark theme', (tester) async {
+      await pumpChip(
+        tester: tester,
+        label: 'alice@example.com',
+        theme: _createDarkTestTheme(),
+      );
+
+      await expectLater(
+        find.byType(CoreInputChip),
+        matchesGoldenFile('goldens/core_input_chip_email_label_dark.png'),
       );
     });
   });
