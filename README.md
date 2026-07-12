@@ -100,6 +100,25 @@ CoreLoadingIndicator(
 )
 ```
 
+### Input Chips
+
+`CoreInputChip` displays a committed token (e.g. an email address or tag) with an optional remove button. It is designed to be used inside a `Wrap`.
+
+```dart
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+// With remove button
+CoreInputChip(
+  label: 'alice@example.com',
+  onRemove: () => setState(() => emails.remove('alice@example.com')),
+)
+
+// Display-only (no remove button)
+CoreInputChip(
+  label: 'alice@example.com',
+)
+```
+
 ### Colors & Typography Usage
 
 **Strict Rule:** Do not use static constants (e.g., `CoreAlertColors.red` or `CoreTypography.body`). Static access breaks Dark Mode support.
