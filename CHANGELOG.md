@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0] - CoreInputChip
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreInputChip**: New non-toggleable input chip for displaying committed tokens (e.g. email addresses or tags) with a remove button.
+    - Displays a text label in `bodyMediumSemiBold` with `TextOverflow.ellipsis` — safe inside `Wrap` rows and on narrow screens
+    - Trailing close (×) button meets the 48 dp minimum tap-target requirement; tapping calls `onRemove`
+    - `onRemove` is optional — omitting it hides the remove button entirely, enabling a read-only/locked-token display mode
+    - Full accessibility support: chip container exposes a `Semantics(container: true)` node with the label text; remove button exposes a `Semantics(button: true)` node labelled `"Remove <label>"`; label `Text` is wrapped in `ExcludeSemantics` to prevent double-announcement
+    - `CoreInputChip.removeButtonKey` static key for locating the tap target in tests
+    - Widget tests, accessibility tests (both themes), and golden tests (light + dark, short label + email label)
+
 ## [0.7.2] - CoreCheckRowItem & CoreDatePicker
 
 ### Upgraded
