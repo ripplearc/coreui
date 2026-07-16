@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.9.0] - Dark theme
+
+### ✨ Features
+
+- **Dark Color Tokens**
+  - 9 dark token classes mirroring each light class (`DarkBackgroundColors`, `DarkTextColors`, `DarkIconColors`, `DarkBorderColors`, `DarkTabColors`, `DarkButtonColors`, `DarkInputColors`, `DarkSelectColors`, `DarkStateColors`) — all colors sourced from the Figma dark-mode palette
+  - `CoreTheme.dark()` now returns a fully populated `ThemeData` with `brightness: Brightness.dark` and `scaffoldBackgroundColor` mapped to `gray50`; both `AppColorsExtension` and `AppTypographyExtension` are switched to their dark variants automatically
+  - `AppTypographyExtension.createDark()` — all 19 text styles substituted with `CoreDarkTextColors.*` (gray25 for headlines, gray100 for titles, gray300 for body); components using `typography.someStyle` without `.copyWith` now render correctly in dark mode
+
+### 🔧 Fixes
+
+- **Accessibility**
+  - `SingleItemSelector` modal title: uses `.copyWith(color: colors.textHeadline)` so text stays visible on the dark scaffold (was gray900 on gray900 — 1:1 contrast)
+  - `SingleItemSelector` item text: uses `.copyWith(color: colors.textBody)` to ensure list items remain legible in dark mode
+  - `CoreSelectButton` selected tab: text color switches to `textInverse` (gray900) when tab background is `tabsHighlight` (orient300), resolving the 1.6:1 contrast failure in dark mode
+- **CoreLetterAvatar**: replaced `Image.asset` with a `BoxDecoration`-based `Container` wrapped in `AspectRatio(aspectRatio: 1.0)`; fixes `Semantics` label propagation that was blocked by `Image.asset` and correctly derives height from the available width constraint without a `RenderBox` infinite-constraint error
+
+### Tests
+
+- `CoreDatePicker Visual Regression - Dark` golden added — verifies header background (`blue900`), selected day fill (`orient200`), and month row text under `CoreTheme.dark()`
+- Dark-mode goldens added for color tokens, letter avatar, and check row item; all light goldens refreshed against current Flutter SDK
+
 ## [0.8.0] - CoreInputChip
 
 ### ✨ Features
