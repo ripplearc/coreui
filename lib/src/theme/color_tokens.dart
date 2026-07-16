@@ -235,6 +235,8 @@ class CoreAccentsColors {
 // numbering diverges by one step for Orient and Blue families.
 // ─────────────────────────────────────────────────────────────────────────────
 
+/// Dark-mode text color tokens. Mirror of the light text classes using
+/// inverted palette steps — gray25 for headline, gray300 for body.
 class CoreDarkTextColors {
   static const Color headline = _CoreColorPalette.gray25;
   static const Color dark = _CoreColorPalette.gray100;
@@ -248,6 +250,8 @@ class CoreDarkTextColors {
   static const Color success = _CoreColorPalette.green300;
 }
 
+/// Dark-mode background color tokens. Surfaces shift to deep gray and
+/// saturated palette steps (e.g. blue900, green900) for tinted areas.
 class CoreDarkBackgroundColors {
   static const Color pageBackground = _CoreColorPalette.gray900;
   static const Color backgroundGrayLight = _CoreColorPalette.gray800;
@@ -266,6 +270,8 @@ class CoreDarkBackgroundColors {
   static const Color backgroundOrientMid = _CoreColorPalette.orient800;
 }
 
+/// Dark-mode border and outline color tokens. Lines use mid-gray steps;
+/// focus and highlight outlines use orient300/200 for sufficient contrast.
 class CoreDarkBorderColors {
   static const Color lineLight = _CoreColorPalette.gray700;
   static const Color lineMid = _CoreColorPalette.gray600;
@@ -276,11 +282,14 @@ class CoreDarkBorderColors {
   static const Color tabsHighlight = _CoreColorPalette.orient300;
 }
 
+/// Dark-mode status color tokens for error and success states.
 class CoreDarkStatusColors {
   static const Color error = _CoreColorPalette.red400;
   static const Color success = _CoreColorPalette.green400;
 }
 
+/// Dark-mode keyboard key color tokens. Key surfaces use deep blue and gray
+/// steps to remain legible on the dark scaffold.
 class CoreDarkKeyboardColors {
   static const Color numbers = _CoreColorPalette.gray700;
   static const Color calculate = _CoreColorPalette.blue800;
@@ -291,6 +300,8 @@ class CoreDarkKeyboardColors {
   static const Color transparent = _CoreColorPalette.transparent;
 }
 
+/// Dark-mode icon color tokens. Primary icon color shifts to orient300;
+/// gray variants use light palette steps for contrast on dark surfaces.
 class CoreDarkIconColors {
   static const Color dark = _CoreColorPalette.orient300;
   static const Color grayDark = _CoreColorPalette.gray100;
@@ -304,6 +315,8 @@ class CoreDarkIconColors {
   static const Color orient = _CoreColorPalette.orient300;
 }
 
+/// Dark-mode chip color tokens. Chip backgrounds use deep palette steps
+/// (e.g. orient800, blue800) so chips remain distinct on dark surfaces.
 class CoreDarkChipColors {
   static const Color gray = _CoreColorPalette.gray700;
   static const Color primary = _CoreColorPalette.orient800;
@@ -313,6 +326,8 @@ class CoreDarkChipColors {
   static const Color green = _CoreColorPalette.green800;
 }
 
+/// Dark-mode button color tokens. Primary surface uses orient400; disabled
+/// state uses gray700 to stay visually muted on dark backgrounds.
 class CoreDarkButtonColors {
   static const Color inverse = _CoreColorPalette.gray25;
   static const Color surface = _CoreColorPalette.orient400;
@@ -321,6 +336,8 @@ class CoreDarkButtonColors {
   static const Color press = _CoreColorPalette.orient200;
 }
 
+/// Dark-mode alert background color tokens. Deep palette steps (800) keep
+/// alert surfaces tinted but not overpowering on dark scaffolds.
 class CoreDarkAlertColors {
   static const Color red = _CoreColorPalette.red800;
   static const Color orange = _CoreColorPalette.orange800;

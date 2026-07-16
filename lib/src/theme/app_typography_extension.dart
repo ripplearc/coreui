@@ -202,7 +202,8 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
     );
   }
 
-  // Factory method to create the extension with all styles
+  /// Creates the light-mode typography extension with all 19 text styles
+  /// using default [CoreTextColors] values.
   static AppTypographyExtension create() {
     return AppTypographyExtension(
       // Headline Large - 32/40
@@ -240,6 +241,9 @@ class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
     );
   }
 
+  /// Creates the dark-mode typography extension with all 19 text styles
+  /// substituted with [CoreDarkTextColors] values (gray25 headlines,
+  /// gray100 titles, gray300 body). Use via [CoreTheme.dark].
   static AppTypographyExtension createDark() {
     return AppTypographyExtension(
       // Headline Large - 32/40
