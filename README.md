@@ -14,26 +14,37 @@ coreui/
 │       │   ├── color_tokens.dart
 │       │   ├── typography.dart
 │       │   ├── spacing.dart
+│       │   ├── shadows.dart
+│       │   ├── icons/
+│       │   ├── app_typography_extension.dart
 │       │   └── theme_data.dart
 │       │
 │       └── components/            # UI components
+│           ├── alerts/
+│           ├── avatar/
+│           ├── bottom_sheets/
 │           ├── buttons/
-│           │   └── primary_button.dart
+│           ├── calculator_chips/
+│           ├── check_row_item/
+│           ├── chips/
+│           ├── date_picker/
+│           ├── display_area/
+│           ├── keyboard/
+│           ├── letter_avatar/
+│           ├── navigation/
+│           ├── search/
+│           ├── select_button/
+│           ├── selects/
 │           ├── switches/
+│           ├── tabs/
 │           ├── text_fields/
-│           └── alerts/
+│           └── tooltips/
 │
 ├── test/                          # Tests
 │   ├── theme/
 │   └── components/
-│       ├── buttons/
-│       │   ├── primary_button_test.dart
-│       │   └── primary_button_golden.dart
 │
-├── showroom/                      # Demo app
-│   ├── main.dart
-│   └── screens/
-│       └── components_screen.dart
+├── example/                       # Demo app
 │
 ├── pubspec.yaml
 └── README.md
@@ -41,12 +52,18 @@ coreui/
 
 ## Features
 
-- Design Tokens (colors, typography, spacing)
-- Basic Components:
-  - Buttons
-  - More components coming soon
-- Comprehensive testing (Unit, Widget, and Golden tests)
-- Showroom app to showcase components
+- Design Tokens (colors, typography, spacing, shadows, icons)
+- Full light and dark theme support via `CoreTheme.light()` and `CoreTheme.dark()`
+- UI Components:
+  - Buttons, switches, text fields, alerts
+  - Avatar, letter avatar
+  - Chips (filter, calculator, input)
+  - Date picker
+  - Search (search box, search row item)
+  - Select button, selects (single item selector)
+  - Keyboard, bottom sheets, navigation, tabs, tooltips
+  - Display area, geometry area
+- Comprehensive testing (unit, widget, golden, and accessibility tests)
 
 ## Getting started
 
@@ -78,6 +95,20 @@ PrimaryButton(
   onPressed: () {},
 );
 ```
+
+### Dark Theme
+
+Pass `CoreTheme.dark()` to `darkTheme` and Flutter will switch automatically based on the device setting. All color and typography tokens resolve to their dark-mode values — no component-level changes needed.
+
+```dart
+MaterialApp(
+  theme: CoreTheme.light(),
+  darkTheme: CoreTheme.dark(),
+  themeMode: ThemeMode.system, // or .light / .dark
+);
+```
+
+Components that access tokens via `Theme.of(context).extension<AppColorsExtension>()!` and `Theme.of(context).extension<AppTypographyExtension>()!` adapt automatically. Never read tokens from static constants — they are frozen to light-mode values and will not update.
 
 ### Loading Animations
 
