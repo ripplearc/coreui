@@ -89,6 +89,7 @@ class CoreSelectButton extends StatelessWidget {
   }) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Semantics(
       selected: selected,
@@ -117,7 +118,9 @@ class CoreSelectButton extends StatelessWidget {
               label,
               style: selected
                   ? typography.bodyMediumSemiBold.copyWith(
-                      color: colors.textHeadline,
+                      // tabsHighlight is bright cyan in both modes; use dark text
+                      // in dark mode (textInverse = gray900) so it passes contrast.
+                      color: isDark ? colors.textInverse : colors.textHeadline,
                     )
                   : typography.bodyMediumRegular.copyWith(
                       color: colors.textBody,

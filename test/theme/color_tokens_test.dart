@@ -212,4 +212,121 @@ void main() {
       matchesGoldenFile('goldens/core_color_tokens.png'),
     );
   });
+
+  testWidgets('Core Dark Color Tokens Golden Test', (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 2700));
+
+    final widget = MaterialApp(
+      home: Scaffold(
+        backgroundColor: CoreDarkBackgroundColors.pageBackground,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildColorGrid('Text Colors', [
+                const MapEntry('headline', CoreDarkTextColors.headline),
+                const MapEntry('dark', CoreDarkTextColors.dark),
+                const MapEntry('body', CoreDarkTextColors.body),
+                const MapEntry('disable', CoreDarkTextColors.disable),
+                const MapEntry('inverse', CoreDarkTextColors.inverse),
+                const MapEntry('link', CoreDarkTextColors.link),
+                const MapEntry('info', CoreDarkTextColors.info),
+                const MapEntry('warning', CoreDarkTextColors.warning),
+                const MapEntry('error', CoreDarkTextColors.error),
+                const MapEntry('success', CoreDarkTextColors.success),
+              ]),
+              buildColorGrid('Background Colors', [
+                const MapEntry('pageBackground', CoreDarkBackgroundColors.pageBackground),
+                const MapEntry('backgroundGrayLight', CoreDarkBackgroundColors.backgroundGrayLight),
+                const MapEntry('backgroundGrayMid', CoreDarkBackgroundColors.backgroundGrayMid),
+                const MapEntry('backgroundBlueLight', CoreDarkBackgroundColors.backgroundBlueLight),
+                const MapEntry('backgroundBlueMid', CoreDarkBackgroundColors.backgroundBlueMid),
+                const MapEntry('backgroundGreenLight', CoreDarkBackgroundColors.backgroundGreenLight),
+                const MapEntry('backgroundGreenMid', CoreDarkBackgroundColors.backgroundGreenMid),
+                const MapEntry('backgroundRedLight', CoreDarkBackgroundColors.backgroundRedLight),
+                const MapEntry('backgroundRedMid', CoreDarkBackgroundColors.backgroundRedMid),
+                const MapEntry('backgroundOrangeLight', CoreDarkBackgroundColors.backgroundOrangeLight),
+                const MapEntry('backgroundOrangeMid', CoreDarkBackgroundColors.backgroundOrangeMid),
+                const MapEntry('backgroundDarkGray', CoreDarkBackgroundColors.backgroundDarkGray),
+                const MapEntry('backgroundDarkOrient', CoreDarkBackgroundColors.backgroundDarkOrient),
+                const MapEntry('backgroundOrientLight', CoreDarkBackgroundColors.backgroundOrientLight),
+                const MapEntry('backgroundOrientMid', CoreDarkBackgroundColors.backgroundOrientMid),
+              ]),
+              buildColorGrid('Border Colors', [
+                const MapEntry('lineLight', CoreDarkBorderColors.lineLight),
+                const MapEntry('lineMid', CoreDarkBorderColors.lineMid),
+                const MapEntry('lineDarkOutline', CoreDarkBorderColors.lineDarkOutline),
+                const MapEntry('lineHighlight', CoreDarkBorderColors.lineHighlight),
+                const MapEntry('outlineHover', CoreDarkBorderColors.outlineHover),
+                const MapEntry('outlineFocus', CoreDarkBorderColors.outlineFocus),
+                const MapEntry('tabsHighlight', CoreDarkBorderColors.tabsHighlight),
+              ]),
+              buildColorGrid('Status Colors', [
+                const MapEntry('error', CoreDarkStatusColors.error),
+                const MapEntry('success', CoreDarkStatusColors.success),
+              ]),
+              buildColorGrid('Keyboard Colors', [
+                const MapEntry('numbers', CoreDarkKeyboardColors.numbers),
+                const MapEntry('calculate', CoreDarkKeyboardColors.calculate),
+                const MapEntry('units', CoreDarkKeyboardColors.units),
+                const MapEntry('functions', CoreDarkKeyboardColors.functions),
+                const MapEntry('actions', CoreDarkKeyboardColors.actions),
+                const MapEntry('main', CoreDarkKeyboardColors.main),
+              ]),
+              buildColorGrid('Icon Colors', [
+                const MapEntry('dark', CoreDarkIconColors.dark),
+                const MapEntry('grayDark', CoreDarkIconColors.grayDark),
+                const MapEntry('grayMid', CoreDarkIconColors.grayMid),
+                const MapEntry('grayLight', CoreDarkIconColors.grayLight),
+                const MapEntry('white', CoreDarkIconColors.white),
+                const MapEntry('red', CoreDarkIconColors.red),
+                const MapEntry('orient', CoreDarkIconColors.orient),
+                const MapEntry('orange', CoreDarkIconColors.orange),
+                const MapEntry('blue', CoreDarkIconColors.blue),
+                const MapEntry('green', CoreDarkIconColors.green),
+              ]),
+              buildColorGrid('Chip Colors', [
+                const MapEntry('grey', CoreDarkChipColors.gray),
+                const MapEntry('primary', CoreDarkChipColors.primary),
+                const MapEntry('red', CoreDarkChipColors.red),
+                const MapEntry('orange', CoreDarkChipColors.orange),
+                const MapEntry('blue', CoreDarkChipColors.blue),
+                const MapEntry('green', CoreDarkChipColors.green),
+              ]),
+              buildColorGrid('Button Colors', [
+                const MapEntry('surface', CoreDarkButtonColors.surface),
+                const MapEntry('hover', CoreDarkButtonColors.hover),
+                const MapEntry('press', CoreDarkButtonColors.press),
+                const MapEntry('disable', CoreDarkButtonColors.disable),
+              ]),
+              buildColorGrid('Alert Colors', [
+                const MapEntry('red', CoreDarkAlertColors.red),
+                const MapEntry('orange', CoreDarkAlertColors.orange),
+                const MapEntry('blue', CoreDarkAlertColors.blue),
+                const MapEntry('green', CoreDarkAlertColors.green),
+              ]),
+              buildColorGrid('Shadow Colors', [
+                MapEntry('shadowGrey3', CoreShadowColors.shadowGrey3),
+                MapEntry('shadowGrey5', CoreShadowColors.shadowGrey5),
+                MapEntry('shadowGrey6', CoreShadowColors.shadowGrey6),
+                MapEntry('shadowGrey7', CoreShadowColors.shadowGrey7),
+                MapEntry('shadowGrey8', CoreShadowColors.shadowGrey8),
+                MapEntry('shadowGrey10', CoreShadowColors.shadowGrey10),
+                MapEntry('shadowGrey18', CoreShadowColors.shadowGrey18),
+              ]),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_dark_color_tokens.png'),
+    );
+  });
 }
