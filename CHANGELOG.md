@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.1] - Dart 3.8 compatibility patch
+
+### 🔧 Fixes
+
+- **Dependency constraints loosened for Dart 3.8 compatibility**
+  - `flutter_svg`: `^2.3.0` → `^2.2.3` — 2.3.0 requires Dart ≥3.9.0; 2.2.3 is the last release compatible with Dart 3.8. No coreui APIs from 2.3.0 are used.
+  - `lottie`: `^3.4.0` → `^3.3.1` — same reason; only `Lottie.asset()` with stable params is used.
+  - `ripplearc_linter` moved from `dependencies` to `dev_dependencies` — the linter has no runtime role and should never have been a transitive dependency for consumers; this was causing `analyzer ^8.4.0` to cascade to every app using coreui, breaking build tooling on Dart 3.8.
+
 ## [0.9.0] - Dark theme
 
 ### ✨ Features

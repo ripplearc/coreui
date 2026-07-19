@@ -396,7 +396,7 @@ packages:
     source: hosted
     version: "1.5.0"
   ripplearc_linter:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: ripplearc_linter
       sha256: "50ce3c7666b82c99f00caad7371dd80462ac30101eacf338c85333b6ade78e2e"
