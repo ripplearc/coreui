@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.0] - Search & Filter Components
+
+### ✨ Features
+
+- **UI Components**
+  - **CoreDateFilterChip**: Filter chip for a date-range filter. With no selection it renders a plain `CoreFilterChip` that opens a `CoreDateRangeSheet` on tap; with a selection it renders an active pill showing the formatted range with a clear ×. Surface-agnostic: each caller supplies its own label, accessibility labels, and widget keys.
+  - **CoreDateRangeSheet**: Modal bottom sheet for picking an inclusive, whole-calendar-day `DateRange`. Offers predefined ranges (Today, Last 7 days, Last 30 days, This month) plus a Custom range option that opens `CoreDatePicker` twice — once for the start date, once for the end date. Resolves with the chosen `DateRange`, or `null` on cancel/dismiss.
+  - **CoreMultiSelectSheet**: Modal bottom sheet body for selecting multiple values from a searchable list of `{id, label}` items. The caller supplies the (already filtered) list and reacts to search and apply callbacks; present it with `CoreQuickSheet.show`.
+  - **DateRange**: Value type representing an inclusive calendar-day range, shared by the date filter components.
+  - All three components ship with showcase screens, widget tests, accessibility tests, and light + dark golden tests.
+
 ## [0.9.1] - Dart 3.8 compatibility patch
 
 ### 🔧 Fixes
