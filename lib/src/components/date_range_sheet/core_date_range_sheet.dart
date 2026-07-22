@@ -2,21 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
 
-/// The selectable options of a [CoreDateRangeSheet].
 enum _PredefinedRange {
-  /// Today only (start == end == today).
   today,
-
-  /// The last 7 days, ending today.
   last7Days,
-
-  /// The last 30 days, ending today.
   last30Days,
-
-  /// From the 1st of the current month through today.
   thisMonth,
-
-  /// A user-picked start/end chosen via two [CoreDatePicker]s.
   custom,
 }
 

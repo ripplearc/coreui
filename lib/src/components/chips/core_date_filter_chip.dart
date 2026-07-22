@@ -167,6 +167,8 @@ class CoreDateFilterChip extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
+    // TODO: [CA-830] Replace this hand-built active pill with a chip-family
+    // primitive (e.g. a CoreInputChip variant with whole-chip tap-to-remove).
     return Semantics(
       label: clearSemanticLabel,
       button: true,
