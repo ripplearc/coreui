@@ -11,6 +11,7 @@ class CoreFilterChip extends StatelessWidget {
     super.key,
     required this.label,
     this.onTap,
+    this.semanticLabel,
   });
 
   /// The text label displayed inside the chip.
@@ -19,6 +20,9 @@ class CoreFilterChip extends StatelessWidget {
   /// Called when the chip is tapped. If null, the chip is non-interactive.
   final VoidCallback? onTap;
 
+  /// Accessibility label for the chip. Defaults to [label].
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -26,7 +30,7 @@ class CoreFilterChip extends StatelessWidget {
     final isEnabled = onTap != null;
 
     return Semantics(
-      label: label,
+      label: semanticLabel ?? label,
       button: isEnabled,
       enabled: isEnabled,
       child: GestureDetector(

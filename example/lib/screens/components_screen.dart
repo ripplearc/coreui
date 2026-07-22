@@ -3,11 +3,14 @@ import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/calculator_chip_showcase_screen.dart';
 import 'package:example/screens/check_row_item_showcase_screen.dart';
 import 'package:example/screens/chip_showcase_screen.dart';
+import 'package:example/screens/date_filter_chip_showcase_screen.dart';
 import 'package:example/screens/date_picker_showcase_screen.dart';
+import 'package:example/screens/date_range_sheet_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
+import 'package:example/screens/multi_select_sheet_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
 import 'package:example/screens/search/search_row_item_screen.dart';
 import 'package:example/screens/search_box_showcase_screen.dart';
@@ -180,6 +183,24 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Date Picker Component',
                 const DatePickerShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Date Filter Chip Component',
+                const DateFilterChipShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Date Range Sheet Component',
+                const DateRangeSheetShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Multi Select Sheet Component',
+                const MultiSelectSheetShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
