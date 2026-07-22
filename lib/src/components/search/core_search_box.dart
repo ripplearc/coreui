@@ -6,7 +6,7 @@ import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
-/// A borderless search input field with a built-in search icon and a clear button.
+/// A borderless search input field with a clear button.
 ///
 /// Unlike [CoreTextField], [CoreSearchBox] has no visible border — it is intended
 /// for use as a global or in-page search bar where a flat appearance is preferred.
@@ -160,15 +160,6 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
         ),
         fillColor: isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
         filled: true,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
-          child: CoreIconWidget(
-            icon: CoreIcons.search,
-            size: _iconSize,
-            color: isDisabled ? colors.textDisable : colors.iconGrayMid,
-          ),
-        ),
-        prefixIconConstraints: BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
         suffixIcon: _hasText && !isDisabled
             ? Semantics(
                 button: true,
