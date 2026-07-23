@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.2] - Accessibility
+
+### ✨ Features
+
+- **CoreInputChip**: add optional `removeSemanticLabel` for a localizable remove-button announcement; when null, keeps the default `'Remove <label>'` English label
+
 ## [0.10.1] - Dark-mode contrast fixes
 
 ### 🔧 Fixes

@@ -21,6 +21,7 @@ class CoreInputChip extends StatelessWidget {
     super.key,
     required this.label,
     this.onRemove,
+    this.removeSemanticLabel,
   });
 
   /// The text token displayed inside the chip.
@@ -31,6 +32,16 @@ class CoreInputChip extends StatelessWidget {
   /// When null, the remove button is not rendered and the chip becomes
   /// display-only (e.g. a locked token in a viewer role).
   final VoidCallback? onRemove;
+
+  /// Semantic label for the remove button.
+  ///
+  /// Callers should pass a localized string. When null, defaults to
+  /// `'Remove $label'` in English.
+  ///
+  /// Include the chip's [label] in the string (e.g. via a parameterized
+  /// translation such as `'Remove {label}'`); a generic label like 'Remove'
+  /// makes every chip in a list announce identically to screen readers.
+  final String? removeSemanticLabel;
 
   /// Key used for the remove button inside the chip.
   ///
@@ -72,7 +83,7 @@ class CoreInputChip extends StatelessWidget {
             if (onRemove != null) ...[
               const SizedBox(width: CoreSpacing.space2),
               Semantics(
-                label: 'Remove $label',
+                label: removeSemanticLabel ?? 'Remove $label',
                 button: true,
                 child: GestureDetector(
                   key: removeButtonKey,

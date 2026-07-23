@@ -19,5 +19,22 @@ void main() {
         find.byKey(CoreInputChip.removeButtonKey),
       );
     });
+
+    testWidgets(
+      'remove button meets guidelines with a custom removeSemanticLabel in both themes',
+      (tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => CoreInputChip(
+            label: 'alice@example.com',
+            onRemove: () {},
+            removeSemanticLabel: 'Supprimer alice@example.com',
+          ),
+          find.byKey(CoreInputChip.removeButtonKey),
+        );
+      },
+    );
   });
 }
