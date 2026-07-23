@@ -35,7 +35,9 @@ class _SizeCard extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(vertical: CoreSpacing.space2),
       decoration: BoxDecoration(
-        color: colors.buttonInverse,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? colors.backgroundGrayLight
+            : colors.buttonInverse,
         borderRadius: BorderRadius.circular(CoreSpacing.space2),
         boxShadow: CoreShadows.small,
         border: isHighlighted
@@ -74,9 +76,7 @@ class _SizeCard extends StatelessWidget {
                     child: Text(
                       entry.value,
                       style: typography.bodyMediumMedium.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? colors.textInverse
-                            : colors.textDark,
+                        color: colors.textDark,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
