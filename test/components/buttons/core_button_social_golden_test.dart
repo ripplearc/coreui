@@ -17,7 +17,12 @@ void main() {
     await loadFonts();
   });
 
-  Future<void> pumpSocialButton(WidgetTester tester, ThemeData theme) async {
+  Future<void> pumpSocialButton(
+    WidgetTester tester,
+    ThemeData theme, {
+    required String label,
+    required CoreIconData icon,
+  }) async {
     final colors = theme.coreColors;
 
     tester.view.physicalSize = const Size(800, 300);
@@ -34,12 +39,12 @@ void main() {
             child: Padding(
               padding: const EdgeInsets.all(CoreSpacing.space6),
               child: CoreButton(
-                label: 'Continue with Google',
+                label: label,
                 variant: CoreButtonVariant.social,
                 size: CoreButtonSize.large,
                 onPressed: () {},
                 icon: CoreIconWidget(
-                  icon: CoreIcons.google,
+                  icon: icon,
                   size: CoreSpacing.space6,
                 ),
               ),
@@ -53,8 +58,13 @@ void main() {
     await tester.awaitImages();
   }
 
-  testWidgets('CoreButton social variant — light theme', (tester) async {
-    await pumpSocialButton(tester, _withRoboto(CoreTheme.light()));
+  testWidgets('CoreButton social variant Google — light theme', (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.light()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+    );
 
     await expectLater(
       find.byType(MaterialApp),
@@ -62,12 +72,45 @@ void main() {
     );
   });
 
-  testWidgets('CoreButton social variant — dark theme', (tester) async {
-    await pumpSocialButton(tester, _withRoboto(CoreTheme.dark()));
+  testWidgets('CoreButton social variant Google — dark theme', (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.dark()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+    );
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_button_social_dark.png'),
+    );
+  });
+
+  testWidgets('CoreButton social variant Apple — light theme', (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.light()),
+      label: 'Continue with Apple',
+      icon: CoreIcons.apple,
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_apple_light.png'),
+    );
+  });
+
+  testWidgets('CoreButton social variant Apple — dark theme', (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.dark()),
+      label: 'Continue with Apple',
+      icon: CoreIcons.apple,
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_apple_dark.png'),
     );
   });
 }
