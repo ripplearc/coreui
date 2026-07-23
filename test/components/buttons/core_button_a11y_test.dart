@@ -188,5 +188,23 @@ void main() {
         find.byType(CoreButton),
       );
     });
+
+    testWidgets('social button meets contrast guidelines in light and dark',
+        (tester) async {
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (_) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: CoreButton(
+            label: 'Continue with Google',
+            onPressed: () {},
+            variant: CoreButtonVariant.social,
+            size: CoreButtonSize.large,
+          ),
+        ),
+        find.byType(CoreButton),
+      );
+    });
   });
 }
