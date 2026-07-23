@@ -52,7 +52,9 @@ class _DimensionCard extends StatelessWidget {
             Text(
               data.value,
               style: typography.bodyMediumSemiBold.copyWith(
-                color: colors.textDark,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? colors.textInverse
+                    : colors.textDark,
               ),
             ),
           ],

@@ -157,6 +157,7 @@ class _CoreButtonState extends State<CoreButton> {
     required bool isEnabled,
     required CoreButtonVariant variant,
     required AppColorsExtension colors,
+    required bool isDark,
   }) {
     if (!isEnabled) {
       return variant == CoreButtonVariant.secondary
@@ -173,7 +174,7 @@ class _CoreButtonState extends State<CoreButton> {
                 ? colors.buttonHover
                 : colors.buttonSurface;
       case CoreButtonVariant.social:
-        return colors.textHeadline;
+        return isDark ? colors.textInverse : colors.textHeadline;
     }
   }
 
@@ -182,6 +183,7 @@ class _CoreButtonState extends State<CoreButton> {
     if (child != null) return child;
 
     final typography = Theme.of(context).coreTypography;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final label = widget.label;
 
     return Text(
@@ -191,6 +193,7 @@ class _CoreButtonState extends State<CoreButton> {
           isEnabled: isEnabled,
           variant: widget.variant,
           colors: colors,
+          isDark: isDark,
         ),
       ),
       overflow: TextOverflow.ellipsis,

@@ -74,7 +74,9 @@ class _SizeCard extends StatelessWidget {
                     child: Text(
                       entry.value,
                       style: typography.bodyMediumMedium.copyWith(
-                        color: colors.textDark,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? colors.textInverse
+                            : colors.textDark,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
