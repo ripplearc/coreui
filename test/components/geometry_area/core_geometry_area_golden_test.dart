@@ -318,7 +318,8 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Geometry Area (Dark)'),
+            const Text('Geometry Area (Dark)',
+                style: TextStyle(color: Colors.white)),
             const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
@@ -372,7 +373,8 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Geometry Area (Expanded, Dark)'),
+            const Text('Geometry Area (Expanded, Dark)',
+                style: TextStyle(color: Colors.white)),
             const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
