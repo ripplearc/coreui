@@ -6,7 +6,7 @@ import '../../load_fonts.dart';
 
 ThemeData _withRoboto(ThemeData base) {
   return base.copyWith(
-    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+    textTheme: base.textTheme.apply(fontFamily: 'Roboto'),
   );
 }
 
@@ -318,8 +318,7 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Geometry Area (Dark)',
-                style: TextStyle(color: Colors.white)),
+            const Text('Geometry Area (Dark)'),
             const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
@@ -373,8 +372,7 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Geometry Area (Expanded, Dark)',
-                style: TextStyle(color: Colors.white)),
+            const Text('Geometry Area (Expanded, Dark)'),
             const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
