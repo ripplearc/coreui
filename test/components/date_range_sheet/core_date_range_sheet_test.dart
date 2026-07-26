@@ -9,6 +9,15 @@ class _ResultHolder {
   bool resolved = false;
 }
 
+Object? _radioGroupValue(WidgetTester tester, Key tileKey) {
+  final finder = find.ancestor(
+    of: find.byKey(tileKey),
+    matching: find.byWidgetPredicate((w) => w is RadioGroup),
+  );
+  // ignore: avoid_dynamic_calls
+  return (tester.firstWidget(finder) as dynamic).groupValue as Object?;
+}
+
 void main() {
   // Fixed mid-month "today" so range math and the custom-picker flows are
   // deterministic regardless of the real clock, timezone, or DST.
@@ -67,7 +76,7 @@ void main() {
       final todayTile = tester.widget<RadioListTile<Object?>>(
         find.byKey(const Key('date_range_option_today')),
       );
-      expect(todayTile.groupValue, todayTile.value);
+      expect(_radioGroupValue(tester, const Key('date_range_option_today')), todayTile.value);
     });
 
     testWidgets('applying Today resolves with start == end == today', (
@@ -157,7 +166,7 @@ void main() {
         final customTile = tester.widget<RadioListTile<Object?>>(
           find.byKey(const Key('date_range_option_custom')),
         );
-        expect(customTile.groupValue, customTile.value);
+        expect(_radioGroupValue(tester, const Key('date_range_option_custom')), customTile.value);
 
         await tester.tap(find.byKey(const Key('date_range_apply_button')));
         await tester.pumpAndSettle();
@@ -182,7 +191,7 @@ void main() {
         final todayTile = tester.widget<RadioListTile<Object?>>(
           find.byKey(const Key('date_range_option_today')),
         );
-        expect(todayTile.groupValue, todayTile.value);
+        expect(_radioGroupValue(tester, const Key('date_range_option_today')), todayTile.value);
       },
     );
 
@@ -214,7 +223,7 @@ void main() {
       final customTile = tester.widget<RadioListTile<Object?>>(
         find.byKey(const Key('date_range_option_custom')),
       );
-      expect(customTile.groupValue, customTile.value);
+      expect(_radioGroupValue(tester, const Key('date_range_option_custom')), customTile.value);
     });
 
     testWidgets(
@@ -252,7 +261,7 @@ void main() {
         final todayTile = tester.widget<RadioListTile<Object?>>(
           find.byKey(const Key('date_range_option_today')),
         );
-        expect(todayTile.groupValue, todayTile.value);
+        expect(_radioGroupValue(tester, const Key('date_range_option_today')), todayTile.value);
 
         await tester.tap(find.byKey(const Key('date_range_apply_button')));
         await tester.pumpAndSettle();

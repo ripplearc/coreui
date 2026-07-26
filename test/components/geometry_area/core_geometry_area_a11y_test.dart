@@ -34,6 +34,30 @@ void main() {
       );
     });
 
+    testWidgets(
+        'DimensionCard and SizeCard text meets contrast guidelines in both themes',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester, screenSize: const Size(1100, 1600));
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (_) => CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          dimensions: [
+            const CoreDimensionData(label: 'Area', value: '50.27ft²'),
+          ],
+          sizesTableTitles: const ['area', 'volume'],
+          sizesTableData: const [
+            CoreSizeCardData(id: '1', values: ['10', '20']),
+          ],
+        ),
+        find.byType(CoreGeometryArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+      );
+    });
+
     testWidgets('text elements expose correct semantics and meet guidelines',
         (WidgetTester tester) async {
       await setTestViewport(tester);

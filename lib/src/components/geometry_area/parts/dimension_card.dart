@@ -21,7 +21,9 @@ class _DimensionCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2),
         decoration: BoxDecoration(
-          color: colors.buttonInverse,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? colors.backgroundGrayLight
+              : colors.buttonInverse,
           borderRadius: BorderRadius.circular(CoreSpacing.space2),
           boxShadow: CoreShadows.small,
         ),
