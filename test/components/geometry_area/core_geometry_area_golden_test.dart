@@ -33,8 +33,8 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Geometry Area'),
-            SizedBox(height: CoreSpacing.space8),
+            const Text('Geometry Area'),
+            const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
@@ -50,7 +50,7 @@ void main() {
                 CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
                 CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
               ],
-              dimensions: [
+              dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
                 CoreDimensionData(label: 'Radius', value: '4ft'),
@@ -88,8 +88,8 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Geometry Area (Expanded)'),
-            SizedBox(height: CoreSpacing.space8),
+            const Text('Geometry Area (Expanded)'),
+            const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
@@ -105,7 +105,7 @@ void main() {
                 CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
                 CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
               ],
-              dimensions: [
+              dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
                 CoreDimensionData(label: 'Radius', value: '4ft'),
@@ -144,8 +144,8 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Geometry Area (Dragging)'),
-            SizedBox(height: CoreSpacing.space8),
+            const Text('Geometry Area (Dragging)'),
+            const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
@@ -155,7 +155,7 @@ void main() {
                 'Rails /section',
                 'O.C.',
               ],
-              sizesTableData: [
+              sizesTableData: const [
                 CoreSizeCardData(id: '1', values: ['2', '6']),
                 CoreSizeCardData(id: '2', values: ['3', '6']),
               ],
@@ -203,24 +203,24 @@ void main() {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Geometry Area (Deleting)'),
-            SizedBox(height: CoreSpacing.space8),
+            const Text('Geometry Area (Deleting)'),
+            const SizedBox(height: CoreSpacing.space8),
             CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: false,
               sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: [
+              sizesTableTitles: const [
                 'Rails /section',
                 'O.C.',
                 'No. of posts',
                 'No. of rails',
               ],
-              sizesTableData: [
+              sizesTableData: const [
                 CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
                 CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
               ],
-              dimensions: [
+              dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
                 CoreDimensionData(label: 'Radius', value: '4ft'),
