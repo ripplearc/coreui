@@ -231,8 +231,6 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   _NavLayout _computeLayout(double maxWidth) {
     final n = widget.tabs.length;
 
-    // N-dependent base widths derived from fixed Figma spec values.
-    // baseTabRowWidth accounts for 1 active tab + (N-1) inactive tabs + (N-1) gaps + horizontal padding.
     final baseTabRowWidth =
         2 * _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad +
             _BaseBottomNavBarDimensions.baseActiveTabWidth +
@@ -363,9 +361,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
               CoreIconWidget(
                 icon: widget.tabs[index].icon,
                 size: layout.iconSize,
-                color: isActive
-                    ? colors.iconDark
-                    : colors.iconGrayMid,
+                color: isActive ? colors.iconDark : colors.iconWhite,
               ),
               Flexible(
                 child: AnimatedSwitcher(
@@ -393,7 +389,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                             softWrap: false,
                             style: typography.bodySmallMedium.copyWith(
                               fontSize: layout.labelFontSize,
-                              color: colors.iconDark,
+                              color: colors.textLink,
                             ),
                           ),
                         )
