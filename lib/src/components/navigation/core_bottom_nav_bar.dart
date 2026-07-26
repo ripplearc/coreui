@@ -292,7 +292,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       padding: EdgeInsets.symmetric(horizontal: layout.barHorizontalPad),
       decoration: BoxDecoration(
         color: colors.backgroundDarkGray,
-        borderRadius: BorderRadius.circular(60),
+        borderRadius: BorderRadius.circular(layout.pillRadius),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
