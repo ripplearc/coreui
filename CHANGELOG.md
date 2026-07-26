@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.11.0] - Parameterize CoreBottomNavBar for 2–4 tabs
+
+### ✨ Features
+
+- **CoreBottomNavBar**: now accepts 2–4 tabs (previously required exactly 4)
+  - Assert updated to `tabs.length >= 2 && tabs.length <= 4`
+  - Layout computation derives tab-row and nav-bar base widths dynamically from `tabs.length`, so pill, active-tab, and inactive-tab proportions are correct for any supported tab count
+  - 2-tab design verified against Figma spec (CA-874)
+  - Inactive tab icons corrected from `iconGrayMid` to `iconWhite` for contrast on dark track
+  - Active tab label uses `textLink` token (semantic fix; same hex value in all themes)
+  - Existing 4-tab layout unchanged; goldens regenerated for icon color fix
+
+### 🧪 Tests
+
+- Boundary assert tests: rejects < 2 tabs and > 4 tabs
+- 2-tab rendering tests: active label only visible, correct icon count
+- 2-tab interaction test: tap second tab fires `onTabSelected(1)`
+- New golden: `core_bottom_nav_bar_2tab_default.png`
+
 ## [0.10.2] - Accessibility
 
 ### ✨ Features
