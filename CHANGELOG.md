@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.1] - Dark-mode contrast fixes
+
+### 🔧 Fixes
+
+- **Accessibility / Dark mode**
+  - **CoreButton (social variant)**: background changed from `buttonInverse` (gray25 — near-white) to `backgroundSecondaryDark` in dark mode, preventing invisible content when text and icon tokens also resolve to near-white
+  - **DimensionCard**: same background-swap fix applied; card surface is now `backgroundSecondaryDark` in dark mode instead of `buttonInverse`
+  - **SizeCard**: same background-swap fix applied; card surface is now `backgroundSecondaryDark` in dark mode instead of `buttonInverse`
+  - All three fixes mirror the existing `CoreSelectButton` dark-mode guard pattern; contrast ratios now meet WCAG AA (≥ 4.5:1 for text, ≥ 3:1 for UI components)
+
+### 🧪 Tests
+
+- Social button: WCAG contrast a11y test + light & dark golden tests
+- DimensionCard / SizeCard: WCAG contrast a11y tests added to `core_geometry_area_a11y_test.dart`
+- Dark-mode golden tests added for `CoreGeometryArea` (collapsed and expanded)
+
 ## [0.10.0] - Search & Filter Components
 
 ### ✨ Features
