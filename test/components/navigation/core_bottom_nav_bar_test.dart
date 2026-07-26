@@ -15,7 +15,7 @@ const _tabs = <BottomNavTab>[
 ];
 
 const _tabs2 = <BottomNavTab>[
-  BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
+  BottomNavTab(icon: CoreIcons.calculation, label: 'Calculations'),
   BottomNavTab(icon: CoreIcons.cost, label: 'Estimates'),
 ];
 

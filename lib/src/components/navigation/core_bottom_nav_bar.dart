@@ -10,8 +10,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// ```dart
 /// // 2-tab variant
 /// const tabs = [
-///   BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
-///   BottomNavTab(icon: CoreIcons.cost,      label: 'Estimates'),
+///   BottomNavTab(icon: CoreIcons.calculation, label: 'Calculations'),
+///   BottomNavTab(icon: CoreIcons.cost,        label: 'Estimates'),
 /// ];
 ///
 /// // 4-tab variant
@@ -191,38 +191,38 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).coreColors;
 
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: appColors.pageBackground,
-        borderRadius: BorderRadius.circular(48),
-        boxShadow: [
-          BoxShadow(
-            color: appColors.shadowGrey6,
-            offset: const Offset(0, 2),
-            blurRadius: 4,
-            spreadRadius: -2,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final layout = _computeLayout(constraints.maxWidth - 16);
+        return Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: appColors.pageBackground,
+            borderRadius: BorderRadius.circular(layout.actionButtonSize),
+            boxShadow: [
+              BoxShadow(
+                color: appColors.shadowGrey6,
+                offset: const Offset(0, 2),
+                blurRadius: 4,
+                spreadRadius: -2,
+              ),
+              BoxShadow(
+                color: appColors.shadowGrey10,
+                offset: const Offset(0, 4),
+                blurRadius: 8,
+                spreadRadius: -2,
+              ),
+            ],
           ),
-          BoxShadow(
-            color: appColors.shadowGrey10,
-            offset: const Offset(0, 4),
-            blurRadius: 8,
-            spreadRadius: -2,
-          ),
-        ],
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final layout = _computeLayout(constraints.maxWidth);
-          return Row(
+          child: Row(
             children: [
               _buildNavTabRow(appColors, layout),
               SizedBox(width: layout.tabRowTrailingIconGap),
               _buildTrailingICon(appColors, layout),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -361,7 +361,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
               CoreIconWidget(
                 icon: widget.tabs[index].icon,
                 size: layout.iconSize,
-                color: isActive ? colors.iconDark : colors.iconWhite,
+                color: isActive ? colors.iconDark : colors.iconGrayMid,
               ),
               Flexible(
                 child: AnimatedSwitcher(
