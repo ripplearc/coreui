@@ -11,6 +11,11 @@ const List<BottomNavTab> _tabs = [
   BottomNavTab(icon: CoreIcons.members, label: 'Members'),
 ];
 
+const List<BottomNavTab> _tabs2 = [
+  BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
+  BottomNavTab(icon: CoreIcons.cost, label: 'Estimates'),
+];
+
 class _Harness extends StatelessWidget {
   const _Harness({
     required this.selectedIndex,
@@ -40,6 +45,33 @@ class _Harness extends StatelessWidget {
   }
 }
 
+class _Harness2Tab extends StatelessWidget {
+  const _Harness2Tab({required this.selectedIndex});
+
+  final int selectedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.create();
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: colors.pageBackground,
+        body: const SizedBox.shrink(),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(16),
+          child: CoreBottomNavBar(
+            tabs: _tabs2,
+            selectedIndex: selectedIndex,
+            onTabSelected: (_) {},
+            animationDuration: const Duration(milliseconds: 1),
+            onActionButtonPressed: () {},
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -47,13 +79,22 @@ void main() {
   });
 
   testWidgets('CoreBottomNavBar ', (tester) async {
-
     await tester.pumpWidget(const _Harness(selectedIndex: 0));
     await tester.pumpAndSettle();
 
     await expectLater(
       find.byType(CoreBottomNavBar),
       matchesGoldenFile('goldens/core_bottom_nav_bar_default.png'),
+    );
+  });
+
+  testWidgets('CoreBottomNavBar 2-tab default', (tester) async {
+    await tester.pumpWidget(const _Harness2Tab(selectedIndex: 0));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreBottomNavBar),
+      matchesGoldenFile('goldens/core_bottom_nav_bar_2tab_default.png'),
     );
   });
 }

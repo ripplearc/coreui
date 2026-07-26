@@ -8,6 +8,13 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 ///
 /// ### Example
 /// ```dart
+/// // 2-tab variant
+/// const tabs = [
+///   BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
+///   BottomNavTab(icon: CoreIcons.cost,      label: 'Estimates'),
+/// ];
+///
+/// // 4-tab variant
 /// const tabs = [
 ///   BottomNavTab(icon: CoreIcons.home,      label: 'Home'),
 ///   BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
@@ -28,13 +35,13 @@ class BottomNavTab {
   });
 }
 
-/// Bottom navigation bar with exactly four tabs and an optional trailing
-/// circular action button (e.g., a calculator shortcut).
+/// Bottom navigation bar with 2–4 tabs and an optional trailing circular
+/// action button (e.g., a calculator shortcut).
 ///
 /// This is a fully controlled widget:
 /// - The parent owns selection via [selectedIndex].
 /// - User interactions are reported via [onTabSelected].
-/// - [tabs] must contain exactly 4 items (enforced by assert).
+/// - [tabs] must contain between 2 and 4 items (enforced by assert).
 ///
 /// ### Behavior
 /// - A sliding “pill” animates beneath the active tab.
@@ -136,12 +143,12 @@ class BottomNavTab {
 /// ```
 
 class CoreBottomNavBar extends StatefulWidget {
-  /// The four tabs rendered by the navigation bar.
+  /// The tabs rendered by the navigation bar.
   ///
-  /// Must contain exactly 4 items; otherwise the widget asserts.
+  /// Must contain between 2 and 4 items; otherwise the widget asserts.
   final List<BottomNavTab> tabs;
 
-  /// The index (0–3) of the currently selected tab.
+  /// The index of the currently selected tab.
   ///
   /// This value is owned by the parent and should be updated when
   /// [onTabSelected] is invoked.
@@ -170,7 +177,10 @@ class CoreBottomNavBar extends StatefulWidget {
     required this.onTabSelected,
     this.animationDuration = const Duration(milliseconds: 600),
     this.onActionButtonPressed,
-  }) : assert(tabs.length == 4, 'CoreBottomNavBar supports exactly 4 tabs');
+  }) : assert(
+          tabs.length >= 2 && tabs.length <= 4,
+          'CoreBottomNavBar requires between 2 and 4 tabs',
+        );
 
   @override
   State<CoreBottomNavBar> createState() => _CoreBottomNavBarState();
@@ -219,44 +229,47 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   // --- Layout Computation ---
 
   _NavLayout _computeLayout(double maxWidth) {
-    final bottomNavBarWidth = maxWidth;
+    final n = widget.tabs.length;
 
-    final tabRowBarWidth = bottomNavBarWidth * _BottomNavBarRatios.tabRowWidth;
+    // N-dependent base widths derived from fixed Figma spec values.
+    // baseTabRowWidth accounts for 1 active tab + (N-1) inactive tabs + (N-1) gaps + horizontal padding.
+    final baseTabRowWidth =
+        2 * _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad +
+            _BaseBottomNavBarDimensions.baseActiveTabWidth +
+            (n - 1) * _BaseBottomNavBarDimensions.baseInactiveTabWidth +
+            (n - 1) * _BaseBottomNavBarDimensions.baseTabGap;
 
-    final tabRowTrailingIconGap =
-        bottomNavBarWidth * _BottomNavBarRatios.trailingIconGap;
+    final baseNavBarWidth = baseTabRowWidth +
+        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap +
+        _BaseBottomNavBarDimensions.baseActionButton;
+
+    final scale = maxWidth / baseNavBarWidth;
 
     final actionButtonSize =
-        bottomNavBarWidth * _BottomNavBarRatios.actionButtonSize;
-
+        _BaseBottomNavBarDimensions.baseActionButton * scale;
+    final tabRowBarWidth = baseTabRowWidth * scale;
+    final tabRowTrailingIconGap =
+        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap * scale;
     final barHorizontalPad =
-        tabRowBarWidth * _BottomNavBarRatios.barHorizontalPad;
-
-    final tabGap = tabRowBarWidth * _BottomNavBarRatios.tabGap;
-
+        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * scale;
+    final tabGap = _BaseBottomNavBarDimensions.baseTabGap * scale;
     final inactiveTabWidth =
-        tabRowBarWidth * _BottomNavBarRatios.inactiveTabWidth;
-
-    final activeTabWidth = tabRowBarWidth * _BottomNavBarRatios.activeTabWidth;
-
+        _BaseBottomNavBarDimensions.baseInactiveTabWidth * scale;
+    final activeTabWidth =
+        _BaseBottomNavBarDimensions.baseActiveTabWidth * scale;
     final tabHeight = actionButtonSize;
 
     final pillHeight = tabHeight * _BottomNavBarRatios.pillHeight;
-
     final pillRadius = tabHeight / 2;
-
     final iconSize = tabHeight * _BottomNavBarRatios.iconSize;
-
     final labelFontSize = tabHeight * _BottomNavBarRatios.labelFontSize;
-
     final tabInnerPad = tabHeight * _BottomNavBarRatios.tabInnerPad;
-
     final iconLabelGap = tabHeight * _BottomNavBarRatios.iconLabelGap;
 
     final pillLeft = widget.selectedIndex * (inactiveTabWidth + tabGap);
 
     return _NavLayout(
-      bottomNavBarWidth: bottomNavBarWidth,
+      bottomNavBarWidth: maxWidth,
       tabRowBarWidth: tabRowBarWidth,
       tabRowTrailingIconGap: tabRowTrailingIconGap,
       actionButtonSize: actionButtonSize,
@@ -416,11 +429,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   }
 }
 
-/// Design tokens / reference dimensions for the bottom navigation bar.
-/// Values are based on design specs (e.g., from Figma) and used for scaling.
+/// Fixed Figma spec dimensions shared across all tab counts.
+/// N-dependent widths (tab row, nav bar total) are derived dynamically in [_computeLayout].
 class _BaseBottomNavBarDimensions {
-  static const double baseBottomNavBarWidth = 328;
-  static const double baseTabRowWidth = 268;
   static const double baseActionButton = 52;
   static const double baseInactiveTabWidth = 40;
   static const double baseActiveTabWidth = 124;
@@ -435,33 +446,8 @@ class _BaseBottomNavBarDimensions {
   static const double baseIconLabelGap = 4;
 }
 
-/// Precomputed ratios to avoid repeated divisions at runtime.
+/// Ratios relative to tab height — N-independent, used in [_computeLayout].
 class _BottomNavBarRatios {
-  // Relative to bottom nav bar (content) width
-  static const double tabRowWidth =
-      _BaseBottomNavBarDimensions.baseTabRowWidth /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-  static const double trailingIconGap =
-      _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-  static const double actionButtonSize =
-      _BaseBottomNavBarDimensions.baseActionButton /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-
-  // Relative to tab row bar width
-  static const double barHorizontalPad =
-      _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double tabGap = _BaseBottomNavBarDimensions.baseTabGap /
-      _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double inactiveTabWidth =
-      _BaseBottomNavBarDimensions.baseInactiveTabWidth /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double activeTabWidth =
-      _BaseBottomNavBarDimensions.baseActiveTabWidth /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-
-  // Relative to tab height
   static const double pillHeight = _BaseBottomNavBarDimensions.basePillHeight /
       _BaseBottomNavBarDimensions.baseTabHeight;
   static const double iconSize = _BaseBottomNavBarDimensions.baseIconSize /
