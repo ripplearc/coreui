@@ -101,7 +101,7 @@ void main() {
 
   testWidgets('CoreKeyboard Collapsed UI Golden Test', (tester) async {
     final testGroups = [
-      FunctionGroup(
+      const FunctionGroup(
         name: basicGeometry,
         keys: [],
       ),

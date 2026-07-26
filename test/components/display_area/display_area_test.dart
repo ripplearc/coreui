@@ -652,7 +652,7 @@ void main() {
               dependentKeyLabel: 'O.C',
               dependentKeyValue: '16in',
               chipsList: [
-                CoreCalculatorChip(
+                const CoreCalculatorChip(
                   label: 'Length',
                   value: '16ft 14in',
                   type: CoreCalculatorChipType.editable,
@@ -660,7 +660,7 @@ void main() {
               ],
               onStageChanged: (stage) => stages.add(stage),
               previousSessions: [
-                CoreHistorySessionData(
+                const CoreHistorySessionData(
                   dateLabel: 'Previous',
                   chipsList: [],
                   value: '100',

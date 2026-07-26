@@ -96,7 +96,7 @@ void main() {
             body: CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
-              dimensions: [
+              dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
                 CoreDimensionData(label: 'Radius', value: '4ft'),

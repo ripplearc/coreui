@@ -181,7 +181,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
                 ),
               )
             : null,
-        suffixIconConstraints: BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
+        suffixIconConstraints: const BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,

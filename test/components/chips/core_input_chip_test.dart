@@ -1,5 +1,3 @@
-import 'package:flutter/semantics.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -79,7 +77,7 @@ void main() {
         final node = tester.getSemantics(
           find.byKey(CoreInputChip.removeButtonKey),
         );
-        expect(node.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(node.flagsCollection.isButton, isTrue);
         expect(node.label, contains('alice@example.com'));
 
         handle.dispose();
