@@ -231,31 +231,34 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   _NavLayout _computeLayout(double maxWidth) {
     final n = widget.tabs.length;
 
+    // Sizing scale: always uses the canonical 4-tab base width so that
+    // actionButtonSize, tabHeight, iconSize, and font stay constant for a
+    // given screen width regardless of tab count.
+    final scale = maxWidth / _BaseBottomNavBarDimensions.baseNavBarWidth4;
+
+    final actionButtonSize =
+        _BaseBottomNavBarDimensions.baseActionButton * scale;
+    final tabRowTrailingIconGap =
+        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap * scale;
+    final tabRowBarWidth = maxWidth - actionButtonSize - tabRowTrailingIconGap;
+    final tabHeight = actionButtonSize;
+
+    // Row scale: lets tab widths and gaps flex with tab count while keeping
+    // actionButtonSize/tabHeight/iconSize/font fixed.
     final baseTabRowWidth =
         2 * _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad +
             _BaseBottomNavBarDimensions.baseActiveTabWidth +
             (n - 1) * _BaseBottomNavBarDimensions.baseInactiveTabWidth +
             (n - 1) * _BaseBottomNavBarDimensions.baseTabGap;
+    final rowScale = tabRowBarWidth / baseTabRowWidth;
 
-    final baseNavBarWidth = baseTabRowWidth +
-        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap +
-        _BaseBottomNavBarDimensions.baseActionButton;
-
-    final scale = maxWidth / baseNavBarWidth;
-
-    final actionButtonSize =
-        _BaseBottomNavBarDimensions.baseActionButton * scale;
-    final tabRowBarWidth = baseTabRowWidth * scale;
-    final tabRowTrailingIconGap =
-        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap * scale;
     final barHorizontalPad =
-        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * scale;
-    final tabGap = _BaseBottomNavBarDimensions.baseTabGap * scale;
+        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * rowScale;
+    final tabGap = _BaseBottomNavBarDimensions.baseTabGap * rowScale;
     final inactiveTabWidth =
-        _BaseBottomNavBarDimensions.baseInactiveTabWidth * scale;
+        _BaseBottomNavBarDimensions.baseInactiveTabWidth * rowScale;
     final activeTabWidth =
-        _BaseBottomNavBarDimensions.baseActiveTabWidth * scale;
-    final tabHeight = actionButtonSize;
+        _BaseBottomNavBarDimensions.baseActiveTabWidth * rowScale;
 
     final pillHeight = tabHeight * _BottomNavBarRatios.pillHeight;
     final pillRadius = tabHeight / 2;
@@ -425,8 +428,6 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   }
 }
 
-/// Fixed Figma spec dimensions shared across all tab counts.
-/// N-dependent widths (tab row, nav bar total) are derived dynamically in [_computeLayout].
 class _BaseBottomNavBarDimensions {
   static const double baseActionButton = 52;
   static const double baseInactiveTabWidth = 40;
@@ -440,9 +441,18 @@ class _BaseBottomNavBarDimensions {
   static const double baseTabRowBarHorizontalPad = 6;
   static const double baseTabGap = 4;
   static const double baseIconLabelGap = 4;
+
+  // Canonical total width for n=4; used as the tab-count-independent
+  // reference so sizing (button, icon, font) is consistent on a given screen.
+  static const double baseNavBarWidth4 =
+      2 * baseTabRowBarHorizontalPad +
+      baseActiveTabWidth +
+      3 * baseInactiveTabWidth +
+      3 * baseTabGap +
+      baseTabRowTrailingIconGap +
+      baseActionButton;
 }
 
-/// Ratios relative to tab height — N-independent, used in [_computeLayout].
 class _BottomNavBarRatios {
   static const double pillHeight = _BaseBottomNavBarDimensions.basePillHeight /
       _BaseBottomNavBarDimensions.baseTabHeight;

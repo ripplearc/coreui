@@ -199,5 +199,20 @@ void main() {
         find.byType(CoreBottomNavBar),
       );
     });
+
+    testWidgets('2-tab: meets tap target, label and contrast guidelines', (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreBottomNavBar(
+          tabs: _tabs2,
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+          onActionButtonPressed: null,
+        ),
+        find.byType(CoreBottomNavBar),
+      );
+    });
   });
 }
