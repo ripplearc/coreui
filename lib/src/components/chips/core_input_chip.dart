@@ -21,6 +21,7 @@ class CoreInputChip extends StatelessWidget {
     super.key,
     required this.label,
     this.onRemove,
+    this.removeSemanticLabel,
   });
 
   /// The text token displayed inside the chip.
@@ -32,6 +33,17 @@ class CoreInputChip extends StatelessWidget {
   /// display-only (e.g. a locked token in a viewer role).
   final VoidCallback? onRemove;
 
+  /// Semantic label for the remove button.
+  ///
+  /// Callers should pass a localized string. When null or empty, defaults to
+  /// `'Remove $label'` in English — an empty string would otherwise produce a
+  /// silent screen-reader announcement for the remove button.
+  ///
+  /// Include the chip's [label] in the string (e.g. via a parameterized
+  /// translation such as `'Remove {label}'`); a generic label like 'Remove'
+  /// makes every chip in a list announce identically to screen readers.
+  final String? removeSemanticLabel;
+
   /// Key used for the remove button inside the chip.
   ///
   /// Use this in tests to locate the tap target:
@@ -42,6 +54,10 @@ class CoreInputChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+    final removeLabel = removeSemanticLabel;
+    final effectiveRemoveLabel = removeLabel == null || removeLabel.isEmpty
+        ? 'Remove $label'
+        : removeLabel;
 
     return Semantics(
       label: label,
@@ -72,7 +88,7 @@ class CoreInputChip extends StatelessWidget {
             if (onRemove != null) ...[
               const SizedBox(width: CoreSpacing.space2),
               Semantics(
-                label: 'Remove $label',
+                label: effectiveRemoveLabel,
                 button: true,
                 child: GestureDetector(
                   key: removeButtonKey,

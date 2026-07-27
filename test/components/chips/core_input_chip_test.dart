@@ -101,6 +101,76 @@ void main() {
         handle.dispose();
       });
 
+      testWidgets('custom removeSemanticLabel replaces the default label', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'alice@example.com',
+              onRemove: () {},
+              removeSemanticLabel: 'Supprimer alice@example.com',
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        final node = tester.getSemantics(
+          find.byKey(CoreInputChip.removeButtonKey),
+        );
+        expect(node.flagsCollection.isButton, isTrue);
+        expect(node.label.split('\n'), contains('Supprimer alice@example.com'));
+        expect(node.label, isNot(contains('Remove alice@example.com')));
+
+        handle.dispose();
+      });
+
+      testWidgets('default remove label is used when removeSemanticLabel is null', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(label: 'alice@example.com', onRemove: () {}),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        final node = tester.getSemantics(
+          find.byKey(CoreInputChip.removeButtonKey),
+        );
+        expect(node.label.split('\n'), contains('Remove alice@example.com'));
+
+        handle.dispose();
+      });
+
+      testWidgets('default remove label is used when removeSemanticLabel is empty', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'alice@example.com',
+              onRemove: () {},
+              removeSemanticLabel: '',
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        final node = tester.getSemantics(
+          find.byKey(CoreInputChip.removeButtonKey),
+        );
+        expect(node.label.split('\n'), contains('Remove alice@example.com'));
+
+        handle.dispose();
+      });
+
       testWidgets('exactly one semantic button node exists (the remove button)', (
         tester,
       ) async {
