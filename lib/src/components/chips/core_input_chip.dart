@@ -35,8 +35,9 @@ class CoreInputChip extends StatelessWidget {
 
   /// Semantic label for the remove button.
   ///
-  /// Callers should pass a localized string. When null, defaults to
-  /// `'Remove $label'` in English.
+  /// Callers should pass a localized string. When null or empty, defaults to
+  /// `'Remove $label'` in English — an empty string would otherwise produce a
+  /// silent screen-reader announcement for the remove button.
   ///
   /// Include the chip's [label] in the string (e.g. via a parameterized
   /// translation such as `'Remove {label}'`); a generic label like 'Remove'
@@ -53,6 +54,10 @@ class CoreInputChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+    final removeLabel = removeSemanticLabel;
+    final effectiveRemoveLabel = removeLabel == null || removeLabel.isEmpty
+        ? 'Remove $label'
+        : removeLabel;
 
     return Semantics(
       label: label,
@@ -83,7 +88,7 @@ class CoreInputChip extends StatelessWidget {
             if (onRemove != null) ...[
               const SizedBox(width: CoreSpacing.space2),
               Semantics(
-                label: removeSemanticLabel ?? 'Remove $label',
+                label: effectiveRemoveLabel,
                 button: true,
                 child: GestureDetector(
                   key: removeButtonKey,
