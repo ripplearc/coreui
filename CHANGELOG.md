@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.11.1] - CoreBottomNavBar action button semantic label
+
+### 🔧 Fixes
+
+- **CoreBottomNavBar**: adds `actionButtonSemanticLabel` parameter — when provided, the trailing circular action button is wrapped in a `Semantics` node so screen readers can announce it; when null (default) behavior is unchanged (backward compatible, no golden change)
+
+### 🧪 Tests
+
+- Semantics test: verifies label and `isButton` flag appear on the trailing button's semantics node
+- A11y test: confirms the labeled trailing button meets tap-target and label guidelines in both light and dark themes
+
 ## [0.11.0] - Parameterize CoreBottomNavBar for 2–4 tabs
 
 ### ✨ Features
