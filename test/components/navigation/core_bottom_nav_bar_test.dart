@@ -14,6 +14,11 @@ const _tabs = <BottomNavTab>[
   BottomNavTab(icon: CoreIcons.members, label: 'Members'),
 ];
 
+const _tabs2 = <BottomNavTab>[
+  BottomNavTab(icon: CoreIcons.calculation, label: 'Calculations'),
+  BottomNavTab(icon: CoreIcons.cost, label: 'Estimates'),
+];
+
 class _Harness extends StatelessWidget {
   const _Harness({
     required this.child,
@@ -60,10 +65,24 @@ void main() {
   });
 
   group('CoreBottomNavBar – API contract', () {
-    testWidgets('asserts exactly 4 tabs', (tester) async {
+    test('asserts on fewer than 2 tabs', () {
       expect(
         () => CoreBottomNavBar(
           tabs: const [BottomNavTab(icon: CoreIcons.home, label: 'Home')],
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('asserts on more than 4 tabs', () {
+      expect(
+        () => CoreBottomNavBar(
+          tabs: List.filled(
+            5,
+            const BottomNavTab(icon: CoreIcons.home, label: 'Home'),
+          ),
           selectedIndex: 0,
           onTabSelected: (_) {},
         ),
@@ -86,6 +105,38 @@ void main() {
       await _mount(tester, selectedIndex: 0);
 
       expect(find.byType(CoreIconWidget), findsNWidgets(5));
+    });
+
+    testWidgets('2-tab: shows only active label', (tester) async {
+      await tester.pumpWidget(
+        _Harness(
+          child: CoreBottomNavBar(
+            tabs: _tabs2,
+            selectedIndex: 0,
+            onTabSelected: (_) {},
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Calculations'), findsOneWidget);
+      expect(find.text('Estimates'), findsNothing);
+    });
+
+    testWidgets('2-tab: renders 2 tab icons + trailing action button', (tester) async {
+      await tester.pumpWidget(
+        _Harness(
+          child: CoreBottomNavBar(
+            tabs: _tabs2,
+            selectedIndex: 0,
+            onTabSelected: (_) {},
+            onActionButtonPressed: () {},
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byType(CoreIconWidget), findsNWidgets(3));
     });
   });
 
@@ -110,6 +161,25 @@ void main() {
 
       expect(fired, isTrue);
     });
+
+    testWidgets('2-tab: tapping second tab calls onTabSelected(1)', (tester) async {
+      int? tapped;
+      await tester.pumpWidget(
+        _Harness(
+          child: CoreBottomNavBar(
+            tabs: _tabs2,
+            selectedIndex: 0,
+            onTabSelected: (i) => tapped = i,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byType(InkWell).at(1));
+      await tester.pumpAndSettle();
+
+      expect(tapped, 1);
+    });
   });
 
   group('CoreBottomNavBar – accessibility', () {
@@ -122,6 +192,21 @@ void main() {
         tester,
         (theme) => CoreBottomNavBar(
           tabs: _tabs,
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+          onActionButtonPressed: null,
+        ),
+        find.byType(CoreBottomNavBar),
+      );
+    });
+
+    testWidgets('2-tab: meets tap target, label and contrast guidelines', (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreBottomNavBar(
+          tabs: _tabs2,
           selectedIndex: 0,
           onTabSelected: (_) {},
           onActionButtonPressed: null,

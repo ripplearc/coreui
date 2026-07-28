@@ -8,6 +8,13 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 ///
 /// ### Example
 /// ```dart
+/// // 2-tab variant
+/// const tabs = [
+///   BottomNavTab(icon: CoreIcons.calculation, label: 'Calculations'),
+///   BottomNavTab(icon: CoreIcons.cost,        label: 'Estimates'),
+/// ];
+///
+/// // 4-tab variant
 /// const tabs = [
 ///   BottomNavTab(icon: CoreIcons.home,      label: 'Home'),
 ///   BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
@@ -28,13 +35,13 @@ class BottomNavTab {
   });
 }
 
-/// Bottom navigation bar with exactly four tabs and an optional trailing
-/// circular action button (e.g., a calculator shortcut).
+/// Bottom navigation bar with 2–4 tabs and an optional trailing circular
+/// action button (e.g., a calculator shortcut).
 ///
 /// This is a fully controlled widget:
 /// - The parent owns selection via [selectedIndex].
 /// - User interactions are reported via [onTabSelected].
-/// - [tabs] must contain exactly 4 items (enforced by assert).
+/// - [tabs] must contain between 2 and 4 items (enforced by assert).
 ///
 /// ### Behavior
 /// - A sliding “pill” animates beneath the active tab.
@@ -136,12 +143,12 @@ class BottomNavTab {
 /// ```
 
 class CoreBottomNavBar extends StatefulWidget {
-  /// The four tabs rendered by the navigation bar.
+  /// The tabs rendered by the navigation bar.
   ///
-  /// Must contain exactly 4 items; otherwise the widget asserts.
+  /// Must contain between 2 and 4 items; otherwise the widget asserts.
   final List<BottomNavTab> tabs;
 
-  /// The index (0–3) of the currently selected tab.
+  /// The index of the currently selected tab.
   ///
   /// This value is owned by the parent and should be updated when
   /// [onTabSelected] is invoked.
@@ -170,7 +177,10 @@ class CoreBottomNavBar extends StatefulWidget {
     required this.onTabSelected,
     this.animationDuration = const Duration(milliseconds: 600),
     this.onActionButtonPressed,
-  }) : assert(tabs.length == 4, 'CoreBottomNavBar supports exactly 4 tabs');
+  }) : assert(
+          tabs.length >= 2 && tabs.length <= 4,
+          'CoreBottomNavBar requires between 2 and 4 tabs',
+        );
 
   @override
   State<CoreBottomNavBar> createState() => _CoreBottomNavBarState();
@@ -181,82 +191,86 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   Widget build(BuildContext context) {
     final appColors = Theme.of(context).coreColors;
 
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: appColors.pageBackground,
-        borderRadius: BorderRadius.circular(48),
-        boxShadow: [
-          BoxShadow(
-            color: appColors.shadowGrey6,
-            offset: const Offset(0, 2),
-            blurRadius: 4,
-            spreadRadius: -2,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final layout = _computeLayout(constraints.maxWidth - 16);
+        return Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: appColors.pageBackground,
+            borderRadius: BorderRadius.circular(layout.actionButtonSize),
+            boxShadow: [
+              BoxShadow(
+                color: appColors.shadowGrey6,
+                offset: const Offset(0, 2),
+                blurRadius: 4,
+                spreadRadius: -2,
+              ),
+              BoxShadow(
+                color: appColors.shadowGrey10,
+                offset: const Offset(0, 4),
+                blurRadius: 8,
+                spreadRadius: -2,
+              ),
+            ],
           ),
-          BoxShadow(
-            color: appColors.shadowGrey10,
-            offset: const Offset(0, 4),
-            blurRadius: 8,
-            spreadRadius: -2,
-          ),
-        ],
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final layout = _computeLayout(constraints.maxWidth);
-          return Row(
+          child: Row(
             children: [
               _buildNavTabRow(appColors, layout),
               SizedBox(width: layout.tabRowTrailingIconGap),
               _buildTrailingICon(appColors, layout),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
   // --- Layout Computation ---
 
   _NavLayout _computeLayout(double maxWidth) {
-    final bottomNavBarWidth = maxWidth;
+    final n = widget.tabs.length;
 
-    final tabRowBarWidth = bottomNavBarWidth * _BottomNavBarRatios.tabRowWidth;
-
-    final tabRowTrailingIconGap =
-        bottomNavBarWidth * _BottomNavBarRatios.trailingIconGap;
+    // Sizing scale: always uses the canonical 4-tab base width so that
+    // actionButtonSize, tabHeight, iconSize, and font stay constant for a
+    // given screen width regardless of tab count.
+    final scale = maxWidth / _BaseBottomNavBarDimensions.baseNavBarWidth4;
 
     final actionButtonSize =
-        bottomNavBarWidth * _BottomNavBarRatios.actionButtonSize;
-
-    final barHorizontalPad =
-        tabRowBarWidth * _BottomNavBarRatios.barHorizontalPad;
-
-    final tabGap = tabRowBarWidth * _BottomNavBarRatios.tabGap;
-
-    final inactiveTabWidth =
-        tabRowBarWidth * _BottomNavBarRatios.inactiveTabWidth;
-
-    final activeTabWidth = tabRowBarWidth * _BottomNavBarRatios.activeTabWidth;
-
+        _BaseBottomNavBarDimensions.baseActionButton * scale;
+    final tabRowTrailingIconGap =
+        _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap * scale;
+    final tabRowBarWidth = maxWidth - actionButtonSize - tabRowTrailingIconGap;
     final tabHeight = actionButtonSize;
 
+    // Row scale: lets tab widths and gaps flex with tab count while keeping
+    // actionButtonSize/tabHeight/iconSize/font fixed.
+    final baseTabRowWidth =
+        2 * _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad +
+            _BaseBottomNavBarDimensions.baseActiveTabWidth +
+            (n - 1) * _BaseBottomNavBarDimensions.baseInactiveTabWidth +
+            (n - 1) * _BaseBottomNavBarDimensions.baseTabGap;
+    final rowScale = tabRowBarWidth / baseTabRowWidth;
+
+    final barHorizontalPad =
+        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * rowScale;
+    final tabGap = _BaseBottomNavBarDimensions.baseTabGap * rowScale;
+    final inactiveTabWidth =
+        _BaseBottomNavBarDimensions.baseInactiveTabWidth * rowScale;
+    final activeTabWidth =
+        _BaseBottomNavBarDimensions.baseActiveTabWidth * rowScale;
+
     final pillHeight = tabHeight * _BottomNavBarRatios.pillHeight;
-
     final pillRadius = tabHeight / 2;
-
     final iconSize = tabHeight * _BottomNavBarRatios.iconSize;
-
     final labelFontSize = tabHeight * _BottomNavBarRatios.labelFontSize;
-
     final tabInnerPad = tabHeight * _BottomNavBarRatios.tabInnerPad;
-
     final iconLabelGap = tabHeight * _BottomNavBarRatios.iconLabelGap;
 
     final pillLeft = widget.selectedIndex * (inactiveTabWidth + tabGap);
 
     return _NavLayout(
-      bottomNavBarWidth: bottomNavBarWidth,
+      bottomNavBarWidth: maxWidth,
       tabRowBarWidth: tabRowBarWidth,
       tabRowTrailingIconGap: tabRowTrailingIconGap,
       actionButtonSize: actionButtonSize,
@@ -281,7 +295,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       padding: EdgeInsets.symmetric(horizontal: layout.barHorizontalPad),
       decoration: BoxDecoration(
         color: colors.backgroundDarkGray,
-        borderRadius: BorderRadius.circular(60),
+        borderRadius: BorderRadius.circular(layout.pillRadius),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -350,9 +364,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
               CoreIconWidget(
                 icon: widget.tabs[index].icon,
                 size: layout.iconSize,
-                color: isActive
-                    ? colors.iconDark
-                    : colors.iconGrayMid,
+                color: isActive ? colors.iconDark : colors.iconGrayMid,
               ),
               Flexible(
                 child: AnimatedSwitcher(
@@ -380,7 +392,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                             softWrap: false,
                             style: typography.bodySmallMedium.copyWith(
                               fontSize: layout.labelFontSize,
-                              color: colors.iconDark,
+                              color: colors.textLink,
                             ),
                           ),
                         )
@@ -416,11 +428,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   }
 }
 
-/// Design tokens / reference dimensions for the bottom navigation bar.
-/// Values are based on design specs (e.g., from Figma) and used for scaling.
 class _BaseBottomNavBarDimensions {
-  static const double baseBottomNavBarWidth = 328;
-  static const double baseTabRowWidth = 268;
   static const double baseActionButton = 52;
   static const double baseInactiveTabWidth = 40;
   static const double baseActiveTabWidth = 124;
@@ -433,35 +441,19 @@ class _BaseBottomNavBarDimensions {
   static const double baseTabRowBarHorizontalPad = 6;
   static const double baseTabGap = 4;
   static const double baseIconLabelGap = 4;
+
+  // Canonical total width for n=4; used as the tab-count-independent
+  // reference so sizing (button, icon, font) is consistent on a given screen.
+  static const double baseNavBarWidth4 =
+      2 * baseTabRowBarHorizontalPad +
+      baseActiveTabWidth +
+      3 * baseInactiveTabWidth +
+      3 * baseTabGap +
+      baseTabRowTrailingIconGap +
+      baseActionButton;
 }
 
-/// Precomputed ratios to avoid repeated divisions at runtime.
 class _BottomNavBarRatios {
-  // Relative to bottom nav bar (content) width
-  static const double tabRowWidth =
-      _BaseBottomNavBarDimensions.baseTabRowWidth /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-  static const double trailingIconGap =
-      _BaseBottomNavBarDimensions.baseTabRowTrailingIconGap /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-  static const double actionButtonSize =
-      _BaseBottomNavBarDimensions.baseActionButton /
-          _BaseBottomNavBarDimensions.baseBottomNavBarWidth;
-
-  // Relative to tab row bar width
-  static const double barHorizontalPad =
-      _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double tabGap = _BaseBottomNavBarDimensions.baseTabGap /
-      _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double inactiveTabWidth =
-      _BaseBottomNavBarDimensions.baseInactiveTabWidth /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-  static const double activeTabWidth =
-      _BaseBottomNavBarDimensions.baseActiveTabWidth /
-          _BaseBottomNavBarDimensions.baseTabRowWidth;
-
-  // Relative to tab height
   static const double pillHeight = _BaseBottomNavBarDimensions.basePillHeight /
       _BaseBottomNavBarDimensions.baseTabHeight;
   static const double iconSize = _BaseBottomNavBarDimensions.baseIconSize /
