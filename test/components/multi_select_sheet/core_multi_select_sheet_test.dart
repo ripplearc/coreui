@@ -190,6 +190,72 @@ void main() {
       expect(find.byType(CoreMultiSelectSheet), findsNothing);
     });
 
+    testWidgets(
+      'keeps the search field, list, and buttons visible above the keyboard',
+      (tester) async {
+        // Present through CoreQuickSheet.show — the real presentation path —
+        // because a plain Scaffold host would absorb the keyboard inset
+        // itself and hide the bug. 780x1688 physical at DPR 2.0 is a 390x844
+        // logical phone viewport.
+        tester.view.physicalSize = const Size(780, 1688);
+        tester.view.devicePixelRatio = 2.0;
+        addTearDown(() => tester.view.reset());
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light(),
+            home: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreQuickSheet.show<void>(
+                  context: context,
+                  child: CoreMultiSelectSheet(
+                    title: 'Filter by tag',
+                    searchHint: 'Search tags',
+                    emptyLabel: 'No tags found',
+                    initialSelectedIds: const {},
+                    listData: const CoreMultiSelectListData(
+                      isLoading: false,
+                      items: items,
+                    ),
+                    onSearchQueryChanged: (_) {},
+                    onApply: (_) {},
+                    itemKeyOf: (id) => Key('sheet_item_$id'),
+                    applyButtonKey: const Key('sheet_apply_button'),
+                  ),
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+
+        // Simulate the keyboard opening: 600 physical px = 300 logical.
+        tester.view.viewInsets = const FakeViewPadding(bottom: 600);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+
+        await tester.enterText(find.byType(TextFormField), 'Roof');
+        await tester.pump();
+
+        const keyboardTop = 844.0 - 300.0;
+        expect(
+          tester.getRect(find.byType(CoreTextField)).bottom,
+          lessThanOrEqualTo(keyboardTop),
+        );
+        expect(
+          tester.getRect(find.byKey(const Key('sheet_item_roofing'))).bottom,
+          lessThanOrEqualTo(keyboardTop),
+        );
+        expect(
+          tester.getRect(find.byKey(const Key('sheet_apply_button'))).bottom,
+          lessThanOrEqualTo(keyboardTop),
+        );
+      },
+    );
+
     testWidgets('the set passed to onApply is unmodifiable', (tester) async {
       final recorder = await pumpAndShow(tester);
 

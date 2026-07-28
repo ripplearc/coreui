@@ -41,6 +41,10 @@ class CoreMultiSelectListData {
 /// [listData] renders the title, search field, and action buttons with an
 /// empty list area, for callers whose state cannot provide a list yet.
 ///
+/// The sheet pads itself by the keyboard's view inset and lets the item list
+/// shrink, so the search field, list, and action buttons stay visible above
+/// the keyboard while the user types.
+///
 /// Present it with `CoreQuickSheet.show(context: context, child: ...)`.
 class CoreMultiSelectSheet extends StatefulWidget {
   /// Title shown at the top of the sheet.
@@ -133,15 +137,20 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
   Widget build(BuildContext context) {
     final typography = AppTypographyExtension.of(context);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTitle(typography),
-        _buildSearchField(),
-        _buildItemList(typography),
-        _buildActionButtons(context),
-      ],
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitle(typography),
+          _buildSearchField(),
+          Flexible(child: _buildItemList(typography)),
+          _buildActionButtons(context),
+        ],
+      ),
     );
   }
 
