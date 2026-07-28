@@ -122,7 +122,7 @@ class ComponentsScreen extends StatelessWidget {
               _buildShowcaseButton(
                 context,
                 'Bottom Navigation Components',
-                BottomNavigationShowcaseScreen(),
+                const BottomNavigationShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

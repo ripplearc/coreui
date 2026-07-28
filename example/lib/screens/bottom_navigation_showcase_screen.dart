@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-class BottomNavigationShowcaseScreen extends StatelessWidget {
-  BottomNavigationShowcaseScreen({super.key});
+class BottomNavigationShowcaseScreen extends StatefulWidget {
+  const BottomNavigationShowcaseScreen({super.key});
 
+  @override
+  State<BottomNavigationShowcaseScreen> createState() =>
+      _BottomNavigationShowcaseScreenState();
+}
+
+class _BottomNavigationShowcaseScreenState
+    extends State<BottomNavigationShowcaseScreen> {
   final _twoTabIndex = ValueNotifier(0);
   final _threeTabIndex = ValueNotifier(0);
   final _fourTabIndex = ValueNotifier(0);
@@ -26,6 +33,15 @@ class BottomNavigationShowcaseScreen extends StatelessWidget {
     BottomNavTab(icon: CoreIcons.cost, label: 'Estimation'),
     BottomNavTab(icon: CoreIcons.members, label: 'Members'),
   ];
+
+  @override
+  void dispose() {
+    _twoTabIndex.dispose();
+    _threeTabIndex.dispose();
+    _fourTabIndex.dispose();
+    _withActionIndex.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
