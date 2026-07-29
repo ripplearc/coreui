@@ -73,7 +73,7 @@ class BottomNavTab {
 /// ### Accessibility
 /// - Labels are text and respect text scaling.
 /// - Use concise, descriptive [BottomNavTab.label]s.
-/// - Consider semantics for [onActionButtonPressed] if provided.
+/// - Pass [actionButtonSemanticLabel] to announce the trailing action button to screen readers.
 ///
 /// ### Debug note
 /// During the selection animation, you might briefly see a debug-only
@@ -434,6 +434,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
             ? Semantics(
                 label: widget.actionButtonSemanticLabel,
                 button: true,
+                enabled: widget.onActionButtonPressed != null,
                 excludeSemantics: true,
                 child: icon,
               )

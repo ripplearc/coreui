@@ -201,6 +201,16 @@ void main() {
 
       handle.dispose();
     });
+
+    testWidgets('no custom semantics label when actionButtonSemanticLabel is null', (tester) async {
+      final handle = tester.ensureSemantics();
+
+      await _mount(tester, selectedIndex: 0, onAction: () {});
+
+      expect(find.bySemanticsLabel('Calculator'), findsNothing);
+
+      handle.dispose();
+    });
   });
 
   group('CoreBottomNavBar – accessibility', () {
