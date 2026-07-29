@@ -43,6 +43,7 @@ Future<void> _mount(
   required int selectedIndex,
   VoidCallback? onAction,
   ValueChanged<int>? onTabSelected,
+  String? actionButtonSemanticLabel,
 }) async {
   await tester.pumpWidget(
     _Harness(
@@ -51,10 +52,11 @@ Future<void> _mount(
         selectedIndex: selectedIndex,
         onTabSelected: onTabSelected ?? (_) {},
         onActionButtonPressed: onAction,
+        actionButtonSemanticLabel: actionButtonSemanticLabel,
       ),
     ),
   );
-  await tester.pump(); 
+  await tester.pump();
 }
 
 void main() {
@@ -182,6 +184,35 @@ void main() {
     });
   });
 
+  group('CoreBottomNavBar – semantics', () {
+    testWidgets('custom label appears on trailing button semantics node', (tester) async {
+      final handle = tester.ensureSemantics();
+
+      await _mount(
+        tester,
+        selectedIndex: 0,
+        onAction: () {},
+        actionButtonSemanticLabel: 'Calculator',
+      );
+
+      final node = tester.getSemantics(find.bySemanticsLabel('Calculator'));
+      expect(node.label, 'Calculator');
+      expect(node.flagsCollection.isButton, isTrue);
+
+      handle.dispose();
+    });
+
+    testWidgets('no custom semantics label when actionButtonSemanticLabel is null', (tester) async {
+      final handle = tester.ensureSemantics();
+
+      await _mount(tester, selectedIndex: 0, onAction: () {});
+
+      expect(find.bySemanticsLabel('Calculator'), findsNothing);
+
+      handle.dispose();
+    });
+  });
+
   group('CoreBottomNavBar – accessibility', () {
     testWidgets(
         'meets tap target, label and contrast guidelines for tabs and action button', (tester) async {
@@ -210,6 +241,22 @@ void main() {
           selectedIndex: 0,
           onTabSelected: (_) {},
           onActionButtonPressed: null,
+        ),
+        find.byType(CoreBottomNavBar),
+      );
+    });
+
+    testWidgets('trailing button with label meets tap target and label guidelines', (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreBottomNavBar(
+          tabs: _tabs,
+          selectedIndex: 0,
+          onTabSelected: (_) {},
+          onActionButtonPressed: () {},
+          actionButtonSemanticLabel: 'Calculator',
         ),
         find.byType(CoreBottomNavBar),
       );

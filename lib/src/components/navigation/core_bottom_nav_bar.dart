@@ -73,7 +73,7 @@ class BottomNavTab {
 /// ### Accessibility
 /// - Labels are text and respect text scaling.
 /// - Use concise, descriptive [BottomNavTab.label]s.
-/// - Consider semantics for [onActionButtonPressed] if provided.
+/// - Pass [actionButtonSemanticLabel] to announce the trailing action button to screen readers.
 ///
 /// ### Debug note
 /// During the selection animation, you might briefly see a debug-only
@@ -170,6 +170,12 @@ class CoreBottomNavBar extends StatefulWidget {
   /// If null, no trailing button is shown.
   final VoidCallback? onActionButtonPressed;
 
+  /// Semantic label announced by screen readers for the trailing action button.
+  ///
+  /// Should be a localized string provided by the caller. When null, the
+  /// trailing button renders without a semantic label (backward compatible).
+  final String? actionButtonSemanticLabel;
+
   const CoreBottomNavBar({
     super.key,
     required this.tabs,
@@ -177,6 +183,7 @@ class CoreBottomNavBar extends StatefulWidget {
     required this.onTabSelected,
     this.animationDuration = const Duration(milliseconds: 600),
     this.onActionButtonPressed,
+    this.actionButtonSemanticLabel,
   }) : assert(
           tabs.length >= 2 && tabs.length <= 4,
           'CoreBottomNavBar requires between 2 and 4 tabs',
@@ -407,6 +414,14 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   }
 
   Widget _buildTrailingICon(AppColorsExtension colors, _NavLayout layout) {
+    final icon = CoreIconWidget(
+      icon: CoreIcons.calculator,
+      color: colors.iconWhite,
+      size: layout.actionButtonSize *
+          (_BaseBottomNavBarDimensions.baseIconSize /
+              _BaseBottomNavBarDimensions.baseActionButton),
+      onTap: widget.onActionButtonPressed,
+    );
     return Container(
       width: layout.actionButtonSize,
       height: layout.actionButtonSize,
@@ -415,14 +430,15 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
         borderRadius: BorderRadius.circular(layout.actionButtonSize / 2),
       ),
       child: Center(
-        child: CoreIconWidget(
-          icon: CoreIcons.calculator,
-          color: colors.iconWhite,
-          size: layout.actionButtonSize *
-              (_BaseBottomNavBarDimensions.baseIconSize /
-                  _BaseBottomNavBarDimensions.baseActionButton),
-          onTap: widget.onActionButtonPressed,
-        ),
+        child: widget.actionButtonSemanticLabel != null
+            ? Semantics(
+                label: widget.actionButtonSemanticLabel,
+                button: true,
+                enabled: widget.onActionButtonPressed != null,
+                excludeSemantics: true,
+                child: icon,
+              )
+            : icon,
       ),
     );
   }
