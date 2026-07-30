@@ -1,3 +1,4 @@
+import 'package:example/screens/app_bar_showcase_screen.dart';
 import 'package:example/screens/bottom_navigation_showcase_screen.dart';
 import 'package:example/screens/button_showcase_screen.dart';
 import 'package:example/screens/calculator_chip_showcase_screen.dart';
@@ -117,6 +118,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Suggestion Area Component',
                 const SuggestionAreaShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'App Bar Components',
+                const AppBarShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

@@ -24,6 +24,7 @@ export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
 export 'src/components/loading/core_loading_indicator.dart';
 export 'src/components/multi_select_sheet/core_multi_select_sheet.dart';
+export 'src/components/navigation/core_app_bar.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/search/core_search_box.dart';
 export 'src/components/search/core_search_row_item.dart';
