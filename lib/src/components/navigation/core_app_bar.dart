@@ -67,6 +67,16 @@ enum CoreAppBarElevation {
 /// tap targets fall short — 56 preferred minus 8+8 padding leaves a 40px
 /// content box. Additive padding is what removes that failure mode here.
 ///
+/// Caveat: the table measures the consuming app's *code*, not the design
+/// spec. The reusable "Action Bar" component in the Figma file measures
+/// 412x64 — total height [CoreSpacing.space16] — with baked-in padding of
+/// t8/b8/l4/r16 (a 48px content box) on every screen it appears on. The
+/// code-derived defaults here (56 tall, zero padding) are therefore 8px
+/// shorter and un-padded relative to Figma's dominant top-bar pattern. Sites
+/// migrating under CA-823 should pass `height`/`padding` explicitly (or this
+/// default should be revisited) rather than silently inheriting the 56px
+/// default as a match for the spec.
+///
 /// ### Theming
 /// Colors come from [AppColorsExtension] (`pageBackground`, `textHeadline`) and
 /// typography from [AppTypographyExtension] (`titleMediumSemiBold`), so the bar
@@ -225,12 +235,19 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
           'leading and action tap targets can meet the 48x48 guideline',
         );
 
-  // Material elevation applied when [elevation] is
-  // CoreAppBarElevation.material.
   static const double _materialElevation = 2.0;
 
   @override
   Size get preferredSize => Size.fromHeight(height + padding.vertical);
+
+  /// The shadow the bar's decoration paints, resolved from [elevation].
+  ///
+  /// This is what [build] hands to the container's [BoxDecoration], exposed so
+  /// tests can assert the resolved shadow without reaching into the widget
+  /// tree for the decorated container.
+  @visibleForTesting
+  List<BoxShadow>? get decorationShadow =>
+      elevation == CoreAppBarElevation.shadow ? CoreShadows.medium : null;
 
   @override
   Widget build(BuildContext context) {
@@ -255,9 +272,7 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       decoration: BoxDecoration(
         color: barColor,
-        boxShadow: elevation == CoreAppBarElevation.shadow
-            ? CoreShadows.medium
-            : null,
+        boxShadow: decorationShadow,
       ),
       padding: padding,
       child: AppBar(

@@ -103,7 +103,7 @@ void main() {
   });
 
   group('CoreAppBar Screenshot Tests', () {
-    const size = Size(390, 160);
+    const width = 390.0;
     const ratio = 1.0;
 
     Future<void> pumpBar({
@@ -111,7 +111,9 @@ void main() {
       required CoreAppBar bar,
       required ThemeData theme,
     }) async {
-      tester.view.physicalSize = size;
+      // Scope the view to the bar's own preferredSize so the golden captures
+      // exactly the bar, with no empty body space below it.
+      tester.view.physicalSize = Size(width, bar.preferredSize.height);
       tester.view.devicePixelRatio = ratio;
       addTearDown(() => tester.view.resetPhysicalSize());
 

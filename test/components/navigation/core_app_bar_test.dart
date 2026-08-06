@@ -282,14 +282,8 @@ void main() {
       expect(appBar.elevation, 0);
       expect(appBar.scrolledUnderElevation, 0);
 
-      final container = tester.widget<Container>(
-        find.ancestor(
-          of: find.byType(AppBar),
-          matching: find.byType(Container),
-        ).first,
-      );
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.boxShadow, CoreShadows.medium);
+      final bar = tester.widget<CoreAppBar>(find.byType(CoreAppBar));
+      expect(bar.decorationShadow, CoreShadows.medium);
     });
 
     testWidgets('none draws no shadow at all', (tester) async {
@@ -303,14 +297,8 @@ void main() {
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect(appBar.elevation, 0);
 
-      final container = tester.widget<Container>(
-        find.ancestor(
-          of: find.byType(AppBar),
-          matching: find.byType(Container),
-        ).first,
-      );
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.boxShadow, isNull);
+      final bar = tester.widget<CoreAppBar>(find.byType(CoreAppBar));
+      expect(bar.decorationShadow, isNull);
     });
 
     testWidgets('material uses Material elevation and no decoration shadow',
@@ -329,14 +317,8 @@ void main() {
       expect(appBar.elevation, greaterThan(0));
       expect(appBar.shadowColor, CoreTheme.light().coreColors.shadowGrey10);
 
-      final container = tester.widget<Container>(
-        find.ancestor(
-          of: find.byType(AppBar),
-          matching: find.byType(Container),
-        ).first,
-      );
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.boxShadow, isNull);
+      final bar = tester.widget<CoreAppBar>(find.byType(CoreAppBar));
+      expect(bar.decorationShadow, isNull);
     });
   });
 
