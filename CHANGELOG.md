@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.11.2] - Keep CoreMultiSelectSheet visible above the keyboard
+
+### 🔧 Fixes
+
+- **CoreMultiSelectSheet**: the sheet now pads itself by the keyboard's view inset and lets the item list shrink, so the search field, list, and action buttons stay visible above the keyboard while the user types (CA-842)
+
+### 🧪 Tests
+
+- Widget test: presents the sheet through `CoreQuickSheet.show` (the real presentation path), simulates the keyboard opening, and asserts the search field, list items, and Apply button all sit above the keyboard
+- Golden tests: keyboard-open sheet in both light and dark themes
+
 ## [0.11.1] - CoreBottomNavBar action button semantic label
 
 ### 🔧 Fixes
