@@ -8,7 +8,8 @@
   - Separating shadow comes from `CoreShadows.medium` via `BoxDecoration`, with Material elevation held at zero, so the shadow is drawn exactly once instead of doubling
   - `CoreAppBarElevation { none, shadow, material }` covers the un-shadowed bar, the CoreShadows bar, and surfaces that must match a Material-elevated sibling
   - **`padding` is additive to `preferredSize`** (`preferredSize.height == height + padding.vertical`), so padding never shrinks the content box. This is the failure mode behind the 48x40 tap target in CA-822; the constructor also asserts `height >= CoreSpacing.space12` (48) so leading and action tap targets can always meet the 48x48 guideline
-  - `height` defaults to `CoreSpacing.space14` (56) — measured from the consuming app, where 56 is the preferred size of 9 of the 12 existing bars (`HeaderRow` uses 64; the two estimation bars use an off-grid `kToolbarHeight + 5`)
+  - `height` defaults to `CoreSpacing.space14` (56) — measured from the consuming app, where 56 is the preferred size of 9 of the 12 existing bars (`HeaderRow` uses 64; the two estimation bars use an off-grid `kToolbarHeight + 5`). The class doc carries a caveat that Figma's reusable "Action Bar" component instead measures 64 total with t8/b8/l4/r16 baked-in padding, so CA-823 migration sites should pass `height`/`padding` explicitly rather than treating the code-derived default as spec-confirmed
+  - `decorationShadow` (`@visibleForTesting`) exposes the shadow the bar's decoration paints, resolved from `elevation` and consumed by `build` itself, so tests assert elevation behavior without reaching into the widget tree
   - `scrolledUnderElevation` is held at zero in every mode, so the bar does not darken or re-tint when content scrolls under it
   - Accepts an arbitrary `title` widget (custom rows, icon clusters) or a `titleText` convenience styled `titleMediumSemiBold` in `textHeadline`; supplying both asserts
   - Colors resolve from the theme extension (`pageBackground`, `textHeadline`, `iconDark`), so the bar tracks `CoreTheme.light()` and `CoreTheme.dark()`
@@ -18,7 +19,7 @@
 ### 🧪 Tests
 
 - Widget tests: preferred-size arithmetic, both asserts, elevation modes, theming fallback and override, action rendering and callbacks, and leading behaviour over a real pushed route (no implied back button by default, opt-in via `implyLeading`, explicit `leading` rendered regardless)
-- Golden tests: five bar shapes (flat/no-shadow, custom title row, back button with project title, Material elevation, plain title) in both light and dark
+- Golden tests: five bar shapes (flat/no-shadow, custom title row, back button with project title, Material elevation, plain title) in both light and dark, with the viewport scoped to each bar's own `preferredSize` so every golden contains exactly the bar and no empty body space
 - A11y tests: tap-target and label guidelines in both themes, including at the minimum permitted height
 - Title contrast is asserted from the resolved tokens rather than sampled pixels; the pixel-sampling guideline reads the AppBar title's antialiased glyph edges and reports a blend of text and background rather than the token colors
 
