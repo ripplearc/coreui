@@ -148,6 +148,13 @@ class _CoreTooltipState extends State<CoreTooltip>
     final targetPosition = renderBox.localToGlobal(Offset.zero);
     final targetSize = renderBox.size;
 
+    // Captured from the declaring context, not the overlay's — an
+    // OverlayEntry builds against the root navigator's context, so resolving
+    // the theme inside it would escape a locally-themed subtree (or throw if
+    // no CoreTheme was installed at the app root at all).
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+
     _overlayEntry = OverlayEntry(
       builder: (context) => _TooltipOverlayWidget(
         targetPosition: targetPosition,
@@ -156,6 +163,8 @@ class _CoreTooltipState extends State<CoreTooltip>
         arrowPosition: widget.arrowPosition,
         fadeAnimation: _fadeAnimation,
         onDismiss: _hideTooltip,
+        colors: colors,
+        typography: typography,
       ),
     );
 
@@ -285,6 +294,8 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
 class _TooltipBubble extends StatelessWidget {
   final String message;
   final TooltipArrowPosition arrowPosition;
+  final AppColorsExtension colors;
+  final AppTypographyExtension typography;
 
   static const double _arrowWidth = CoreSpacing.space3;
 
@@ -293,13 +304,12 @@ class _TooltipBubble extends StatelessWidget {
   const _TooltipBubble({
     required this.message,
     required this.arrowPosition,
+    required this.colors,
+    required this.typography,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-
     final text = Text(
       message,
       style: typography.bodySmallRegular.copyWith(color: colors.textInverse),
@@ -406,6 +416,8 @@ class _TooltipOverlayWidget extends StatelessWidget {
   final TooltipArrowPosition arrowPosition;
   final Animation<double> fadeAnimation;
   final VoidCallback onDismiss;
+  final AppColorsExtension colors;
+  final AppTypographyExtension typography;
 
   const _TooltipOverlayWidget({
     required this.targetPosition,
@@ -414,18 +426,19 @@ class _TooltipOverlayWidget extends StatelessWidget {
     required this.arrowPosition,
     required this.fadeAnimation,
     required this.onDismiss,
+    required this.colors,
+    required this.typography,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = AppColorsExtension.of(context);
     return GestureDetector(
       onTap: onDismiss,
       behavior: HitTestBehavior.translucent,
       child: Stack(
         children: [
-          Positioned.fill(
-            child: Container(color: colorTheme.transparent),
+          const Positioned.fill(
+            child: ColoredBox(color: Colors.transparent),
           ),
           Positioned(
             left: 0,
@@ -433,7 +446,7 @@ class _TooltipOverlayWidget extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Material(
-              color: colorTheme.transparent,
+              color: Colors.transparent,
               child: FadeTransition(
                 opacity: fadeAnimation,
                 child: LayoutBuilder(
@@ -449,6 +462,8 @@ class _TooltipOverlayWidget extends StatelessWidget {
                           child: _TooltipBubble(
                             message: message,
                             arrowPosition: arrowPosition,
+                            colors: colors,
+                            typography: typography,
                           ),
                         ),
                       ],
