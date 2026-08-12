@@ -25,14 +25,17 @@ const List<BottomNavTab> _tabs3 = [
 class _Harness extends StatelessWidget {
   const _Harness({
     required this.selectedIndex,
+    required this.theme,
   });
 
   final int selectedIndex;
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColorsExtension.create();
+    final colors = theme.coreColors;
     return MaterialApp(
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: const SizedBox.shrink(),
@@ -52,14 +55,16 @@ class _Harness extends StatelessWidget {
 }
 
 class _Harness2Tab extends StatelessWidget {
-  const _Harness2Tab({required this.selectedIndex});
+  const _Harness2Tab({required this.selectedIndex, required this.theme});
 
   final int selectedIndex;
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColorsExtension.create();
+    final colors = theme.coreColors;
     return MaterialApp(
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: const SizedBox.shrink(),
@@ -79,14 +84,16 @@ class _Harness2Tab extends StatelessWidget {
 }
 
 class _Harness3Tab extends StatelessWidget {
-  const _Harness3Tab({required this.selectedIndex});
+  const _Harness3Tab({required this.selectedIndex, required this.theme});
 
   final int selectedIndex;
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColorsExtension.create();
+    final colors = theme.coreColors;
     return MaterialApp(
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: const SizedBox.shrink(),
@@ -112,7 +119,9 @@ void main() {
   });
 
   testWidgets('CoreBottomNavBar ', (tester) async {
-    await tester.pumpWidget(const _Harness(selectedIndex: 0));
+    await tester.pumpWidget(
+      _Harness(selectedIndex: 0, theme: CoreTheme.light()),
+    );
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -121,8 +130,22 @@ void main() {
     );
   });
 
+  testWidgets('CoreBottomNavBar dark', (tester) async {
+    await tester.pumpWidget(
+      _Harness(selectedIndex: 0, theme: CoreTheme.dark()),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreBottomNavBar),
+      matchesGoldenFile('goldens/core_bottom_nav_bar_default_dark.png'),
+    );
+  });
+
   testWidgets('CoreBottomNavBar 2-tab default', (tester) async {
-    await tester.pumpWidget(const _Harness2Tab(selectedIndex: 0));
+    await tester.pumpWidget(
+      _Harness2Tab(selectedIndex: 0, theme: CoreTheme.light()),
+    );
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -131,13 +154,39 @@ void main() {
     );
   });
 
+  testWidgets('CoreBottomNavBar 2-tab dark', (tester) async {
+    await tester.pumpWidget(
+      _Harness2Tab(selectedIndex: 0, theme: CoreTheme.dark()),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreBottomNavBar),
+      matchesGoldenFile('goldens/core_bottom_nav_bar_2tab_default_dark.png'),
+    );
+  });
+
   testWidgets('CoreBottomNavBar 3-tab default', (tester) async {
-    await tester.pumpWidget(const _Harness3Tab(selectedIndex: 0));
+    await tester.pumpWidget(
+      _Harness3Tab(selectedIndex: 0, theme: CoreTheme.light()),
+    );
     await tester.pumpAndSettle();
 
     await expectLater(
       find.byType(CoreBottomNavBar),
       matchesGoldenFile('goldens/core_bottom_nav_bar_3tab_default.png'),
+    );
+  });
+
+  testWidgets('CoreBottomNavBar 3-tab dark', (tester) async {
+    await tester.pumpWidget(
+      _Harness3Tab(selectedIndex: 0, theme: CoreTheme.dark()),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(CoreBottomNavBar),
+      matchesGoldenFile('goldens/core_bottom_nav_bar_3tab_default_dark.png'),
     );
   });
 }

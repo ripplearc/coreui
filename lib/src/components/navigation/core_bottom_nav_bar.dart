@@ -204,7 +204,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
         return Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: appColors.pageBackground,
+            // Raised surface, not the page — flip with backgroundDarkGray so
+            // the shell reads as a step above the scaffold in both themes.
+            color: appColors.backgroundGrayLight,
             borderRadius: BorderRadius.circular(layout.actionButtonSize),
             boxShadow: [
               BoxShadow(
@@ -324,7 +326,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       height: layout.pillHeight,
       child: Container(
         decoration: BoxDecoration(
-          color: colors.pageBackground,
+          // Sits on the inverse surface (backgroundDarkGray), so it needs
+          // the onInverseSurface content color, not the page color.
+          color: colors.textInverse,
           border: Border.all(
               color: colors.lineMid, width: 2),
           borderRadius: BorderRadius.circular(layout.pillRadius),

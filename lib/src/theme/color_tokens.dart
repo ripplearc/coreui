@@ -110,7 +110,11 @@ class CoreTextColors {
 // Background-related color tokens
 class CoreBackgroundColors {
   static const Color pageBackground = _CoreColorPalette.gray50;
-  static const Color backgroundGrayLight = _CoreColorPalette.gray50;
+  // The raised-surface step above the page. It was gray50 — identical to
+  // pageBackground (1.00:1) — so cards, tracks and sheets had no surface to
+  // sit on and relied entirely on borders/shadows. Matches Figma's #FFFFFF
+  // nav pill spec.
+  static const Color backgroundGrayLight = _CoreColorPalette.gray25;
   static const Color backgroundGrayMid = _CoreColorPalette.gray100;
   static const Color backgroundBlueLight = _CoreColorPalette.blue25;
   static const Color backgroundBlueMid = _CoreColorPalette.blue50;
