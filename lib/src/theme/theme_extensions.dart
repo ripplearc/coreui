@@ -58,6 +58,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color iconGrayMid;
   final Color iconGrayLight;
   final Color iconWhite;
+
+  /// Icon content on [backgroundDarkGray], the inverse surface. Unlike
+  /// [iconWhite] this flips with that surface between themes.
+  final Color iconInverse;
   final Color iconRed;
   final Color iconGreen;
   final Color iconOrange;
@@ -146,6 +150,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.iconGrayMid,
     required this.iconGrayLight,
     required this.iconWhite,
+    required this.iconInverse,
     required this.iconRed,
     required this.iconGreen,
     required this.iconOrange,
@@ -237,6 +242,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? iconGrayMid,
     Color? iconGrayLight,
     Color? iconWhite,
+    Color? iconInverse,
     Color? iconRed,
     Color? iconGreen,
     Color? iconOrange,
@@ -314,6 +320,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       iconGrayMid: iconGrayMid ?? this.iconGrayMid,
       iconGrayLight: iconGrayLight ?? this.iconGrayLight,
       iconWhite: iconWhite ?? this.iconWhite,
+      iconInverse: iconInverse ?? this.iconInverse,
       iconRed: iconRed ?? this.iconRed,
       iconGreen: iconGreen ?? this.iconGreen,
       iconOrange: iconOrange ?? this.iconOrange,
@@ -435,6 +442,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       iconGrayLight:
           Color.lerp(iconGrayLight, other.iconGrayLight, t) ?? iconGrayLight,
       iconWhite: Color.lerp(iconWhite, other.iconWhite, t) ?? iconWhite,
+      iconInverse: Color.lerp(iconInverse, other.iconInverse, t) ?? iconInverse,
       iconRed: Color.lerp(iconRed, other.iconRed, t) ?? iconRed,
       iconGreen: Color.lerp(iconGreen, other.iconGreen, t) ?? iconGreen,
       iconOrange: Color.lerp(iconOrange, other.iconOrange, t) ?? iconOrange,
@@ -535,6 +543,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       iconGrayMid: CoreIconColors.grayMid,
       iconGrayLight: CoreIconColors.grayLight,
       iconWhite: CoreIconColors.white,
+      iconInverse: CoreIconColors.inverse,
       iconRed: CoreIconColors.red,
       iconGreen: CoreIconColors.green,
       iconOrange: CoreIconColors.orange,

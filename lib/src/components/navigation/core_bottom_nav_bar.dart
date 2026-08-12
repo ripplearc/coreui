@@ -371,7 +371,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
               CoreIconWidget(
                 icon: widget.tabs[index].icon,
                 size: layout.iconSize,
-                color: isActive ? colors.iconDark : colors.iconGrayMid,
+                color: isActive ? colors.iconDark : colors.iconGrayLight,
               ),
               Flexible(
                 child: AnimatedSwitcher(
@@ -416,7 +416,7 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
   Widget _buildTrailingICon(AppColorsExtension colors, _NavLayout layout) {
     final icon = CoreIconWidget(
       icon: CoreIcons.calculator,
-      color: colors.iconWhite,
+      color: colors.iconInverse,
       size: layout.actionButtonSize *
           (_BaseBottomNavBarDimensions.baseIconSize /
               _BaseBottomNavBarDimensions.baseActionButton),
