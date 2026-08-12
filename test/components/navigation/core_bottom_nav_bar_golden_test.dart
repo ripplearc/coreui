@@ -4,6 +4,18 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+ThemeData _createTestTheme() {
+  return CoreTheme.light().copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
+ThemeData _createDarkTestTheme() {
+  return CoreTheme.dark().copyWith(
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
 const List<BottomNavTab> _tabs = [
   BottomNavTab(icon: CoreIcons.home, label: 'Home'),
   BottomNavTab(icon: CoreIcons.calculate, label: 'Calculations'),
@@ -120,7 +132,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar ', (tester) async {
     await tester.pumpWidget(
-      _Harness(selectedIndex: 0, theme: CoreTheme.light()),
+      _Harness(selectedIndex: 0, theme: _createTestTheme()),
     );
     await tester.pumpAndSettle();
 
@@ -132,7 +144,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar dark', (tester) async {
     await tester.pumpWidget(
-      _Harness(selectedIndex: 0, theme: CoreTheme.dark()),
+      _Harness(selectedIndex: 0, theme: _createDarkTestTheme()),
     );
     await tester.pumpAndSettle();
 
@@ -144,7 +156,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar 2-tab default', (tester) async {
     await tester.pumpWidget(
-      _Harness2Tab(selectedIndex: 0, theme: CoreTheme.light()),
+      _Harness2Tab(selectedIndex: 0, theme: _createTestTheme()),
     );
     await tester.pumpAndSettle();
 
@@ -156,7 +168,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar 2-tab dark', (tester) async {
     await tester.pumpWidget(
-      _Harness2Tab(selectedIndex: 0, theme: CoreTheme.dark()),
+      _Harness2Tab(selectedIndex: 0, theme: _createDarkTestTheme()),
     );
     await tester.pumpAndSettle();
 
@@ -168,7 +180,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar 3-tab default', (tester) async {
     await tester.pumpWidget(
-      _Harness3Tab(selectedIndex: 0, theme: CoreTheme.light()),
+      _Harness3Tab(selectedIndex: 0, theme: _createTestTheme()),
     );
     await tester.pumpAndSettle();
 
@@ -180,7 +192,7 @@ void main() {
 
   testWidgets('CoreBottomNavBar 3-tab dark', (tester) async {
     await tester.pumpWidget(
-      _Harness3Tab(selectedIndex: 0, theme: CoreTheme.dark()),
+      _Harness3Tab(selectedIndex: 0, theme: _createDarkTestTheme()),
     );
     await tester.pumpAndSettle();
 
