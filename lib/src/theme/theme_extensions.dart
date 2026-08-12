@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'color_tokens.dart';
+import 'theme_data.dart';
 
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   // Text Colors
@@ -478,107 +478,17 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     );
   }
 
-  static AppColorsExtension create() {
-    return AppColorsExtension(
-      // Text Colors
-      textHeadline: CoreTextColors.headline,
-      textDark: CoreTextColors.dark,
-      textBody: CoreTextColors.body,
-      textDisable: CoreTextColors.disable,
-      textInverse: CoreTextColors.inverse,
-      textLink: CoreTextColors.link,
-      textInfo: CoreTextColors.info,
-      textWarning: CoreTextColors.warning,
-      textError: CoreTextColors.error,
-      textSuccess: CoreTextColors.success,
+  /// The default light-mode palette, used as a fallback wherever no
+  /// [AppColorsExtension] is registered on the ambient [ThemeData].
+  ///
+  /// Delegates to [CoreTheme.lightAppColors] rather than keeping its own
+  /// copy of the token mapping, so the two can't drift out of sync.
+  static AppColorsExtension create() => CoreTheme.lightAppColors();
 
-      // Background Colors
-      pageBackground: CoreBackgroundColors.pageBackground,
-      backgroundGrayLight: CoreBackgroundColors.backgroundGrayLight,
-      backgroundGrayMid: CoreBackgroundColors.backgroundGrayMid,
-      backgroundBlueLight: CoreBackgroundColors.backgroundBlueLight,
-      backgroundBlueMid: CoreBackgroundColors.backgroundBlueMid,
-      backgroundGreenLight: CoreBackgroundColors.backgroundGreenLight,
-      backgroundGreenMid: CoreBackgroundColors.backgroundGreenMid,
-      backgroundRedLight: CoreBackgroundColors.backgroundRedLight,
-      backgroundRedMid: CoreBackgroundColors.backgroundRedMid,
-      backgroundOrangeLight: CoreBackgroundColors.backgroundOrangeLight,
-      backgroundOrangeMid: CoreBackgroundColors.backgroundOrangeMid,
-      backgroundDarkGray: CoreBackgroundColors.backgroundDarkGray,
-      backgroundDarkOrient: CoreBackgroundColors.backgroundDarkOrient,
-      orientLight: CoreBackgroundColors.backgroundOrientLight,
-      orientMid: CoreBackgroundColors.backgroundOrientMid,
-
-      // Border Colors
-      lineLight: CoreBorderColors.lineLight,
-      lineMid: CoreBorderColors.lineMid,
-      lineDarkOutline: CoreBorderColors.lineDarkOutline,
-      lineHighlight: CoreBorderColors.lineHighlight,
-      outlineHover: CoreBorderColors.outlineHover,
-      outlineFocus: CoreBorderColors.outlineFocus,
-      tabsHighlight: CoreBorderColors.tabsHighlight,
-
-      // Status Colors
-      statusError: CoreStatusColors.error,
-      statusSuccess: CoreStatusColors.success,
-
-      // Button Colors
-      buttonInverse: CoreButtonColors.inverse,
-      buttonSurface: CoreButtonColors.surface,
-      buttonHover: CoreButtonColors.hover,
-      buttonDisable: CoreButtonColors.disable,
-      buttonPress: CoreButtonColors.press,
-
-      // Icon Colors
-      iconDark: CoreIconColors.dark,
-      iconGrayDark: CoreIconColors.grayDark,
-      iconGrayMid: CoreIconColors.grayMid,
-      iconGrayLight: CoreIconColors.grayLight,
-      iconWhite: CoreIconColors.white,
-      iconRed: CoreIconColors.red,
-      iconGreen: CoreIconColors.green,
-      iconOrange: CoreIconColors.orange,
-      iconBlue: CoreIconColors.blue,
-      iconOrient: CoreIconColors.orient,
-
-      // Chip Colors
-      chipGrey: CoreChipColors.gray,
-      chipPrimary: CoreChipColors.primary,
-      chipRed: CoreChipColors.red,
-      chipOrange: CoreChipColors.orange,
-      chipBlue: CoreChipColors.blue,
-      chipGreen: CoreChipColors.green,
-
-      // Alert Colors
-      alertRed: CoreAlertColors.red,
-      alertOrange: CoreAlertColors.orange,
-      alertBlue: CoreAlertColors.blue,
-      alertGreen: CoreAlertColors.green,
-
-      // Keyboard Colors
-      keyboardNumbers: CoreKeyboardColors.numbers,
-      keyboardCalculate: CoreKeyboardColors.calculate,
-      keyboardUnits: CoreKeyboardColors.units,
-      keyboardFunctions: CoreKeyboardColors.functions,
-      keyboardActions: CoreKeyboardColors.actions,
-      keyboardMain: CoreKeyboardColors.main,
-
-      // Utility Colors
-      transparent: CorePrimitiveColors.transparent,
-
-      // Shadow Colors
-      shadowGrey3: CoreShadowColors.shadowGrey3,
-      shadowGrey5: CoreShadowColors.shadowGrey5,
-      shadowGrey6: CoreShadowColors.shadowGrey6,
-      shadowGrey7: CoreShadowColors.shadowGrey7,
-      shadowGrey8: CoreShadowColors.shadowGrey8,
-      shadowGrey10: CoreShadowColors.shadowGrey10,
-      shadowGrey18: CoreShadowColors.shadowGrey18,
-
-      // Accents
-      indigo: CoreAccentsColors.indigo,
-    );
-  }
+  /// The dark-mode counterpart of [create]. Prefer installing
+  /// [CoreTheme.dark] on the ambient [ThemeData] instead of calling this
+  /// directly — see [AppColorsTheme.coreColors] for the fallback this feeds.
+  static AppColorsExtension createDark() => CoreTheme.darkAppColors();
 }
 
 /// Extension on [ThemeData] to easily access the [AppColorsExtension].
