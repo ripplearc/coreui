@@ -139,12 +139,17 @@ class CoreSwitch extends StatelessWidget {
       (activeLabel?.isNotEmpty ?? false) ||
       (inactiveLabel?.isNotEmpty ?? false);
 
+  /// Despite the name, this feeds the inactive thumb fill (see its use
+  /// below), not the track border — [_getBorderColor] does that. normal was
+  /// lineDarkOutline, which fails 3:1 against backgroundGrayLight in both
+  /// themes (2.58:1 light, 2.96:1 dark); iconGrayMid clears it (4.97:1,
+  /// 5.71:1) and matches the track border it sits inside of.
   Color _getInactiveBorderColor(AppColorsExtension colors) {
     return inactiveColor ??
         (switch (type) {
           CoreSwitchType.lock => colors.iconRed,
           CoreSwitchType.imperial => colors.iconGreen,
-          CoreSwitchType.normal => colors.lineDarkOutline,
+          CoreSwitchType.normal => colors.iconGrayMid,
         });
   }
 
