@@ -4,6 +4,18 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+ThemeData _createTestTheme() {
+  return CoreTheme.light().copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
+ThemeData _createDarkTestTheme() {
+  return CoreTheme.dark().copyWith(
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
 Widget _buildVariants() {
   return const Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +110,7 @@ void main() {
 
   testWidgets('CoreSwitch Golden Test - All Variants',
       (WidgetTester tester) async {
-    await pumpVariants(tester, CoreTheme.light());
+    await pumpVariants(tester, _createTestTheme());
 
     await expectLater(
       find.byType(MaterialApp),
@@ -108,7 +120,7 @@ void main() {
 
   testWidgets('CoreSwitch Golden Test - All Variants - Dark',
       (WidgetTester tester) async {
-    await pumpVariants(tester, CoreTheme.dark());
+    await pumpVariants(tester, _createDarkTestTheme());
 
     await expectLater(
       find.byType(MaterialApp),
