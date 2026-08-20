@@ -142,7 +142,13 @@ class CoreInputChip extends StatelessWidget {
         child: InkWell(
           onTap: onRemove,
           borderRadius: BorderRadius.circular(CoreSpacing.space6),
-          child: chipBody,
+          // The whole chip is the tap target here, so it carries the 48 dp
+          // Android/iOS minimum tap-target height itself rather than
+          // inheriting it from the close icon's constraints.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
+            child: chipBody,
+          ),
         ),
       );
     }

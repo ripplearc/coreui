@@ -150,6 +150,26 @@ void main() {
         handle.dispose();
       });
 
+      testWidgets('keeps the tap region at the 48 dp minimum height', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'Jan 05, 2026',
+              onRemove: () {},
+              removeOnChipTap: true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(
+          tester.getSize(find.byType(CoreInputChip)).height,
+          greaterThanOrEqualTo(CoreSpacing.space12),
+        );
+      });
+
       testWidgets('has no effect while onRemove is null', (tester) async {
         await tester.pumpWidget(
           buildTestApp(
