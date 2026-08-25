@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13.0] - CoreDateFilterChip active pill reuses the CoreInputChip primitive
+
+### ✨ Features
+
+- **CoreInputChip**: adds `removeOnChipTap` (default false) — when true, tapping anywhere on the chip invokes `onRemove` and the whole chip is exposed as a single semantic button labeled with `removeSemanticLabel`; the close (×) icon stays visible as the removal affordance but is no longer a separate tap target (CA-830)
+
+### 🔧 Changes
+
+- **CoreDateFilterChip**: the active pill is now a `CoreInputChip` with whole-chip tap-to-remove instead of a hand-built container, so it adopts the chip family's visual treatment (pill radius, `chipGrey` background, semibold label, size-20 close icon). Consumers with goldens of the active pill will see pixel drift and should regenerate (CA-830)
+
+### 🧪 Tests
+
+- Unit + semantics tests for the whole-chip tap-to-remove mode (tap anywhere removes, single button node, icon stays, no-op without `onRemove`); default-mode chip goldens are byte-identical
+- CoreDateFilterChip active-pill goldens regenerated (light + dark)
+
 ## [0.12.0] - CoreAppBar
 
 ### ✨ Features

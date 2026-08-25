@@ -22,6 +22,7 @@ class CoreInputChip extends StatelessWidget {
     required this.label,
     this.onRemove,
     this.removeSemanticLabel,
+    this.removeOnChipTap = false,
   });
 
   /// The text token displayed inside the chip.
@@ -32,6 +33,16 @@ class CoreInputChip extends StatelessWidget {
   /// When null, the remove button is not rendered and the chip becomes
   /// display-only (e.g. a locked token in a viewer role).
   final VoidCallback? onRemove;
+
+  /// When true, tapping anywhere on the chip invokes [onRemove], and the
+  /// whole chip is exposed as a single semantic button labeled with
+  /// [removeSemanticLabel]. The close (×) icon stays visible as the removal
+  /// affordance but is no longer a separate tap target.
+  ///
+  /// For chips whose entire pill clears a value on tap — e.g.
+  /// [CoreDateFilterChip]'s active pill. Has no effect while [onRemove] is
+  /// null.
+  final bool removeOnChipTap;
 
   /// Semantic label for the remove button.
   ///
@@ -44,10 +55,13 @@ class CoreInputChip extends StatelessWidget {
   /// makes every chip in a list announce identically to screen readers.
   final String? removeSemanticLabel;
 
-  /// Key used for the remove button inside the chip.
+  /// Key used for the close (×) affordance inside the chip.
   ///
-  /// Use this in tests to locate the tap target:
-  /// `find.byKey(CoreInputChip.removeButtonKey)`.
+  /// Use this in tests to locate it:
+  /// `find.byKey(CoreInputChip.removeButtonKey)`. In the default mode the
+  /// keyed subtree is the remove button's tap target; with
+  /// [removeOnChipTap] the whole chip is the tap target and the key marks
+  /// the decorative icon.
   static const Key removeButtonKey = Key('core_input_chip_remove_button');
 
   @override
@@ -58,35 +72,53 @@ class CoreInputChip extends StatelessWidget {
     final effectiveRemoveLabel = removeLabel == null || removeLabel.isEmpty
         ? 'Remove $label'
         : removeLabel;
+    final wholeChipRemoves = removeOnChipTap && onRemove != null;
 
-    return Semantics(
-      label: label,
-      container: true,
-      child: Container(
-        padding: const EdgeInsets.only(
-          left: CoreSpacing.space3,
+    final removeIcon = ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: CoreSpacing.space12,
+        minHeight: CoreSpacing.space12,
+      ),
+      child: Center(
+        child: CoreIconWidget(
+          icon: CoreIcons.close,
+          color: colors.iconGrayMid,
+          size: CoreIconSize.size20,
         ),
-        decoration: BoxDecoration(
-          color: colors.chipGrey,
-          borderRadius: BorderRadius.circular(CoreSpacing.space6),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: ExcludeSemantics(
-                child: Text(
-                  label,
-                  style: typography.bodyMediumSemiBold.copyWith(
-                    color: colors.textDark,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+      ),
+    );
+
+    final chipBody = Container(
+      padding: const EdgeInsets.only(
+        left: CoreSpacing.space3,
+      ),
+      decoration: BoxDecoration(
+        color: colors.chipGrey,
+        borderRadius: BorderRadius.circular(CoreSpacing.space6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: ExcludeSemantics(
+              child: Text(
+                label,
+                style: typography.bodyMediumSemiBold.copyWith(
+                  color: colors.textDark,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
-            if (onRemove != null) ...[
-              const SizedBox(width: CoreSpacing.space2),
+          ),
+          if (onRemove != null) ...[
+            const SizedBox(width: CoreSpacing.space2),
+            if (wholeChipRemoves)
+              // The whole chip is the tap target; the icon is decorative.
+              ExcludeSemantics(
+                child: KeyedSubtree(key: removeButtonKey, child: removeIcon),
+              )
+            else
               Semantics(
                 label: effectiveRemoveLabel,
                 button: true,
@@ -94,25 +126,37 @@ class CoreInputChip extends StatelessWidget {
                   key: removeButtonKey,
                   behavior: HitTestBehavior.opaque,
                   onTap: onRemove,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: CoreSpacing.space12,
-                      minHeight: CoreSpacing.space12,
-                    ),
-                    child: Center(
-                      child: CoreIconWidget(
-                        icon: CoreIcons.close,
-                        color: colors.iconGrayMid,
-                        size: CoreIconSize.size20,
-                      ),
-                    ),
-                  ),
+                  child: removeIcon,
                 ),
               ),
-            ],
           ],
-        ),
+        ],
       ),
+    );
+
+    if (wholeChipRemoves) {
+      return Semantics(
+        label: effectiveRemoveLabel,
+        button: true,
+        container: true,
+        child: InkWell(
+          onTap: onRemove,
+          borderRadius: BorderRadius.circular(CoreSpacing.space6),
+          // The whole chip is the tap target here, so it carries the 48 dp
+          // Android/iOS minimum tap-target height itself rather than
+          // inheriting it from the close icon's constraints.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
+            child: chipBody,
+          ),
+        ),
+      );
+    }
+
+    return Semantics(
+      label: label,
+      container: true,
+      child: chipBody,
     );
   }
 }

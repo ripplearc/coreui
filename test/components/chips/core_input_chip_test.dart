@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -60,6 +61,128 @@ void main() {
         await tester.pump();
 
         expect(removed, isTrue);
+      });
+
+      testWidgets('does not call onRemove when the label is tapped in the '
+          'default mode', (tester) async {
+        var removed = false;
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'alice@example.com',
+              onRemove: () => removed = true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        await tester.tap(find.text('alice@example.com'));
+        await tester.pump();
+
+        expect(removed, isFalse);
+      });
+    });
+
+    group('Whole-chip tap-to-remove', () {
+      testWidgets('calls onRemove when any part of the chip is tapped', (
+        tester,
+      ) async {
+        var removed = false;
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'Jan 05, 2026',
+              onRemove: () => removed = true,
+              removeOnChipTap: true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        await tester.tap(find.text('Jan 05, 2026'));
+        await tester.pump();
+
+        expect(removed, isTrue);
+      });
+
+      testWidgets('still renders the close icon as the removal affordance', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'Jan 05, 2026',
+              onRemove: () {},
+              removeOnChipTap: true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(find.byKey(CoreInputChip.removeButtonKey), findsOneWidget);
+      });
+
+      testWidgets('exposes the whole chip as one semantic button labeled '
+          'with removeSemanticLabel', (tester) async {
+        final handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'Jan 05, 2026',
+              onRemove: () {},
+              removeOnChipTap: true,
+              removeSemanticLabel: 'Clear date filter',
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(
+          find.bySemanticsLabel('Clear date filter'),
+          findsOneWidget,
+        );
+        // The close icon must not be a second, separately announced button.
+        expect(find.bySemanticsLabel(RegExp('Remove')), findsNothing);
+
+        handle.dispose();
+      });
+
+      testWidgets('keeps the tap region at the 48 dp minimum height', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreInputChip(
+              label: 'Jan 05, 2026',
+              onRemove: () {},
+              removeOnChipTap: true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(
+          tester.getSize(find.byType(CoreInputChip)).height,
+          greaterThanOrEqualTo(CoreSpacing.space12),
+        );
+      });
+
+      testWidgets('has no effect while onRemove is null', (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const CoreInputChip(
+              label: 'Jan 05, 2026',
+              removeOnChipTap: true,
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        expect(find.byKey(CoreInputChip.removeButtonKey), findsNothing);
+        expect(find.byType(InkWell), findsNothing);
       });
     });
 

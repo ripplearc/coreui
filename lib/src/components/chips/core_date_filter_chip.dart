@@ -164,60 +164,15 @@ class CoreDateFilterChip extends StatelessWidget {
       );
     }
 
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-
-    // TODO: [CA-830] Replace this hand-built active pill with a chip-family
-    // primitive (e.g. a CoreInputChip variant with whole-chip tap-to-remove).
-    return Semantics(
-      label: clearSemanticLabel,
-      button: true,
-      child: InkWell(
-        key: activeChipKey,
-        onTap: onClear,
-        borderRadius: BorderRadius.circular(CoreSpacing.space3),
-        child: Container(
-          // Guarantee a 48dp-tall tap target to meet the Android/iOS minimum
-          // tap-target accessibility guideline; the symmetric padding alone
-          // leaves the pill shorter than 48dp.
-          constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space3,
-            vertical: CoreSpacing.space2,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(CoreSpacing.space3),
-            color: colors.backgroundGrayMid,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Flexible + ellipsis keeps a long formatted range from
-              // overflowing the pill on narrow screens (same treatment as
-              // CoreInputChip's label).
-              Flexible(
-                child: ExcludeSemantics(
-                  child: Text(
-                    _formatRange(range),
-                    overflow: TextOverflow.ellipsis,
-                    style: typography.bodyMediumRegular.copyWith(
-                      color: colors.textDark,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: CoreSpacing.space2),
-              ExcludeSemantics(
-                child: CoreIconWidget(
-                  icon: CoreIcons.close,
-                  color: colors.iconDark,
-                  size: CoreSpacing.space4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    // The active pill is a chip-family primitive: the whole pill clears the
+    // filter on tap, and the pill adopts CoreInputChip's visual treatment so
+    // every removable token in the catalogue reads the same (CA-830).
+    return CoreInputChip(
+      key: activeChipKey,
+      label: _formatRange(range),
+      onRemove: onClear,
+      removeOnChipTap: true,
+      removeSemanticLabel: clearSemanticLabel,
     );
   }
 }
