@@ -4,12 +4,16 @@
 
 ### ⚠️ Breaking changes
 
+- **KeyType / GroupNameType**: both gain a required `id` — a stable, locale-independent identifier separate from the displayed `label`. `GroupNameType` equality and `hashCode` now key on `id` alone, so a group stays the same group (and the same `Map` key) when the app switches locale and re-renders its label. `KeyType.groupName` is documented as holding the group's `id` (CA-898)
+  - `onKeyTapped` is unchanged: it already hands over the whole `KeyType`, so consumers read `key.id` for domain logic and `key.label` only for display
+  - Migration: pass `id` at every `KeyType` / `GroupNameType` call site. Using the existing English label as the `id` keeps current domain matching working with no other change
 - **CoreDisplayArea**: `closeSemanticLabel` and `historyPlaceholder` are now **required**. The English defaults (`'Close'`, `'Here will show what you type'`) and the `defaultCloseSemanticLabel` / `defaultHistoryPlaceholder` constants that exposed them are gone, so a user-facing string can no longer reach the screen without passing through the consuming app's localization layer (CA-654)
   - Migration: pass localized strings at every call site, e.g. `closeSemanticLabel: AppLocalizations.of(context).closeButton`. Callers that relied on the constants for test assertions should assert against their own localized value instead
 
 ### 🧪 Tests
 
 - Display-area widget, golden, and a11y call sites updated to pass both strings explicitly; goldens are byte-identical since the default text is unchanged
+- `GroupNameType` identity tests: equal across differing labels, unequal across differing ids, and still resolving as a `Map` key when the label is localized
 
 ## [0.14.1] - Dark-theme colour audit: switch contrast, tooltip theming, AppColorsExtension dedup
 

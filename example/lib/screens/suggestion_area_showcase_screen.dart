@@ -9,42 +9,42 @@ class SuggestionAreaShowcaseScreen extends StatelessWidget {
   const SuggestionAreaShowcaseScreen({super.key});
 
   static const GroupNameType _basicGeometryGroup =
-  GroupNameType(label: 'Basic Geometry');
+  GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
   static const GroupNameType _materialsGroup =
-  GroupNameType(label: 'Materials');
+  GroupNameType(id: 'Materials', label: 'Materials');
   static const GroupNameType _trigonometryGroup =
-  GroupNameType(label: 'Trigonometry');
+  GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
   static final List<FunctionGroup> _groups = [
     FunctionGroup(
       name: _basicGeometryGroup,
       keys: [
-        KeyType(groupName: 'Basic Geometry', label: 'Width'),
-        KeyType(groupName: 'Basic Geometry', label: 'Length'),
-        KeyType(groupName: 'Basic Geometry', label: 'Height'),
-        KeyType(groupName: 'Basic Geometry', label: 'Pitch'),
-        KeyType(groupName: 'Basic Geometry', label: 'Circle'),
-        KeyType(groupName: 'Basic Geometry', label: 'Rise'),
-        KeyType(groupName: 'Basic Geometry', label: 'Run'),
-        KeyType(groupName: 'Basic Geometry', label: 'Radius'),
+        KeyType(groupName: 'Basic Geometry', id: 'Width', label: 'Width'),
+        KeyType(groupName: 'Basic Geometry', id: 'Length', label: 'Length'),
+        KeyType(groupName: 'Basic Geometry', id: 'Height', label: 'Height'),
+        KeyType(groupName: 'Basic Geometry', id: 'Pitch', label: 'Pitch'),
+        KeyType(groupName: 'Basic Geometry', id: 'Circle', label: 'Circle'),
+        KeyType(groupName: 'Basic Geometry', id: 'Rise', label: 'Rise'),
+        KeyType(groupName: 'Basic Geometry', id: 'Run', label: 'Run'),
+        KeyType(groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
       ],
     ),
     FunctionGroup(
       name: _materialsGroup,
       keys: [
-        KeyType(groupName: 'Materials', label: 'Lbs'),
-        KeyType(groupName: 'Materials', label: 'Kg'),
-        KeyType(groupName: 'Materials', label: 'Tons'),
-        KeyType(groupName: 'Materials', label: 'Drywall'),
-        KeyType(groupName: 'Materials', label: 'Fence'),
+        KeyType(groupName: 'Materials', id: 'Lbs', label: 'Lbs'),
+        KeyType(groupName: 'Materials', id: 'Kg', label: 'Kg'),
+        KeyType(groupName: 'Materials', id: 'Tons', label: 'Tons'),
+        KeyType(groupName: 'Materials', id: 'Drywall', label: 'Drywall'),
+        KeyType(groupName: 'Materials', id: 'Fence', label: 'Fence'),
       ],
     ),
     FunctionGroup(
       name: _trigonometryGroup,
       keys: [
-        KeyType(groupName: 'Trigonometry', label: 'SIN'),
-        KeyType(groupName: 'Trigonometry', label: 'COS'),
-        KeyType(groupName: 'Trigonometry', label: 'TAN'),
+        KeyType(groupName: 'Trigonometry', id: 'SIN', label: 'SIN'),
+        KeyType(groupName: 'Trigonometry', id: 'COS', label: 'COS'),
+        KeyType(groupName: 'Trigonometry', id: 'TAN', label: 'TAN'),
       ],
     ),
   ];

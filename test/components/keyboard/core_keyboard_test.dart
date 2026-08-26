@@ -8,11 +8,11 @@ void main() {
   group('CoreKeyboard', () {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: "Basic Geometry"),
+        name: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         keys: [
-          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+          KeyType(groupName: 'Basic Geometry', id: 'Area', label: 'Area', action: () {}),
           KeyType(
-              groupName: 'Basic Geometry', label: 'Perimeter', action: () {}),
+              groupName: 'Basic Geometry', id: 'Perimeter', label: 'Perimeter', action: () {}),
         ],
       ),
     ];
@@ -28,7 +28,7 @@ void main() {
           ),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -57,7 +57,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (digit) => pressedDigit = digit,
               onUnitSelected: (_) {},
@@ -89,7 +89,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -124,7 +124,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -158,7 +158,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -190,7 +190,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -218,7 +218,7 @@ void main() {
 
       final emptyGroups = [
         const FunctionGroup(
-          name: GroupNameType(label: ""),
+          name: GroupNameType(id: "", label: ""),
           keys: [],
         ),
       ];
@@ -228,7 +228,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: ""),
+              currentGroup: const GroupNameType(id: "", label: ""),
               allGroups: emptyGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -257,7 +257,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -298,7 +298,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
@@ -342,7 +342,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(label: "Basic Geometry"),
+              currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
               allGroups: testGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},

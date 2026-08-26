@@ -120,7 +120,7 @@ class _CoreFunctionKeyBottomSheetState
                         colors.keyboardUnits;
                     final isSelected = group.name == widget.selectedGroup;
                     return Padding(
-                      key: ValueKey(group.name.label),
+                      key: ValueKey(group.name.id),
                       padding: const EdgeInsets.only(
                         bottom: CoreSpacing.space3,
                       ),
