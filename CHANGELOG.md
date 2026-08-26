@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.13.1] - CoreSearchBox exposes test keys on the inner text field and clear button
+
+### ✨ Features
+
+- **CoreSearchBox**: exposes `CoreSearchBox.textFieldKey` (`core_search_box_text_field`) on the inner text field and promotes the existing clear-button key to `CoreSearchBox.clearButtonKey` (`core_search_box_clear_button`, string unchanged), so app widget tests can target both with `find.byKey` instead of fragile `find.byType(TextFormField)` descendant finders. Both keys are shared statics, matching `CoreInputChip.removeButtonKey` — scope with `find.descendant` when a screen renders more than one search box (CA-952)
+
+### 🧪 Tests
+
+- Widget tests pin both key strings, assert the keyed widget is the single rendered text field, and pin the shared-static behavior across two instances; the suite migrated to the shared `buildTestApp` harness with `CoreTheme.light()` and every finder now goes through the key constants
+
 ## [0.13.0] - CoreDateFilterChip active pill reuses the CoreInputChip primitive
 
 ### ✨ Features

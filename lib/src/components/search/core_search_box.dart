@@ -47,6 +47,22 @@ class CoreSearchBox extends StatefulWidget {
     this.clearSemanticLabel = 'Clear search',
   });
 
+  /// Key on the inner text field.
+  ///
+  /// Use this in tests to type into or read the field without a type-based
+  /// finder: `tester.enterText(find.byKey(CoreSearchBox.textFieldKey), ...)`.
+  /// The key is shared by every [CoreSearchBox]; when a screen renders more
+  /// than one, scope the lookup with `find.descendant`.
+  static const Key textFieldKey = Key('core_search_box_text_field');
+
+  /// Key on the clear (×) button's tap target.
+  ///
+  /// Use this in tests to locate it:
+  /// `find.byKey(CoreSearchBox.clearButtonKey)`. The button is only present
+  /// while the field has text and is enabled. Shared by every instance,
+  /// like [textFieldKey].
+  static const Key clearButtonKey = Key('core_search_box_clear_button');
+
   @override
   State<CoreSearchBox> createState() => _CoreSearchBoxState();
 }
@@ -143,6 +159,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
     final isDisabled = !widget.enabled;
 
     return TextFormField(
+      key: CoreSearchBox.textFieldKey,
       controller: _controller,
       focusNode: _focusNode,
       enabled: widget.enabled,
@@ -165,7 +182,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
                 button: true,
                 label: widget.clearSemanticLabel,
                 child: InkWell(
-                  key: const ValueKey('core_search_box_clear_button'),
+                  key: CoreSearchBox.clearButtonKey,
                   onTap: _handleClear,
                   borderRadius: BorderRadius.circular(CoreSpacing.space5),
                   child: Padding(
