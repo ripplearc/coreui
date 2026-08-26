@@ -20,7 +20,10 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -38,6 +41,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -71,6 +76,8 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
           chipsList: [
             CoreCalculatorChip(
               label: 'Length',
@@ -100,13 +107,16 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+            ),
           ),
         ),
       );
 
       expect(
-        find.text(CoreDisplayArea.defaultHistoryPlaceholder),
+        find.text('Here will show what you type'),
         findsOneWidget,
       );
     });
@@ -118,7 +128,10 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -133,7 +146,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(label: 'Current Total'),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
+          label: 'Current Total',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -150,7 +167,11 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(isTyping: true),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+              isTyping: true,
+            ),
           ),
         ),
       );
@@ -170,7 +191,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(value: '1234.56'),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
+          value: '1234.56',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -186,6 +211,8 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => const CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
           hasError: true,
           errorMessage: 'Dimension Error',
           errorTitle: 'Error',
@@ -209,6 +236,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -238,6 +267,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               hasError: true,
               errorTitle: errorTitle,
             ),
@@ -259,6 +290,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C',
               dependentKeyValue: '16in',
               onPressedDependentKey: () {},
@@ -286,6 +319,8 @@ void main() {
             theme: theme,
             home: const Scaffold(
               body: CoreDisplayArea(
+                closeSemanticLabel: 'Close',
+                historyPlaceholder: 'Here will show what you type',
                 previousSessions: [
                   CoreHistorySessionData(
                     dateLabel: 'Previous',
@@ -324,6 +359,8 @@ void main() {
             theme: theme,
             home: const Scaffold(
               body: CoreDisplayArea(
+                closeSemanticLabel: 'Close',
+                historyPlaceholder: 'Here will show what you type',
                 previousSessions: [
                   CoreHistorySessionData(
                     dateLabel: 'Previous',
@@ -364,6 +401,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               previousSessions: [
                 CoreHistorySessionData(
                   dateLabel: 'Oct 20, 2026',

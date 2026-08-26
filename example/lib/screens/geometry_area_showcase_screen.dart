@@ -89,6 +89,8 @@ class _GeometryAreaShowcaseScreenState
                 return Column(
                   children: [
                     CoreDisplayArea(
+                      closeSemanticLabel: 'Close',
+                      historyPlaceholder: 'Here will show what you type',
                       label: state.activeInputLabel ?? 'Length',
                       value: state.currentInputValue.isEmpty
                           ? '0'

@@ -17,7 +17,10 @@ void main() {
             textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
           ),
           home: const Scaffold(
-            body: CoreDisplayArea(),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+            ),
           ),
         ),
       );
@@ -57,6 +60,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               onClose: () => closed = true,
             ),
           ),
@@ -81,6 +86,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -107,23 +114,28 @@ void main() {
       expect(chipFinder, findsNWidgets(3));
     });
 
-    testWidgets('shows default placeholder text when chipsList is empty',
+    testWidgets('announces the provided closeSemanticLabel on the close icon',
         (WidgetTester tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
+      final semantics = tester.ensureSemantics();
 
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Cerrar',
+              historyPlaceholder: 'Aqui aparecera lo que escribas',
+            ),
           ),
         ),
       );
 
-      expect(find.byType(CoreCalculatorChip), findsNothing);
-      expect(
-          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
+      // Deliberately non-English: proves the string is threaded through to the
+      // icon rather than a hardcoded default being announced.
+      expect(find.bySemanticsLabel('Cerrar'), findsOneWidget);
+      semantics.dispose();
     });
 
     testWidgets('shows custom historyPlaceholder text when chipsList is empty',
@@ -136,6 +148,7 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
               historyPlaceholder: 'Enter a value to begin',
             ),
           ),
@@ -156,6 +169,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Width',
@@ -182,6 +197,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Item 1',
@@ -227,7 +244,11 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(label: 'Total Output'),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+              label: 'Total Output',
+            ),
           ),
         ),
       );
@@ -241,7 +262,12 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(label: 'Total Output', isTyping: true),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+              label: 'Total Output',
+              isTyping: true,
+            ),
           ),
         ),
       );
@@ -255,7 +281,12 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(label: 'Total Output', isTyping: false),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+              label: 'Total Output',
+              isTyping: false,
+            ),
           ),
         ),
       );
@@ -268,7 +299,11 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(value: '123.45'),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+              value: '123.45',
+            ),
           ),
         ),
       );
@@ -281,7 +316,10 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(),
+            body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
+            ),
           ),
         ),
       );
@@ -296,6 +334,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               value: '123.45',
               hasError: true,
               errorTitle: 'Custom Error',
@@ -315,6 +355,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Width',
@@ -340,6 +382,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [],
               hasError: true,
               errorMessage: 'Dimension Error',
@@ -349,7 +393,7 @@ void main() {
       );
 
       expect(
-          find.text(CoreDisplayArea.defaultHistoryPlaceholder), findsOneWidget);
+          find.text('Here will show what you type'), findsOneWidget);
       expect(find.text('Dimension Error'), findsNothing);
     });
 
@@ -360,6 +404,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               value: '123.45',
               hasError: true,
               errorTitle: '',
@@ -378,6 +424,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Width',
@@ -400,6 +448,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C',
               dependentKeyValue: '16in',
             ),
@@ -418,6 +468,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C',
             ),
           ),
@@ -430,6 +482,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C:',
             ),
           ),
@@ -442,6 +496,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C: ',
             ),
           ),
@@ -458,6 +514,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               dependentKeyLabel: 'O.C',
               onPressedDependentKey: () => pressed = true,
             ),
@@ -480,6 +538,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               value: '16ft 14in',
               dependentKeyLabel: 'O.C',
@@ -538,6 +598,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               value: '16ft 14in',
               dependentKeyLabel: 'O.C',
@@ -600,6 +662,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               value: '16ft 14in',
               dependentKeyLabel: 'O.C',
@@ -647,6 +711,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               value: '16ft 14in',
               dependentKeyLabel: 'O.C',
@@ -694,6 +760,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               chipsList: [
                 CoreCalculatorChip(
                     label: '1', type: CoreCalculatorChipType.active),
@@ -746,6 +814,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               onClose: () => closed = true,
               chipsList: const [
                 CoreCalculatorChip(

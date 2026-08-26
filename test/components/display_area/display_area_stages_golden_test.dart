@@ -95,6 +95,8 @@ void main() {
             viewInsets: EdgeInsets.zero,
           ),
           child: CoreDisplayArea(
+            closeSemanticLabel: 'Close',
+            historyPlaceholder: 'Here will show what you type',
             label: 'Length',
             value: '16ft 14in',
             isTyping: false,
@@ -181,6 +183,8 @@ void main() {
       ),
       home: Scaffold(
         body: CoreDisplayArea(
+          closeSemanticLabel: 'Close',
+          historyPlaceholder: 'Here will show what you type',
           label: 'Length',
           value: '16ft 14in',
           isTyping: false,

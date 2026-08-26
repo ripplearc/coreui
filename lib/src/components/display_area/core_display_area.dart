@@ -33,23 +33,16 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// Use [onStageChanged] to react to stage transitions — for example to
 /// animate a keyboard component out of view.
 class CoreDisplayArea extends StatefulWidget {
-  /// The default placeholder text shown when no chips are provided.
-  static const String defaultHistoryPlaceholder =
-      'Here will show what you type';
-
-  /// The default semantic label for the close icon.
-  static const String defaultCloseSemanticLabel = 'Close';
-
   /// Chip-count threshold. More than this value activates the three-stage path.
   static const int _twoRowChipThreshold = 5;
 
   const CoreDisplayArea({
     super.key,
     this.onClose,
-    this.closeSemanticLabel = defaultCloseSemanticLabel,
+    required this.closeSemanticLabel,
     this.chipsList = const [],
     this.previousSessions = const [],
-    this.historyPlaceholder = defaultHistoryPlaceholder,
+    required this.historyPlaceholder,
     this.label,
     this.isTyping = false,
     this.value,
@@ -66,7 +59,12 @@ class CoreDisplayArea extends StatefulWidget {
   final VoidCallback? onClose;
 
   /// The semantic label announced by screen readers for the close icon.
-  /// Defaults to [defaultCloseSemanticLabel].
+  ///
+  /// Required: localisation is the consumer's responsibility. Pass a localised
+  /// string from the app layer:
+  /// ```dart
+  /// closeSemanticLabel: AppLocalizations.of(context).closeButton,
+  /// ```
   final String closeSemanticLabel;
 
   /// Current-session chips displayed in the history panel.
@@ -80,8 +78,8 @@ class CoreDisplayArea extends StatefulWidget {
 
   /// Placeholder text shown when [chipsList] is empty.
   ///
-  /// Defaults to [defaultHistoryPlaceholder]. Pass a localised string from
-  /// the app layer:
+  /// Required: localisation is the consumer's responsibility. Pass a localised
+  /// string from the app layer:
   /// ```dart
   /// historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
   /// ```

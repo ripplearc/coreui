@@ -30,6 +30,8 @@ void main() {
             Text('Display Area'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Area',
               chipsList: [
                 CoreCalculatorChip(
@@ -79,6 +81,8 @@ void main() {
             Text('Display Area - two rows of chips'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               isTyping: true,
               chipsList: [
@@ -132,6 +136,8 @@ void main() {
             const Text('Display Area - empty state'),
             const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               onClose: () {},
             ),
           ],
@@ -169,6 +175,8 @@ void main() {
             const Text('Display Area - more than two rows'),
             const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               onClose: () {},
               label: 'Length',
               isTyping: true,
@@ -254,6 +262,8 @@ void main() {
             Text('Display Area - Error state'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: 'Close',
+              historyPlaceholder: 'Here will show what you type',
               label: 'Length',
               hasError: true,
               errorMessage: 'Dimension Error',
