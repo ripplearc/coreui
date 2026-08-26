@@ -14,11 +14,12 @@ void main() {
   group('CoreKeyboard – accessibility', () {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: "Basic Geometry"),
+        name: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         keys: [
-          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
+          KeyType(groupName: 'Basic Geometry', id: 'Area', label: 'Area', action: () {}),
           KeyType(
             groupName: 'Basic Geometry',
+            id: 'Perimeter',
             label: 'Perimeter',
             action: () {},
           ),
@@ -28,7 +29,7 @@ void main() {
 
     Widget buildTestKeyboard() {
       return CoreKeyboard(
-        currentGroup: const GroupNameType(label: "Basic Geometry"),
+        currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         allGroups: testGroups,
         onDigitPressed: (_) {},
         onUnitSelected: (_) {},

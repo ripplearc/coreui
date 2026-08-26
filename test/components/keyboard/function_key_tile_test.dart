@@ -23,6 +23,7 @@ void main() {
                 child: FunctionKeyTile(
                   keyType: const KeyType(
                     groupName: 'test',
+                    id: 'Test',
                     label: 'Test',
                     semanticLabel: 'Test key',
                   ),

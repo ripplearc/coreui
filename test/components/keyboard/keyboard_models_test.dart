@@ -46,4 +46,42 @@ void main() {
       expect(UnitSystem.metric.label, equals('Metric'));
     });
   });
+
+  group('GroupNameType identity', () {
+    // The whole point of CA-898: a localized keyboard re-renders `label`, and
+    // group selection must not notice. Equality keys on `id` alone.
+    test('groups with the same id are equal across differing labels', () {
+      const english = GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
+      const spanish = GroupNameType(id: 'Basic Geometry', label: 'Geometria Basica');
+
+      expect(english, equals(spanish));
+      expect(english.hashCode, equals(spanish.hashCode));
+    });
+
+    test('groups with different ids are not equal despite a shared label', () {
+      const materials = GroupNameType(id: 'Materials', label: 'Shared');
+      const trigonometry = GroupNameType(id: 'Trigonometry', label: 'Shared');
+
+      expect(materials, isNot(equals(trigonometry)));
+    });
+
+    test('a localized group still resolves as a map key', () {
+      const key = GroupNameType(id: 'Materials', label: 'Materials');
+      final accents = {key: 0xFF0000};
+
+      expect(
+        accents[const GroupNameType(id: 'Materials', label: 'Materiales')],
+        equals(0xFF0000),
+      );
+    });
+  });
+
+  group('KeyType identity', () {
+    test('id is independent of the displayed label', () {
+      const key = KeyType(id: 'Rise', groupName: 'Basic Geometry', label: 'Subida');
+
+      expect(key.id, equals('Rise'));
+      expect(key.label, equals('Subida'));
+    });
+  });
 }
