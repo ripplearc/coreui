@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.14.0] - CoreDivider hairline rule
+
+### ✨ Features
+
+- **CoreDivider**: new 1px hairline rule that replaces the hand-tokened Material `Divider` call sites in the consuming app (the search-results end-of-results footer and the auth pages' "or" separators), which each re-applied `thickness: 1` + `lineLight` with private constants (CA-1016)
+  - Exactly `CoreDivider.thickness` (1px) tall with no built-in whitespace — unlike Material's `Divider` and its default 16px `height`, vertical rhythm stays at the call site as `CoreSpacing` tokens; in a `Row` via `Expanded` the rule adds no vertical extent, so the label-separator row is sized by the text alone
+  - Color defaults to the theme extension's `lineLight`, so the rule tracks `CoreTheme.light()` and `CoreTheme.dark()`; `color` overrides it for surfaces that need a different line token
+  - Every Material `Divider` parameter is pinned — including `radius: BorderRadius.zero` — so a consuming app's ambient `DividerThemeData` cannot restyle the rule
+  - `indent` / `endIndent` inset the rule from either edge; pass `CoreSpacing` tokens
+  - `resolvedColor(context)` (`@visibleForTesting`) exposes the color `build` paints, so tests assert color resolution without reaching into the widget tree
+  - Purely decorative: exposes no semantic node, matching Material's `Divider`
+  - Defaults are derived from the two consumer call-site families, not measured from Figma directly; CA-1016 names the pagination-footer frame (`65869:151824`) as the design source for review cross-checking
+- Divider showcase screen added to the example catalogue (full-bleed, inset, custom color, label separator, end-of-list footer)
+
+### 🧪 Tests
+
+- Widget tests pin the 1px-tall/full-width geometry, the text-only row height and centering in the label-separator `Row`, and color resolution across both themes plus the explicit override
+- A11y test pins the purely-decorative contract — no announceable semantics node — in light and dark
+- Goldens for the three rule variants (full-bleed, inset, `lineMid` override), light + dark
+
 ## [0.13.1] - CoreSearchBox exposes test keys on the inner text field and clear button
 
 > Version note: 0.13.1 is a deliberate patch even though the change is a Feature — it is additive-only, and 0.14.0 is already claimed by the open CA-898 (#158) and CA-654 (#157) branches. Whichever of #157/#158/#159 merges last reconciles the version headers.

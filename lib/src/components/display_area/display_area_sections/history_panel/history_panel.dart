@@ -200,6 +200,8 @@ class _PreviousChipsSection extends StatelessWidget {
       children: [
         for (int i = start; i < sessions.length; i++) ...[
           if (i > start)
+            // TODO: Migrate this hand-rolled hairline to CoreDivider
+            // (https://ripplearc.youtrack.cloud/issue/CA-1020).
             Divider(
               thickness: _kDividerThickness,
               color: colors.lineDarkOutline,

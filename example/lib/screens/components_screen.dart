@@ -8,6 +8,7 @@ import 'package:example/screens/date_filter_chip_showcase_screen.dart';
 import 'package:example/screens/date_picker_showcase_screen.dart';
 import 'package:example/screens/date_range_sheet_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
+import 'package:example/screens/divider_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
@@ -208,6 +209,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Multi Select Sheet Component',
                 const MultiSelectSheetShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Divider Component',
+                const DividerShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
