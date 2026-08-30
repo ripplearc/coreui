@@ -29,10 +29,11 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// | Search results end-of-results footer   | 1         | `lineLight` |
 /// | Auth pages "or" separator rows (x2)    | 1         | `lineLight` |
 ///
-/// Caveat: the table measures the consuming app's *code*. CA-1016 points at
-/// the Figma pagination-footer frame (`65869:151824`) as the design source;
-/// the values here are code-derived and have not been verified against that
-/// frame directly.
+/// The table measures the consuming app's *code*. CA-1016 points at the
+/// Figma pagination-footer frame (`65869:151824`) as the design source, and
+/// the values here were verified against that frame directly during review:
+/// the thickness (1px) and the color (`Border Color/Line Light`, `0xEAECF0`,
+/// matching `lineLight`) both match.
 ///
 /// ### Theming
 /// The hairline color resolves from the theme extension, so the rule tracks
