@@ -437,8 +437,8 @@ class _TooltipOverlayWidget extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       child: Stack(
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: Colors.transparent),
+          Positioned.fill(
+            child: ColoredBox(color: colors.transparent),
           ),
           Positioned(
             left: 0,
@@ -446,7 +446,7 @@ class _TooltipOverlayWidget extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Material(
-              color: Colors.transparent,
+              color: colors.transparent,
               child: FadeTransition(
                 opacity: fadeAnimation,
                 child: LayoutBuilder(
