@@ -5,7 +5,10 @@ import 'color_tokens.dart';
 import 'theme_extensions.dart';
 
 class CoreTheme {
-  static AppColorsExtension _getLightAppColors() {
+  /// The light-mode token mapping, exposed publicly so
+  /// [AppColorsExtension.create] can delegate to it instead of keeping its
+  /// own copy of the mapping in sync by hand.
+  static AppColorsExtension lightAppColors() {
     return AppColorsExtension(
       // Text Colors
       textHeadline: CoreTextColors.headline,
@@ -105,7 +108,8 @@ class CoreTheme {
     );
   }
 
-  static AppColorsExtension _getDarkAppColors() {
+  /// The dark-mode counterpart of [lightAppColors].
+  static AppColorsExtension darkAppColors() {
     return AppColorsExtension(
       // Text Colors
       textHeadline: CoreDarkTextColors.headline,
@@ -219,7 +223,7 @@ class CoreTheme {
           ? CoreDarkBackgroundColors.pageBackground
           : CoreBackgroundColors.pageBackground,
       extensions: [
-        isDark ? _getDarkAppColors() : _getLightAppColors(),
+        isDark ? darkAppColors() : lightAppColors(),
         isDark ? AppTypographyExtension.createDark() : AppTypographyExtension.create(),
       ],
     );
