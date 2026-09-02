@@ -110,7 +110,11 @@ class CoreTextColors {
 // Background-related color tokens
 class CoreBackgroundColors {
   static const Color pageBackground = _CoreColorPalette.gray50;
-  static const Color backgroundGrayLight = _CoreColorPalette.gray50;
+  // The raised-surface step above the page. It was gray50 — identical to
+  // pageBackground (1.00:1) — so cards, tracks and sheets had no surface to
+  // sit on and relied entirely on borders/shadows. Matches Figma's #FFFFFF
+  // nav pill spec.
+  static const Color backgroundGrayLight = _CoreColorPalette.gray25;
   static const Color backgroundGrayMid = _CoreColorPalette.gray100;
   static const Color backgroundBlueLight = _CoreColorPalette.blue25;
   static const Color backgroundBlueMid = _CoreColorPalette.blue50;
@@ -148,7 +152,10 @@ class CoreKeyboardColors {
   static const Color numbers = _CoreColorPalette.gray200;
   static const Color calculate = _CoreColorPalette.blue50;
   static const Color units = _CoreColorPalette.blue200;
-  static const Color functions = _CoreColorPalette.blue600;
+  // Key fill, per Figma "Keyboard Buttons/Functions" (Grey/100). It was blue600,
+  // which made it an accent colour rather than a key surface; the function-group
+  // accent now comes from textInfo.
+  static const Color functions = _CoreColorPalette.gray100;
   static const Color actions = _CoreColorPalette.blue700;
   static const Color main = _CoreColorPalette.blue800;
   static const Color transparent = _CoreColorPalette.transparent;
@@ -159,8 +166,12 @@ class CoreIconColors {
   static const Color dark = _CoreColorPalette.orient800;
   static const Color grayDark = _CoreColorPalette.gray900;
   static const Color grayMid = _CoreColorPalette.gray500;
-  static const Color grayLight = _CoreColorPalette.gray300;
+  // Figma "Icon Color/Grey Light" is Grey/400; gray300 failed 3:1 on the nav row.
+  static const Color grayLight = _CoreColorPalette.gray400;
   static const Color white = _CoreColorPalette.gray25;
+  /// Icon content on [CoreBackgroundColors.backgroundDarkGray] — the inverse
+  /// surface. Flips with that surface, unlike [white].
+  static const Color inverse = _CoreColorPalette.gray25;
   static const Color red = _CoreColorPalette.red600;
   static const Color green = _CoreColorPalette.green600;
   static const Color orange = _CoreColorPalette.orange500;
@@ -264,7 +275,10 @@ class CoreDarkBackgroundColors {
   static const Color backgroundRedMid = _CoreColorPalette.red800;
   static const Color backgroundOrangeLight = _CoreColorPalette.orange900;
   static const Color backgroundOrangeMid = _CoreColorPalette.orange800;
-  static const Color backgroundDarkGray = _CoreColorPalette.gray900;
+  // The inverse surface: its polarity is opposite the page, so when the page
+  // flips dark this must flip light. gray900 collided with pageBackground,
+  // flattening the bottom nav bar and hiding the tooltip.
+  static const Color backgroundDarkGray = _CoreColorPalette.gray100;
   static const Color backgroundDarkOrient = _CoreColorPalette.orient700;
   static const Color backgroundOrientLight = _CoreColorPalette.orient900;
   static const Color backgroundOrientMid = _CoreColorPalette.orient800;
@@ -308,6 +322,7 @@ class CoreDarkIconColors {
   static const Color grayMid = _CoreColorPalette.gray400;
   static const Color grayLight = _CoreColorPalette.gray500;
   static const Color white = _CoreColorPalette.gray25;
+  static const Color inverse = _CoreColorPalette.gray900;
   static const Color red = _CoreColorPalette.red300;
   static const Color green = _CoreColorPalette.green300;
   static const Color orange = _CoreColorPalette.orange300;

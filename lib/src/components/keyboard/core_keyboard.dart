@@ -118,8 +118,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
               name: GroupNameType(label: "Basic Geometry"), keys: []),
     );
     final colors = Theme.of(context).coreColors;
-    final accent = widget.groupAccentColors[widget.currentGroup] ??
-        colors.keyboardFunctions;
+    final accent =
+        widget.groupAccentColors[widget.currentGroup] ?? colors.textInfo;
 
     return Container(
       decoration: BoxDecoration(
