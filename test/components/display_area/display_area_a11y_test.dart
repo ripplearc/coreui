@@ -118,7 +118,7 @@ void main() {
       );
 
       expect(
-        find.text('Here will show what you type'),
+        find.text(testHistoryPlaceholder),
         findsOneWidget,
       );
     });

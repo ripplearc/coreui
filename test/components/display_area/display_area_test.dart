@@ -395,7 +395,7 @@ void main() {
       );
 
       expect(
-          find.text('Here will show what you type'), findsOneWidget);
+          find.text(testHistoryPlaceholder), findsOneWidget);
       expect(find.text('Dimension Error'), findsNothing);
     });
 
