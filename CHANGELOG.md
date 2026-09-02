@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.14.1] - Dark-theme colour audit: switch contrast, tooltip theming, AppColorsExtension dedup
+
+### 🔧 Fixes
+
+- **CoreSwitch**: the normal (non-error) inactive thumb fill moves from `lineDarkOutline` to `iconGrayMid` so it clears WCAG 1.4.11 (3:1 non-text contrast) against the track in both `CoreTheme.light()` and `CoreTheme.dark()`; the error-state thumb is unchanged (F10 in the dark-theme colour audit)
+  - `_getInactiveThumbColor` now delegates to `_getBorderColor` instead of duplicating its body
+- **CoreTooltip**: theme-dependent colours and typography are captured in `_showTooltip()` from the widget's declaring context and threaded into the overlay, instead of being re-resolved against the root navigator's overlay context. A tooltip inside a locally themed subtree (e.g. a `Theme(data: CoreTheme.dark())` wrapper under a light `MaterialApp`) now renders with its local theme. This matches Flutter's own `Tooltip`, which also resolves theme values at show time (F7 in the dark-theme colour audit)
+
+### 🔧 Internal
+
+- **AppColorsExtension**: `create()` / `createDark()` now delegate to `CoreTheme.lightAppColors()` / `CoreTheme.darkAppColors()` instead of holding a second copy of the token map. Output is unchanged (F11 in the dark-theme colour audit)
+
+### 🧪 Tests
+
+- `test/theme/theme_extensions_test.dart` pins `AppColorsExtension.create()` / `createDark()` field-for-field against `CoreTheme.lightAppColors()` / `darkAppColors()`, and asserts the dark factory returns the dark palette rather than the light one
+- Switch goldens: a dark golden is added (`switch_component_dark.png`) and the light golden is refreshed for the new inactive-thumb colour
+- `CoreTooltip` gains a regression test for the locally-themed-subtree case
+
 ## [0.14.0] - CoreDivider hairline rule
 
 ### ✨ Features
