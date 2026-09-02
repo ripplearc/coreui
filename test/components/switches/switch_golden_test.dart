@@ -4,84 +4,101 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+ThemeData _createTestTheme() {
+  return CoreTheme.light().copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
+ThemeData _createDarkTestTheme() {
+  return CoreTheme.dark().copyWith(
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
+Widget _buildVariants() {
+  return const Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      CoreSwitch(
+        type: CoreSwitchType.normal,
+        value: false,
+        onChanged: _noop,
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.normal,
+        value: true,
+        onChanged: _noop,
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.lock,
+        value: false,
+        onChanged: _noop,
+        activeLabel: 'Lock',
+        inactiveLabel: 'Unlock',
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.lock,
+        value: true,
+        onChanged: _noop,
+        activeLabel: 'Lock',
+        inactiveLabel: 'Unlock',
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.normal,
+        value: false,
+        onChanged: _noop,
+        activeLabel: 'Public',
+        inactiveLabel: 'Private',
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.normal,
+        value: true,
+        onChanged: _noop,
+        activeLabel: 'Public',
+        inactiveLabel: 'Private',
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.imperial,
+        value: false,
+        onChanged: _noop,
+        activeLabel: 'Metric',
+        inactiveLabel: 'Imperial',
+      ),
+      SizedBox(height: 10),
+      CoreSwitch(
+        type: CoreSwitchType.imperial,
+        value: true,
+        onChanged: _noop,
+        activeLabel: 'Metric',
+        inactiveLabel: 'Imperial',
+      ),
+    ],
+  );
+}
+
+void _noop(bool _) {}
+
 void main() {
   setUpAll(() async {
     await loadFonts();
   });
 
-  final colors = AppColorsExtension.create();
-
-  testWidgets('CoreSwitch Golden Test - All Variants',
-      (WidgetTester tester) async {
+  Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
     final widget = MaterialApp(
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CoreSwitch(
-                type: CoreSwitchType.normal,
-                value: false,
-                onChanged: (_) {},
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.normal,
-                value: true,
-                onChanged: (_) {},
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.lock,
-                value: false,
-                onChanged: (_) {},
-                activeLabel: 'Lock',
-                inactiveLabel: 'Unlock',
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.lock,
-                value: true,
-                onChanged: (_) {},
-                activeLabel: 'Lock',
-                inactiveLabel: 'Unlock',
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.normal,
-                value: false,
-                onChanged: (_) {},
-                activeLabel: 'Public',
-                inactiveLabel: 'Private',
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.normal,
-                value: true,
-                onChanged: (_) {},
-                activeLabel: 'Public',
-                inactiveLabel: 'Private',
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.imperial,
-                value: false,
-                onChanged: (_) {},
-                activeLabel: 'Metric',
-                inactiveLabel: 'Imperial',
-              ),
-              const SizedBox(height: 10),
-              CoreSwitch(
-                type: CoreSwitchType.imperial,
-                value: true,
-                onChanged: (_) {},
-                activeLabel: 'Metric',
-                inactiveLabel: 'Imperial',
-              ),
-            ],
-          ),
+          child: _buildVariants(),
         ),
       ),
     );
@@ -89,10 +106,25 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('CoreSwitch Golden Test - All Variants',
+      (WidgetTester tester) async {
+    await pumpVariants(tester, _createTestTheme());
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/switch_component.png'),
+    );
+  });
+
+  testWidgets('CoreSwitch Golden Test - All Variants - Dark',
+      (WidgetTester tester) async {
+    await pumpVariants(tester, _createDarkTestTheme());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/switch_component_dark.png'),
     );
   });
 }

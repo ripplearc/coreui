@@ -139,14 +139,8 @@ class CoreSwitch extends StatelessWidget {
       (activeLabel?.isNotEmpty ?? false) ||
       (inactiveLabel?.isNotEmpty ?? false);
 
-  Color _getInactiveBorderColor(AppColorsExtension colors) {
-    return inactiveColor ??
-        (switch (type) {
-          CoreSwitchType.lock => colors.iconRed,
-          CoreSwitchType.imperial => colors.iconGreen,
-          CoreSwitchType.normal => colors.lineDarkOutline,
-        });
-  }
+  Color _getInactiveThumbColor(AppColorsExtension colors) =>
+      _getBorderColor(colors);
 
   Color _getInactiveTextColor(AppColorsExtension colors) {
     return inactiveColor ??
@@ -209,7 +203,7 @@ class CoreSwitch extends StatelessWidget {
     final colors = Theme.of(context).coreColors;
 
     final Color effectiveActiveColor = colors.iconDark;
-    final Color effectiveInactiveBorderColor = _getInactiveBorderColor(colors);
+    final Color effectiveInactiveThumbColor = _getInactiveThumbColor(colors);
     final Color effectiveInactiveTextColor = _getInactiveTextColor(colors);
 
     // Background and border colors based on state
@@ -272,7 +266,7 @@ class CoreSwitch extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: value
                         ? colors.textInverse
-                        : effectiveInactiveBorderColor,
+                        : effectiveInactiveThumbColor,
                     shape: BoxShape.circle,
                   ),
                 ),
