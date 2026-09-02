@@ -74,6 +74,16 @@ void main() {
         equals(0xFF0000),
       );
     });
+
+    // Equality depends on `id` alone, so two groups that both end up with an
+    // empty id -- the shape a missed migration takes -- would silently share
+    // one equality bucket and one map key. Rejected at construction instead.
+    test('an empty id is rejected at construction', () {
+      expect(
+        () => GroupNameType(id: '', label: 'Basic Geometry'),
+        throwsA(isA<AssertionError>()),
+      );
+    });
   });
 
   group('KeyType identity', () {

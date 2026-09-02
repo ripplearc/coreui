@@ -216,9 +216,12 @@ void main() {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
 
+      // "Empty" here means the group carries no keys, which is what this
+      // test exercises. The id stays real: it is the group's identity, and
+      // GroupNameType now rejects an empty one.
       final emptyGroups = [
         const FunctionGroup(
-          name: GroupNameType(id: "", label: ""),
+          name: GroupNameType(id: "Empty", label: ""),
           keys: [],
         ),
       ];
@@ -228,7 +231,7 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreKeyboard(
-              currentGroup: const GroupNameType(id: "", label: ""),
+              currentGroup: const GroupNameType(id: "Empty", label: ""),
               allGroups: emptyGroups,
               onDigitPressed: (_) {},
               onUnitSelected: (_) {},
