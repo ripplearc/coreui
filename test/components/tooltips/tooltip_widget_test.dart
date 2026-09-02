@@ -231,6 +231,54 @@ void main() {
       expect(tooltipCenter.dy < childCenter.dy, isTrue);
     });
 
+    testWidgets(
+        'uses the theme of its declaring context, not the overlay root',
+        (WidgetTester tester) async {
+      // The app root is light, but the tooltip is declared inside a locally
+      // dark-themed subtree. The overlay it paints into builds against the
+      // root navigator's context, so if the tooltip re-resolved its theme
+      // inside the overlay builder it would render with the root's light
+      // colors instead of the local dark ones.
+      late Color rootInverse;
+      late Color localInverse;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Builder(
+              builder: (rootContext) {
+                rootInverse = Theme.of(rootContext).coreColors.textInverse;
+                return Theme(
+                  data: CoreTheme.dark(),
+                  child: Builder(
+                    builder: (localContext) {
+                      localInverse =
+                          Theme.of(localContext).coreColors.textInverse;
+                      return const CoreTooltip(
+                        message: testMessage,
+                        child: testChild,
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.info));
+      await tester.pumpAndSettle();
+
+      expect(rootInverse, isNot(localInverse));
+      final text = tester.widget<Text>(find.text(testMessage));
+      expect(
+        text.style,
+        isA<TextStyle>().having((style) => style.color, 'color', localInverse),
+      );
+    });
+
     testWidgets('meets accessibility guidelines', (WidgetTester tester) async {
       await setupA11yTest(tester);
 
