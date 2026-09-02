@@ -4,6 +4,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+import 'display_area_test_helpers.dart';
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -95,6 +97,8 @@ void main() {
             viewInsets: EdgeInsets.zero,
           ),
           child: CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
             label: 'Length',
             value: '16ft 14in',
             isTyping: false,
@@ -181,6 +185,8 @@ void main() {
       ),
       home: Scaffold(
         body: CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
           label: 'Length',
           value: '16ft 14in',
           isTyping: false,

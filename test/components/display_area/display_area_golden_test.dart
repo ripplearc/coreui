@@ -4,6 +4,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+import 'display_area_test_helpers.dart';
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,8 @@ void main() {
             Text('Display Area'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               label: 'Area',
               chipsList: [
                 CoreCalculatorChip(
@@ -79,6 +83,8 @@ void main() {
             Text('Display Area - two rows of chips'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               isTyping: true,
               chipsList: [
@@ -132,6 +138,8 @@ void main() {
             const Text('Display Area - empty state'),
             const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               onClose: () {},
             ),
           ],
@@ -169,6 +177,8 @@ void main() {
             const Text('Display Area - more than two rows'),
             const SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               onClose: () {},
               label: 'Length',
               isTyping: true,
@@ -254,6 +264,8 @@ void main() {
             Text('Display Area - Error state'),
             SizedBox(height: CoreSpacing.space8),
             CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               hasError: true,
               errorMessage: 'Dimension Error',

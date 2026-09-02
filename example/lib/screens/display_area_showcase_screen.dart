@@ -101,6 +101,8 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                             ? const NeverScrollableScrollPhysics()
                             : const AlwaysScrollableScrollPhysics(),
                         child: CoreDisplayArea(
+                          closeSemanticLabel: 'Close',
+                          historyPlaceholder: 'Here will show what you type',
                           label: state.resultLabel ?? state.activeInputLabel,
                           value: state.resultValue ?? state.currentInputValue,
                           hasError: false,

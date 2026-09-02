@@ -23,6 +23,9 @@ The component is highly customizable and pairs perfectly with a state management
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 CoreDisplayArea(
+  // Both strings are required: localization is the consumer's responsibility.
+  closeSemanticLabel: AppLocalizations.of(context).closeButton,
+  historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
   label: 'Length',
   value: '16ft 14in',
   isTyping: false,
@@ -115,7 +118,7 @@ TweenAnimationBuilder<double>(
 | :--- | :--- | :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `label` | `String` | `''` | Main label text shown in the label section (e.g., 'Rise', 'Run').                                                                                                             |
 | `value` | `String` | `''` | Main value text shown prominently in the value section.                                                                                                                       |
-| `historyPlaceholder` | `String` | `'Here will show what you type'` | Text displayed in the history panel when `chipsList` is empty. **TODO: [CA-654]** https://ripplearc.youtrack.cloud/issue/CA-654/Display-Area-Parameterize-Hardcoded-i18n-Strings-in-historyPlaceholder-and-closeSemanticLabel. |
+| `historyPlaceholder` | `String` | **required** | Text displayed in the history panel when `chipsList` is empty. Has no default — pass a localized string from your app's localization layer. |
 
 ### State Properties
 | Property | Type | Default | Description |
@@ -148,7 +151,7 @@ Designed for secondary, context-specific buttons securely attached beneath the m
 ### Accessibility
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `closeSemanticLabel` | `String` | `'Close'` | The semantic label announced by screen readers for the close icon. **TODO: [CA-XXX]** Parameterize this hardcoded default. Ensure you pass a localized string in production. |
+| `closeSemanticLabel` | `String` | **required** | The semantic label announced by screen readers for the close icon. Has no default — pass a localized string so screen readers announce it in the user's language. |
 
 ---
 *Architectural Note: `CoreDisplayArea` heavily utilizes `AnimatedSize` aligned to `Alignment.topCenter` for its fluid layout transitions and relies on a deliberately calibrated swipe velocity threshold (`80px/sec`) to ensure intention-driven gestures without accidental triggers.*

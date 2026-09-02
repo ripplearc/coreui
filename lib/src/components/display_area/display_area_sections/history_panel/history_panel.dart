@@ -4,10 +4,10 @@ class _HistoryPanel extends StatelessWidget {
   const _HistoryPanel({
     super.key,
     this.onClose,
-    this.closeSemanticLabel = 'Close',
+    required this.closeSemanticLabel,
     required this.chipsList,
     this.previousSessions = const [],
-    this.historyPlaceholder = 'Here will show what you type',
+    required this.historyPlaceholder,
     required this.hasError,
     required this.errorMessage,
     required this.stage,

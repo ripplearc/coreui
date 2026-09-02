@@ -6,6 +6,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
 
+import 'display_area_test_helpers.dart';
+
 Future<void> setTestViewport(WidgetTester tester) async {
   addTearDown(() => tester.view.resetPhysicalSize());
   tester.view.physicalSize = const ui.Size(1100, 1600);
@@ -20,7 +22,10 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -38,6 +43,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -71,6 +78,8 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
           chipsList: [
             CoreCalculatorChip(
               label: 'Length',
@@ -100,13 +109,16 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(),
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+            ),
           ),
         ),
       );
 
       expect(
-        find.text(CoreDisplayArea.defaultHistoryPlaceholder),
+        find.text(testHistoryPlaceholder),
         findsOneWidget,
       );
     });
@@ -118,7 +130,10 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -133,7 +148,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(label: 'Current Total'),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          label: 'Current Total',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -150,7 +169,11 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: const Scaffold(
-            body: CoreDisplayArea(isTyping: true),
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              isTyping: true,
+            ),
           ),
         ),
       );
@@ -170,7 +193,11 @@ void main() {
       await setupA11yTest(tester);
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
-        (theme) => const CoreDisplayArea(value: '1234.56'),
+        (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          value: '1234.56',
+        ),
         find.byType(CoreDisplayArea),
         checkTapTargetSize: false,
         checkLabeledTapTarget: false,
@@ -186,6 +213,8 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => const CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
           hasError: true,
           errorMessage: 'Dimension Error',
           errorTitle: 'Error',
@@ -209,6 +238,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -238,6 +269,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               hasError: true,
               errorTitle: errorTitle,
             ),
@@ -259,6 +292,8 @@ void main() {
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               dependentKeyLabel: 'O.C',
               dependentKeyValue: '16in',
               onPressedDependentKey: () {},
@@ -286,6 +321,8 @@ void main() {
             theme: theme,
             home: const Scaffold(
               body: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
                 previousSessions: [
                   CoreHistorySessionData(
                     dateLabel: 'Previous',
@@ -324,6 +361,8 @@ void main() {
             theme: theme,
             home: const Scaffold(
               body: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
                 previousSessions: [
                   CoreHistorySessionData(
                     dateLabel: 'Previous',
@@ -364,6 +403,8 @@ void main() {
           theme: CoreTheme.light(),
           home: const Scaffold(
             body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
               previousSessions: [
                 CoreHistorySessionData(
                   dateLabel: 'Oct 20, 2026',

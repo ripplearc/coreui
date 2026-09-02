@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.15.0] - Localization ownership moves to the consumer
+
+### ⚠️ Breaking changes
+
+- **CoreDisplayArea**: `closeSemanticLabel` and `historyPlaceholder` are now **required**. The English defaults (`'Close'`, `'Here will show what you type'`) and the `defaultCloseSemanticLabel` / `defaultHistoryPlaceholder` constants that exposed them are gone, so a user-facing string can no longer reach the screen without passing through the consuming app's localization layer (CA-654)
+  - Migration: pass localized strings at every call site, e.g. `closeSemanticLabel: AppLocalizations.of(context).closeButton`. Callers that relied on the constants for test assertions should assert against their own localized value instead
+
+### 🧪 Tests
+
+- Display-area widget, golden, and a11y call sites updated to pass both strings explicitly; goldens are byte-identical since the default text is unchanged
+
 ## [0.14.1] - Dark-theme colour audit: switch contrast, tooltip theming, AppColorsExtension dedup
 
 ### 🔧 Fixes
