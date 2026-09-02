@@ -248,5 +248,80 @@ void main() {
       final semantics = tester.getSemantics(toggleFinder);
       expect(semantics.hint, isNotNull);
     });
+
+    // The regression CA-898 exists to close, exercised through the widget
+    // rather than only through GroupNameType's == / hashCode. Every other
+    // fixture in this suite sets id == label, so reverting the wiring here to
+    // match on `group.name.label` leaves the whole suite green -- verified.
+    // This case diverges the two: the sheet is handed groups whose labels are
+    // localized while the caller still holds the un-localized selectedGroup,
+    // exactly the state a locale switch produces mid-session.
+    testWidgets('selection survives a locale switch that changes only labels',
+        (tester) async {
+      final localizedGroups = [
+        FunctionGroup(
+          name: const GroupNameType(id: 'Trigonomety', label: 'Trigonometria'),
+          keys: [
+            KeyType(
+                groupName: 'Trigonomety',
+                id: 'sin',
+                label: 'sen',
+                action: () {}),
+          ],
+        ),
+        FunctionGroup(
+          name: const GroupNameType(id: 'Materials', label: 'Materiales'),
+          keys: [
+            KeyType(
+                groupName: 'Materials',
+                id: 'Wood',
+                label: 'Madera',
+                action: () {}),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: localizedGroups,
+              groupAccentColors: testAccentColors,
+              // Still the pre-switch instance: same id, un-localized label.
+              selectedGroup:
+                  const GroupNameType(id: 'Materials', label: 'Materials'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              currentUnitSystem: UnitSystem.imperial,
+              onUnitSystemChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Headers render as '<label> group' (_GroupHeader), and the keys carry
+      // their own localized labels.
+      expect(find.text('Materiales group'), findsOneWidget);
+      expect(find.text('Trigonometria group'), findsOneWidget);
+      expect(find.text('Madera'), findsOneWidget);
+
+      // The reorder key tracks the stable id, not the label that just changed.
+      expect(
+        find.byKey(const ValueKey('Materials')),
+        findsOneWidget,
+        reason: 'the list key must be the id, so the row is not rebuilt as a '
+            'new item when the locale changes',
+      );
+
+      // The accent map is keyed on GroupNameType; a localized instance must
+      // still hit the entry registered under the un-localized one.
+      expect(
+        testAccentColors[localizedGroups[1].name],
+        equals(colors.orientMid),
+        reason: 'a re-localized group must resolve as the same Map key',
+      );
+    });
   });
 }
