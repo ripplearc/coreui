@@ -213,21 +213,44 @@ extension ControlActionX on ControlAction {
 }
 
 /// Defines the types of function groups available on the keyboard.
-/// - [label]: The label of the group
-
+///
+/// - [id]: Stable, locale-independent identifier for the group. Equality and
+///   hashing are based on this alone, so a group stays the same group when the
+///   app switches locale and re-renders [label].
+/// - [label]: The display text for the group tab. Localize this in the app
+///   layer; never match on it.
+///
+/// [id] must be non-empty and unique among sibling groups. Equality and
+/// hashing depend on nothing else, so two groups sharing an [id] collapse
+/// into one equality bucket and one [Map] key — a `firstWhere` over them
+/// returns whichever comes first, and the second group becomes unreachable.
+/// The empty string is the likely form of that mistake (a call site missed
+/// during migration), so the constructor asserts against it.
+@immutable
 class GroupNameType {
+  /// Stable, locale-independent identifier for the group.
+  ///
+  /// Must be non-empty and unique among sibling groups — see the class doc.
+  final String id;
+
+  /// Display text shown on the group tab.
   final String label;
-  const GroupNameType({required this.label});
+
+  // `id != ''` rather than `id.isNotEmpty`: every call site is a const
+  // expression, and `isNotEmpty` is not const-evaluable, so the getter form
+  // fails to compile at each one.
+  const GroupNameType({required this.id, required this.label})
+      : assert(id != '', 'GroupNameType.id must be non-empty');
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is GroupNameType &&
           runtimeType == other.runtimeType &&
-          label == other.label;
+          id == other.id;
 
   @override
-  int get hashCode => label.hashCode;
+  int get hashCode => id.hashCode;
 }
 
 /// Defines the types of results that can be displayed on the keyboard.
@@ -263,17 +286,24 @@ extension UnitSystemX on UnitSystem {
 
 /// Represents a key on the keyboard with its properties.
 ///
-/// [id] is a unique identifier for the key.
+/// [id] is a stable, locale-independent identifier for the key. Callbacks such
+/// as `onKeyTapped` hand over the whole [KeyType]; consumers should read [id]
+/// for domain logic and [label] only for display, so a localized keyboard does
+/// not change what the domain matches on.
+/// [groupName] is the [GroupNameType.id] of the group the key belongs to.
 /// [label] is the text displayed on the key.
 /// [icon] is an optional icon to display instead of or alongside the label.
 /// [action] is the callback function executed when the key is pressed.
 /// [semanticLabel] is an optional label for accessibility purposes.
 @immutable
 class KeyType {
-  /// Unique identifier on which group the key exists for the key.
+  /// Stable, locale-independent identifier for the key.
+  final String id;
+
+  /// The [GroupNameType.id] of the group this key belongs to.
   final String groupName;
 
-  /// Text label displayed on the key.
+  /// Text label displayed on the key. Display only — match on [id] instead.
   final String label;
 
   /// Optional icon to display on the key.
@@ -287,6 +317,7 @@ class KeyType {
 
   /// Creates a [KeyType] instance.
   const KeyType({
+    required this.id,
     required this.groupName,
     required this.label,
     this.icon,

@@ -13,9 +13,9 @@ void main() {
 
   final colors = AppColorsExtension.create();
 
-  const basicGeometry = GroupNameType(label: "Basic Geometry");
-  const materials = GroupNameType(label: "Materials");
-  const trigonometry = GroupNameType(label: "Trigonometry");
+  const basicGeometry = GroupNameType(id: "Basic Geometry", label: "Basic Geometry");
+  const materials = GroupNameType(id: "Materials", label: "Materials");
+  const trigonometry = GroupNameType(id: "Trigonometry", label: "Trigonometry");
 
   testWidgets('CoreKeyboard Full UI Golden Test - Multiple Function Groups',
       (tester) async {
@@ -23,10 +23,11 @@ void main() {
       FunctionGroup(
         name: basicGeometry,
         keys: [
-          KeyType(groupName: 'Basic Geometry', label: 'Area', action: () {}),
-          KeyType(groupName: 'Basic Geometry', label: 'Volume', action: () {}),
+          KeyType(groupName: 'Basic Geometry', id: 'Area', label: 'Area', action: () {}),
+          KeyType(groupName: 'Basic Geometry', id: 'Volume', label: 'Volume', action: () {}),
           KeyType(
             groupName: 'Basic Geometry',
+            id: 'Perimeter',
             label: 'Perimeter',
             action: () {},
           ),
@@ -35,17 +36,17 @@ void main() {
       FunctionGroup(
         name: materials,
         keys: [
-          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Concrete', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Steel', label: 'Steel', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Concrete', label: 'Concrete', action: () {}),
         ],
       ),
       FunctionGroup(
         name: trigonometry,
         keys: [
-          KeyType(groupName: 'Trigonometry', label: 'sin', action: () {}),
-          KeyType(groupName: 'Trigonometry', label: 'cos', action: () {}),
-          KeyType(groupName: 'Trigonometry', label: 'tan', action: () {}),
+          KeyType(groupName: 'Trigonometry', id: 'sin', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonometry', id: 'cos', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonometry', id: 'tan', label: 'tan', action: () {}),
         ],
       ),
     ];

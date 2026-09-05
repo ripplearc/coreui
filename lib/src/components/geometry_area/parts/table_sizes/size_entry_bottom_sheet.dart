@@ -301,14 +301,14 @@ class _SizeEntryBottomSheetState extends State<SizeEntryBottomSheet> {
               ),
             ),
             CoreKeyboard(
-              currentGroup: const GroupNameType(label: 'Function'),
+              currentGroup: const GroupNameType(id: 'Function', label: 'Function'),
               allGroups: [
                 FunctionGroup(
-                  name: const GroupNameType(label: 'Function'),
+                  name: const GroupNameType(id: 'Function', label: 'Function'),
                   keys: [
-                    KeyType(groupName: 'Function', label: 'm', action: () {}),
-                    KeyType(groupName: 'Function', label: 'cm', action: () {}),
-                    KeyType(groupName: 'Function', label: 'mm', action: () {}),
+                    KeyType(groupName: 'Function', id: 'm', label: 'm', action: () {}),
+                    KeyType(groupName: 'Function', id: 'cm', label: 'cm', action: () {}),
+                    KeyType(groupName: 'Function', id: 'mm', label: 'mm', action: () {}),
                   ],
                 ),
               ],

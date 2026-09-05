@@ -20,31 +20,31 @@ void main() {
   testWidgets('CoreFunctionKeyBottomSheet Golden Test', (tester) async {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: 'Trigonomety'),
+        name: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
         keys: [
-          KeyType(groupName: 'Trigonomety', label: 'sin', action: () {}),
-          KeyType(groupName: 'Trigonomety', label: 'cos', action: () {}),
-          KeyType(groupName: 'Trigonomety', label: 'tan', action: () {}),
-          KeyType(groupName: 'Trigonomety', label: 'csc', action: () {}),
-          KeyType(groupName: 'Trigonomety', label: 'sec', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'tan', label: 'tan', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'csc', label: 'csc', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'sec', label: 'sec', action: () {}),
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: 'Materials'),
+        name: const GroupNameType(id: 'Materials', label: 'Materials'),
         keys: [
-          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Steel', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Concrete', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Brick', action: () {}),
-          KeyType(groupName: 'Materials', label: 'Glass', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Steel', label: 'Steel', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Concrete', label: 'Concrete', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Brick', label: 'Brick', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Glass', label: 'Glass', action: () {}),
         ],
       ),
     ];
 
     final testAccentColors = {
-      const GroupNameType(label: 'Trigonomety'):
+      const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'):
           colors.backgroundDarkGray,
-      const GroupNameType(label: 'Materials'):
+      const GroupNameType(id: 'Materials', label: 'Materials'):
           colors.orientMid,
     };
 
@@ -56,7 +56,7 @@ void main() {
           child: CoreFunctionKeyBottomSheet(
             groups: testGroups,
             groupAccentColors: testAccentColors,
-            selectedGroup: const GroupNameType(label: 'Trigonomety'),
+            selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
             onGroupSelected: (_) {},
             onKeyTapped: (_) {},
             showUnitToggle: true,

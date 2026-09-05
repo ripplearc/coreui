@@ -115,7 +115,11 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
       orElse: () => widget.allGroups.isNotEmpty
           ? widget.allGroups.first
           : const FunctionGroup(
-              name: GroupNameType(label: "Basic Geometry"), keys: []),
+              name: GroupNameType(
+                id: "Basic Geometry",
+                label: "Basic Geometry",
+              ),
+              keys: []),
     );
     final colors = Theme.of(context).coreColors;
     final accent = widget.groupAccentColors[widget.currentGroup] ??

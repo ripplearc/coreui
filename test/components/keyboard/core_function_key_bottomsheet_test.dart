@@ -6,24 +6,24 @@ void main() {
   group('CoreFunctionKeyBottomSheet', () {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(label: 'Trigonomety'),
+        name: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
         keys: [
-          KeyType(groupName: 'Trigonomety', label: 'sin', action: () {}),
-          KeyType(groupName: 'Trigonomety', label: 'cos', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
+          KeyType(groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
         ],
       ),
       FunctionGroup(
-        name: const GroupNameType(label: 'Materials'),
+        name: const GroupNameType(id: 'Materials', label: 'Materials'),
         keys: [
-          KeyType(groupName: 'Materials', label: 'Wood', action: () {}),
+          KeyType(groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
         ],
       ),
     ];
 
     final colors = AppColorsExtension.create();
     final testAccentColors = {
-      const GroupNameType(label: 'Trigonomety'): colors.backgroundDarkGray,
-      const GroupNameType(label: 'Materials'): colors.orientMid,
+      const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'): colors.backgroundDarkGray,
+      const GroupNameType(id: 'Materials', label: 'Materials'): colors.orientMid,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {
@@ -35,7 +35,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (key) => tappedKey = key,
             ),
@@ -60,7 +60,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (group) => selectedGroup = group,
               onKeyTapped: (_) {},
             ),
@@ -71,7 +71,7 @@ void main() {
       await tester.tap(find.text('Materials group'));
       await tester.pumpAndSettle();
 
-      expect(selectedGroup, equals(const GroupNameType(label: 'Materials')));
+      expect(selectedGroup, equals(const GroupNameType(id: 'Materials', label: 'Materials')));
     });
 
     testWidgets('shows unit toggle when showUnitToggle is true',
@@ -83,7 +83,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               showUnitToggle: true,
@@ -106,7 +106,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               showUnitToggle: false,
@@ -128,7 +128,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               currentUnitSystem: UnitSystem.imperial,
@@ -160,7 +160,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
             ),
@@ -178,16 +178,16 @@ void main() {
         'the correct final index', (tester) async {
       final reorderGroups = [
         FunctionGroup(
-          name: const GroupNameType(label: 'Group A'),
-          keys: [KeyType(groupName: 'Group A', label: 'A1', action: () {})],
+          name: const GroupNameType(id: 'Group A', label: 'Group A'),
+          keys: [KeyType(groupName: 'Group A', id: 'A1', label: 'A1', action: () {})],
         ),
         FunctionGroup(
-          name: const GroupNameType(label: 'Group B'),
-          keys: [KeyType(groupName: 'Group B', label: 'B1', action: () {})],
+          name: const GroupNameType(id: 'Group B', label: 'Group B'),
+          keys: [KeyType(groupName: 'Group B', id: 'B1', label: 'B1', action: () {})],
         ),
         FunctionGroup(
-          name: const GroupNameType(label: 'Group C'),
-          keys: [KeyType(groupName: 'Group C', label: 'C1', action: () {})],
+          name: const GroupNameType(id: 'Group C', label: 'Group C'),
+          keys: [KeyType(groupName: 'Group C', id: 'C1', label: 'C1', action: () {})],
         ),
       ];
 
@@ -198,7 +198,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: reorderGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Group A'),
+              selectedGroup: const GroupNameType(id: 'Group A', label: 'Group A'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               showUnitToggle: false,
@@ -232,7 +232,7 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(label: 'Trigonomety'),
+              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               currentUnitSystem: UnitSystem.imperial,
@@ -247,6 +247,81 @@ void main() {
 
       final semantics = tester.getSemantics(toggleFinder);
       expect(semantics.hint, isNotNull);
+    });
+
+    // The regression CA-898 exists to close, exercised through the widget
+    // rather than only through GroupNameType's == / hashCode. Every other
+    // fixture in this suite sets id == label, so reverting the wiring here to
+    // match on `group.name.label` leaves the whole suite green -- verified.
+    // This case diverges the two: the sheet is handed groups whose labels are
+    // localized while the caller still holds the un-localized selectedGroup,
+    // exactly the state a locale switch produces mid-session.
+    testWidgets('selection survives a locale switch that changes only labels',
+        (tester) async {
+      final localizedGroups = [
+        FunctionGroup(
+          name: const GroupNameType(id: 'Trigonomety', label: 'Trigonometria'),
+          keys: [
+            KeyType(
+                groupName: 'Trigonomety',
+                id: 'sin',
+                label: 'sen',
+                action: () {}),
+          ],
+        ),
+        FunctionGroup(
+          name: const GroupNameType(id: 'Materials', label: 'Materiales'),
+          keys: [
+            KeyType(
+                groupName: 'Materials',
+                id: 'Wood',
+                label: 'Madera',
+                action: () {}),
+          ],
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: localizedGroups,
+              groupAccentColors: testAccentColors,
+              // Still the pre-switch instance: same id, un-localized label.
+              selectedGroup:
+                  const GroupNameType(id: 'Materials', label: 'Materials'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              currentUnitSystem: UnitSystem.imperial,
+              onUnitSystemChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Headers render as '<label> group' (_GroupHeader), and the keys carry
+      // their own localized labels.
+      expect(find.text('Materiales group'), findsOneWidget);
+      expect(find.text('Trigonometria group'), findsOneWidget);
+      expect(find.text('Madera'), findsOneWidget);
+
+      // The reorder key tracks the stable id, not the label that just changed.
+      expect(
+        find.byKey(const ValueKey('Materials')),
+        findsOneWidget,
+        reason: 'the list key must be the id, so the row is not rebuilt as a '
+            'new item when the locale changes',
+      );
+
+      // The accent map is keyed on GroupNameType; a localized instance must
+      // still hit the entry registered under the un-localized one.
+      expect(
+        testAccentColors[localizedGroups[1].name],
+        equals(colors.orientMid),
+        reason: 'a re-localized group must resolve as the same Map key',
+      );
     });
   });
 }
