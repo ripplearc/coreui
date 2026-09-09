@@ -4,8 +4,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
-ThemeData _createTestTheme() {
-  return CoreTheme.light().copyWith(
+ThemeData _withRoboto(ThemeData base) {
+  return base.copyWith(
     textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
   );
 }
@@ -16,41 +16,51 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('CoreCalculatorChip Component Visual Regression Test',
-      (WidgetTester tester) async {
-    final colors = AppColorsExtension.create();
-    final typography = AppTypographyExtension.create();
+  Widget captioned(String title, TextStyle style, CoreCalculatorChip chip) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: style),
+        const SizedBox(height: CoreSpacing.space2),
+        chip,
+      ],
+    );
+  }
+
+  Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+    final caption =
+        theme.coreTypography.bodySmallRegular.copyWith(color: colors.textBody);
+
     debugDisableShadows = false;
     addTearDown(() => debugDisableShadows = true);
-    await tester.binding.setSurfaceSize(const Size(1200, 400));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    Widget buildColumnExample(String title, CoreCalculatorChip chip) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(title, style: typography.bodyMediumRegular),
-            const SizedBox(height: CoreSpacing.space4),
-            chip,
-          ],
-        );
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 1040x310 @ 2.0 => 520x155 logical: two rows of four captioned chips
+    // with space4 padding and no dead space below the second row.
+    tester.view.physicalSize = const Size(1040, 310);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
-    final widget = MaterialApp(
-      theme: _createTestTheme(),
-      home: Scaffold(
-        backgroundColor: colors.pageBackground,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space8,
-              vertical: CoreSpacing.space8,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
+            child: Wrap(
+              spacing: CoreSpacing.space6,
+              runSpacing: CoreSpacing.space4,
               children: [
-                buildColumnExample(
+                captioned(
                   'Editable',
+                  caption,
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.editable,
                     label: 'Length',
@@ -58,9 +68,9 @@ void main() {
                     onTap: () {},
                   ),
                 ),
-                const SizedBox(width: CoreSpacing.space8),
-                buildColumnExample(
-                  'Editable w/ Factor',
+                captioned(
+                  'Editable + factor',
+                  caption,
                   CoreCalculatorChip(
                     type: CoreCalculatorChipType.editable,
                     value: '4in',
@@ -68,43 +78,61 @@ void main() {
                     onTap: () {},
                   ),
                 ),
-                const SizedBox(width: CoreSpacing.space8),
-                buildColumnExample(
-                  'Disabled',
+                captioned(
+                  'Active',
+                  caption,
                   CoreCalculatorChip(
+                    type: CoreCalculatorChipType.active,
+                    label: 'Width',
+                    value: '10ft',
+                    onTap: () {},
+                  ),
+                ),
+                captioned(
+                  'Disabled',
+                  caption,
+                  const CoreCalculatorChip(
                     type: CoreCalculatorChipType.disabled,
                     label: 'Area',
                     value: '410.67ft²',
-                    onTap: () {},
                   ),
                 ),
-                const SizedBox(width: CoreSpacing.space8),
-                buildColumnExample(
-                  'Active',
+                captioned(
+                  'Result',
+                  caption,
                   CoreCalculatorChip(
-                    type: CoreCalculatorChipType.active,
+                    type: CoreCalculatorChipType.result,
                     label: 'Area',
                     value: '410.67ft²',
-                    onTap: () {},
+                    onLongPress: () {},
                   ),
                 ),
-                const SizedBox(width: CoreSpacing.space8),
-                buildColumnExample(
-                  'Active w/ Factor',
+                captioned(
+                  'Result + factor',
+                  caption,
                   CoreCalculatorChip(
-                    type: CoreCalculatorChipType.active,
+                    type: CoreCalculatorChipType.result,
                     value: '4in',
                     factor: CoreIcons.addOperator,
+                    onLongPress: () {},
+                  ),
+                ),
+                captioned(
+                  'Dashed',
+                  caption,
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.dashed,
+                    label: 'Height',
+                    value: '8ft ?',
                     onTap: () {},
                   ),
                 ),
-                const SizedBox(width: CoreSpacing.space8),
-                buildColumnExample(
-                  'Active w/ Factor only',
-                  CoreCalculatorChip(
-                    type: CoreCalculatorChipType.active,
-                    factor: CoreIcons.addOperator,
-                    onTap: () {},
+                captioned(
+                  'Error',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.error,
+                    value: 'Dimension error',
                   ),
                 ),
               ],
@@ -114,14 +142,28 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(widget);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('CoreCalculatorChip Visual Regression - Light',
+      (WidgetTester tester) async {
+    await pumpVariants(tester, _withRoboto(CoreTheme.light()));
 
     await expectLater(
       find.byType(MaterialApp),
-      matchesGoldenFile('goldens/core_calculator_chip_component.png'),
+      matchesGoldenFile('goldens/core_calculator_chip_light.png'),
     );
+    debugDisableShadows = true;
+  });
 
+  testWidgets('CoreCalculatorChip Visual Regression - Dark',
+      (WidgetTester tester) async {
+    await pumpVariants(tester, _withRoboto(CoreTheme.dark()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_dark.png'),
+    );
     debugDisableShadows = true;
   });
 }

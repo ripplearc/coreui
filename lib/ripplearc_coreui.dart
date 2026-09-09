@@ -8,6 +8,7 @@ export 'src/components/chips/core_chip.dart';
 export 'src/components/chips/core_date_filter_chip.dart';
 export 'src/components/chips/core_filter_chip.dart';
 export 'src/components/chips/core_input_chip.dart';
+export 'src/components/core_dashed_border_decoration.dart';
 export 'src/components/core_icon.dart';
 export 'src/components/date_picker/core_date_picker.dart';
 export 'src/components/date_range_sheet/core_date_range_sheet.dart';
