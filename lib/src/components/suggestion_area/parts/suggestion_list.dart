@@ -86,6 +86,7 @@ class _SuggestionList extends StatefulWidget {
   final Widget? leadingWidget;
 
   const _SuggestionList({
+    super.key,
     this.suggestions,
     required this.isExpanded,
     this.onExpandedChanged,

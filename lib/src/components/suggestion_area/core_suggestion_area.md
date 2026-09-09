@@ -1,6 +1,6 @@
 # CoreSuggestionArea
 
-A specialized widget that provides a dedicated area for presenting smart recommendations to the user, including AI-driven insights (e.g. Area calculation) and contextual unit conversions. It elegantly handles overflow, expands into a scrollable list, and toggles between multiple sets of suggestions. Each suggestion carries a `SuggestionKind`, mirroring the Figma Suggestion Strip Chip variants: a **deterministic** rung renders with the highlight outline, a **bind** offer with a dashed outline and a trailing `?` because accepting it relabels an existing chip instead of adding a result, and a **memory** recall with a leading history icon.
+A specialized widget that provides a dedicated area for presenting smart recommendations to the user, including AI-driven insights (e.g. Area calculation) and contextual unit conversions. It elegantly handles overflow and expands into a scrollable list. Two layouts: the original single row with an AI / conversion **toggle**, and the calculator's **two rows** where the primary row and the conversions row are visible together and overflow independently. Each suggestion carries a `SuggestionKind`, mirroring the Figma Suggestion Strip Chip variants: a **deterministic** rung renders with the highlight outline, a **bind** offer with a dashed outline and a trailing `?` because accepting it relabels an existing chip instead of adding a result, and a **memory** recall with a leading history icon.
 
 ## Usage
 
@@ -47,6 +47,8 @@ CoreSuggestionArea(
 | `collapseToggleSemanticsLabel` | `String` | Yes | - | Semantics label for the collapse control when expanded. Used by screen readers. |
 | `toggleSemanticsLabel` | `String` | Yes | - | Semantics label for the AI / conversion toggle shown when both lists are provided. Must be localised by the app. |
 | `bindSuffix` | `String` | No | `'?'` | Trailing marker appended to a `SuggestionKind.bind` chip's last text segment (`Height: 8ft ?`). Override per locale. |
+| `layout` | `CoreSuggestionLayout` | No | `toggle` | `toggle` — one row with an AI / conversion switch; `twoRows` — `aiSuggestions` on row 1, `conversionSuggestions` on row 2, no switch. |
+| `secondRowHidden` | `bool` | No | `false` | In `twoRows`, folds the conversions row away (an `AnimatedSize` over `CoreSuggestionArea.animationDuration`, 300 ms) so the display area's dependent-key band can take the space. Ignored in `toggle`. |
 
 ### SuggestionData
 
@@ -71,11 +73,22 @@ CoreSuggestionArea(
 
 The looks follow the Figma **Suggestion Strip Chip** component set (Design System page, node `66225:151222`, variants `Deterministic` / `Predictive` / `Conversion` / `Bind` / `Memory`): every strip chip is the plain 48 px chip, `Deterministic` adds a 2 px highlight outline, `Bind` a dashed teal outline, `Memory` a leading history icon; the spec's 1.5 px / 4-3 dash is rendered here at the chip's 1 px / 4-4 dash. `predictive` and `conversion` exist so the app can attach the right accept behaviour without re-deriving it from the label text. The dashed look reuses `CoreDashedBorderDecoration` from `CoreCalculatorChip`'s dashed variant.
 
+## Layouts
+
+| Layout | Rows | Toggle | Overflow | When |
+| :--- | :--- | :--- | :--- | :--- |
+| `toggle` (default) | One | Shown when both lists are provided | One `+N` chip for the visible list | The original layout; the calculator keeps it behind its "Strip layout" preference |
+| `twoRows` | Row 1 `aiSuggestions` (the rung that fired), row 2 `conversionSuggestions` | Never | Each row has its own `+N` chip and expands on its own | The calculator's default (prototype `strip: 'tworow'`) |
+
+In `twoRows` a single non-empty list renders as a single row (no empty shelf), and `onExpandedChanged` reports `true` while **either** row is expanded and `false` once both are collapsed. `secondRowHidden` animates row 2 out over `CoreSuggestionArea.animationDuration` — the same 300 ms as the display area's stage transitions, so the two surfaces move together — and collapses it if it was expanded; with only conversions present and the row hidden, the placeholder shows.
+
+The prototype renders row 2 as visibly secondary (value-only mini chips behind an "as" tag). This component keeps both rows at the standard large chip size; a secondary treatment for row 2 is a follow-up once the Figma frame (`62058:64729`) confirms it.
+
 ## Features
 
-- **Dynamic Toggling**: If both `aiSuggestions` and `conversionSuggestions` are provided, a leading toggle button (icon slider) automatically appears to allow users to switch between the two lists.
-- **Overflow Management**: Chips overflow into a hidden trailing "Toggle" button. Tapping this button expands the area and allows vertical scrolling if there are many suggestions.
-- **Auto-collapse**: If the suggestions update from underneath while expanded, the area automatically collapses back to its default horizontal list state.
+- **Dynamic Toggling** (`toggle` layout): If both `aiSuggestions` and `conversionSuggestions` are provided, a leading toggle button (icon slider) automatically appears to allow users to switch between the two lists.
+- **Overflow Management**: Chips overflow into a hidden trailing "Toggle" button. Tapping this button expands the area and allows vertical scrolling if there are many suggestions. In `twoRows` each row overflows independently.
+- **Auto-collapse**: If the suggestions (or the layout) update from underneath while expanded, the area automatically collapses back to its default horizontal list state.
 - **Fallback State**: Displays a clean, themed placeholder text string if there are no smart chips available to show yet.
 
 ## Examples
@@ -99,6 +112,26 @@ CoreSuggestionArea(
   ],
   hiddenChipsTextBuilder: (count) => '+$count',
   expandToggleSemanticsLabelBuilder: (count) => 'Expand',
+  collapseToggleSemanticsLabel: 'Collapse',
+  toggleSemanticsLabel: 'Toggle suggestion mode',
+)
+```
+
+### Two rows
+```dart
+CoreSuggestionArea(
+  layout: CoreSuggestionLayout.twoRows,
+  secondRowHidden: dependentKeys.isNotEmpty, // hand the band back to the pills
+  aiSuggestions: [
+    SuggestionData(label: 'Area:', value: '410.67', unit: 'ft²', kind: SuggestionKind.deterministic, onTap: () {}),
+    SuggestionData(label: 'Cost:', value: '\$84.25', kind: SuggestionKind.predictive, onTap: () {}),
+  ],
+  conversionSuggestions: [
+    SuggestionData(label: 'Conv:', value: '264', unit: 'in', kind: SuggestionKind.conversion, onTap: () {}),
+    SuggestionData(label: 'Conv:', value: '7.33', unit: 'yd', kind: SuggestionKind.conversion, onTap: () {}),
+  ],
+  hiddenChipsTextBuilder: (count) => '+$count',
+  expandToggleSemanticsLabelBuilder: (count) => 'Show $count more',
   collapseToggleSemanticsLabel: 'Collapse',
   toggleSemanticsLabel: 'Toggle suggestion mode',
 )

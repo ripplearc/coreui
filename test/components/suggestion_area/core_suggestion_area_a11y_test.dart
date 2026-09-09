@@ -286,4 +286,56 @@ void main() {
       expect(semantics.flagsCollection.isButton, isTrue);
     });
   });
+
+  group('CoreSuggestionArea two-row layout – accessibility', () {
+    CoreSuggestionArea twoRowArea() => testCoreSuggestionArea(
+          layout: CoreSuggestionLayout.twoRows,
+          aiSuggestions: [
+            SuggestionData(
+              label: 'Area:',
+              value: '220',
+              unit: 'ft²',
+              kind: SuggestionKind.deterministic,
+              onTap: () {},
+            ),
+          ],
+          conversionSuggestions: [
+            SuggestionData(
+              label: 'Conv:',
+              value: '264',
+              unit: 'in',
+              kind: SuggestionKind.conversion,
+              onTap: () {},
+            ),
+          ],
+        );
+
+    testWidgets('both rows meet tap target, label and contrast guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => twoRowArea(),
+        find.byType(CoreSuggestionArea),
+        checkTapTargetSize: true,
+        checkLabeledTapTarget: true,
+        checkTextContrast: true,
+      );
+    });
+
+    testWidgets('no toggle is announced in the two-row layout',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(tester, twoRowArea());
+
+      expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
+      expect(find.byType(CoreChip), findsNWidgets(2));
+    });
+  });
 }
