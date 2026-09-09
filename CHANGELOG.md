@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.18.0] - CoreSuggestionArea two-row layout
+
+### ✨ Features
+
+- **CoreSuggestionArea**: new `layout` parameter — `CoreSuggestionLayout { toggle, twoRows }`, default `toggle` so existing callers compile and render unchanged (CA-1035)
+  - `twoRows` shows both lists at once: `aiSuggestions` on row 1 (the rung that fired), `conversionSuggestions` on row 2, no AI / conversion toggle. Each row keeps its own `+N` overflow chip and expands on its own; a single non-empty list renders as a single row rather than an empty shelf. This is the calculator's default (prototype `strip: 'tworow'`); the toggle layout survives behind the app's "Strip layout" preference
+  - `secondRowHidden` (default `false`) folds the conversions row away so the display area's dependent-key band can take the space. The fold is an `AnimatedSize` over the new public `CoreSuggestionArea.animationDuration` (300 ms — the display area's stage timing, so the two surfaces move together); a hidden row is collapsed if it was expanded, and with only conversions present the placeholder shows. Ignored in `toggle`
+  - `onExpandedChanged` reports `true` while either row is expanded and `false` once both are collapsed; a suggestion or layout change collapses both rows, as before
+- Suggestion area showcase gains a "Two rows" switch and a "Hide conversions row" switch above the strip; two rows is the showcase default
+
+### 🧪 Tests
+
+- Widget tests: default layout is `toggle`; two rows render both lists with no toggle and the conversions row below the primary row; single-list two-row renders one row; `secondRowHidden` folds the row away and back, animates over the shared duration rather than snapping, shows the placeholder when only conversions exist, and is ignored in `toggle`; independent per-row overflow with `onExpandedChanged` aggregation; a suggestion change collapses both rows
+- A11y: both rows meet tap-target, label and contrast guidelines in light and dark; no toggle is announced in two-row mode
+- Goldens: `suggestion_area_two_rows_{light,dark}.png` (deterministic + predictive over three conversions), viewport scoped to the two rows; every existing suggestion-area golden verified byte-identical
+
 ## [0.17.0] - CoreSuggestionArea suggestion kinds, bind styling, localisable toggle label
 
 ### ⚠️ Breaking changes
