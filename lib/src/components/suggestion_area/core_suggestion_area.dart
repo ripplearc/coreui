@@ -10,6 +10,10 @@ part 'parts/toggle_button.dart';
 ///
 /// This widget provides a dedicated area for presenting smart recommendations
 /// to the user, including AI-driven insights and contextual unit conversions.
+/// Each [SuggestionData] carries a [SuggestionKind]; a [SuggestionKind.bind]
+/// offer renders with the dashed [CoreChipOutline.dashed] look and a trailing
+/// [bindSuffix], because accepting it relabels an existing chip instead of
+/// adding a result.
 ///
 /// Displays [suggestionAreaPlaceholder] when both [aiSuggestions] and
 /// [conversionSuggestions] are null or empty.
@@ -23,11 +27,16 @@ class CoreSuggestionArea extends StatefulWidget {
     required this.hiddenChipsTextBuilder,
     required this.expandToggleSemanticsLabelBuilder,
     required this.collapseToggleSemanticsLabel,
+    required this.toggleSemanticsLabel,
+    this.bindSuffix = defaultBindSuffix,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
   static const String defaultSuggestionAreaPlaceholder =
       'Here you can see smart suggestions from us';
+
+  /// The default trailing marker of a [SuggestionKind.bind] chip.
+  static const String defaultBindSuffix = '?';
 
   /// Placeholder text shown in the suggestion area.
   ///
@@ -58,6 +67,21 @@ class CoreSuggestionArea extends StatefulWidget {
   /// Semantics label for the collapse control when expanded.
   final String collapseToggleSemanticsLabel;
 
+  /// Semantics label for the AI / conversion toggle shown when both lists are
+  /// provided.
+  ///
+  /// Required: localisation is the consumer's responsibility. Pass a localised
+  /// string from the app layer:
+  /// ```dart
+  /// toggleSemanticsLabel: AppLocalizations.of(context).toggleSuggestionMode,
+  /// ```
+  final String toggleSemanticsLabel;
+
+  /// Trailing marker appended to a [SuggestionKind.bind] chip's last text
+  /// segment ("Height: 8ft ?"), so an offer reads as a question rather than a
+  /// fact. Defaults to [defaultBindSuffix]; override it per locale.
+  final String bindSuffix;
+
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
@@ -73,7 +97,9 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     for (int i = 0; i < a.length; i++) {
       if (a[i].label != b[i].label ||
           a[i].value != b[i].value ||
-          a[i].unit != b[i].unit) {
+          a[i].unit != b[i].unit ||
+          a[i].kind != b[i].kind ||
+          a[i].semanticsLabel != b[i].semanticsLabel) {
         return false;
       }
     }
@@ -142,9 +168,11 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
                         widget.expandToggleSemanticsLabelBuilder,
                     collapseToggleSemanticsLabel:
                         widget.collapseToggleSemanticsLabel,
+                    bindSuffix: widget.bindSuffix,
                     leadingWidget: hasBothLists
                         ? _AIToggle(
                             mode: _mode,
+                            semanticsLabel: widget.toggleSemanticsLabel,
                             onChanged: (value) {
                               setState(() {
                                 _mode = value;

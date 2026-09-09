@@ -137,7 +137,7 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pump();
-    await tester.tap(find.bySemanticsLabel('Toggle suggestion mode'));
+    await tester.tap(find.bySemanticsLabel(testToggleSemanticsLabel));
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -286,5 +286,75 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/suggestion_list_expanded_component.png'),
     );
+  });
+
+  Future<void> pumpBindOffer(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 824x128 @ 2.0 => 412x64 logical: one row of large chips (48 + the
+    // chip's own space2 vertical padding) and nothing else.
+    tester.view.physicalSize = const Size(824, 128);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Height:',
+                value: '8ft',
+                kind: SuggestionKind.bind,
+                onTap: () {},
+              ),
+              SuggestionData(
+                label: 'Area:',
+                value: '220',
+                unit: 'ft²',
+                kind: SuggestionKind.deterministic,
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('SuggestionArea bind offer Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpBindOffer(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_bind_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('SuggestionArea bind offer Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpBindOffer(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_bind_dark.png'),
+    );
+    debugDisableShadows = true;
   });
 }
