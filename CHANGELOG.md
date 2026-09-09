@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.17.0] - CoreSuggestionArea suggestion kinds, bind styling, localisable toggle label
+
+### ⚠️ Breaking changes
+
+- **CoreSuggestionArea**: `toggleSemanticsLabel` is now a **required** parameter. The AI / conversion toggle's screen-reader label (`'Toggle suggestion mode'`) was the last hard-coded semantics string in `suggestion_area/`; like the sibling `expandToggleSemanticsLabelBuilder` and `collapseToggleSemanticsLabel` it has no English default, so a user-facing string cannot reach the screen without passing through the consuming app's localization layer (CA-1036)
+  - Migration: `toggleSemanticsLabel: AppLocalizations.of(context).toggleSuggestionMode`
+
+### ✨ Features
+
+- **SuggestionData**: gains `kind` — `SuggestionKind { deterministic, predictive, bind, conversion }`, default `predictive` — so the app can attach the right accept behaviour without re-deriving it from label text, and an optional `semanticsLabel` that overrides the chip's announced text (`'12.57yd²'` → "Convert to 12.57 square yards"). A suggestion update that only swaps a `kind` or `semanticsLabel` now also collapses an expanded area (CA-1036)
+- **CoreSuggestionArea**: a `SuggestionKind.bind` offer renders with the dashed offer outline and a trailing `bindSuffix` (default `'?'`, overridable per locale) appended to its last text segment — `Height: 8ft ?` — because accepting a bind relabels an existing chip instead of adding a result, and the look says so
+- **CoreChip**: gains `outline` (`CoreChipOutline { solid, dashed }`, default `solid`) and `semanticsLabel`. The dashed outline reuses `CoreDashedBorderDecoration` (0.16.0) as the chip's `foregroundDecoration` over a `backgroundBlueLight` fill, with the solid border painted transparent so the chip measures the same and the stroke following the focus border width; `CoreChipTheme.dashedOutline(outline:, isFocused:, colors:)` resolves it. Pressed feedback still wins over the offer fill
+- Suggestion area showcase: digits typed with no function key start an unnamed entry, and the strip offers `bind` chips for the dimensions still missing (prototype off-script rule); Area suggestions are tagged `deterministic`, conversions `conversion` with spoken semantics labels
+
+### 🧪 Tests
+
+- Suggestion area widget tests: default kind, bind outline + suffix (value and unit placement, custom suffix), solid kinds unchanged, bind accept callback, `semanticsLabel` override, custom toggle label, and kind-only change collapsing an expanded area; a11y tests for the bind chip's tap target, label, contrast and announced text in both themes
+- CoreChip widget tests: default solid outline, dashed chip text, `semanticsLabel` override, and theme resolution for the dashed fill, transparent border, pressed priority and focus stroke width in light and dark
+- Goldens: `suggestion_area_bind_{light,dark}.png` (bind offer beside a deterministic chip) and `core_chip_outline_{light,dark}.png` (solid vs dashed at large and medium), viewport scoped to one chip row; existing suggestion area and chip goldens are byte-identical
+
 ## [0.16.0] - CoreCalculatorChip result, dashed and error variants + long-press
 
 ### ✨ Features

@@ -148,7 +148,7 @@ void main() {
         ),
       );
 
-      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsOneWidget);
+      expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(CoreSuggestionArea),
@@ -180,7 +180,7 @@ void main() {
         ),
       );
 
-      final toggleFinder = find.bySemanticsLabel('Toggle suggestion mode');
+      final toggleFinder = find.bySemanticsLabel(testToggleSemanticsLabel);
       final iconWidgets = tester.widgetList<CoreIconWidget>(
         find.descendant(
           of: toggleFinder,
@@ -241,7 +241,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.bySemanticsLabel('Toggle suggestion mode'));
+      await tester.tap(find.bySemanticsLabel(testToggleSemanticsLabel));
       await tester.pumpAndSettle();
 
       final animatedAlign = tester.widget<AnimatedAlign>(
@@ -275,7 +275,7 @@ void main() {
       expect(find.text('AI'), findsOneWidget);
       expect(find.text('Conv'), findsNothing);
 
-      await tester.tap(find.bySemanticsLabel('Toggle suggestion mode'));
+      await tester.tap(find.bySemanticsLabel(testToggleSemanticsLabel));
       await tester.pumpAndSettle();
 
       expect(find.text('AI'), findsNothing);
@@ -298,7 +298,7 @@ void main() {
         ),
       );
 
-      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsNothing);
+      expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
       expect(find.text('AI'), findsOneWidget);
     });
 
@@ -318,7 +318,7 @@ void main() {
         ),
       );
 
-      expect(find.bySemanticsLabel('Toggle suggestion mode'), findsNothing);
+      expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
       expect(find.text('Conv'), findsOneWidget);
     });
 
@@ -474,6 +474,198 @@ void main() {
 
       host.updateSuggestions([
         SuggestionData(label: 'New', value: '1', onTap: () {}),
+      ]);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isFalse);
+    });
+  });
+
+  group('CoreSuggestionArea suggestion kinds', () {
+    test('SuggestionData defaults to the predictive kind', () {
+      final data = SuggestionData(label: 'Cost:', value: '84', onTap: () {});
+      expect(data.kind, SuggestionKind.predictive);
+      expect(data.semanticsLabel, isNull);
+    });
+
+    testWidgets('bind offer renders the dashed outline and the suffix',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Height:',
+                value: '8ft',
+                kind: SuggestionKind.bind,
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      expect(find.text('Height:'), findsOneWidget);
+      expect(find.text('8ft ?'), findsOneWidget);
+      final chip = tester.widget<CoreChip>(find.byType(CoreChip));
+      expect(chip.outline, CoreChipOutline.dashed);
+    });
+
+    testWidgets('bind suffix follows the unit when one is given',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Height:',
+                value: '8',
+                unit: 'ft',
+                kind: SuggestionKind.bind,
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      expect(find.text('8'), findsOneWidget);
+      expect(find.text('ft ?'), findsOneWidget);
+    });
+
+    testWidgets('bindSuffix is configurable', (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            bindSuffix: '¿?',
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Height:',
+                value: '8ft',
+                kind: SuggestionKind.bind,
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      expect(find.text('8ft ¿?'), findsOneWidget);
+    });
+
+    testWidgets('other kinds keep the solid outline and no suffix',
+        (WidgetTester tester) async {
+      const solidKinds = [
+        SuggestionKind.deterministic,
+        SuggestionKind.predictive,
+        SuggestionKind.conversion,
+      ];
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              for (final kind in solidKinds)
+                SuggestionData(
+                  label: kind.name,
+                  value: '1',
+                  unit: 'ft',
+                  kind: kind,
+                  onTap: () {},
+                ),
+            ],
+          ));
+
+      final chips = tester.widgetList<CoreChip>(find.byType(CoreChip));
+      expect(chips.length, solidKinds.length);
+      for (final chip in chips) {
+        expect(chip.outline, CoreChipOutline.solid);
+        expect(chip.unit, 'ft');
+      }
+      expect(find.textContaining('?'), findsNothing);
+    });
+
+    testWidgets('bind offer calls onTap like any other suggestion',
+        (WidgetTester tester) async {
+      bool accepted = false;
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Height:',
+                value: '8ft',
+                kind: SuggestionKind.bind,
+                onTap: () => accepted = true,
+              ),
+            ],
+          ));
+
+      await tester.tap(find.byType(CoreChip));
+      await tester.pump(const Duration(seconds: 1));
+      expect(accepted, isTrue);
+    });
+
+    testWidgets('semanticsLabel overrides the announced chip text',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            conversionSuggestions: [
+              SuggestionData(
+                label: 'Conv:',
+                value: '12.57',
+                unit: 'yd²',
+                kind: SuggestionKind.conversion,
+                semanticsLabel: 'Convert to 12.57 square yards',
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      final semantics = tester.getSemantics(find.byType(CoreChip));
+      expect(semantics.label, 'Convert to 12.57 square yards');
+    });
+
+    testWidgets('toggle announces the provided semantics label',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            toggleSemanticsLabel: 'Cambiar sugerencias',
+            aiSuggestions: [
+              SuggestionData(label: 'AI', value: '1', onTap: () {})
+            ],
+            conversionSuggestions: [
+              SuggestionData(label: 'Conv', value: '1', onTap: () {})
+            ],
+          ));
+
+      expect(find.bySemanticsLabel('Cambiar sugerencias'), findsOneWidget);
+      expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
+    });
+
+    testWidgets('a kind change alone collapses an expanded area',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const _SuggestionAreaHost(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+
+      final host = tester
+          .state<_SuggestionAreaHostState>(find.byType(_SuggestionAreaHost));
+      expect(host.lastExpanded, isTrue);
+
+      host.updateSuggestions([
+        for (final data in host.suggestions)
+          SuggestionData(
+            label: data.label,
+            value: data.value,
+            kind: SuggestionKind.bind,
+            onTap: data.onTap,
+          ),
       ]);
       await tester.pumpAndSettle();
 

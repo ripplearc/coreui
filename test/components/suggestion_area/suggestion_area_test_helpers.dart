@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 String testHiddenChipsText(int count) => '+$count';
@@ -8,7 +9,9 @@ String testExpandToggleSemantics(int hiddenCount) =>
 
 const String testCollapseToggleSemantics = 'Show fewer suggestions';
 
-/// [CoreSuggestionArea] with test-localized overflow strings.
+const String testToggleSemanticsLabel = 'Toggle suggestion mode';
+
+/// [CoreSuggestionArea] with test-localized overflow and toggle strings.
 CoreSuggestionArea testCoreSuggestionArea({
   Key? key,
   String suggestionAreaPlaceholder =
@@ -16,6 +19,8 @@ CoreSuggestionArea testCoreSuggestionArea({
   List<SuggestionData>? aiSuggestions,
   List<SuggestionData>? conversionSuggestions,
   ValueChanged<bool>? onExpandedChanged,
+  String toggleSemanticsLabel = testToggleSemanticsLabel,
+  String bindSuffix = CoreSuggestionArea.defaultBindSuffix,
 }) {
   return CoreSuggestionArea(
     key: key,
@@ -26,5 +31,14 @@ CoreSuggestionArea testCoreSuggestionArea({
     hiddenChipsTextBuilder: testHiddenChipsText,
     expandToggleSemanticsLabelBuilder: testExpandToggleSemantics,
     collapseToggleSemanticsLabel: testCollapseToggleSemantics,
+    toggleSemanticsLabel: toggleSemanticsLabel,
+    bindSuffix: bindSuffix,
+  );
+}
+
+/// Pumps [area] inside the light-themed app shell the widget tests share.
+Future<void> pumpSuggestionArea(WidgetTester tester, Widget area) {
+  return tester.pumpWidget(
+    MaterialApp(theme: CoreTheme.light(), home: Scaffold(body: area)),
   );
 }

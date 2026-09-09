@@ -9,9 +9,13 @@ part 'suggestion_area_showcase_state.dart';
 ///
 /// It handles key selections, digit presses, unit selections, and operators,
 /// automatically computes Area suggestions when both "Length" and "Width" are
-/// provided, and generates unit conversion chips dynamically.
+/// provided, generates unit conversion chips dynamically, and offers to bind
+/// a value typed without a function key to a dimension that is still missing.
 class SuggestionAreaShowcaseBloc
     extends Bloc<SuggestionAreaShowcaseEvent, SuggestionAreaShowcaseState> {
+  static const List<String> _bindableDimensions = ['Length', 'Width'];
+  static final RegExp _valueWithUnit = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$');
+
   /// Creates a [SuggestionAreaShowcaseBloc].
   SuggestionAreaShowcaseBloc() : super(SuggestionAreaShowcaseState.initial()) {
     on<_InitializeEvent>((event, emit) {
@@ -32,11 +36,11 @@ class SuggestionAreaShowcaseBloc
         );
 
         final updatedChips =
-        List<CoreCalculatorChip>.from(finalizedState.completedChips)
-          ..add(areaChip);
+            List<CoreCalculatorChip>.from(finalizedState.completedChips)
+              ..add(areaChip);
         final updatedValues =
-        Map<String, double>.from(finalizedState.finalizedValues)
-          ..['Area'] = double.tryParse(event.value) ?? 0.0;
+            Map<String, double>.from(finalizedState.finalizedValues)
+              ..['Area'] = double.tryParse(event.value) ?? 0.0;
 
         final newState = finalizedState.copyWith(
           activeInputLabel: () => 'Area',
@@ -65,9 +69,24 @@ class SuggestionAreaShowcaseBloc
     add(const _InitializeEvent());
   }
 
-  void _onKeySelected(KeySelected event,
-      Emitter<SuggestionAreaShowcaseState> emit) {
-    final finalizedState = _finalizeCurrentInput(state);
+  void _onKeySelected(
+      KeySelected event, Emitter<SuggestionAreaShowcaseState> emit) {
+    final bindsUnnamedEntry = state.isTyping && state.activeInputLabel == null;
+    final finalizedState = _finalizeCurrentInput(
+      bindsUnnamedEntry
+          ? state.copyWith(activeInputLabel: () => event.label)
+          : state,
+    );
+    if (bindsUnnamedEntry) {
+      emit(finalizedState.copyWith(
+        activeInputLabel: () => null,
+        currentInputValue: '',
+        currentNumericValue: '',
+        aiSuggestions: [],
+        conversionSuggestions: [],
+      ));
+      return;
+    }
     final newState = finalizedState.copyWith(
       activeInputLabel: () => event.label,
       currentInputValue: '',
@@ -82,20 +101,32 @@ class SuggestionAreaShowcaseBloc
     _updateSuggestions(newState, emit);
   }
 
-  void _onDigitPressed(DigitPressed event,
-      Emitter<SuggestionAreaShowcaseState> emit) {
-    if (!state.isTyping) return;
-    final newValue = state.currentInputValue + event.digit;
-    final newNumericValue = state.currentNumericValue + event.digit;
-    final newState = state.copyWith(
+  void _onDigitPressed(
+      DigitPressed event, Emitter<SuggestionAreaShowcaseState> emit) {
+    final base = state.isTyping
+        ? state
+        : state.copyWith(
+            activeInputLabel: () => null,
+            currentInputValue: '',
+            currentNumericValue: '',
+            isTyping: true,
+            resultLabel: () => null,
+            resultValue: () => null,
+            resultChip: () => null,
+            aiSuggestions: [],
+            conversionSuggestions: [],
+          );
+    final newValue = base.currentInputValue + event.digit;
+    final newNumericValue = base.currentNumericValue + event.digit;
+    final newState = base.copyWith(
       currentInputValue: newValue,
       currentNumericValue: newNumericValue,
     );
     _updateSuggestions(newState, emit);
   }
 
-  void _onUnitSelected(UnitSelected event,
-      Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onUnitSelected(
+      UnitSelected event, Emitter<SuggestionAreaShowcaseState> emit) {
     if (!state.isTyping) return;
     final unit = event.unit.toLowerCase() == 'feet' ? 'ft' : event.unit;
     final newValue = state.currentInputValue.isEmpty
@@ -105,16 +136,16 @@ class SuggestionAreaShowcaseBloc
     _updateSuggestions(newState, emit);
   }
 
-  void _onOperatorPressed(OperatorPressed event,
-      Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onOperatorPressed(
+      OperatorPressed event, Emitter<SuggestionAreaShowcaseState> emit) {
     if (event.operator == '=') {
       final newState = _finalizeCurrentInput(state);
       _updateSuggestions(newState, emit);
     }
   }
 
-  void _onResetRequested(ResetRequested event,
-      Emitter<SuggestionAreaShowcaseState> emit) {
+  void _onResetRequested(
+      ResetRequested event, Emitter<SuggestionAreaShowcaseState> emit) {
     emit(SuggestionAreaShowcaseState.initial());
   }
 
@@ -131,12 +162,12 @@ class SuggestionAreaShowcaseBloc
       );
 
       final updatedChips =
-      List<CoreCalculatorChip>.from(currentState.completedChips)
-        ..add(newChip);
+          List<CoreCalculatorChip>.from(currentState.completedChips)
+            ..add(newChip);
       final updatedNumericValues =
-      Map<String, double>.from(currentState.finalizedValues)
-        ..[activeInputLabel] =
-            double.tryParse(currentState.currentNumericValue) ?? 0.0;
+          Map<String, double>.from(currentState.finalizedValues)
+            ..[activeInputLabel] =
+                double.tryParse(currentState.currentNumericValue) ?? 0.0;
 
       return currentState.copyWith(
         isTyping: false,
@@ -147,9 +178,29 @@ class SuggestionAreaShowcaseBloc
     return currentState;
   }
 
+  List<SuggestionData> _bindOffers(SuggestionAreaShowcaseState newState) {
+    final match = _valueWithUnit.firstMatch(newState.currentInputValue);
+    if (match == null) return [];
+    final numberStr = match.group(1);
+    final unitStr = match.group(2);
+    if (numberStr == null || unitStr == null) return [];
+    return [
+      for (final dimension in _bindableDimensions)
+        if (!newState.finalizedValues.containsKey(dimension))
+          SuggestionData(
+            label: '$dimension:',
+            value: numberStr,
+            unit: unitStr,
+            kind: SuggestionKind.bind,
+            semanticsLabel: 'Name $numberStr $unitStr as $dimension',
+            onTap: () => add(KeySelected(dimension)),
+          ),
+    ];
+  }
+
   void _updateSuggestions(SuggestionAreaShowcaseState newState,
       Emitter<SuggestionAreaShowcaseState> emit) {
-    if (!newState.isTyping || newState.activeInputLabel == null) {
+    if (!newState.isTyping) {
       emit(newState); // chip taps, resets, finalizations
       return;
     }
@@ -158,8 +209,7 @@ class SuggestionAreaShowcaseBloc
     List<SuggestionData> conv = List.from(newState.conversionSuggestions);
     List<SuggestionData> ai = List.from(newState.aiSuggestions);
 
-    final match = RegExp(r'^([\d.]+)\s*([a-zA-Z]+)$')
-        .firstMatch(newState.currentInputValue);
+    final match = _valueWithUnit.firstMatch(newState.currentInputValue);
     if (match != null) {
       final numberStr = match.group(1);
       final unitStr = match.group(2);
@@ -173,21 +223,31 @@ class SuggestionAreaShowcaseBloc
               label: 'Conv:',
               value: convIn.toStringAsFixed(0),
               unit: 'in',
-              onTap: () =>
-                  add(SuggestionChipTapped(
-                      'Conv:', convIn.toStringAsFixed(0), 'in')),
+              kind: SuggestionKind.conversion,
+              semanticsLabel: 'Convert to ${convIn.toStringAsFixed(0)} inches',
+              onTap: () => add(SuggestionChipTapped(
+                  'Conv:', convIn.toStringAsFixed(0), 'in')),
             ),
             SuggestionData(
               label: 'Conv:',
               value: convYd.toStringAsFixed(2),
               unit: 'yd',
-              onTap: () =>
-                  add(SuggestionChipTapped(
-                      'Conv:', convYd.toStringAsFixed(2), 'yd')),
+              kind: SuggestionKind.conversion,
+              semanticsLabel: 'Convert to ${convYd.toStringAsFixed(2)} yards',
+              onTap: () => add(SuggestionChipTapped(
+                  'Conv:', convYd.toStringAsFixed(2), 'yd')),
             ),
           ];
         }
       }
+    }
+
+    if (newState.activeInputLabel == null) {
+      emit(newState.copyWith(
+        aiSuggestions: _bindOffers(newState),
+        conversionSuggestions: conv,
+      ));
+      return;
     }
 
     final lengthVal = newState.finalizedValues['Length'];
@@ -215,17 +275,17 @@ class SuggestionAreaShowcaseBloc
           label: 'Area:',
           value: areaSqFt.toStringAsFixed(2),
           unit: 'sq ft',
-          onTap: () =>
-              add(SuggestionChipTapped(
-                  'Area:', areaSqFt.toStringAsFixed(2), 'sq ft')),
+          kind: SuggestionKind.deterministic,
+          onTap: () => add(SuggestionChipTapped(
+              'Area:', areaSqFt.toStringAsFixed(2), 'sq ft')),
         ),
         SuggestionData(
           label: 'Area:',
           value: (areaSqFt / 9.0).toStringAsFixed(2),
           unit: 'sq yd',
-          onTap: () =>
-              add(SuggestionChipTapped(
-                  'Area:', (areaSqFt / 9.0).toStringAsFixed(2), 'sq yd')),
+          kind: SuggestionKind.deterministic,
+          onTap: () => add(SuggestionChipTapped(
+              'Area:', (areaSqFt / 9.0).toStringAsFixed(2), 'sq yd')),
         ),
       ];
     }
