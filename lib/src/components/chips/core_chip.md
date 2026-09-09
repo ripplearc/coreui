@@ -30,6 +30,8 @@ CoreChip(
 | `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
 | `isSmartChip` | `bool` | No | `false` | If true, the chip acts as a "smart chip" that highlights on tap for 1 second instead of toggling selection. |
 | `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
+| `outline` | `CoreChipOutline` | No | `CoreChipOutline.solid` | Outline style: `solid`, or `dashed` for a tentative offer (a bind suggestion). |
+| `semanticsLabel` | `String?` | No | `null` | Overrides the announced text; defaults to `label`, `value` and `unit` joined with spaces. |
 
 Notes:
 
@@ -150,6 +152,21 @@ CoreChip(
 );
 ```
 
+### Dashed offer chip
+
+```dart
+final isSelected = ValueNotifier<bool>(false);
+
+CoreChip(
+  label: 'Height:',
+  value: '8ft ?',
+  selected: isSelected,
+  size: CoreChipSize.large,
+  outline: CoreChipOutline.dashed,
+  isSmartChip: true,
+);
+```
+
 ### Smart chip
 
 ```dart
@@ -200,3 +217,13 @@ Priority: selected → pressed → focused → default.
 
 - Default: `CoreChipTheme.borderWidth` (`1px`)
 - Focused: `CoreChipTheme.borderWidthFor(isFocused: true)` (`2px`)
+
+### Dashed outline
+
+`CoreChipOutline.dashed` keeps every size, state and animation and swaps only the border:
+
+- Background: `colors.backgroundBlueLight` (pressed still resolves to `colors.pageBackground`)
+- Solid border: `colors.transparent` at the normal width, so the chip measures the same
+- Outline: `CoreDashedBorderDecoration` in `colors.outlineFocus`, `CoreChipTheme.dashLength` / `gapLength` (`4px` / `4px`), stroke following `borderWidthFor` so a focused chip thickens like a solid one
+
+The dashes are the chip's `foregroundDecoration`, so the solid border and its animation are untouched.
