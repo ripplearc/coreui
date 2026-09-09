@@ -49,6 +49,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
         KeyType(groupName: 'Materials', id: 'Tons', label: 'Tons'),
         KeyType(groupName: 'Materials', id: 'Drywall', label: 'Drywall'),
         KeyType(groupName: 'Materials', id: 'Fence', label: 'Fence'),
+        KeyType(groupName: 'Materials', id: 'Cost', label: 'Cost'),
       ],
     ),
     FunctionGroup(
@@ -113,9 +114,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                               setState(() => _currentStage = stage);
                             }
                           },
-                          dependentKeyLabel: state.dependentKeyLabel,
-                          dependentKeyValue: state.dependentKeyValue,
-                          onPressedDependentKey: () {},
+                          dependentKeys: state.dependentKeys,
                           chipsList: chips,
                           previousSessions: [
                             CoreHistorySessionData(

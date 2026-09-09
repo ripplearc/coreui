@@ -102,9 +102,6 @@ class _GeometryAreaShowcaseScreenState
                       isTyping: state.isTyping,
                       onClose: () => bloc.add(const GeometryResetRequested()),
                       onStageChanged: (stage) {},
-                      dependentKeyLabel: null,
-                      dependentKeyValue: null,
-                      onPressedDependentKey: () {},
                       chipsList: [
                         ...state.completedChips,
                         if (state.isTyping && state.activeInputLabel != null)
