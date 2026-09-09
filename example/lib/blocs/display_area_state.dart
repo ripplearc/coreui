@@ -1,5 +1,17 @@
 part of 'display_area_bloc.dart';
 
+/// The three trade spellings of one pitch, cycled by the Shown-as pill.
+enum PitchReading {
+  /// Rise per 12in of run (`16in/12in`).
+  risePerRun,
+
+  /// Degrees (`53.13°`).
+  degrees,
+
+  /// Percent grade (`133.3%`).
+  grade,
+}
+
 /// Represents the current state of the display area calculator.
 class DisplayAreaState extends Equatable {
   /// The label of the input currently being entered, or `null` if idle.
@@ -30,13 +42,21 @@ class DisplayAreaState extends Equatable {
   /// A standalone chip representing the final computed result.
   final CoreCalculatorChip? resultChip;
 
-  /// Label for the dependent key shown in the display area value section.
-  /// `null` means no dependent key is displayed.
-  final String? dependentKeyLabel;
+  /// The dependent-key pills shown under the display area value — the
+  /// assumptions, readings and offers the current answer depends on.
+  final List<CoreDependentKeyData> dependentKeys;
 
-  /// Value for the dependent key shown in the display area value section.
-  /// `null` means no dependent key is displayed.
-  final String? dependentKeyValue;
+  /// Fence post spacing in feet, edited through the O.C. pill.
+  final double fenceOcFeet;
+
+  /// Cost rate per square foot, edited through the Rate pill.
+  final double ratePerSqFt;
+
+  /// Waste allowance in percent, edited through the Waste pill.
+  final double wastePercent;
+
+  /// Which spelling of the pitch result is shown, cycled by the Shown-as pill.
+  final PitchReading pitchReading;
 
   /// Creates a [DisplayAreaState].
   const DisplayAreaState({
@@ -49,8 +69,11 @@ class DisplayAreaState extends Equatable {
     this.resultLabel,
     this.resultValue,
     this.resultChip,
-    this.dependentKeyLabel,
-    this.dependentKeyValue,
+    this.dependentKeys = const [],
+    this.fenceOcFeet = 6.0,
+    this.ratePerSqFt = 12.3,
+    this.wastePercent = 10.0,
+    this.pitchReading = PitchReading.risePerRun,
   });
 
   /// Returns the initial [DisplayAreaState] with all fields at their defaults.
@@ -71,8 +94,11 @@ class DisplayAreaState extends Equatable {
     String? Function()? resultLabel,
     String? Function()? resultValue,
     CoreCalculatorChip? Function()? resultChip,
-    String? Function()? dependentKeyLabel,
-    String? Function()? dependentKeyValue,
+    List<CoreDependentKeyData>? dependentKeys,
+    double? fenceOcFeet,
+    double? ratePerSqFt,
+    double? wastePercent,
+    PitchReading? pitchReading,
   }) {
     return DisplayAreaState(
       activeInputLabel:
@@ -85,12 +111,11 @@ class DisplayAreaState extends Equatable {
       resultLabel: resultLabel != null ? resultLabel() : this.resultLabel,
       resultValue: resultValue != null ? resultValue() : this.resultValue,
       resultChip: resultChip != null ? resultChip() : this.resultChip,
-      dependentKeyLabel: dependentKeyLabel != null
-          ? dependentKeyLabel()
-          : this.dependentKeyLabel,
-      dependentKeyValue: dependentKeyValue != null
-          ? dependentKeyValue()
-          : this.dependentKeyValue,
+      dependentKeys: dependentKeys ?? this.dependentKeys,
+      fenceOcFeet: fenceOcFeet ?? this.fenceOcFeet,
+      ratePerSqFt: ratePerSqFt ?? this.ratePerSqFt,
+      wastePercent: wastePercent ?? this.wastePercent,
+      pitchReading: pitchReading ?? this.pitchReading,
     );
   }
 
@@ -105,7 +130,10 @@ class DisplayAreaState extends Equatable {
         resultLabel,
         resultValue,
         resultChip,
-        dependentKeyLabel,
-        dependentKeyValue,
+        dependentKeys,
+        fenceOcFeet,
+        ratePerSqFt,
+        wastePercent,
+        pitchReading,
       ];
 }

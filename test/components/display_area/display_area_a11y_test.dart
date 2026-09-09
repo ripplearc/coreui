@@ -282,7 +282,7 @@ void main() {
       expect(errorTitleSemantics.label, errorTitle);
     });
 
-    testWidgets('dependent key button exposes correct semantics',
+    testWidgets('dependent key pill exposes correct semantics',
         (WidgetTester tester) async {
       await setTestViewport(tester);
 
@@ -294,9 +294,14 @@ void main() {
             body: CoreDisplayArea(
               closeSemanticLabel: testCloseSemanticLabel,
               historyPlaceholder: testHistoryPlaceholder,
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
-              onPressedDependentKey: () {},
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                  onPressed: () {},
+                ),
+              ],
             ),
           ),
         ),
@@ -308,6 +313,101 @@ void main() {
       final semantics = tester.getSemantics(buttonFinder);
       expect(semantics.label, contains('O.C: 16in'));
       expect(semantics.flagsCollection.isButton, isTrue);
+    });
+
+    testWidgets('each dependent key kind is announced with its own label',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              value: '16in/12in',
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'Rate',
+                  value: '\$14.5/sheet',
+                  kind: CoreDependentKeyKind.editable,
+                  onPressed: () {},
+                ),
+                CoreDependentKeyData(
+                  label: 'Shown as',
+                  value: 'in/12in',
+                  kind: CoreDependentKeyKind.toggle,
+                  onPressed: () {},
+                ),
+                CoreDependentKeyData(
+                  label: 'Re-input 38.30° as',
+                  value: '38°30′',
+                  kind: CoreDependentKeyKind.offer,
+                  semanticsLabel:
+                      'Re-input 38.30 degrees as 38 degrees 30 minutes',
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final pills = find.byType(CoreButton);
+      expect(pills, findsNWidgets(3));
+      final labels = [
+        for (var i = 0; i < 3; i++) tester.getSemantics(pills.at(i)).label,
+      ];
+      expect(labels, [
+        'Rate: \$14.5/sheet',
+        'Shown as: in/12in',
+        'Re-input 38.30 degrees as 38 degrees 30 minutes',
+      ]);
+      for (var i = 0; i < 3; i++) {
+        expect(
+            tester.getSemantics(pills.at(i)).flagsCollection.isButton, isTrue);
+      }
+    });
+
+    testWidgets('dependent key pills meet label and contrast guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          value: '\$84.25',
+          dependentKeys: [
+            CoreDependentKeyData(
+              label: 'Rate',
+              value: '\$14.5/sheet',
+              kind: CoreDependentKeyKind.editable,
+              onPressed: () {},
+            ),
+            CoreDependentKeyData(
+              label: 'Shown as',
+              value: 'in/12in',
+              kind: CoreDependentKeyKind.toggle,
+              onPressed: () {},
+            ),
+            CoreDependentKeyData(
+              label: 'Re-input 38.30° as',
+              value: '38°30′',
+              kind: CoreDependentKeyKind.offer,
+              onPressed: () {},
+            ),
+          ],
+        ),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: true,
+        checkTextContrast: true,
+      );
     });
 
     testWidgets('expandedPrevious state meets accessibility guidelines',
