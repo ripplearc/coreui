@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.20.0] - CoreKeyboard group swipe and CoreFunctionKeyBottomSheet reorder callback
+
+### ✨ Features
+
+- **CoreKeyboard**: a horizontal swipe on the function-key strip selects the previous (swipe right) or next (swipe left) group in `allGroups` through the existing `onGroupSelected`, wrapping at either end. One gesture selects exactly one group; a drag shorter than `CoreKeyboard.groupSwipeThreshold` (`space16`, 64 dp) is ignored, and a tap on a key never counts as a swipe — a swipe that starts on a key cancels that key's tap instead. The "View all" sheet stays the non-gesture equivalent (CA-1038)
+- **CoreKeyboard**: `onGroupsReordered` and `reorderSemanticsLabelBuilder` pass through to the built-in "View all" sheet. The keyboard keeps a rebuild hook rather than an order, so when the consumer applies a reorder and passes a new `allGroups` the sheet that is still open re-renders in the new order
+- **CoreFunctionKeyBottomSheet**: `onGroupsReordered(int oldIndex, int newIndex)` reports a drag once the group is dropped; `newIndex` is already the final index, so `groups.insert(newIndex, groups.removeAt(oldIndex))` applies it. The sheet no longer keeps a private copy of the order — it renders `groups` as given, so the stored preference is the single source of truth. Drag handles render only when the callback is set, so a read-only sheet offers no gesture it cannot honour
+- **CoreFunctionKeyBottomSheet**: `reorderSemanticsLabelBuilder(groupLabel)` replaces the hard-coded drag-handle label; `defaultReorderSemanticsLabel` keeps the previous English string when the builder is omitted
+- Showcases: the keyboard sheet applies reorders to its group list; the display-area and suggestion-area calculators now track the swiped group and apply reorders, so the strip follows the gesture
+
+### ⚠️ Behaviour change
+
+- **CoreFunctionKeyBottomSheet** without `onGroupsReordered` shows no drag handles and cannot be reordered. Previously the handles were always shown and dragging reordered a private copy that no consumer could read back — a reorder that was lost on the next rebuild. Wire the callback to keep the handles
+
+### 🧪 Tests
+
+- Keyboard: swipe left / right select the neighbouring group exactly once, wrap at both ends, a key tap never swipes, a swipe that starts on a key cancels the tap and the key's action, a sub-threshold drag is ignored, a single group ignores swipes; the "View all" sheet forwards the reorder and the handle label and re-renders in the consumer's new order while open
+- Sheet: the drop reports `(oldIndex, finalIndex)` and the rendered order stays the consumer's; a host that applies the callback renders the new order; no handles without the callback; the handle label defaults to the previous string and follows the builder
+- Goldens: the sheet golden wires the callback so the handles stay and the image is byte-identical; keyboard goldens unchanged
+
 ## [0.19.0] - CoreDisplayArea dependent-key row
 
 ### ✨ Features

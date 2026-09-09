@@ -19,6 +19,7 @@ class DisplayAreaShowcaseScreen extends StatefulWidget {
 
 class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   DisplayAreaStage _currentStage = DisplayAreaStage.collapsed;
+  GroupNameType _currentGroup = _basicGeometryGroup;
 
   static const GroupNameType _basicGeometryGroup =
       GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
@@ -175,7 +176,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                         );
                       },
                       child: CoreKeyboard(
-                        currentGroup: _basicGeometryGroup,
+                        currentGroup: _currentGroup,
                         allGroups: _groups,
                         onDigitPressed: (digit) =>
                             bloc.add(DigitPressed(digit.label)),
@@ -186,7 +187,12 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                         onControlAction: (_) {},
                         onResultTapped: () =>
                             bloc.add(const OperatorPressed('=')),
-                        onGroupSelected: (_) {},
+                        onGroupSelected: (group) =>
+                            setState(() => _currentGroup = group),
+                        onGroupsReordered: (oldIndex, newIndex) => setState(
+                          () => _groups.insert(
+                              newIndex, _groups.removeAt(oldIndex)),
+                        ),
                         currentUnitSystem: UnitSystem.imperial,
                         onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
                         onUnitSystemChanged: (_) {},

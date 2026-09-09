@@ -50,7 +50,8 @@ void main() {
       expect(pressedDigit, equals(DigitType.three));
     });
 
-    testWidgets('onDigitPressed is called exactly once per tap', (tester) async {
+    testWidgets('onDigitPressed is called exactly once per tap',
+        (tester) async {
       var callCount = 0;
       await tester.pumpWidget(
         MaterialApp(

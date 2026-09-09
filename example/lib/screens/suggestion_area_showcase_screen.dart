@@ -70,6 +70,8 @@ class _SuggestionAreaShowcaseViewState
     extends State<_SuggestionAreaShowcaseView> {
   CoreSuggestionLayout _layout = CoreSuggestionLayout.twoRows;
   bool _secondRowHidden = false;
+  GroupNameType _currentGroup =
+      SuggestionAreaShowcaseScreen._basicGeometryGroup;
 
   Widget _layoutControls(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -196,8 +198,7 @@ class _SuggestionAreaShowcaseViewState
                                 padding: const EdgeInsets.only(
                                     top: CoreSpacing.space1),
                                 child: CoreKeyboard(
-                                  currentGroup: SuggestionAreaShowcaseScreen
-                                      ._basicGeometryGroup,
+                                  currentGroup: _currentGroup,
                                   allGroups:
                                       SuggestionAreaShowcaseScreen._groups,
                                   onDigitPressed: (key) {
@@ -217,7 +218,15 @@ class _SuggestionAreaShowcaseViewState
                                   onResultTapped: () {
                                     bloc.add(const OperatorPressed('='));
                                   },
-                                  onGroupSelected: (_) {},
+                                  onGroupSelected: (group) =>
+                                      setState(() => _currentGroup = group),
+                                  onGroupsReordered: (oldIndex, newIndex) =>
+                                      setState(() {
+                                    final groups =
+                                        SuggestionAreaShowcaseScreen._groups;
+                                    groups.insert(
+                                        newIndex, groups.removeAt(oldIndex));
+                                  }),
                                   currentUnitSystem: UnitSystem.imperial,
                                   onKeyTapped: (key) {
                                     bloc.add(KeySelected(key.label));
