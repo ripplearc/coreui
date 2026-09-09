@@ -51,8 +51,10 @@ void main() {
     // The whole point of CA-898: a localized keyboard re-renders `label`, and
     // group selection must not notice. Equality keys on `id` alone.
     test('groups with the same id are equal across differing labels', () {
-      const english = GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
-      const spanish = GroupNameType(id: 'Basic Geometry', label: 'Geometria Basica');
+      const english =
+          GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
+      const spanish =
+          GroupNameType(id: 'Basic Geometry', label: 'Geometria Basica');
 
       expect(english, equals(spanish));
       expect(english.hashCode, equals(spanish.hashCode));
@@ -88,7 +90,8 @@ void main() {
 
   group('KeyType identity', () {
     test('id is independent of the displayed label', () {
-      const key = KeyType(id: 'Rise', groupName: 'Basic Geometry', label: 'Subida');
+      const key =
+          KeyType(id: 'Rise', groupName: 'Basic Geometry', label: 'Subida');
 
       expect(key.id, equals('Rise'));
       expect(key.label, equals('Subida'));

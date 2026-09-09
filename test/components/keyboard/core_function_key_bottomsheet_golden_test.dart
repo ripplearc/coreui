@@ -22,21 +22,43 @@ void main() {
       FunctionGroup(
         name: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
         keys: [
-          KeyType(groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
-          KeyType(groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
-          KeyType(groupName: 'Trigonomety', id: 'tan', label: 'tan', action: () {}),
-          KeyType(groupName: 'Trigonomety', id: 'csc', label: 'csc', action: () {}),
-          KeyType(groupName: 'Trigonomety', id: 'sec', label: 'sec', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'tan', label: 'tan', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'csc', label: 'csc', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'sec', label: 'sec', action: () {}),
         ],
       ),
       FunctionGroup(
         name: const GroupNameType(id: 'Materials', label: 'Materials'),
         keys: [
-          KeyType(groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
-          KeyType(groupName: 'Materials', id: 'Steel', label: 'Steel', action: () {}),
-          KeyType(groupName: 'Materials', id: 'Concrete', label: 'Concrete', action: () {}),
-          KeyType(groupName: 'Materials', id: 'Brick', label: 'Brick', action: () {}),
-          KeyType(groupName: 'Materials', id: 'Glass', label: 'Glass', action: () {}),
+          KeyType(
+              groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
+          KeyType(
+              groupName: 'Materials',
+              id: 'Steel',
+              label: 'Steel',
+              action: () {}),
+          KeyType(
+              groupName: 'Materials',
+              id: 'Concrete',
+              label: 'Concrete',
+              action: () {}),
+          KeyType(
+              groupName: 'Materials',
+              id: 'Brick',
+              label: 'Brick',
+              action: () {}),
+          KeyType(
+              groupName: 'Materials',
+              id: 'Glass',
+              label: 'Glass',
+              action: () {}),
         ],
       ),
     ];
@@ -56,9 +78,11 @@ void main() {
           child: CoreFunctionKeyBottomSheet(
             groups: testGroups,
             groupAccentColors: testAccentColors,
-            selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+            selectedGroup:
+                const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
             onGroupSelected: (_) {},
             onKeyTapped: (_) {},
+            onGroupsReordered: (_, __) {},
             showUnitToggle: true,
             currentUnitSystem: UnitSystem.imperial,
             onUnitSystemChanged: (_) {},

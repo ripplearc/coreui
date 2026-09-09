@@ -3,6 +3,12 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A bottom sheet widget that displays function key groups for the keyboard.
 ///
+/// The sheet renders [groups] in the order it is given and holds no order of
+/// its own: dragging a group's handle reports the move through
+/// [onGroupsReordered], and the consumer — who owns the order as a stored
+/// preference — reorders [groups] and rebuilds. Handles render only when the
+/// callback is set, so a read-only sheet offers no gesture it cannot honour.
+///
 /// [groups] is the list of function groups to display.
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [selectedGroup] is the currently selected function group.
@@ -17,6 +23,17 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   final GroupNameType selectedGroup;
   final ValueChanged<GroupNameType> onGroupSelected;
   final ValueChanged<KeyType> onKeyTapped;
+
+  /// Called with the dragged group's old index and its final index once it
+  /// is dropped. `newIndex` is already adjusted for the removal, so
+  /// `groups.insert(newIndex, groups.removeAt(oldIndex))` applies it. Drag
+  /// handles render only while this is set.
+  final void Function(int oldIndex, int newIndex)? onGroupsReordered;
+
+  /// Builds the drag handle's screen-reader label from the group label.
+  /// Defaults to [defaultReorderSemanticsLabel].
+  final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
+
   final bool showUnitToggle;
   final UnitSystem currentUnitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
@@ -28,10 +45,16 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
     required this.selectedGroup,
     required this.onGroupSelected,
     required this.onKeyTapped,
+    this.onGroupsReordered,
+    this.reorderSemanticsLabelBuilder,
     this.showUnitToggle = true,
     this.currentUnitSystem = UnitSystem.imperial,
     this.onUnitSystemChanged,
   });
+
+  /// The drag handle label used when [reorderSemanticsLabelBuilder] is null.
+  static String defaultReorderSemanticsLabel(String groupLabel) =>
+      'Drag indicator for $groupLabel group';
 
   @override
   State<CoreFunctionKeyBottomSheet> createState() =>
@@ -40,29 +63,10 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
 
 class _CoreFunctionKeyBottomSheetState
     extends State<CoreFunctionKeyBottomSheet> {
-  late List<FunctionGroup> _groups;
-
   static const double _maxHeightRatio = 0.7;
 
-  @override
-  void initState() {
-    super.initState();
-    _groups = List.from(widget.groups);
-  }
-
   void _handleGroupReorder(int oldIndex, int newIndex) {
-    if (_groups.isEmpty ||
-        oldIndex < 0 ||
-        newIndex < 0 ||
-        oldIndex >= _groups.length ||
-        newIndex >= _groups.length) {
-      return;
-    }
-
-    setState(() {
-      final FunctionGroup item = _groups.removeAt(oldIndex);
-      _groups.insert(newIndex, item);
-    });
+    widget.onGroupsReordered?.call(oldIndex, newIndex);
   }
 
   @override
@@ -104,7 +108,7 @@ class _CoreFunctionKeyBottomSheetState
               Flexible(
                 child: ReorderableListView.builder(
                   buildDefaultDragHandles: false,
-                  itemCount: _groups.length,
+                  itemCount: widget.groups.length,
                   onReorderItem: _handleGroupReorder,
                   proxyDecorator:
                       (Widget child, int index, Animation<double> animation) {
@@ -115,7 +119,7 @@ class _CoreFunctionKeyBottomSheetState
                     );
                   },
                   itemBuilder: (context, index) {
-                    final group = _groups[index];
+                    final group = widget.groups[index];
                     final accent = widget.groupAccentColors[group.name] ??
                         colors.keyboardUnits;
                     final isSelected = group.name == widget.selectedGroup;
@@ -131,6 +135,12 @@ class _CoreFunctionKeyBottomSheetState
                         isSelected: isSelected,
                         onGroupSelected: widget.onGroupSelected,
                         onKeyTapped: widget.onKeyTapped,
+                        showDragHandle: widget.onGroupsReordered != null,
+                        dragHandleSemanticsLabel:
+                            (widget.reorderSemanticsLabelBuilder ??
+                                    CoreFunctionKeyBottomSheet
+                                        .defaultReorderSemanticsLabel)(
+                                group.name.label),
                       ),
                     );
                   },
@@ -151,6 +161,8 @@ class _FunctionGroupSection extends StatelessWidget {
   final bool isSelected;
   final ValueChanged<GroupNameType> onGroupSelected;
   final ValueChanged<KeyType> onKeyTapped;
+  final bool showDragHandle;
+  final String dragHandleSemanticsLabel;
 
   const _FunctionGroupSection({
     required this.index,
@@ -159,6 +171,8 @@ class _FunctionGroupSection extends StatelessWidget {
     required this.isSelected,
     required this.onGroupSelected,
     required this.onKeyTapped,
+    required this.showDragHandle,
+    required this.dragHandleSemanticsLabel,
   });
 
   @override
@@ -172,6 +186,8 @@ class _FunctionGroupSection extends StatelessWidget {
           accentColor: accentColor,
           isSelected: isSelected,
           onTap: () => onGroupSelected(group.name),
+          showDragHandle: showDragHandle,
+          dragHandleSemanticsLabel: dragHandleSemanticsLabel,
         ),
         const SizedBox(height: CoreSpacing.space3),
         GridView.count(
@@ -284,6 +300,8 @@ class _GroupHeader extends StatelessWidget {
   final Color accentColor;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool showDragHandle;
+  final String dragHandleSemanticsLabel;
 
   const _GroupHeader({
     required this.index,
@@ -291,6 +309,8 @@ class _GroupHeader extends StatelessWidget {
     required this.accentColor,
     required this.isSelected,
     required this.onTap,
+    required this.showDragHandle,
+    required this.dragHandleSemanticsLabel,
   });
 
   @override
@@ -304,18 +324,20 @@ class _GroupHeader extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            ReorderableDragStartListener(
-              index: index,
-              child: RotatedBox(
-                quarterTurns: 1,
-                child: Icon(
-                  Icons.drag_indicator,
-                  color: colors.iconGrayMid,
-                  semanticLabel: 'Drag indicator for $name group',
+            if (showDragHandle) ...[
+              ReorderableDragStartListener(
+                index: index,
+                child: RotatedBox(
+                  quarterTurns: 1,
+                  child: Icon(
+                    Icons.drag_indicator,
+                    color: colors.iconGrayMid,
+                    semanticLabel: dragHandleSemanticsLabel,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: CoreSpacing.space2),
+              const SizedBox(width: CoreSpacing.space2),
+            ],
             Text(
               '$name group',
               style: typography.bodyMediumSemiBold.copyWith(
