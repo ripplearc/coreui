@@ -25,6 +25,7 @@ class CoreMaterialIcons {
   static const add = CoreIconData.material(Icons.add);
   static const minus = CoreIconData.material(Icons.remove);
   static const edit = CoreIconData.material(Icons.edit_outlined);
+  static const swapHorizontal = CoreIconData.material(Icons.swap_horiz);
   static const delete = CoreIconData.material(Icons.delete_outline);
   static const close = CoreIconData.material(Icons.cancel_outlined);
   static const search = CoreIconData.material(Icons.search);

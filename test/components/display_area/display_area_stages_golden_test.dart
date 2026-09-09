@@ -102,9 +102,14 @@ void main() {
             label: 'Length',
             value: '16ft 14in',
             isTyping: false,
-            dependentKeyLabel: 'O.C',
-            dependentKeyValue: '16in',
-            onPressedDependentKey: () {},
+            dependentKeys: [
+              CoreDependentKeyData(
+                label: 'O.C',
+                value: '16in',
+                kind: CoreDependentKeyKind.editable,
+                onPressed: () {},
+              ),
+            ],
             chipsList: mockChips,
             previousSessions: mockPreviousSessions,
             onStageChanged: onStageChanged,
