@@ -19,6 +19,15 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [customResultLabel] is an optional custom label for the result button.
+///
+/// ## Group swipe
+/// A horizontal swipe on the function-key strip selects the previous (swipe
+/// right) or next (swipe left) group in [allGroups] through [onGroupSelected],
+/// wrapping at either end. One gesture selects one group, a drag shorter than
+/// [groupSwipeThreshold] is ignored, and a tap on a key never counts as a
+/// swipe. The "View all" sheet stays the non-gesture equivalent, and the
+/// keyboard holds no group order of its own: a reorder made in that sheet
+/// reaches the consumer through [onGroupsReordered].
 class CoreKeyboard extends StatefulWidget {
   const CoreKeyboard({
     super.key,
@@ -37,7 +46,14 @@ class CoreKeyboard extends StatefulWidget {
     this.groupAccentColors = const {},
     this.customResultLabel,
     this.onCollapseChanged,
+    this.onGroupsReordered,
+    this.reorderSemanticsLabelBuilder,
   });
+
+  /// Minimum horizontal travel for a drag on the function-key strip to count
+  /// as a group swipe; anything shorter is ignored so a wobbly tap never
+  /// changes the group.
+  static const double groupSwipeThreshold = CoreSpacing.space16;
 
   final GroupNameType currentGroup;
   final List<FunctionGroup> allGroups;
@@ -55,6 +71,17 @@ class CoreKeyboard extends StatefulWidget {
   final String? customResultLabel;
   final ValueChanged<bool>? onCollapseChanged;
 
+  /// Called when the user drags a group to a new position in the "View all"
+  /// sheet, with its old index and its final index. The consumer reorders
+  /// [allGroups] and rebuilds; the sheet re-renders while open when
+  /// [allGroups] changes.
+  final void Function(int oldIndex, int newIndex)? onGroupsReordered;
+
+  /// Builds the screen-reader label of a group's drag handle in the "View
+  /// all" sheet from the group label. Defaults to
+  /// [CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel].
+  final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
+
   @override
   State<CoreKeyboard> createState() => _CoreKeyboardState();
 }
@@ -64,6 +91,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   static const double _dragIndicatorWidth = CoreSpacing.space8;
 
   bool _isCollapsed = false;
+  double _groupSwipeDistance = 0;
+  _FunctionsSheetHostState? _openFunctionsSheet;
 
   late final AnimationController _controller;
   final GlobalKey _contentKey = GlobalKey();
@@ -83,6 +112,39 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(CoreKeyboard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final sheet = _openFunctionsSheet;
+    if (sheet != null && !identical(widget.allGroups, oldWidget.allGroups)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => sheet.refresh());
+    }
+  }
+
+  void _handleGroupSwipeUpdate(DragUpdateDetails details) {
+    _groupSwipeDistance += details.delta.dx;
+  }
+
+  void _handleGroupSwipeEnd(DragEndDetails details) {
+    final distance = _groupSwipeDistance;
+    _groupSwipeDistance = 0;
+    if (distance.abs() < CoreKeyboard.groupSwipeThreshold) return;
+    _selectNeighborGroup(forward: distance < 0);
+  }
+
+  void _handleGroupSwipeCancel() {
+    _groupSwipeDistance = 0;
+  }
+
+  void _selectNeighborGroup({required bool forward}) {
+    final groups = widget.allGroups;
+    if (groups.length < 2) return;
+    final current = groups.indexWhere((g) => g.name == widget.currentGroup);
+    final step = forward ? 1 : groups.length - 1;
+    final next = ((current < 0 ? 0 : current) + step) % groups.length;
+    widget.onGroupSelected(groups[next].name);
   }
 
   void _updateContentHeight() {
@@ -239,11 +301,17 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _FunctionKeyStrip(
-                            group: group,
-                            onKeyTapped: widget.onKeyTapped,
-                            accentColor: accent,
-                            onViewAll: () => _showFunctionsSheet(context),
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onHorizontalDragUpdate: _handleGroupSwipeUpdate,
+                            onHorizontalDragEnd: _handleGroupSwipeEnd,
+                            onHorizontalDragCancel: _handleGroupSwipeCancel,
+                            child: _FunctionKeyStrip(
+                              group: group,
+                              onKeyTapped: widget.onKeyTapped,
+                              accentColor: accent,
+                              onViewAll: () => _showFunctionsSheet(context),
+                            ),
                           ),
                           SizedBox(height: functionStripSpacing),
                           _buildColumnLayout(
@@ -503,26 +571,68 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
             BorderRadius.vertical(top: Radius.circular(CoreSpacing.space6)),
       ),
       builder: (context) {
-        return CoreFunctionKeyBottomSheet(
-          groups: widget.allGroups,
-          groupAccentColors: widget.groupAccentColors,
-          selectedGroup: widget.currentGroup,
-          onGroupSelected: (groupName) {
-            widget.onGroupSelected(groupName);
-            Navigator.of(context).pop();
-          },
-          onKeyTapped: (key) {
-            widget.onKeyTapped(key);
-            Navigator.of(context).pop();
-          },
-          currentUnitSystem: widget.currentUnitSystem,
-          onUnitSystemChanged: (system) {
-            widget.onUnitSystemChanged(system);
-          },
+        return _FunctionsSheetHost(
+          onAttach: (sheet) => _openFunctionsSheet = sheet,
+          onDetach: () => _openFunctionsSheet = null,
+          builder: (context) => CoreFunctionKeyBottomSheet(
+            groups: widget.allGroups,
+            groupAccentColors: widget.groupAccentColors,
+            selectedGroup: widget.currentGroup,
+            onGroupSelected: (groupName) {
+              widget.onGroupSelected(groupName);
+              Navigator.of(context).pop();
+            },
+            onKeyTapped: (key) {
+              widget.onKeyTapped(key);
+              Navigator.of(context).pop();
+            },
+            onGroupsReordered: widget.onGroupsReordered,
+            reorderSemanticsLabelBuilder: widget.reorderSemanticsLabelBuilder,
+            currentUnitSystem: widget.currentUnitSystem,
+            onUnitSystemChanged: (system) {
+              widget.onUnitSystemChanged(system);
+            },
+          ),
         );
       },
     );
   }
+}
+
+class _FunctionsSheetHost extends StatefulWidget {
+  const _FunctionsSheetHost({
+    required this.onAttach,
+    required this.onDetach,
+    required this.builder,
+  });
+
+  final ValueChanged<_FunctionsSheetHostState> onAttach;
+  final VoidCallback onDetach;
+  final WidgetBuilder builder;
+
+  @override
+  State<_FunctionsSheetHost> createState() => _FunctionsSheetHostState();
+}
+
+class _FunctionsSheetHostState extends State<_FunctionsSheetHost> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onAttach(this);
+  }
+
+  @override
+  void dispose() {
+    widget.onDetach();
+    super.dispose();
+  }
+
+  void refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }
 
 class _FunctionKeyStrip extends StatelessWidget {
