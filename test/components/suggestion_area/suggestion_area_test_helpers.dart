@@ -21,6 +21,8 @@ CoreSuggestionArea testCoreSuggestionArea({
   ValueChanged<bool>? onExpandedChanged,
   String toggleSemanticsLabel = testToggleSemanticsLabel,
   String bindSuffix = CoreSuggestionArea.defaultBindSuffix,
+  CoreSuggestionLayout layout = CoreSuggestionLayout.toggle,
+  bool secondRowHidden = false,
 }) {
   return CoreSuggestionArea(
     key: key,
@@ -33,6 +35,8 @@ CoreSuggestionArea testCoreSuggestionArea({
     collapseToggleSemanticsLabel: testCollapseToggleSemantics,
     toggleSemanticsLabel: toggleSemanticsLabel,
     bindSuffix: bindSuffix,
+    layout: layout,
+    secondRowHidden: secondRowHidden,
   );
 }
 
