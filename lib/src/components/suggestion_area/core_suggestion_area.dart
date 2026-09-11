@@ -52,6 +52,8 @@ class CoreSuggestionArea extends StatefulWidget {
     this.bindSuffix = defaultBindSuffix,
     this.layout = CoreSuggestionLayout.toggle,
     this.secondRowHidden = false,
+    this.conversionsExpandToggleSemanticsLabelBuilder,
+    this.conversionsCollapseToggleSemanticsLabel,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
@@ -120,6 +122,20 @@ class CoreSuggestionArea extends StatefulWidget {
   /// [CoreSuggestionLayout.toggle]. Defaults to `false`.
   final bool secondRowHidden;
 
+  /// Semantics label for the conversions row's expand control in
+  /// [CoreSuggestionLayout.twoRows], so a screen reader can tell it apart from
+  /// the primary row's. Receives the hidden chip count. Falls back to
+  /// [expandToggleSemanticsLabelBuilder] when null; ignored in
+  /// [CoreSuggestionLayout.toggle].
+  final String Function(int hiddenCount)?
+      conversionsExpandToggleSemanticsLabelBuilder;
+
+  /// Semantics label for the conversions row's collapse control in
+  /// [CoreSuggestionLayout.twoRows]. Falls back to
+  /// [collapseToggleSemanticsLabel] when null; ignored in
+  /// [CoreSuggestionLayout.toggle].
+  final String? conversionsCollapseToggleSemanticsLabel;
+
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
@@ -187,6 +203,8 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     required bool isExpanded,
     required ValueChanged<bool> onExpandedChanged,
     Widget? leadingWidget,
+    String Function(int hiddenCount)? expandToggleSemanticsLabelBuilder,
+    String? collapseToggleSemanticsLabel,
   }) {
     return _SuggestionList(
       key: key,
@@ -194,9 +212,10 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
       isExpanded: isExpanded,
       onExpandedChanged: onExpandedChanged,
       hiddenChipsTextBuilder: widget.hiddenChipsTextBuilder,
-      expandToggleSemanticsLabelBuilder:
+      expandToggleSemanticsLabelBuilder: expandToggleSemanticsLabelBuilder ??
           widget.expandToggleSemanticsLabelBuilder,
-      collapseToggleSemanticsLabel: widget.collapseToggleSemanticsLabel,
+      collapseToggleSemanticsLabel:
+          collapseToggleSemanticsLabel ?? widget.collapseToggleSemanticsLabel,
       bindSuffix: widget.bindSuffix,
       leadingWidget: leadingWidget,
     );
@@ -249,15 +268,17 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hasAi)
-          _animatedSize(
-            child: _buildRow(
-              key: const ValueKey('suggestion_row_primary'),
-              suggestions: widget.aiSuggestions,
-              isExpanded: _isExpanded,
-              onExpandedChanged: (expanded) => _setExpanded(primary: expanded),
-            ),
-          ),
+        _animatedSize(
+          child: hasAi
+              ? _buildRow(
+                  key: const ValueKey('suggestion_row_primary'),
+                  suggestions: widget.aiSuggestions,
+                  isExpanded: _isExpanded,
+                  onExpandedChanged: (expanded) =>
+                      _setExpanded(primary: expanded),
+                )
+              : const SizedBox.shrink(),
+        ),
         _animatedSize(
           child: showSecondRow
               ? _buildRow(
@@ -266,6 +287,10 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
                   isExpanded: _isSecondaryExpanded,
                   onExpandedChanged: (expanded) =>
                       _setExpanded(secondary: expanded),
+                  expandToggleSemanticsLabelBuilder:
+                      widget.conversionsExpandToggleSemanticsLabelBuilder,
+                  collapseToggleSemanticsLabel:
+                      widget.conversionsCollapseToggleSemanticsLabel,
                 )
               : const SizedBox.shrink(),
         ),

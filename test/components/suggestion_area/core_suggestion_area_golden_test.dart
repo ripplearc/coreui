@@ -365,10 +365,10 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 824x256 @ 2.0 => 412x128 logical: the primary row over the conversions
+    // 1236x384 @ 3.0 => 412x128 logical: the primary row over the conversions
     // row, each 64 tall (48 chip + its own space2 vertical padding).
-    tester.view.physicalSize = const Size(824, 256);
-    tester.view.devicePixelRatio = 2.0;
+    tester.view.physicalSize = const Size(1236, 384);
+    tester.view.devicePixelRatio = 3.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -427,7 +427,7 @@ void main() {
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump();
   }
 
   testWidgets('SuggestionArea two rows Golden Test - Light',
