@@ -18,6 +18,10 @@ final _expandToggleFinder = find.bySemanticsLabel(
   RegExp(r'Show \d+ more suggestions'),
 );
 
+final _conversionsExpandToggleFinder = find.bySemanticsLabel(
+  RegExp(r'Show \d+ more conversions'),
+);
+
 void main() {
   group('CoreSuggestionArea – accessibility', () {
     testWidgets('meets basic accessibility guidelines',
@@ -336,6 +340,47 @@ void main() {
 
       expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
       expect(find.byType(CoreChip), findsNWidgets(2));
+    });
+
+    testWidgets('each row announces its own overflow controls',
+        (WidgetTester tester) async {
+      await setupA11yTest(
+        tester,
+        screenSize: const ui.Size(200, 600),
+      );
+
+      List<SuggestionData> overflow(String prefix, SuggestionKind kind) =>
+          List.generate(
+            5,
+            (index) => SuggestionData(
+              label: '$prefix $index',
+              value: '$index',
+              kind: kind,
+              onTap: () {},
+            ),
+          );
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: overflow('Smart', SuggestionKind.predictive),
+            conversionSuggestions: overflow('Conv', SuggestionKind.conversion),
+          ));
+      await tester.pumpAndSettle();
+
+      expect(_expandToggleFinder, findsOneWidget);
+      expect(_conversionsExpandToggleFinder, findsOneWidget);
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(_conversionsExpandToggleFinder);
+      await tester.pumpAndSettle();
+
+      expect(
+          find.bySemanticsLabel(testCollapseToggleSemantics), findsOneWidget);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsOneWidget);
     });
   });
 }

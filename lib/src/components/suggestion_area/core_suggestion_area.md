@@ -49,6 +49,8 @@ CoreSuggestionArea(
 | `bindSuffix` | `String` | No | `'?'` | Trailing marker appended to a `SuggestionKind.bind` chip's last text segment (`Height: 8ft ?`). Override per locale. |
 | `layout` | `CoreSuggestionLayout` | No | `toggle` | `toggle` — one row with an AI / conversion switch; `twoRows` — `aiSuggestions` on row 1, `conversionSuggestions` on row 2, no switch. |
 | `secondRowHidden` | `bool` | No | `false` | In `twoRows`, folds the conversions row away (an `AnimatedSize` over `CoreSuggestionArea.animationDuration`, 300 ms) so the display area's dependent-key band can take the space. Ignored in `toggle`. |
+| `conversionsExpandToggleSemanticsLabelBuilder` | `String Function(int count)?` | No | `null` | In `twoRows`, semantics label for the conversions row's expand control, so a screen reader can tell it from the primary row's. Falls back to `expandToggleSemanticsLabelBuilder`. Ignored in `toggle`. |
+| `conversionsCollapseToggleSemanticsLabel` | `String?` | No | `null` | In `twoRows`, semantics label for the conversions row's collapse control. Falls back to `collapseToggleSemanticsLabel`. Ignored in `toggle`. |
 
 ### SuggestionData
 
@@ -79,9 +81,9 @@ Only `bind` changes how the chip looks; the other kinds exist so the app can att
 | `toggle` (default) | One | Shown when both lists are provided | One `+N` chip for the visible list | The original layout; the calculator keeps it behind its "Strip layout" preference |
 | `twoRows` | Row 1 `aiSuggestions` (the rung that fired), row 2 `conversionSuggestions` | Never | Each row has its own `+N` chip and expands on its own | The calculator's default (prototype `strip: 'tworow'`) |
 
-In `twoRows` a single non-empty list renders as a single row (no empty shelf), and `onExpandedChanged` reports `true` while **either** row is expanded and `false` once both are collapsed. `secondRowHidden` animates row 2 out over `CoreSuggestionArea.animationDuration` — the same 300 ms as the display area's stage transitions, so the two surfaces move together — and collapses it if it was expanded; with only conversions present and the row hidden, the placeholder shows.
+In `twoRows` a single non-empty list renders as a single row (no empty shelf), and `onExpandedChanged` reports `true` while **either** row is expanded and `false` once both are collapsed. `secondRowHidden` animates row 2 out over `CoreSuggestionArea.animationDuration` — the same 300 ms as the display area's stage transitions, so the two surfaces move together — and collapses it if it was expanded; with only conversions present and the row hidden, the placeholder shows. Pass `conversionsExpandToggleSemanticsLabelBuilder` and `conversionsCollapseToggleSemanticsLabel` so a screen-reader user hears which row a `+N` control belongs to; without them the conversions row reuses the primary row's labels.
 
-The prototype renders row 2 as visibly secondary (value-only mini chips behind an "as" tag). This component keeps both rows at the standard large chip size; a secondary treatment for row 2 is a follow-up once the Figma frame (`62058:64729`) confirms it.
+Row 2 follows the Figma calculator frames (`61933:62752`, `61665:80039`): standard 48 px chips, each prefixed `Conv:`, with no leading row icon. The prototype instead renders row 2 as value-only mini chips behind a single "as" tag; that treatment is not in Figma, so adopting it is a design decision rather than a follow-up of this component.
 
 ## Features
 
@@ -132,6 +134,8 @@ CoreSuggestionArea(
   hiddenChipsTextBuilder: (count) => '+$count',
   expandToggleSemanticsLabelBuilder: (count) => 'Show $count more',
   collapseToggleSemanticsLabel: 'Collapse',
+  conversionsExpandToggleSemanticsLabelBuilder: (count) => 'Show $count more conversions',
+  conversionsCollapseToggleSemanticsLabel: 'Collapse conversions',
   toggleSemanticsLabel: 'Toggle suggestion mode',
 )
 ```

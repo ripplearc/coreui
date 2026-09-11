@@ -692,6 +692,16 @@ void main() {
             onTap: () {},
           ),
         ];
+    List<SuggestionData> overflow(String prefix, SuggestionKind kind) =>
+        List.generate(
+          5,
+          (index) => SuggestionData(
+            label: '$prefix $index',
+            value: '$index',
+            kind: kind,
+            onTap: () {},
+          ),
+        );
 
     test('layout defaults to toggle so existing callers are unchanged', () {
       expect(testCoreSuggestionArea().layout, CoreSuggestionLayout.toggle);
@@ -829,56 +839,71 @@ void main() {
           testCoreSuggestionArea(
             layout: CoreSuggestionLayout.twoRows,
             onExpandedChanged: (value) => lastExpanded = value,
-            aiSuggestions: List.generate(
-              5,
-              (index) => SuggestionData(
-                label: 'Smart $index',
-                value: '$index',
-                onTap: () {},
-              ),
-            ),
-            conversionSuggestions: List.generate(
-              5,
-              (index) => SuggestionData(
-                label: 'Conv $index',
-                value: '$index',
-                kind: SuggestionKind.conversion,
-                onTap: () {},
-              ),
-            ),
+            aiSuggestions: overflow('Smart', SuggestionKind.predictive),
+            conversionSuggestions: overflow('Conv', SuggestionKind.conversion),
           ));
       await tester.pumpAndSettle();
       await tester.pump();
 
-      expect(_expandToggleFinder, findsNWidgets(2));
+      expect(_expandToggleFinder, findsOneWidget);
+      expect(_conversionsExpandToggleFinder, findsOneWidget,
+          reason: 'the conversions row announces its own expand toggle');
 
-      await tester.tap(_expandToggleFinder.first);
+      await tester.tap(_expandToggleFinder);
       await tester.pumpAndSettle();
 
       expect(lastExpanded, isTrue);
       expect(find.bySemanticsLabel(testCollapseToggleSemantics), findsOneWidget,
           reason: 'only the primary row expanded');
-      expect(_expandToggleFinder, findsOneWidget,
+      expect(_conversionsExpandToggleFinder, findsOneWidget,
           reason: 'the conversions row still offers its own expand toggle');
       expect(tester.getTopLeft(find.text('Smart 1')).dy, greaterThan(0));
       expect(tester.getTopLeft(find.text('Conv 1')).dy, lessThan(0),
           reason: 'the conversions row is still collapsed');
 
-      await tester.tap(_expandToggleFinder);
+      await tester.tap(_conversionsExpandToggleFinder);
       await tester.pumpAndSettle();
       expect(tester.getTopLeft(find.text('Conv 1')).dy, greaterThan(0));
-      expect(
-          find.bySemanticsLabel(testCollapseToggleSemantics), findsNWidgets(2));
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsOneWidget);
 
-      await tester
-          .tap(find.bySemanticsLabel(testCollapseToggleSemantics).first);
+      await tester.tap(find.bySemanticsLabel(testCollapseToggleSemantics));
       await tester.pumpAndSettle();
       expect(lastExpanded, isTrue,
           reason: 'still expanded while the other row is open');
 
-      await tester.tap(find.bySemanticsLabel(testCollapseToggleSemantics));
+      await tester
+          .tap(find.bySemanticsLabel(testConversionsCollapseToggleSemantics));
       await tester.pumpAndSettle();
       expect(lastExpanded, isFalse);
+    });
+
+    testWidgets('the conversions row falls back to the shared overflow labels',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            conversionsExpandToggleSemanticsLabelBuilder: null,
+            conversionsCollapseToggleSemanticsLabel: null,
+            aiSuggestions: overflow('Smart', SuggestionKind.predictive),
+            conversionSuggestions: overflow('Conv', SuggestionKind.conversion),
+          ));
+      await tester.pumpAndSettle();
+
+      expect(_expandToggleFinder, findsNWidgets(2));
+      expect(_conversionsExpandToggleFinder, findsNothing);
+
+      await tester.tap(_expandToggleFinder.last);
+      await tester.pumpAndSettle();
+
+      expect(
+          find.bySemanticsLabel(testCollapseToggleSemantics), findsOneWidget);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
     });
 
     testWidgets('a suggestion change collapses both rows',
@@ -895,21 +920,139 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pump();
 
-      await tester.tap(_expandToggleFinder.first);
-      await tester.pumpAndSettle();
       await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(_conversionsExpandToggleFinder);
       await tester.pumpAndSettle();
 
       final host = tester.state<_TwoRowHostState>(find.byType(_TwoRowHost));
       expect(host.lastExpanded, isTrue);
       expect(
-          find.bySemanticsLabel(testCollapseToggleSemantics), findsNWidgets(2));
+          find.bySemanticsLabel(testCollapseToggleSemantics), findsOneWidget);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsOneWidget);
 
       host.replaceSuggestions();
       await tester.pumpAndSettle();
 
       expect(host.lastExpanded, isFalse);
       expect(find.bySemanticsLabel(testCollapseToggleSemantics), findsNothing);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
+    });
+
+    testWidgets('changing layout at runtime collapses both rows',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const _TwoRowHost(overflow: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(_conversionsExpandToggleFinder);
+      await tester.pumpAndSettle();
+
+      final host = tester.state<_TwoRowHostState>(find.byType(_TwoRowHost));
+      expect(host.lastExpanded, isTrue);
+
+      host.setLayout(CoreSuggestionLayout.toggle);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isFalse);
+      expect(find.bySemanticsLabel(testCollapseToggleSemantics), findsNothing);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
+      expect(_expandToggleFinder, findsOneWidget,
+          reason: 'the toggle layout shows its single row collapsed');
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      expect(host.lastExpanded, isTrue);
+
+      host.setLayout(CoreSuggestionLayout.twoRows);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isFalse);
+      expect(_expandToggleFinder, findsOneWidget);
+      expect(_conversionsExpandToggleFinder, findsOneWidget,
+          reason: 'both rows come back collapsed');
+    });
+
+    testWidgets('hiding an expanded conversions row reports collapsed',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const _TwoRowHost(overflow: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(_conversionsExpandToggleFinder);
+      await tester.pumpAndSettle();
+
+      final host = tester.state<_TwoRowHostState>(find.byType(_TwoRowHost));
+      expect(host.lastExpanded, isTrue);
+
+      host.setSecondRowHidden(true);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isFalse);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
+
+      host.setSecondRowHidden(false);
+      await tester.pumpAndSettle();
+
+      expect(_conversionsExpandToggleFinder, findsOneWidget,
+          reason: 'the row comes back collapsed');
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
+    });
+
+    testWidgets(
+        'hiding conversions reports nothing while the primary row is open',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(200, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const _TwoRowHost(overflow: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(_expandToggleFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(_conversionsExpandToggleFinder);
+      await tester.pumpAndSettle();
+
+      final host = tester.state<_TwoRowHostState>(find.byType(_TwoRowHost));
+      expect(host.lastExpanded, isTrue);
+      host.lastExpanded = null;
+
+      host.setSecondRowHidden(true);
+      await tester.pumpAndSettle();
+
+      expect(host.lastExpanded, isNull,
+          reason:
+              'no edge: the area is still expanded through the primary row');
+      expect(
+          find.bySemanticsLabel(testCollapseToggleSemantics), findsOneWidget);
+      expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
+          findsNothing);
     });
   });
 }
@@ -924,9 +1067,14 @@ class _TwoRowHost extends StatefulWidget {
 }
 
 class _TwoRowHostState extends State<_TwoRowHost> {
+  CoreSuggestionLayout layout = CoreSuggestionLayout.twoRows;
   bool secondRowHidden = false;
   bool? lastExpanded;
   int generation = 0;
+
+  void setLayout(CoreSuggestionLayout next) {
+    setState(() => layout = next);
+  }
 
   void setSecondRowHidden(bool hidden) {
     setState(() => secondRowHidden = hidden);
@@ -949,7 +1097,7 @@ class _TwoRowHostState extends State<_TwoRowHost> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: testCoreSuggestionArea(
-        layout: CoreSuggestionLayout.twoRows,
+        layout: layout,
         secondRowHidden: secondRowHidden,
         aiSuggestions: _list('Area:'),
         conversionSuggestions: _list('Conv:'),
@@ -961,6 +1109,10 @@ class _TwoRowHostState extends State<_TwoRowHost> {
 
 final _expandToggleFinder = find.bySemanticsLabel(
   RegExp(r'Show \d+ more suggestions'),
+);
+
+final _conversionsExpandToggleFinder = find.bySemanticsLabel(
+  RegExp(r'Show \d+ more conversions'),
 );
 
 class _SuggestionAreaHost extends StatefulWidget {
