@@ -186,6 +186,10 @@ class _SuggestionAreaShowcaseViewState
                                     'Show $count more suggestions',
                                 collapseToggleSemanticsLabel:
                                     'Show fewer suggestions',
+                                conversionsExpandToggleSemanticsLabelBuilder:
+                                    (count) => 'Show $count more conversions',
+                                conversionsCollapseToggleSemanticsLabel:
+                                    'Show fewer conversions',
                                 toggleSemanticsLabel: 'Toggle suggestion mode',
                               ),
                               Padding(
