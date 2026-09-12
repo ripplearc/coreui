@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.16.0] - CoreCalculatorChip result, dashed and error variants + long-press
+
+### ✨ Features
+
+- **CoreCalculatorChip**: three new `CoreCalculatorChipType` variants for the calculator tape, so the app no longer has to borrow `disabled` for an answer or hand-build a chip for an error (CA-1034)
+  - `result` — filled chip for an answer the app computed (prototype: outlined = typed, filled = computed). Shares the muted grey pair of `disabled` by design (prototype `.t-result`) but stays interactive so a long-press can open provenance
+  - `dashed` — dashed `outlineFocus` outline over `backgroundBlueLight` for a bind offer ("Height: 8ft ?") or a chip being edited in place; text and factor keep the editable teal
+  - `error` — `alertRed` fill with a regular-weight `textDark` value for the dimension-error chip that backspace repairs. The prototype's `red200` border tint has no token, so the fill doubles as the border
+  - `onLongPress` fires for every variant except `disabled`; `longPressSemanticLabel` is exposed as the semantics long-press hint only while the callback is set, so screen readers never announce an action that is not there
+  - `CoreCalculatorChipTheme.dashedOutline(type:, colors:)` resolves the dashed decoration (null for every other type); the solid border is painted transparent at the same width so all six variants measure the same
+- **CoreDashedBorderDecoration**: new shared `Decoration` for dashed rounded outlines, applied as a container's `foregroundDecoration` so the solid `BoxDecoration` border stays untouched
+- Calculator chip showcase regrouped by tape meaning (typed / computed / tentative / error) with a long-press provenance demo
+
+### 🧪 Tests
+
+- Widget tests: tap and long-press gating per variant, long-press semantics action + hint (present with the callback, withheld without it and when disabled), dashed outline resolved only for `dashed`, and token resolution for the three new variants in light and dark; text contrast checked for the new variants in both themes
+- Decoration unit tests for equality, step interpolation and painting
+- Goldens: the single light golden is replaced by light + dark goldens covering all six variants
+
 ## [0.15.0] - Localization ownership moves to the consumer
 
 ### ⚠️ Breaking changes

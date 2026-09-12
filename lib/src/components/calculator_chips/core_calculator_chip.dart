@@ -5,41 +5,58 @@ import 'core_calculator_chip_theme.dart';
 
 /// The type variant of a [CoreCalculatorChip].
 ///
-/// [editable] represents a state that can be interacted with, [disabled] is for
-/// non-interactive states, and [active] is for highlighted or currently
-/// selected states.
+/// On the calculator tape an outlined chip is something the user typed and a
+/// filled chip is something the app worked out; the remaining variants mark
+/// the in-between states (entry in progress, a tentative value, a mistake).
 enum CoreCalculatorChipType {
-  /// Interactive state that can be edited.
+  /// A value the user typed. Outlined, interactive.
   editable,
 
-  /// Non-interactive state.
+  /// Non-interactive, muted. Ignores [CoreCalculatorChip.onTap] and
+  /// [CoreCalculatorChip.onLongPress]; requires a label.
   disabled,
 
-  /// Highlighted or currently selected state.
+  /// The value currently being entered. Highlighted.
   active,
+
+  /// An answer the app computed. Filled; stays interactive so a long-press
+  /// can open provenance (which chips produced it).
+  result,
+
+  /// A tentative value — a bind offer ("Height: 8ft ?") or a chip being
+  /// edited in place. Dashed outline.
+  dashed,
+
+  /// A dimension error ("area + length") the user repairs with backspace.
+  /// Keeps the tape's button semantics on purpose: like every variant but
+  /// [disabled] it stays interactive, so the app can attach a repair action
+  /// to [CoreCalculatorChip.onTap] or [CoreCalculatorChip.onLongPress].
+  error,
 }
 
 /// A chip component specifically designed for calculator or input-driven
-/// interfaces. It displays a value and an optional label, supporting
-/// interactive, disabled, and active states.
+/// interfaces. It displays a value and an optional label and takes one of
+/// six [CoreCalculatorChipType] looks.
 ///
-/// ## Types
-/// [CoreCalculatorChipType.editable] is interactive and typically features a
-/// shadow to indicate elevation.
-/// [CoreCalculatorChipType.disabled] is non-interactive and visually muted.
-/// [CoreCalculatorChipType.active] represents a highlighted or selected state.
+/// ## Interaction
+/// Every variant except [CoreCalculatorChipType.disabled] responds to [onTap]
+/// and [onLongPress]. Long-press is how the calculator opens provenance for a
+/// result; the callback is the whole contract, so the app can also offer the
+/// same action through a menu.
 ///
 /// ## Accessibility
-/// Automatically provides a combined semantic label for [label] and [value].
+/// Automatically provides a combined semantic label for [label] and [value],
+/// and exposes [longPressSemanticLabel] as the long-press hint while
+/// [onLongPress] is set.
 ///
 /// ## Example
 /// ```dart
 /// CoreCalculatorChip(
-///   type: CoreCalculatorChipType.editable,
-///   label: 'Amount',
-///   value: '123.45',
-///   onTap: () => debugPrint('Chip tapped'),
-///   factor: CoreIcons.addOperator,
+///   type: CoreCalculatorChipType.result,
+///   label: 'Area',
+///   value: '410.67ft²',
+///   onLongPress: () => showProvenance(),
+///   longPressSemanticLabel: 'show which chips produced this result',
 /// )
 /// ```
 class CoreCalculatorChip extends StatelessWidget {
@@ -48,11 +65,17 @@ class CoreCalculatorChip extends StatelessWidget {
     required this.type,
     this.value,
     this.onTap,
+    this.onLongPress,
+    this.longPressSemanticLabel,
     this.label,
     this.factor,
-  }) : assert(
+  })  : assert(
           !(type == CoreCalculatorChipType.disabled && label == null),
           'Label must not be null when type is disabled',
+        ),
+        assert(
+          longPressSemanticLabel == null || onLongPress != null,
+          'longPressSemanticLabel needs an onLongPress to describe',
         );
 
   /// The type variant determining the chip's visual and interactive behavior.
@@ -72,7 +95,26 @@ class CoreCalculatorChip extends StatelessWidget {
   final CoreIconData? factor;
 
   /// Called when the user taps the chip.
+  ///
+  /// Ignored when [type] is [CoreCalculatorChipType.disabled].
   final VoidCallback? onTap;
+
+  /// Called when the user long-presses the chip.
+  ///
+  /// Ignored when [type] is [CoreCalculatorChipType.disabled].
+  final VoidCallback? onLongPress;
+
+  /// Screen-reader hint for the long-press action (announced as "double tap
+  /// and hold to …"). Requires [onLongPress] and is withheld while the chip
+  /// is [CoreCalculatorChipType.disabled].
+  ///
+  /// Pass a localised string from the app layer:
+  /// ```dart
+  /// longPressSemanticLabel: AppLocalizations.of(context).showProvenance,
+  /// ```
+  final String? longPressSemanticLabel;
+
+  bool get _isInteractive => type != CoreCalculatorChipType.disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -84,16 +126,20 @@ class CoreCalculatorChip extends StatelessWidget {
     final semanticsLabel = label != null
         ? '$label${value != null ? ', $value' : ''}'
         : value ?? 'Factor chip';
+    final effectiveOnLongPress = _isInteractive ? onLongPress : null;
 
     return Semantics(
       label: semanticsLabel,
       button: true,
       container: true,
-      enabled: type != CoreCalculatorChipType.disabled,
+      enabled: _isInteractive,
+      onLongPressHint:
+          effectiveOnLongPress != null ? longPressSemanticLabel : null,
       child: Material(
         color: colors.transparent,
         child: InkWell(
-          onTap: type != CoreCalculatorChipType.disabled ? onTap : null,
+          onTap: _isInteractive ? onTap : null,
+          onLongPress: effectiveOnLongPress,
           splashFactory: NoSplash.splashFactory,
           overlayColor: WidgetStateProperty.all(
             colors.transparent,
@@ -101,6 +147,10 @@ class CoreCalculatorChip extends StatelessWidget {
           borderRadius: CoreCalculatorChipTheme.borderRadius,
           child: Container(
             padding: CoreCalculatorChipTheme.padding,
+            foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
+              type: type,
+              colors: colors,
+            ),
             decoration: BoxDecoration(
               color: CoreCalculatorChipTheme.background(
                 type: type,
@@ -121,7 +171,7 @@ class CoreCalculatorChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (factor != null && type != CoreCalculatorChipType.disabled)
+                if (factor != null && _isInteractive)
                   ExcludeSemantics(
                     child: Center(
                       child: CoreIconWidget(
