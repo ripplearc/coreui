@@ -15,40 +15,6 @@ class SuggestionAreaShowcaseScreen extends StatelessWidget {
   static const GroupNameType _trigonometryGroup =
       GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
-  static final List<FunctionGroup> _groups = [
-    FunctionGroup(
-      name: _basicGeometryGroup,
-      keys: [
-        KeyType(groupName: 'Basic Geometry', id: 'Width', label: 'Width'),
-        KeyType(groupName: 'Basic Geometry', id: 'Length', label: 'Length'),
-        KeyType(groupName: 'Basic Geometry', id: 'Height', label: 'Height'),
-        KeyType(groupName: 'Basic Geometry', id: 'Pitch', label: 'Pitch'),
-        KeyType(groupName: 'Basic Geometry', id: 'Circle', label: 'Circle'),
-        KeyType(groupName: 'Basic Geometry', id: 'Rise', label: 'Rise'),
-        KeyType(groupName: 'Basic Geometry', id: 'Run', label: 'Run'),
-        KeyType(groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
-      ],
-    ),
-    FunctionGroup(
-      name: _materialsGroup,
-      keys: [
-        KeyType(groupName: 'Materials', id: 'Lbs', label: 'Lbs'),
-        KeyType(groupName: 'Materials', id: 'Kg', label: 'Kg'),
-        KeyType(groupName: 'Materials', id: 'Tons', label: 'Tons'),
-        KeyType(groupName: 'Materials', id: 'Drywall', label: 'Drywall'),
-        KeyType(groupName: 'Materials', id: 'Fence', label: 'Fence'),
-      ],
-    ),
-    FunctionGroup(
-      name: _trigonometryGroup,
-      keys: [
-        KeyType(groupName: 'Trigonometry', id: 'SIN', label: 'SIN'),
-        KeyType(groupName: 'Trigonometry', id: 'COS', label: 'COS'),
-        KeyType(groupName: 'Trigonometry', id: 'TAN', label: 'TAN'),
-      ],
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -72,6 +38,39 @@ class _SuggestionAreaShowcaseViewState
   bool _secondRowHidden = false;
   GroupNameType _currentGroup =
       SuggestionAreaShowcaseScreen._basicGeometryGroup;
+  List<FunctionGroup> _groups = [
+    FunctionGroup(
+      name: SuggestionAreaShowcaseScreen._basicGeometryGroup,
+      keys: [
+        KeyType(groupName: 'Basic Geometry', id: 'Width', label: 'Width'),
+        KeyType(groupName: 'Basic Geometry', id: 'Length', label: 'Length'),
+        KeyType(groupName: 'Basic Geometry', id: 'Height', label: 'Height'),
+        KeyType(groupName: 'Basic Geometry', id: 'Pitch', label: 'Pitch'),
+        KeyType(groupName: 'Basic Geometry', id: 'Circle', label: 'Circle'),
+        KeyType(groupName: 'Basic Geometry', id: 'Rise', label: 'Rise'),
+        KeyType(groupName: 'Basic Geometry', id: 'Run', label: 'Run'),
+        KeyType(groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
+      ],
+    ),
+    FunctionGroup(
+      name: SuggestionAreaShowcaseScreen._materialsGroup,
+      keys: [
+        KeyType(groupName: 'Materials', id: 'Lbs', label: 'Lbs'),
+        KeyType(groupName: 'Materials', id: 'Kg', label: 'Kg'),
+        KeyType(groupName: 'Materials', id: 'Tons', label: 'Tons'),
+        KeyType(groupName: 'Materials', id: 'Drywall', label: 'Drywall'),
+        KeyType(groupName: 'Materials', id: 'Fence', label: 'Fence'),
+      ],
+    ),
+    FunctionGroup(
+      name: SuggestionAreaShowcaseScreen._trigonometryGroup,
+      keys: [
+        KeyType(groupName: 'Trigonometry', id: 'SIN', label: 'SIN'),
+        KeyType(groupName: 'Trigonometry', id: 'COS', label: 'COS'),
+        KeyType(groupName: 'Trigonometry', id: 'TAN', label: 'TAN'),
+      ],
+    ),
+  ];
 
   Widget _layoutControls(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -199,8 +198,7 @@ class _SuggestionAreaShowcaseViewState
                                     top: CoreSpacing.space1),
                                 child: CoreKeyboard(
                                   currentGroup: _currentGroup,
-                                  allGroups:
-                                      SuggestionAreaShowcaseScreen._groups,
+                                  allGroups: _groups,
                                   onDigitPressed: (key) {
                                     bloc.add(DigitPressed(key.label));
                                   },
@@ -222,10 +220,10 @@ class _SuggestionAreaShowcaseViewState
                                       setState(() => _currentGroup = group),
                                   onGroupsReordered: (oldIndex, newIndex) =>
                                       setState(() {
-                                    final groups =
-                                        SuggestionAreaShowcaseScreen._groups;
-                                    groups.insert(
-                                        newIndex, groups.removeAt(oldIndex));
+                                    final next = List.of(_groups);
+                                    next.insert(
+                                        newIndex, next.removeAt(oldIndex));
+                                    _groups = next;
                                   }),
                                   currentUnitSystem: UnitSystem.imperial,
                                   onKeyTapped: (key) {

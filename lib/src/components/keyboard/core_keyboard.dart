@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -72,9 +73,10 @@ class CoreKeyboard extends StatefulWidget {
   final ValueChanged<bool>? onCollapseChanged;
 
   /// Called when the user drags a group to a new position in the "View all"
-  /// sheet, with its old index and its final index. The consumer reorders
-  /// [allGroups] and rebuilds; the sheet re-renders while open when
-  /// [allGroups] changes.
+  /// sheet, with its old index and its final index; both are in range for
+  /// [allGroups]. The consumer reorders [allGroups] — in place or as a new
+  /// list — and rebuilds; the sheet re-renders while open whenever
+  /// [allGroups] or the order of its groups changes.
   final void Function(int oldIndex, int newIndex)? onGroupsReordered;
 
   /// Builds the screen-reader label of a group's drag handle in the "View
@@ -86,13 +88,15 @@ class CoreKeyboard extends StatefulWidget {
   State<CoreKeyboard> createState() => _CoreKeyboardState();
 }
 
-class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderStateMixin {
+class _CoreKeyboardState extends State<CoreKeyboard>
+    with SingleTickerProviderStateMixin {
   static const double _dragIndicatorHeight = CoreSpacing.space2;
   static const double _dragIndicatorWidth = CoreSpacing.space8;
 
   bool _isCollapsed = false;
   double _groupSwipeDistance = 0;
   _FunctionsSheetHostState? _openFunctionsSheet;
+  List<GroupNameType> _groupOrder = const [];
 
   late final AnimationController _controller;
   final GlobalKey _contentKey = GlobalKey();
@@ -101,6 +105,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+    _groupOrder = _orderOf(widget.allGroups);
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -117,11 +122,18 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   @override
   void didUpdateWidget(CoreKeyboard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    final order = _orderOf(widget.allGroups);
+    final groupsChanged = !identical(widget.allGroups, oldWidget.allGroups) ||
+        !listEquals(order, _groupOrder);
+    _groupOrder = order;
     final sheet = _openFunctionsSheet;
-    if (sheet != null && !identical(widget.allGroups, oldWidget.allGroups)) {
+    if (groupsChanged && sheet != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => sheet.refresh());
     }
   }
+
+  static List<GroupNameType> _orderOf(List<FunctionGroup> groups) =>
+      [for (final group in groups) group.name];
 
   void _handleGroupSwipeUpdate(DragUpdateDetails details) {
     _groupSwipeDistance += details.delta.dx;
@@ -148,7 +160,8 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   }
 
   void _updateContentHeight() {
-    final RenderBox? renderBox = _contentKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _contentKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null && renderBox.size.height > 0) {
       _contentHeight = renderBox.size.height;
     }
@@ -276,11 +289,12 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                               width: double.infinity,
                               padding: EdgeInsets.only(
                                   top: CoreSpacing.space1,
-                                  bottom: CoreSpacing.space1 * (1.0 - _controller.value)),
+                                  bottom: CoreSpacing.space1 *
+                                      (1.0 - _controller.value)),
                               child: Center(
                                 child: CustomPaint(
-                                  size: const Size(
-                                      _dragIndicatorWidth, _dragIndicatorHeight),
+                                  size: const Size(_dragIndicatorWidth,
+                                      _dragIndicatorHeight),
                                   painter: _CurvedDragHandlePainter(
                                     color: colors.lineDarkOutline,
                                     collapseProgress: 1.0 - _controller.value,
@@ -319,8 +333,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                             buttonWidth: finalButtonWidth,
                             buttonHeight: finalButtonHeight,
                             buttonSpacing: finalSpacing,
-                            heightSpacing:
-                                min(finalSpacing, maxHeightSpacing),
+                            heightSpacing: min(finalSpacing, maxHeightSpacing),
                           ),
                         ],
                       ),
@@ -778,7 +791,7 @@ class _CurvedDragHandlePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    
+
     final startY = size.height * 0.2 + (size.height * 0.6 * collapseProgress);
     final controlY = size.height - (size.height * collapseProgress);
 
@@ -795,6 +808,7 @@ class _CurvedDragHandlePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.collapseProgress != collapseProgress;
+    return oldDelegate.color != color ||
+        oldDelegate.collapseProgress != collapseProgress;
   }
 }
