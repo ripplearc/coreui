@@ -25,7 +25,8 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   final ValueChanged<KeyType> onKeyTapped;
 
   /// Called with the dragged group's old index and its final index once it
-  /// is dropped. `newIndex` is already adjusted for the removal, so
+  /// is dropped. `newIndex` is already adjusted for the removal and both
+  /// indices are in range for [groups], so
   /// `groups.insert(newIndex, groups.removeAt(oldIndex))` applies it. Drag
   /// handles render only while this is set.
   final void Function(int oldIndex, int newIndex)? onGroupsReordered;
@@ -66,6 +67,13 @@ class _CoreFunctionKeyBottomSheetState
   static const double _maxHeightRatio = 0.7;
 
   void _handleGroupReorder(int oldIndex, int newIndex) {
+    assert(
+      oldIndex >= 0 &&
+          oldIndex < widget.groups.length &&
+          newIndex >= 0 &&
+          newIndex < widget.groups.length,
+      'Reorder indices must be in range for groups',
+    );
     widget.onGroupsReordered?.call(oldIndex, newIndex);
   }
 

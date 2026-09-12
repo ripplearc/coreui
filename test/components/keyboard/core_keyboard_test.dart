@@ -32,32 +32,33 @@ class _ReorderingKeyboardHostState extends State<_ReorderingKeyboardHost> {
   late List<FunctionGroup> groups = List.of(widget.initialGroups);
   final List<(int, int)> reorders = [];
 
+  void reorderInPlace(int oldIndex, int newIndex) {
+    setState(() => groups.insert(newIndex, groups.removeAt(oldIndex)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: CoreTheme.light(),
-      home: Scaffold(
-        body: CoreKeyboard(
-          currentGroup: groups.first.name,
-          allGroups: groups,
-          onDigitPressed: _ignoreDigit,
-          onUnitSelected: _ignoreUnit,
-          onOperatorPressed: _ignoreOperator,
-          onControlAction: _ignoreControl,
-          onResultTapped: _ignoreResult,
-          onGroupSelected: (_) {},
-          onKeyTapped: _ignoreKey,
-          onUnitSystemChanged: _ignoreUnitSystem,
-          onGroupsReordered: (oldIndex, newIndex) {
-            reorders.add((oldIndex, newIndex));
-            setState(() {
-              final next = List.of(groups);
-              next.insert(newIndex, next.removeAt(oldIndex));
-              groups = next;
-            });
-          },
-          reorderSemanticsLabelBuilder: (label) => 'Reorder $label',
-        ),
+    return Scaffold(
+      body: CoreKeyboard(
+        currentGroup: groups.first.name,
+        allGroups: groups,
+        onDigitPressed: _ignoreDigit,
+        onUnitSelected: _ignoreUnit,
+        onOperatorPressed: _ignoreOperator,
+        onControlAction: _ignoreControl,
+        onResultTapped: _ignoreResult,
+        onGroupSelected: (_) {},
+        onKeyTapped: _ignoreKey,
+        onUnitSystemChanged: _ignoreUnitSystem,
+        onGroupsReordered: (oldIndex, newIndex) {
+          reorders.add((oldIndex, newIndex));
+          setState(() {
+            final next = List.of(groups);
+            next.insert(newIndex, next.removeAt(oldIndex));
+            groups = next;
+          });
+        },
+        reorderSemanticsLabelBuilder: (label) => 'Reorder $label',
       ),
     );
   }
@@ -284,8 +285,10 @@ void main() {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1800, 3000);
 
-      await tester
-          .pumpWidget(const _ReorderingKeyboardHost(initialGroups: groups));
+      await tester.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: const _ReorderingKeyboardHost(initialGroups: groups),
+      ));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('View all'));
@@ -313,6 +316,34 @@ void main() {
         tester.widgetList<Text>(sheetHeaders()).map((t) => t.data).toList(),
         ['Materials group', 'Trigonometry group', 'Basic Geometry group'],
         reason: 'the sheet is still open and shows the consumer\'s new order',
+      );
+    });
+
+    testWidgets(
+        're-renders the open sheet when the same list is reordered in place',
+        (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1800, 3000);
+
+      await tester.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: const _ReorderingKeyboardHost(initialGroups: groups),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+
+      final host = tester.state<_ReorderingKeyboardHostState>(
+          find.byType(_ReorderingKeyboardHost));
+      host.reorderInPlace(0, 2);
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widgetList<Text>(sheetHeaders()).map((t) => t.data).toList(),
+        ['Materials group', 'Trigonometry group', 'Basic Geometry group'],
+        reason: 'a reorder applied to the same list instance from outside the '
+            'sheet still refreshes it while open',
       );
     });
   });
