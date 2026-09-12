@@ -183,9 +183,14 @@ void main() {
               label: 'Length',
               isTyping: true,
               value: '16ft 14in',
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
-              onPressedDependentKey: () {},
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                  onPressed: () {},
+                ),
+              ],
               chipsList: const [
                 CoreCalculatorChip(
                   label: "Length",
@@ -299,5 +304,109 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/display_area_component_error_state.png'),
     );
+  });
+
+  Future<void> pumpDependentKeys(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 824x456 @ 2.0 => 412x228 logical: exactly the collapsed display area
+    // (CoreSpacing.space57 tall), so the golden holds the area and nothing
+    // else. Four pills outgrow the width on purpose: the row anchors the
+    // trailing pill and scrolls the leading one off the start edge.
+    tester.view.physicalSize = const Size(824, 456);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            label: 'Cost',
+            value: '\$84.25',
+            chipsList: const [
+              CoreCalculatorChip(
+                label: 'Length',
+                value: '20ft',
+                type: CoreCalculatorChipType.editable,
+              ),
+              CoreCalculatorChip(
+                label: 'Height',
+                value: '9ft',
+                type: CoreCalculatorChipType.editable,
+              ),
+              CoreCalculatorChip(
+                label: 'Sheets',
+                value: '5.81',
+                type: CoreCalculatorChipType.result,
+              ),
+            ],
+            dependentKeys: [
+              CoreDependentKeyData(
+                label: 'Re-input 38.30° as',
+                value: '38°30′',
+                kind: CoreDependentKeyKind.offer,
+                onPressed: () {},
+              ),
+              CoreDependentKeyData(
+                label: 'Shown as',
+                value: 'in/12in',
+                kind: CoreDependentKeyKind.toggle,
+                onPressed: () {},
+              ),
+              CoreDependentKeyData(
+                label: 'Rate',
+                value: '\$14.5/sheet',
+                kind: CoreDependentKeyKind.editable,
+                onPressed: () {},
+              ),
+              CoreDependentKeyData(
+                label: 'Waste',
+                value: '10%',
+                kind: CoreDependentKeyKind.editable,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('DisplayArea dependent keys Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpDependentKeys(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_dependent_keys_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('DisplayArea dependent keys Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpDependentKeys(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_dependent_keys_dark.png'),
+    );
+    debugDisableShadows = true;
   });
 }

@@ -121,9 +121,8 @@ class _CoreButtonState extends State<CoreButton> {
                 ? colors.buttonHover
                 : colors.buttonSurface;
       case CoreButtonVariant.secondary:
-        return widget.shadows == null
-            ? colors.transparent
-            : colors.buttonInverse;
+        if (widget.shadows == null) return colors.transparent;
+        return isDark ? colors.backgroundGrayLight : colors.buttonInverse;
       case CoreButtonVariant.social:
         return isDark ? colors.backgroundGrayLight : colors.buttonInverse;
     }

@@ -59,6 +59,21 @@ class OperatorPressed extends DisplayAreaEvent {
   List<Object?> get props => [operator];
 }
 
+/// Fired when the user taps a dependent-key pill under the value.
+///
+/// [id] names the pill: `oc`, `rate` and `waste` cycle their stored value and
+/// recompute; `shownAs` cycles the pitch spelling.
+class DependentKeyPressed extends DisplayAreaEvent {
+  /// Which pill was tapped.
+  final String id;
+
+  /// Creates a [DependentKeyPressed] event.
+  const DependentKeyPressed(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
+
 /// Fired when the user requests to reset the calculator state.
 class ResetRequested extends DisplayAreaEvent {
   /// Creates a [ResetRequested] event.

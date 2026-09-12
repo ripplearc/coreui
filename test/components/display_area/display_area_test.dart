@@ -394,8 +394,7 @@ void main() {
         ),
       );
 
-      expect(
-          find.text(testHistoryPlaceholder), findsOneWidget);
+      expect(find.text(testHistoryPlaceholder), findsOneWidget);
       expect(find.text('Dimension Error'), findsNothing);
     });
 
@@ -443,7 +442,8 @@ void main() {
 
       expect(find.text('Width'), findsOneWidget);
     });
-    testWidgets('renders dependent key when label or value is provided',
+    testWidgets(
+        'deprecated adapter renders one pill when label or value is provided',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -463,7 +463,8 @@ void main() {
       expect(find.textContaining('16in', findRichText: true), findsOneWidget);
     });
 
-    testWidgets('formats dependent key label with colon automatically',
+    testWidgets(
+        'deprecated adapter formats the label with a colon automatically',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -508,7 +509,7 @@ void main() {
       expect(find.textContaining('O.C: ', findRichText: true), findsOneWidget);
     });
 
-    testWidgets('triggers onPressedDependentKey when button is tapped',
+    testWidgets('deprecated adapter triggers onPressedDependentKey when tapped',
         (WidgetTester tester) async {
       bool pressed = false;
       await tester.pumpWidget(
@@ -544,8 +545,13 @@ void main() {
               historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               value: '16ft 14in',
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                ),
+              ],
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Length',
@@ -604,8 +610,13 @@ void main() {
               historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               value: '16ft 14in',
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                ),
+              ],
               chipsList: [
                 CoreCalculatorChip(
                     label: '1', type: CoreCalculatorChipType.active),
@@ -668,8 +679,13 @@ void main() {
               historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               value: '16ft 14in',
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                ),
+              ],
               chipsList: [
                 CoreCalculatorChip(
                     label: '1', type: CoreCalculatorChipType.active),
@@ -717,8 +733,13 @@ void main() {
               historyPlaceholder: testHistoryPlaceholder,
               label: 'Length',
               value: '16ft 14in',
-              dependentKeyLabel: 'O.C',
-              dependentKeyValue: '16in',
+              dependentKeys: const [
+                CoreDependentKeyData(
+                  label: 'O.C',
+                  value: '16in',
+                  kind: CoreDependentKeyKind.editable,
+                ),
+              ],
               chipsList: [
                 const CoreCalculatorChip(
                   label: 'Length',
@@ -849,6 +870,211 @@ void main() {
       await tester.tap(closeIconFinder);
       await tester.pumpAndSettle();
       expect(closed, isTrue);
+    });
+  });
+
+  group('CoreDisplayArea dependent keys', () {
+    const rate = CoreDependentKeyData(
+      label: 'Rate',
+      value: '\$14.5/sheet',
+      kind: CoreDependentKeyKind.editable,
+    );
+    const waste = CoreDependentKeyData(
+      label: 'Waste',
+      value: '10%',
+      kind: CoreDependentKeyKind.editable,
+    );
+    const shownAs = CoreDependentKeyData(
+      label: 'Shown as',
+      value: 'in/12in',
+      kind: CoreDependentKeyKind.toggle,
+    );
+    const offer = CoreDependentKeyData(
+      label: 'Re-input 38.30° as',
+      value: '38°30′',
+      kind: CoreDependentKeyKind.offer,
+    );
+
+    Widget host(
+      List<CoreDependentKeyData> keys, {
+      String? value,
+      TextDirection textDirection = TextDirection.ltr,
+    }) {
+      return MaterialApp(
+        theme: CoreTheme.light(),
+        home: Directionality(
+          textDirection: textDirection,
+          child: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              value: value,
+              dependentKeys: keys,
+            ),
+          ),
+        ),
+      );
+    }
+
+    Finder iconFinder(CoreIconData icon) => find.byWidgetPredicate(
+          (widget) => widget is CoreIconWidget && widget.icon == icon,
+        );
+
+    testWidgets('renders every pill with its label and value',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [rate, waste], value: '\$84.25'));
+
+      expect(find.byType(CoreButton), findsNWidgets(2));
+      expect(find.textContaining('Rate: ', findRichText: true), findsOneWidget);
+      expect(find.textContaining('\$14.5/sheet', findRichText: true),
+          findsOneWidget);
+      expect(
+          find.textContaining('Waste: ', findRichText: true), findsOneWidget);
+      expect(find.textContaining('10%', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('shows the value section for pills alone',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [rate]));
+
+      expect(find.byType(CoreButton), findsOneWidget);
+    });
+
+    testWidgets('editable and toggle pills carry their trailing icons',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [rate, shownAs, offer]));
+
+      expect(iconFinder(CoreIcons.edit), findsOneWidget);
+      expect(iconFinder(CoreIcons.swapHorizontal), findsOneWidget);
+      expect(find.byType(CoreButton), findsNWidgets(3));
+      expect(
+        find.descendant(
+          of: find.byType(CoreButton).last,
+          matching: find.byType(CoreIconWidget),
+        ),
+        findsNothing,
+        reason: 'an offer has no trailing icon',
+      );
+    });
+
+    testWidgets('offer labels are joined with a space, not a colon',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [offer, shownAs]));
+
+      expect(find.textContaining('Re-input 38.30° as ', findRichText: true),
+          findsOneWidget);
+      expect(find.textContaining('Re-input 38.30° as: ', findRichText: true),
+          findsNothing);
+      expect(find.textContaining('Shown as: ', findRichText: true),
+          findsOneWidget);
+    });
+
+    testWidgets('each pill fires its own onPressed',
+        (WidgetTester tester) async {
+      final pressed = <String>[];
+      await tester.pumpWidget(host([
+        CoreDependentKeyData(
+          label: 'Rate',
+          value: '\$14.5/sheet',
+          kind: CoreDependentKeyKind.editable,
+          onPressed: () => pressed.add('rate'),
+        ),
+        CoreDependentKeyData(
+          label: 'Waste',
+          value: '10%',
+          kind: CoreDependentKeyKind.editable,
+          onPressed: () => pressed.add('waste'),
+        ),
+      ]));
+
+      await tester.tap(find.byType(CoreButton).last);
+      await tester.pumpAndSettle();
+      expect(pressed, ['waste']);
+
+      await tester.tap(find.byType(CoreButton).first);
+      await tester.pumpAndSettle();
+      expect(pressed, ['waste', 'rate']);
+    });
+
+    testWidgets('a pill without onPressed is disabled',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [rate]));
+
+      final semantics = tester.getSemantics(find.byType(CoreButton));
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
+    });
+
+    testWidgets('anchors the trailing pill in view and scrolls the rest in',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(host(const [rate, waste, shownAs, offer]));
+      await tester.pumpAndSettle();
+
+      final width = tester.getSize(find.byType(CoreDisplayArea)).width;
+      final lastPill = tester.getRect(find.byType(CoreButton).last);
+      final firstPill = tester.getRect(find.byType(CoreButton).first);
+      expect(lastPill.right, lessThanOrEqualTo(width));
+      expect(firstPill.left, lessThan(0),
+          reason: 'the leading pill starts off-screen when the row overflows');
+
+      await tester.drag(find.byType(CoreButton).last,
+          const Offset(CoreSpacing.space64 * 5, 0));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byType(CoreButton).first).left,
+          greaterThanOrEqualTo(0));
+    });
+
+    testWidgets('anchors the trailing pill at the end edge in RTL',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(host(
+        const [rate, waste, shownAs, offer],
+        textDirection: TextDirection.rtl,
+      ));
+      await tester.pumpAndSettle();
+
+      final width = tester.getSize(find.byType(CoreDisplayArea)).width;
+      final lastPill = tester.getRect(find.byType(CoreButton).last);
+      final firstPill = tester.getRect(find.byType(CoreButton).first);
+      expect(lastPill.left, greaterThanOrEqualTo(0),
+          reason: 'the trailing pill anchors at the end edge, the left in RTL');
+      expect(firstPill.right, greaterThan(width),
+          reason: 'the leading pill starts off-screen to the right');
+
+      await tester.drag(find.byType(CoreButton).last,
+          const Offset(-CoreSpacing.space64 * 5, 0));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byType(CoreButton).first).right,
+          lessThanOrEqualTo(width));
+    });
+
+    test('resolvedDependentKeys appends the deprecated single pill', () {
+      const area = CoreDisplayArea(
+        closeSemanticLabel: testCloseSemanticLabel,
+        historyPlaceholder: testHistoryPlaceholder,
+        dependentKeys: [rate],
+        dependentKeyLabel: 'O.C',
+        dependentKeyValue: '16in',
+      );
+
+      final resolved = area.resolvedDependentKeys;
+      expect(resolved.length, 2);
+      expect(resolved.first, same(rate));
+      expect(resolved.last.label, 'O.C');
+      expect(resolved.last.value, '16in');
+      expect(resolved.last.kind, CoreDependentKeyKind.editable);
+    });
+
+    test('resolvedDependentKeys is empty without either source', () {
+      const area = CoreDisplayArea(
+        closeSemanticLabel: testCloseSemanticLabel,
+        historyPlaceholder: testHistoryPlaceholder,
+      );
+      expect(area.resolvedDependentKeys, isEmpty);
     });
   });
 }

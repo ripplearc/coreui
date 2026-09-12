@@ -9,7 +9,7 @@ A robust, self-contained, and gesture-driven multi-stage display area component 
 ### Key Features
 - **Adaptive Multi-Stage Expansion**: Intelligently switches between a 2-stage and 3-stage expansion trajectory based on the amount of current session data (determined by a 5-item `chipsList` threshold).
 - **Interactive History Panel**: Supports rendering a scrollable list of current session chips (`CoreCalculatorChip`) and previous session histories (`CoreHistorySessionData`).
-- **Rich State Management**: Natively supports `isTyping` indicators, comprehensive error states (`hasError`, `errorMessage`, `errorTitle`), and contextual dependent keys (e.g., displaying "O.C: 16in" adjacent to the main value).
+- **Rich State Management**: Natively supports `isTyping` indicators, comprehensive error states (`hasError`, `errorMessage`, `errorTitle`), and a row of dependent-key pills under the value (e.g. `Rate: $12.3/ft²` and `Waste: 10%` beneath a cost, or `Shown as: in/12in` beneath a pitch).
 - **Haptic Feedback Integration**: Provides subtle physical cues (`HapticFeedback.lightImpact`/`mediumImpact`) as the user crosses different expansion thresholds.
 - **Stage Callback Hooks**: Exposes `onStageChanged` to seamlessly synchronize and drive external spatial animations.
 
@@ -26,12 +26,23 @@ CoreDisplayArea(
   // Both strings are required: localization is the consumer's responsibility.
   closeSemanticLabel: AppLocalizations.of(context).closeButton,
   historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
-  label: 'Length',
-  value: '16ft 14in',
+  label: 'Cost',
+  value: '\$84.25',
   isTyping: false,
-  dependentKeyLabel: 'O.C',
-  dependentKeyValue: '16in',
-  onPressedDependentKey: () => print('Dependent key tapped!'),
+  dependentKeys: [
+    CoreDependentKeyData(
+      label: 'Rate',
+      value: '\$14.5/sheet',
+      kind: CoreDependentKeyKind.editable,
+      onPressed: () => openRateEditor(),
+    ),
+    CoreDependentKeyData(
+      label: 'Waste',
+      value: '10%',
+      kind: CoreDependentKeyKind.editable,
+      onPressed: () => openWasteEditor(),
+    ),
+  ],
   onStageChanged: (DisplayAreaStage stage) {
     // React to the display area's current stage,
     // e.g., to animate the paired keyboard's height factor.
@@ -139,14 +150,35 @@ TweenAnimationBuilder<double>(
 | :--- | :--- | :--- | :--- |
 | `onStageChanged` | `void Function(DisplayAreaStage)?` | `null` | Triggered precisely when the expansion stage transitions. |
 | `onClose` | `VoidCallback?` | `null` | Triggered when the user taps the top-right close icon (which is hidden in `expandedPrevious` and `fullScreen` modes). |
-| `onPressedDependentKey` | `VoidCallback?` | `null` | Action fired when the dependent key button is tapped. |
+| `onPressedDependentKey` | `VoidCallback?` | `null` | **Deprecated** — action fired when the legacy single dependent-key pill is tapped. Use `CoreDependentKeyData.onPressed`. |
 
-### Dependent Key Properties
-Designed for secondary, context-specific buttons securely attached beneath the main value.
+### Dependent Keys
+An answer keeps its assumption on screen. `dependentKeys` renders an end-aligned row of pills under the value; when the pills outgrow the width the row scrolls horizontally with the trailing pill anchored in view.
+
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `dependentKeyLabel` | `String` | `''` | The descriptive prefix label of the dependent key. |
-| `dependentKeyValue` | `String` | `''` | The dynamic value of the dependent key (e.g., '16in'). |
+| `dependentKeys` | `List<CoreDependentKeyData>` | `[]` | The pills rendered under the value, in order. |
+
+#### `CoreDependentKeyData`
+| Property | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `label` | `String` | Yes | The descriptive prefix (`Rate`, `Shown as`, `Re-input 38.30° as`). A colon is appended for `editable` / `toggle` unless the label already ends with one; an `offer` label is used as written. |
+| `value` | `String` | Yes | The bold value after the label (`$12.3/ft²`, `in/12in`, `38°30′`). |
+| `kind` | `CoreDependentKeyKind` | Yes | `editable`, `toggle` or `offer` — see below. |
+| `onPressed` | `VoidCallback?` | No | Tap handler. `null` renders the pill disabled. |
+| `semanticsLabel` | `String?` | No | Overrides the announced label; defaults to the visible label and value. |
+
+#### Kinds
+| Kind | Meaning | Trailing icon | Example |
+| :--- | :--- | :--- | :--- |
+| `editable` | Opens an editor for the assumption the result was computed with. | ✎ `CoreIcons.edit` | `Sheet size: 48in × 94.49in`, `Rate: $12.3/ft²`, `Waste: 10%`, `Density (concrete): 4,050lbs/yd³` |
+| `toggle` | Cycles or swaps a reading of the value already on screen without changing it. | ⇄ `CoreIcons.swapHorizontal` | `Shown as: in/12in` → degrees → grade |
+| `offer` | A one-time offer that rewrites the number; the app removes it once accepted. | none | `Re-input 38.30° as 38°30′` |
+
+Every pill is a `CoreButton` (medium, secondary, small shadow) exposing `button: true` with its label, so the three kinds are distinct both visually and to screen readers. All strings come from the consumer — the row holds no defaults.
+
+#### Deprecated single-pill adapter
+`dependentKeyLabel`, `dependentKeyValue` and `onPressedDependentKey` still render, as one `editable` pill appended after `dependentKeys`, but are deprecated and will be removed in the next minor release. `resolvedDependentKeys` (`@visibleForTesting`) exposes the merged list `build` renders.
 
 ### Accessibility
 | Property | Type | Default | Description |

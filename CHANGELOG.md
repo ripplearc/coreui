@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.19.0] - CoreDisplayArea dependent-key row
+
+### ✨ Features
+
+- **CoreDisplayArea**: `dependentKeys: List<CoreDependentKeyData>` renders a row of pills under the value instead of the single `dependentKeyLabel` / `dependentKeyValue` pair, because an answer can depend on more than one assumption at once — a cost shows `Rate` and `Waste` together (CA-1037)
+  - **`CoreDependentKeyData { label, value, kind, onPressed, semanticsLabel }`** with **`CoreDependentKeyKind { editable, toggle, offer }`**: `editable` opens an editor for an assumption and carries the ✎ icon; `toggle` respells the value on screen (`Shown as: in/12in`) and carries the new ⇄ `CoreIcons.swapHorizontal` icon; `offer` is a one-time rewrite (`Re-input 38.30° as 38°30′`) with no icon and a space instead of a colon, so it reads as a sentence
+  - The row is end-aligned and scrolls horizontally with the trailing pill anchored in view when the pills outgrow the width; pills are separated by `space2`
+  - Each pill is a `CoreButton` exposing `button: true` with its label (or the consumer's `semanticsLabel`); the row holds no default strings, in line with the 0.15.0 localization rule
+  - `resolvedDependentKeys` (`@visibleForTesting`) exposes the list `build` renders, so tests assert the adapter without reaching into the widget tree
+- **CoreIcons.swapHorizontal** (`Icons.swap_horiz`) added for the toggle pill
+- Display area showcase: a **Cost** key prices the current Area and shows `Rate` + `Waste` editable pills that recompute the cost on tap; the Pitch result carries a `Shown as` toggle that cycles `in/12in` → degrees → grade
+
+### 🔧 Fixes
+
+- **CoreButton**: a raised secondary button (`variant: secondary` with `shadows`) painted its card `buttonInverse` — white — in the dark theme too, so the dependent-key pill's `textBody` / `textDark` text was near-invisible on it (contrast 1.47:1). In dark mode the card now takes the same elevated `backgroundGrayLight` surface the social variant already uses; the light theme is untouched. Surfaced by the new pill contrast test; the old single pill had the same defect
+
+### 🔧 Deprecations
+
+- **CoreDisplayArea**: `dependentKeyLabel`, `dependentKeyValue` and `onPressedDependentKey` are deprecated. They still render — as one `editable` pill appended after `dependentKeys` — so existing callers get a deprecation warning only; the adapter is removed in the next minor release
+
+### 🧪 Tests
+
+- Widget tests: the row renders every pill with its label and value; kind-specific trailing icons (✎ / ⇄ / none) and offer punctuation; per-pill `onPressed`; `button` semantics with the default and the overridden label; a disabled pill without `onPressed`; the row anchors its trailing pill in view and scrolls the leading pills in; the adapter appends the legacy pill and `resolvedDependentKeys` reflects both sources; the value section shows for pills alone
+- A11y: pills meet label and contrast guidelines in light and dark; each kind is announced with its own label
+- Goldens: `display_area_dependent_keys_{light,dark}.png` (cost result with `Rate` + `Waste`, a `Shown as` toggle and an offer overflowing the width), viewport scoped to the collapsed display area. The existing dependent-key goldens (`more_than_two_rows`, expansion stages) migrated to `dependentKeys` and are byte-identical
+
 ## [0.18.0] - CoreSuggestionArea two-row layout
 
 ### ✨ Features
