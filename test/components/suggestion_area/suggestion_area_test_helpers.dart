@@ -9,6 +9,11 @@ String testExpandToggleSemantics(int hiddenCount) =>
 
 const String testCollapseToggleSemantics = 'Show fewer suggestions';
 
+String testConversionsExpandToggleSemantics(int hiddenCount) =>
+    'Show $hiddenCount more conversions';
+
+const String testConversionsCollapseToggleSemantics = 'Show fewer conversions';
+
 const String testToggleSemanticsLabel = 'Toggle suggestion mode';
 
 /// [CoreSuggestionArea] with test-localized overflow and toggle strings.
@@ -21,6 +26,12 @@ CoreSuggestionArea testCoreSuggestionArea({
   ValueChanged<bool>? onExpandedChanged,
   String toggleSemanticsLabel = testToggleSemanticsLabel,
   String bindSuffix = CoreSuggestionArea.defaultBindSuffix,
+  CoreSuggestionLayout layout = CoreSuggestionLayout.toggle,
+  bool secondRowHidden = false,
+  String Function(int hiddenCount)? conversionsExpandToggleSemanticsLabelBuilder =
+      testConversionsExpandToggleSemantics,
+  String? conversionsCollapseToggleSemanticsLabel =
+      testConversionsCollapseToggleSemantics,
 }) {
   return CoreSuggestionArea(
     key: key,
@@ -33,6 +44,12 @@ CoreSuggestionArea testCoreSuggestionArea({
     collapseToggleSemanticsLabel: testCollapseToggleSemantics,
     toggleSemanticsLabel: toggleSemanticsLabel,
     bindSuffix: bindSuffix,
+    layout: layout,
+    secondRowHidden: secondRowHidden,
+    conversionsExpandToggleSemanticsLabelBuilder:
+        conversionsExpandToggleSemanticsLabelBuilder,
+    conversionsCollapseToggleSemanticsLabel:
+        conversionsCollapseToggleSemanticsLabel,
   );
 }
 
