@@ -28,7 +28,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   static const GroupNameType _trigonometryGroup =
       GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
-  static final List<FunctionGroup> _groups = [
+  List<FunctionGroup> _groups = [
     FunctionGroup(
       name: _basicGeometryGroup,
       keys: [
@@ -189,10 +189,11 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                             bloc.add(const OperatorPressed('=')),
                         onGroupSelected: (group) =>
                             setState(() => _currentGroup = group),
-                        onGroupsReordered: (oldIndex, newIndex) => setState(
-                          () => _groups.insert(
-                              newIndex, _groups.removeAt(oldIndex)),
-                        ),
+                        onGroupsReordered: (oldIndex, newIndex) => setState(() {
+                          final next = List.of(_groups);
+                          next.insert(newIndex, next.removeAt(oldIndex));
+                          _groups = next;
+                        }),
                         currentUnitSystem: UnitSystem.imperial,
                         onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
                         onUnitSystemChanged: (_) {},
