@@ -24,7 +24,7 @@ CoreCalculatorChip(
 | `factor`                 | `CoreIconData?`          |       No | `null`  | An optional factor icon (e.g. `+`, `-`, `x`) displayed before the element.                              |
 | `onTap`                  | `VoidCallback`           |       No | `null`  | Called when the chip is tapped. Ignored if type is `disabled`.                                          |
 | `onLongPress`            | `VoidCallback`           |       No | `null`  | Called when the chip is long-pressed (the calculator opens provenance this way). Ignored if `disabled`. |
-| `longPressSemanticLabel` | `String?`                |       No | `null`  | Screen-reader hint for the long-press action. Exposed only while `onLongPress` is set; pass a localised string. |
+| `longPressSemanticLabel` | `String?`                |       No | `null`  | Screen-reader hint for the long-press action. Requires `onLongPress` (asserted) and is withheld while `disabled`; pass a localised string. |
 | `label`                  | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.                    |
 
 ## Types
@@ -36,7 +36,7 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 - **Disabled**: Grey, dimmed layout indicating an inactive property. Ignores tap and long-press.
 - **Result**: Filled grey chip for an answer the app computed. Shares the `disabled` fill by design (prototype `.t-result`) but stays interactive so a long-press can open provenance.
 - **Dashed**: Dashed teal outline for a tentative value — a bind offer (`Height: 8ft ?`) or a chip being edited in place.
-- **Error**: Red fill with a regular-weight value for the dimension-error chip that backspace repairs.
+- **Error**: Red fill with a regular-weight value for the dimension-error chip that backspace repairs. Keeps button semantics on purpose: it stays interactive like every variant but `disabled`, so the app can attach a repair action to tap or long-press.
 
 | Type       | Background            | Border                      | Label/Value Color | Factor Color   | Shadow  |
 |------------|-----------------------|-----------------------------|-------------------|----------------|---------|

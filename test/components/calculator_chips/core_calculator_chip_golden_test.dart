@@ -37,9 +37,9 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 1040x310 @ 2.0 => 520x155 logical: two rows of four captioned chips
-    // with space4 padding and no dead space below the second row.
-    tester.view.physicalSize = const Size(1040, 310);
+    // 1040x452 @ 2.0 => 520x226 logical: three rows of captioned chips (four,
+    // four, two) with space4 padding and no dead space below the last row.
+    tester.view.physicalSize = const Size(1040, 452);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -128,11 +128,30 @@ void main() {
                   ),
                 ),
                 captioned(
+                  'Dashed + factor',
+                  caption,
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.dashed,
+                    value: '8ft ?',
+                    factor: CoreIcons.addOperator,
+                    onTap: () {},
+                  ),
+                ),
+                captioned(
                   'Error',
                   caption,
                   const CoreCalculatorChip(
                     type: CoreCalculatorChipType.error,
                     value: 'Dimension error',
+                  ),
+                ),
+                captioned(
+                  'Error + factor',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.error,
+                    value: 'Dimension error',
+                    factor: CoreIcons.addOperator,
                   ),
                 ),
               ],
@@ -142,7 +161,7 @@ void main() {
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
   }
 
   testWidgets('CoreCalculatorChip Visual Regression - Light',

@@ -28,6 +28,9 @@ enum CoreCalculatorChipType {
   dashed,
 
   /// A dimension error ("area + length") the user repairs with backspace.
+  /// Keeps the tape's button semantics on purpose: like every variant but
+  /// [disabled] it stays interactive, so the app can attach a repair action
+  /// to [CoreCalculatorChip.onTap] or [CoreCalculatorChip.onLongPress].
   error,
 }
 
@@ -66,9 +69,13 @@ class CoreCalculatorChip extends StatelessWidget {
     this.longPressSemanticLabel,
     this.label,
     this.factor,
-  }) : assert(
+  })  : assert(
           !(type == CoreCalculatorChipType.disabled && label == null),
           'Label must not be null when type is disabled',
+        ),
+        assert(
+          longPressSemanticLabel == null || onLongPress != null,
+          'longPressSemanticLabel needs an onLongPress to describe',
         );
 
   /// The type variant determining the chip's visual and interactive behavior.
@@ -98,7 +105,8 @@ class CoreCalculatorChip extends StatelessWidget {
   final VoidCallback? onLongPress;
 
   /// Screen-reader hint for the long-press action (announced as "double tap
-  /// and hold to …"). Exposed only while [onLongPress] is set.
+  /// and hold to …"). Requires [onLongPress] and is withheld while the chip
+  /// is [CoreCalculatorChipType.disabled].
   ///
   /// Pass a localised string from the app layer:
   /// ```dart

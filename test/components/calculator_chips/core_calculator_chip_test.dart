@@ -488,7 +488,7 @@ void main() {
       expect(semantics.hintOverrides!.onLongPressHint, 'show provenance');
     });
 
-    testWidgets('withholds the long-press hint without onLongPress',
+    testWidgets('withholds the long-press action and hint without onLongPress',
         (WidgetTester tester) async {
       await pumpChip(
         tester,
@@ -496,7 +496,6 @@ void main() {
           type: CoreCalculatorChipType.result,
           label: 'Area',
           value: '410.67ft²',
-          longPressSemanticLabel: 'show provenance',
         ),
       );
 
@@ -506,6 +505,19 @@ void main() {
         isFalse,
       );
       expect(semantics.hintOverrides, isNull);
+    });
+
+    testWidgets('throws assertion if longPressSemanticLabel has no onLongPress',
+        (WidgetTester tester) async {
+      expect(
+        () => CoreCalculatorChip(
+          type: CoreCalculatorChipType.result,
+          label: 'Area',
+          value: '410.67ft²',
+          longPressSemanticLabel: 'show provenance',
+        ),
+        throwsAssertionError,
+      );
     });
 
     testWidgets('withholds the long-press action and hint when disabled',

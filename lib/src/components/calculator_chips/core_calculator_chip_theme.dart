@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+import '../../../ripplearc_coreui.dart';
 
 /// Resolves all visual tokens for a [CoreCalculatorChip] given its current state.
 ///

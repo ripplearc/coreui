@@ -10,7 +10,7 @@
   - `error` — `alertRed` fill with a regular-weight `textDark` value for the dimension-error chip that backspace repairs. The prototype's `red200` border tint has no token, so the fill doubles as the border
   - `onLongPress` fires for every variant except `disabled`; `longPressSemanticLabel` is exposed as the semantics long-press hint only while the callback is set, so screen readers never announce an action that is not there
   - `CoreCalculatorChipTheme.dashedOutline(type:, colors:)` resolves the dashed decoration (null for every other type); the solid border is painted transparent at the same width so all six variants measure the same
-- **CoreDashedBorderDecoration**: new shared `Decoration` for dashed rounded outlines, applied as a container's `foregroundDecoration` so the solid border and its animation stay untouched
+- **CoreDashedBorderDecoration**: new shared `Decoration` for dashed rounded outlines, applied as a container's `foregroundDecoration` so the solid `BoxDecoration` border stays untouched
 - Calculator chip showcase regrouped by tape meaning (typed / computed / tentative / error) with a long-press provenance demo
 
 ### 🧪 Tests
