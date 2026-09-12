@@ -14,9 +14,14 @@ void main() {
   group('CoreKeyboard – accessibility', () {
     final testGroups = [
       FunctionGroup(
-        name: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
+        name:
+            const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         keys: [
-          KeyType(groupName: 'Basic Geometry', id: 'Area', label: 'Area', action: () {}),
+          KeyType(
+              groupName: 'Basic Geometry',
+              id: 'Area',
+              label: 'Area',
+              action: () {}),
           KeyType(
             groupName: 'Basic Geometry',
             id: 'Perimeter',
@@ -29,7 +34,8 @@ void main() {
 
     Widget buildTestKeyboard() {
       return CoreKeyboard(
-        currentGroup: const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
+        currentGroup:
+            const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         allGroups: testGroups,
         onDigitPressed: (_) {},
         onUnitSelected: (_) {},
@@ -108,6 +114,58 @@ void main() {
             tester,
             find.bySemanticsLabel('Keyboard drag handle'),
           );
+        }
+      },
+    );
+
+    testWidgets(
+      'View all sheet drag handles are announced with the reorder label',
+      (tester) async {
+        await setupA11yTest(tester, screenSize: const Size(600, 1000));
+
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(
+            buildTestApp(
+              CoreKeyboard(
+                currentGroup: const GroupNameType(
+                    id: "Basic Geometry", label: "Basic Geometry"),
+                allGroups: testGroups,
+                onDigitPressed: (_) {},
+                onUnitSelected: (_) {},
+                onOperatorPressed: (_) {},
+                onControlAction: (_) {},
+                onResultTapped: () {},
+                onGroupSelected: (_) {},
+                onKeyTapped: (_) {},
+                onUnitSystemChanged: (_) {},
+                onGroupsReordered: (_, __) {},
+                reorderSemanticsLabelBuilder: (label) => 'Reorder $label group',
+              ),
+              theme: theme,
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.text('View all'));
+          await tester.pumpAndSettle();
+
+          expect(
+            find.bySemanticsLabel(RegExp('Reorder Basic Geometry group')),
+            findsOneWidget,
+          );
+          await expectMeetsTapTargetAndLabelGuidelines(
+            tester,
+            find.byType(CoreFunctionKeyBottomSheet),
+            checkTapTargetSize: false,
+            checkLabeledTapTarget: true,
+            checkTextContrast: false,
+          );
+
+          await tester.tap(find.descendant(
+            of: find.byType(CoreFunctionKeyBottomSheet),
+            matching: find.text('Basic Geometry group'),
+          ));
+          await tester.pumpAndSettle();
         }
       },
     );

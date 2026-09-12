@@ -19,6 +19,7 @@ class DisplayAreaShowcaseScreen extends StatefulWidget {
 
 class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   DisplayAreaStage _currentStage = DisplayAreaStage.collapsed;
+  GroupNameType _currentGroup = _basicGeometryGroup;
 
   static const GroupNameType _basicGeometryGroup =
       GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
@@ -27,7 +28,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   static const GroupNameType _trigonometryGroup =
       GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
-  static final List<FunctionGroup> _groups = [
+  List<FunctionGroup> _groups = [
     FunctionGroup(
       name: _basicGeometryGroup,
       keys: [
@@ -175,7 +176,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                         );
                       },
                       child: CoreKeyboard(
-                        currentGroup: _basicGeometryGroup,
+                        currentGroup: _currentGroup,
                         allGroups: _groups,
                         onDigitPressed: (digit) =>
                             bloc.add(DigitPressed(digit.label)),
@@ -186,7 +187,13 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                         onControlAction: (_) {},
                         onResultTapped: () =>
                             bloc.add(const OperatorPressed('=')),
-                        onGroupSelected: (_) {},
+                        onGroupSelected: (group) =>
+                            setState(() => _currentGroup = group),
+                        onGroupsReordered: (oldIndex, newIndex) => setState(() {
+                          final next = List.of(_groups);
+                          next.insert(newIndex, next.removeAt(oldIndex));
+                          _groups = next;
+                        }),
                         currentUnitSystem: UnitSystem.imperial,
                         onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
                         onUnitSystemChanged: (_) {},
