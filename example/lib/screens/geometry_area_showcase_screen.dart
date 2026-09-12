@@ -135,6 +135,8 @@ class _GeometryAreaShowcaseScreenState
                                             'Expand $count more suggestions',
                                     collapseToggleSemanticsLabel:
                                         'Collapse suggestions',
+                                    toggleSemanticsLabel:
+                                        'Toggle suggestion mode',
                                   ),
                                   CoreGeometryArea(
                                     isCollapsed: false,
@@ -147,8 +149,8 @@ class _GeometryAreaShowcaseScreenState
                                         bloc.add(SizeDeleted(id)),
                                     onSizesReordered: (oldIndex, newIndex) =>
                                         bloc.add(
-                                          SizesReordered(oldIndex, newIndex),
-                                        ),
+                                      SizesReordered(oldIndex, newIndex),
+                                    ),
                                     onSizeSaved: (result) =>
                                         bloc.add(SizeSaved(result)),
                                     dimensions: state.dimensions,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+import 'package:ripplearc_coreui/src/components/chips/core_chip_theme.dart';
 
 import '../../utils/test_harness.dart';
 
@@ -377,5 +378,142 @@ void main() {
 
       expect(border.top.color, colors.lineDarkOutline);
     });
+  });
+
+  group('CoreChip outline', () {
+    testWidgets('defaults to a solid outline', (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(label: 'Solid', selected: selected),
+          ),
+        ),
+      );
+
+      expect(tester.widget<CoreChip>(find.byType(CoreChip)).outline,
+          CoreChipOutline.solid);
+    });
+
+    testWidgets('renders a dashed chip with its text intact',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(
+              label: 'Height:',
+              value: '8ft ?',
+              selected: selected,
+              size: CoreChipSize.large,
+              outline: CoreChipOutline.dashed,
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.widget<CoreChip>(find.byType(CoreChip)).outline,
+          CoreChipOutline.dashed);
+      expect(find.text('Height:'), findsOneWidget);
+      expect(find.text('8ft ?'), findsOneWidget);
+    });
+
+    testWidgets('semanticsLabel overrides the combined label',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(
+              label: 'Conv:',
+              value: '12.57',
+              unit: 'yd²',
+              selected: selected,
+              semanticsLabel: 'Convert to 12.57 square yards',
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreChip));
+      expect(semantics.label, 'Convert to 12.57 square yards');
+    });
+
+    for (final entry in {
+      'light': AppColorsExtension.create(),
+      'dark': AppColorsExtension.createDark(),
+    }.entries) {
+      final colors = entry.value;
+
+      test(
+          '${entry.key}: dashed chips sit on backgroundBlueLight with a '
+          'transparent solid border', () {
+        expect(
+          CoreChipTheme.background(
+            size: CoreChipSize.large,
+            isSelected: false,
+            isPressed: false,
+            isFocused: false,
+            colors: colors,
+            outline: CoreChipOutline.dashed,
+          ),
+          colors.backgroundBlueLight,
+        );
+        expect(
+          CoreChipTheme.borderColor(
+            size: CoreChipSize.large,
+            isSelected: true,
+            isPressed: true,
+            isFocused: true,
+            colors: colors,
+            outline: CoreChipOutline.dashed,
+          ),
+          colors.transparent,
+        );
+        expect(
+          CoreChipTheme.background(
+            size: CoreChipSize.large,
+            isSelected: false,
+            isPressed: true,
+            isFocused: false,
+            colors: colors,
+            outline: CoreChipOutline.dashed,
+          ),
+          colors.pageBackground,
+          reason: 'pressed feedback still wins over the offer fill',
+        );
+      });
+
+      test('${entry.key}: dashed outline follows the focus border width', () {
+        final resting = CoreChipTheme.dashedOutline(
+          outline: CoreChipOutline.dashed,
+          isFocused: false,
+          colors: colors,
+        )!;
+        final focused = CoreChipTheme.dashedOutline(
+          outline: CoreChipOutline.dashed,
+          isFocused: true,
+          colors: colors,
+        )!;
+        expect(resting.color, colors.outlineFocus);
+        expect(resting.strokeWidth, CoreChipTheme.borderWidth);
+        expect(
+            focused.strokeWidth, CoreChipTheme.borderWidthFor(isFocused: true));
+        expect(resting.radius, CoreSpacing.space6);
+        expect(resting.dashLength, CoreChipTheme.dashLength);
+        expect(resting.gapLength, CoreChipTheme.gapLength);
+        expect(
+          CoreChipTheme.dashedOutline(
+            outline: CoreChipOutline.solid,
+            isFocused: false,
+            colors: colors,
+          ),
+          isNull,
+        );
+      });
+    }
   });
 }

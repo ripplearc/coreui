@@ -9,11 +9,11 @@ class SuggestionAreaShowcaseScreen extends StatelessWidget {
   const SuggestionAreaShowcaseScreen({super.key});
 
   static const GroupNameType _basicGeometryGroup =
-  GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
+      GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
   static const GroupNameType _materialsGroup =
-  GroupNameType(id: 'Materials', label: 'Materials');
+      GroupNameType(id: 'Materials', label: 'Materials');
   static const GroupNameType _trigonometryGroup =
-  GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
+      GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
   static final List<FunctionGroup> _groups = [
     FunctionGroup(
@@ -66,7 +66,7 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final Map<GroupNameType, Color> groupAccentColors = {
       SuggestionAreaShowcaseScreen._basicGeometryGroup:
-      colors.keyboardFunctions,
+          colors.keyboardFunctions,
       SuggestionAreaShowcaseScreen._materialsGroup: colors.keyboardUnits,
       SuggestionAreaShowcaseScreen._trigonometryGroup: colors.textSuccess,
     };
@@ -97,12 +97,11 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                       chipsList: [
                         ...state.completedChips,
                         if (state.isTyping)
-                          if (state.activeInputLabel case final label?)
-                            CoreCalculatorChip(
-                              label: label,
-                              value: state.currentInputValue,
-                              type: CoreCalculatorChipType.active,
-                            ),
+                          CoreCalculatorChip(
+                            label: state.activeInputLabel,
+                            value: state.currentInputValue,
+                            type: CoreCalculatorChipType.active,
+                          ),
                         if (state.resultChip case final resultChip?) resultChip,
                       ],
                     ),
@@ -118,12 +117,13 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                               CoreSuggestionArea(
                                 aiSuggestions: state.aiSuggestions,
                                 conversionSuggestions:
-                                state.conversionSuggestions,
+                                    state.conversionSuggestions,
                                 hiddenChipsTextBuilder: (count) => '+$count',
                                 expandToggleSemanticsLabelBuilder: (count) =>
-                                'Show $count more suggestions',
+                                    'Show $count more suggestions',
                                 collapseToggleSemanticsLabel:
-                                'Show fewer suggestions',
+                                    'Show fewer suggestions',
+                                toggleSemanticsLabel: 'Toggle suggestion mode',
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(
@@ -132,7 +132,7 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                                   currentGroup: SuggestionAreaShowcaseScreen
                                       ._basicGeometryGroup,
                                   allGroups:
-                                  SuggestionAreaShowcaseScreen._groups,
+                                      SuggestionAreaShowcaseScreen._groups,
                                   onDigitPressed: (key) {
                                     bloc.add(DigitPressed(key.label));
                                   },

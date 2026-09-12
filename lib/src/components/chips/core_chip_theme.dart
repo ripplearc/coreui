@@ -25,23 +25,27 @@ abstract final class CoreChipTheme {
       };
 
   /// Returns the background color for a chip given its [size], interaction
-  /// states ([isSelected], [isPressed], [isFocused]), and the current [colors]
-  /// theme.
+  /// states ([isSelected], [isPressed], [isFocused]), [outline], and the
+  /// current [colors] theme.
   ///
   /// The resolved color depends on the chip size and interaction priority:
-  /// pressed → focused → selected → default.
+  /// pressed → dashed outline → focused → selected → default.
   ///
   /// Small and medium chips use a grey background by default, while the large
   /// chip uses the page background. Focus, pressed, and selected states
-  /// elevate the chip to the page background.
+  /// elevate the chip to the page background. A [CoreChipOutline.dashed] chip
+  /// sits on `backgroundBlueLight` (prototype `.s-bind`) unless pressed.
   static Color background({
     required CoreChipSize size,
     required bool isSelected,
     required bool isPressed,
     required bool isFocused,
     required AppColorsExtension colors,
+    CoreChipOutline outline = CoreChipOutline.solid,
   }) {
     if (isPressed) return colors.pageBackground;
+
+    if (outline == CoreChipOutline.dashed) return colors.backgroundBlueLight;
 
     if (isFocused &&
         (size == CoreChipSize.small || size == CoreChipSize.medium)) {
@@ -66,13 +70,19 @@ abstract final class CoreChipTheme {
   /// - **Default**:
   ///   - [CoreChipSize.large] uses [colors.lineMid].
   ///   - [CoreChipSize.small] and [CoreChipSize.medium] use [colors.chipGrey].
+  ///
+  /// A [CoreChipOutline.dashed] chip resolves to `transparent` in every state:
+  /// its outline is painted by [dashedOutline] instead, and the transparent
+  /// side keeps the border width in the layout so the chip measures the same.
   static Color borderColor({
     required CoreChipSize size,
     required bool isSelected,
     required bool isPressed,
     required bool isFocused,
     required AppColorsExtension colors,
+    CoreChipOutline outline = CoreChipOutline.solid,
   }) {
+    if (outline == CoreChipOutline.dashed) return colors.transparent;
     if (isSelected) return colors.outlineHover;
     if (isPressed) return colors.lineDarkOutline;
     if (isFocused) return colors.lineHighlight;
@@ -88,6 +98,31 @@ abstract final class CoreChipTheme {
   /// [borderWidth].
   static double borderWidthFor({required bool isFocused}) =>
       isFocused ? borderWidth * 2 : borderWidth;
+
+  /// Returns the dashed outline for a chip with the given [outline], or
+  /// `null` for [CoreChipOutline.solid]. The stroke follows [borderWidthFor]
+  /// so a focused dashed chip thickens like a solid one; [CoreChip] applies
+  /// it as its `foregroundDecoration`.
+  static CoreDashedBorderDecoration? dashedOutline({
+    required CoreChipOutline outline,
+    required bool isFocused,
+    required AppColorsExtension colors,
+  }) {
+    if (outline != CoreChipOutline.dashed) return null;
+    return CoreDashedBorderDecoration(
+      color: colors.outlineFocus,
+      strokeWidth: borderWidthFor(isFocused: isFocused),
+      radius: CoreSpacing.space6,
+      dashLength: dashLength,
+      gapLength: gapLength,
+    );
+  }
+
+  /// Dash length of the [CoreChipOutline.dashed] outline.
+  static const double dashLength = CoreSpacing.space1;
+
+  /// Gap length between dashes of the [CoreChipOutline.dashed] outline.
+  static const double gapLength = CoreSpacing.space1;
 
   /// Returns the shadow list for a chip of a given [size].
   /// Only [CoreChipSize.large] has a shadow; others return null.
