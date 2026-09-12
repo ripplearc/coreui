@@ -895,15 +895,22 @@ void main() {
       kind: CoreDependentKeyKind.offer,
     );
 
-    Widget host(List<CoreDependentKeyData> keys, {String? value}) {
+    Widget host(
+      List<CoreDependentKeyData> keys, {
+      String? value,
+      TextDirection textDirection = TextDirection.ltr,
+    }) {
       return MaterialApp(
         theme: CoreTheme.light(),
-        home: Scaffold(
-          body: CoreDisplayArea(
-            closeSemanticLabel: testCloseSemanticLabel,
-            historyPlaceholder: testHistoryPlaceholder,
-            value: value,
-            dependentKeys: keys,
+        home: Directionality(
+          textDirection: textDirection,
+          child: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              value: value,
+              dependentKeys: keys,
+            ),
           ),
         ),
       );
@@ -1017,6 +1024,32 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byType(CoreButton).first).left,
           greaterThanOrEqualTo(0));
+    });
+
+    testWidgets('anchors the trailing pill at the end edge in RTL',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(host(
+        const [rate, waste, shownAs, offer],
+        textDirection: TextDirection.rtl,
+      ));
+      await tester.pumpAndSettle();
+
+      final width = tester.getSize(find.byType(CoreDisplayArea)).width;
+      final lastPill = tester.getRect(find.byType(CoreButton).last);
+      final firstPill = tester.getRect(find.byType(CoreButton).first);
+      expect(lastPill.left, greaterThanOrEqualTo(0),
+          reason: 'the trailing pill anchors at the end edge, the left in RTL');
+      expect(firstPill.right, greaterThan(width),
+          reason: 'the leading pill starts off-screen to the right');
+
+      await tester.drag(find.byType(CoreButton).last,
+          const Offset(-CoreSpacing.space64 * 5, 0));
+      await tester.pumpAndSettle();
+      expect(tester.getRect(find.byType(CoreButton).first).right,
+          lessThanOrEqualTo(width));
     });
 
     test('resolvedDependentKeys appends the deprecated single pill', () {
