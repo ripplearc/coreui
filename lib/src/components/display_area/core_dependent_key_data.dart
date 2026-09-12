@@ -26,6 +26,7 @@ enum CoreDependentKeyKind {
 /// why the display area takes a list rather than a single label/value pair.
 @immutable
 class CoreDependentKeyData {
+  /// Creates a [CoreDependentKeyData].
   const CoreDependentKeyData({
     required this.label,
     required this.value,
