@@ -335,6 +335,7 @@ void main() {
         expect(outline.radius, CoreSpacing.space6);
         expect(outline.dashLength, CoreCalculatorChipTheme.dashLength);
         expect(outline.gapLength, CoreCalculatorChipTheme.gapLength);
+        expect(CoreCalculatorChipTheme.shadow(type), CoreShadows.small);
         expect(
           CoreCalculatorChipTheme.labelStyle(
             type: type,
@@ -357,8 +358,9 @@ void main() {
         );
         expect(
           CoreCalculatorChipTheme.borderColor(type: type, colors: colors),
-          colors.alertRed,
+          colors.alertRedOutline,
         );
+        expect(CoreCalculatorChipTheme.shadow(type), CoreShadows.small);
         final valueStyle = CoreCalculatorChipTheme.valueStyle(
           type: type,
           colors: colors,

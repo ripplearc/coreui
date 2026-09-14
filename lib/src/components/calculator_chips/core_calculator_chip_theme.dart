@@ -49,7 +49,7 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.active => colors.lineMid,
       CoreCalculatorChipType.result => colors.lineMid,
       CoreCalculatorChipType.dashed => colors.transparent,
-      CoreCalculatorChipType.error => colors.alertRed,
+      CoreCalculatorChipType.error => colors.alertRedOutline,
     };
   }
 
@@ -130,10 +130,23 @@ abstract final class CoreCalculatorChipTheme {
     };
   }
 
-  /// Returns the shadow list for a calculator chip.
-  /// No shadow is defined for calculator chips by default except for editable chips.
-  static List<BoxShadow>? shadow(CoreCalculatorChipType type) =>
-      type == CoreCalculatorChipType.editable ? CoreShadows.small : null;
+  /// Returns the shadow list for a calculator chip, or `null` for the flat
+  /// variants.
+  ///
+  /// The Figma Calculator Chip spec raises the outlined chips —
+  /// [CoreCalculatorChipType.editable], [CoreCalculatorChipType.dashed] and
+  /// [CoreCalculatorChipType.error] — with [CoreShadows.small]; the filled
+  /// `disabled`, `active` and `result` chips sit flat on the tape.
+  static List<BoxShadow>? shadow(CoreCalculatorChipType type) => switch (type) {
+        CoreCalculatorChipType.editable ||
+        CoreCalculatorChipType.dashed ||
+        CoreCalculatorChipType.error =>
+          CoreShadows.small,
+        CoreCalculatorChipType.disabled ||
+        CoreCalculatorChipType.active ||
+        CoreCalculatorChipType.result =>
+          null,
+      };
 
   /// The standard border radius for all calculator chips.
   static BorderRadius get borderRadius =>

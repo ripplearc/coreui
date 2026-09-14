@@ -81,6 +81,7 @@ class CoreTheme {
 
       // Alert Colors
       alertRed: CoreAlertColors.red,
+      alertRedOutline: CoreAlertColors.redOutline,
       alertOrange: CoreAlertColors.orange,
       alertBlue: CoreAlertColors.blue,
       alertGreen: CoreAlertColors.green,
@@ -182,6 +183,7 @@ class CoreTheme {
 
       // Alert Colors
       alertRed: CoreDarkAlertColors.red,
+      alertRedOutline: CoreDarkAlertColors.redOutline,
       alertOrange: CoreDarkAlertColors.orange,
       alertBlue: CoreDarkAlertColors.blue,
       alertGreen: CoreDarkAlertColors.green,
@@ -224,7 +226,9 @@ class CoreTheme {
           : CoreBackgroundColors.pageBackground,
       extensions: [
         isDark ? darkAppColors() : lightAppColors(),
-        isDark ? AppTypographyExtension.createDark() : AppTypographyExtension.create(),
+        isDark
+            ? AppTypographyExtension.createDark()
+            : AppTypographyExtension.create(),
       ],
     );
   }

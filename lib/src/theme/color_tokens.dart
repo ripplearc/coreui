@@ -190,6 +190,7 @@ class CoreButtonColors {
 // Alert-related color tokens
 class CoreAlertColors {
   static const Color red = _CoreColorPalette.red100;
+  static const Color redOutline = _CoreColorPalette.red200;
   static const Color orange = _CoreColorPalette.orange100;
   static const Color blue = _CoreColorPalette.blue100;
   static const Color green = _CoreColorPalette.green100;
@@ -340,6 +341,7 @@ class CoreDarkButtonColors {
 /// alert surfaces tinted but not overpowering on dark scaffolds.
 class CoreDarkAlertColors {
   static const Color red = _CoreColorPalette.red800;
+  static const Color redOutline = _CoreColorPalette.red700;
   static const Color orange = _CoreColorPalette.orange800;
   static const Color blue = _CoreColorPalette.blue800;
   static const Color green = _CoreColorPalette.green800;

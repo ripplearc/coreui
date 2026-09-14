@@ -44,16 +44,21 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 | `disabled` | `backgroundGrayMid`   | `lineMid`                   | `textDark`        | `iconGrayMid`  | `null`  |
 | `active`   | `backgroundGreenMid`  | `lineMid`                   | `textDark`        | `iconGrayDark` | `null`  |
 | `result`   | `backgroundGrayMid`   | `lineMid`                   | `textDark`        | `iconGrayDark` | `null`  |
-| `dashed`   | `backgroundBlueLight` | dashed `outlineFocus`       | `textLink`        | `iconOrient`   | `null`  |
-| `error`    | `alertRed`            | `alertRed`                  | `textDark`        | `iconRed`      | `null`  |
+| `dashed`   | `backgroundBlueLight` | dashed `outlineFocus`       | `textLink`        | `iconOrient`   | `small` |
+| `error`    | `alertRed`            | `alertRedOutline`           | `textDark`        | `iconRed`      | `small` |
 
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
 `CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
 resolves it, and the solid border is painted transparent at the same width so every variant measures the same.
 
-Tokens are mapped from the calculator prototype's tape chips (`.t-result`, `.t-stale`/`.s-bind`, `.t-error`); Figma
-`61948:65013` (result) and `61948:65858` (editing) are the design sources for cross-checking. The prototype's error
-border tint (`red200`) has no token, so `error` uses its fill as the border.
+The tokens follow the Figma **Calculator Chip** component set (Design System page, node `58781:24269`, variants
+`Editable` / `Disabled` / `Active` / `Result` / `Dashed` / `Error`, each with a `Factor` axis): `Result` is defined with
+the `Disabled` fill and border, `Dashed` is `#EEFAFF` under a `#015B7C` dashed stroke with the value `8ft ?`, `Error` is
+`#FEE4E2` inside a `#FECDCA` (`red200`) stroke with a 14 px regular value, and the outlined `Editable` / `Dashed` /
+`Error` variants carry the small drop shadow while the filled ones sit flat. `alertRedOutline` was added for the error
+stroke. The populated calculator screens (`61948:65013` result, `61948:65858` editing) use the same instances. Two
+spec values stay off-grid and are not reproduced: the dashed stroke is 1.5 px with a 4 / 3 dash in Figma, here 1 px
+with a 4 / 4 dash (`CoreSpacing.space1`) so every variant keeps the same border width.
 
 ## Examples
 
