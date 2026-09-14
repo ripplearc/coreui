@@ -61,6 +61,7 @@ Map<String, Color> fieldMap(AppColorsExtension colors) {
     'chipBlue': colors.chipBlue,
     'chipGreen': colors.chipGreen,
     'alertRed': colors.alertRed,
+    'alertRedOutline': colors.alertRedOutline,
     'alertOrange': colors.alertOrange,
     'alertBlue': colors.alertBlue,
     'alertGreen': colors.alertGreen,
