@@ -46,6 +46,19 @@ class CoreButton extends StatefulWidget {
   final List<BoxShadow>? shadows;
   final String? semanticsLabel;
 
+  /// Overrides the border colour the [variant] resolves for every state.
+  /// `null` keeps the variant's own pressed / focused / resting colours.
+  final Color? borderColor;
+
+  /// Overrides the border width the [variant] resolves (`0` for
+  /// [CoreButtonVariant.primary], `2` otherwise). Pass
+  /// [hairlineBorderWidth] for a chip-style 1 px edge.
+  final double? borderWidth;
+
+  /// A 1 px [borderWidth] — the hairline the chips and the display area's
+  /// dependent-key pills draw (Figma Dependent Key Chip).
+  static const double hairlineBorderWidth = 1;
+
   const CoreButton({
     super.key,
     this.label,
@@ -64,6 +77,8 @@ class CoreButton extends StatefulWidget {
     this.autofocus = false,
     this.shadows,
     this.semanticsLabel,
+    this.borderColor,
+    this.borderWidth,
   }) : assert(
           label != null || child != null,
           'Either label or child must be provided',
@@ -285,8 +300,10 @@ class _CoreButtonState extends State<CoreButton> {
                 isDark: isDark,
               ),
               border: Border.all(
-                color: _getBorderColor(isEnabled, widget.variant, colors),
-                width: widget.variant == CoreButtonVariant.primary ? 0 : 2,
+                color: widget.borderColor ??
+                    _getBorderColor(isEnabled, widget.variant, colors),
+                width: widget.borderWidth ??
+                    (widget.variant == CoreButtonVariant.primary ? 0 : 2),
               ),
             ),
             child: Padding(

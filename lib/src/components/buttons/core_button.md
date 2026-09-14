@@ -30,6 +30,8 @@ CoreButton(
 | `spaceOut` | `bool` | No | `false` | If true and an icon is present, adds space between icon and label. |
 | `trailing` | `bool` | No | `false` | If true, places the icon after the label. |
 | `shadows` | `List<BoxShadow>?` | No | `null` | Optional list of shadows to apply to the button. |
+| `borderColor` | `Color?` | No | `null` | Overrides the border colour the variant resolves, in every state. |
+| `borderWidth` | `double?` | No | `null` | Overrides the border width the variant resolves (`0` primary, `2` otherwise). `CoreButton.hairlineBorderWidth` is the 1 px chip-style edge. |
 | `focusNode` | `FocusNode?` | No | `null` | Optional focus node to control button focus state. |
 | `autofocus` | `bool` | No | `false` | Whether the button should be auto-focused. |
 

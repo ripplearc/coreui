@@ -175,7 +175,9 @@ An answer keeps its assumption on screen. `dependentKeys` renders an end-aligned
 | `toggle` | Cycles or swaps a reading of the value already on screen without changing it. | ⇄ `CoreIcons.swapHorizontal` | `Shown as: in/12in` → degrees → grade |
 | `offer` | A one-time offer that rewrites the number; the app removes it once accepted. | none | `Re-input 38.30° as 38°30′` |
 
-Every pill is a `CoreButton` (medium, secondary, small shadow) exposing `button: true` with its label, so the three kinds are distinct both visually and to screen readers. All strings come from the consumer — the row holds no defaults.
+Every pill is a `CoreButton` (medium, secondary, small shadow, a 1 px `lineMid` hairline instead of the secondary button's 2 px outline) exposing `button: true` with its label, so the three kinds are distinct both visually and to screen readers. All strings come from the consumer — the row holds no defaults.
+
+The pill follows the Figma **Dependent Key Chip** component set (Design System page, node `66225:151236`, variants `Editable` / `Toggle` / `Offer`): a 40 px pill with a 1 px `#D0D5DD` (`lineMid`) border, a 12 px regular label and 12 px semibold value, the edit icon on `Editable`, the swap-horizontal icon on `Toggle` and no icon on `Offer`; the populated screens (`61948:65013`) render it white with the small shadow, right-aligned under the value.
 
 #### Deprecated single-pill adapter
 `dependentKeyLabel`, `dependentKeyValue` and `onPressedDependentKey` still render, as one `editable` pill appended after `dependentKeys`, but are deprecated and will be removed in the next minor release. `resolvedDependentKeys` (`@visibleForTesting`) exposes the merged list `build` renders.
