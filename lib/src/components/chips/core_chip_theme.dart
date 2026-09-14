@@ -33,8 +33,10 @@ abstract final class CoreChipTheme {
   ///
   /// Small and medium chips use a grey background by default, while the large
   /// chip uses the page background. Focus, pressed, and selected states
-  /// elevate the chip to the page background. A [CoreChipOutline.dashed] chip
-  /// sits on `backgroundBlueLight` (prototype `.s-bind`) unless pressed.
+  /// elevate the chip to the page background. The outline style does not
+  /// change the fill: a [CoreChipOutline.dashed] or [CoreChipOutline.highlight]
+  /// chip takes the same background as a solid one of its size (Figma
+  /// Suggestion Strip Chip).
   static Color background({
     required CoreChipSize size,
     required bool isSelected,
@@ -44,8 +46,6 @@ abstract final class CoreChipTheme {
     CoreChipOutline outline = CoreChipOutline.solid,
   }) {
     if (isPressed) return colors.pageBackground;
-
-    if (outline == CoreChipOutline.dashed) return colors.backgroundBlueLight;
 
     if (isFocused &&
         (size == CoreChipSize.small || size == CoreChipSize.medium)) {
@@ -66,7 +66,7 @@ abstract final class CoreChipTheme {
   ///
   /// - **Selected**: uses [colors.outlineHover].
   /// - **Pressed**: uses [colors.lineDarkOutline].
-  /// - **Focused**: uses [colors.lineHighlight].
+  /// - **Focused** or [CoreChipOutline.highlight]: uses [colors.lineHighlight].
   /// - **Default**:
   ///   - [CoreChipSize.large] uses [colors.lineMid].
   ///   - [CoreChipSize.small] and [CoreChipSize.medium] use [colors.chipGrey].
@@ -85,19 +85,27 @@ abstract final class CoreChipTheme {
     if (outline == CoreChipOutline.dashed) return colors.transparent;
     if (isSelected) return colors.outlineHover;
     if (isPressed) return colors.lineDarkOutline;
-    if (isFocused) return colors.lineHighlight;
+    if (isFocused || outline == CoreChipOutline.highlight) {
+      return colors.lineHighlight;
+    }
     return size == CoreChipSize.large ? colors.lineMid : colors.chipGrey;
   }
 
   /// The default border width for all chip sizes.
   static const double borderWidth = 1;
 
-  /// Returns the border width for the current interaction state.
+  /// Returns the border width for the current interaction state and
+  /// [outline].
   ///
-  /// Focused chips get a thicker outline; all other states use
-  /// [borderWidth].
-  static double borderWidthFor({required bool isFocused}) =>
-      isFocused ? borderWidth * 2 : borderWidth;
+  /// Focused chips and [CoreChipOutline.highlight] chips get a double-width
+  /// outline; all other states use [borderWidth].
+  static double borderWidthFor({
+    required bool isFocused,
+    CoreChipOutline outline = CoreChipOutline.solid,
+  }) =>
+      isFocused || outline == CoreChipOutline.highlight
+          ? borderWidth * 2
+          : borderWidth;
 
   /// Returns the dashed outline for a chip with the given [outline], or
   /// `null` for [CoreChipOutline.solid]. The stroke follows [borderWidthFor]

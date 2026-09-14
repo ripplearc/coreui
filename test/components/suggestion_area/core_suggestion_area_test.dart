@@ -547,12 +547,69 @@ void main() {
       expect(find.text('8ft ¿?'), findsOneWidget);
     });
 
+    testWidgets('a deterministic rung renders the highlight outline',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Area:',
+                value: '220',
+                unit: 'ft²',
+                kind: SuggestionKind.deterministic,
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      final chip = tester.widget<CoreChip>(find.byType(CoreChip));
+      expect(chip.outline, CoreChipOutline.highlight);
+      expect(chip.icon, isNull);
+      expect(find.textContaining('?'), findsNothing);
+    });
+
+    testWidgets('a memory recall leads with the history icon',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: [
+              SuggestionData(
+                label: '',
+                value: '12.57',
+                unit: 'yd²',
+                kind: SuggestionKind.memory,
+                onTap: () {},
+              ),
+              SuggestionData(
+                label: 'M1:',
+                value: '8',
+                unit: 'ft',
+                kind: SuggestionKind.memory,
+                onTap: () {},
+              ),
+            ],
+          ));
+
+      final chips = tester.widgetList<CoreChip>(find.byType(CoreChip)).toList();
+      expect(chips.length, 2);
+      expect(chips[0].icon, CoreIcons.history);
+      expect(chips[0].label, isNull,
+          reason: 'an empty label shows the value alone');
+      expect(chips[0].outline, CoreChipOutline.solid);
+      expect(chips[1].icon, CoreIcons.history);
+      expect(chips[1].label, 'M1:');
+      expect(find.text('12.57'), findsOneWidget);
+      expect(find.text('M1:'), findsOneWidget);
+    });
+
     testWidgets('other kinds keep the solid outline and no suffix',
         (WidgetTester tester) async {
       const solidKinds = [
-        SuggestionKind.deterministic,
         SuggestionKind.predictive,
         SuggestionKind.conversion,
+        SuggestionKind.memory,
       ];
       await pumpSuggestionArea(
           tester,
