@@ -933,6 +933,21 @@ void main() {
       expect(find.textContaining('10%', findRichText: true), findsOneWidget);
     });
 
+    testWidgets('every pill draws the hairline border',
+        (WidgetTester tester) async {
+      final colors = AppColorsExtension.create();
+      await tester
+          .pumpWidget(host(const [rate, shownAs, offer], value: '\$84.25'));
+
+      final pills = tester.widgetList<CoreButton>(find.byType(CoreButton));
+      expect(pills.length, 3);
+      for (final pill in pills) {
+        expect(pill.variant, CoreButtonVariant.secondary);
+        expect(pill.borderColor, colors.lineMid);
+        expect(pill.borderWidth, CoreButton.hairlineBorderWidth);
+      }
+    });
+
     testWidgets('shows the value section for pills alone',
         (WidgetTester tester) async {
       await tester.pumpWidget(host(const [rate]));

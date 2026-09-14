@@ -90,6 +90,8 @@ class _DependentKeyPill extends StatelessWidget {
       size: CoreButtonSize.medium,
       shadows: CoreShadows.small,
       variant: CoreButtonVariant.secondary,
+      borderColor: colors.lineMid,
+      borderWidth: CoreButton.hairlineBorderWidth,
       trailing: true,
       fullWidth: false,
       icon: trailingIcon == null
