@@ -24,11 +24,18 @@ enum CoreChipOutline {
   /// A solid 1px border resolved by [CoreChipTheme.borderColor].
   solid,
 
-  /// A dashed `outlineFocus` outline over a `backgroundBlueLight` fill — the
-  /// look of a tentative offer, such as a bind suggestion in
-  /// [CoreSuggestionArea] that relabels an existing value instead of adding
-  /// one. Painted by [CoreDashedBorderDecoration].
+  /// A dashed `outlineFocus` outline over the chip's usual fill — the look of
+  /// a tentative offer, such as a bind suggestion in [CoreSuggestionArea] that
+  /// relabels an existing value instead of adding one. Painted by
+  /// [CoreDashedBorderDecoration].
   dashed,
+
+  /// A solid `lineHighlight` outline at twice the border width — the look of
+  /// a deterministic suggestion in [CoreSuggestionArea], the rule that fired
+  /// from the named dimensions on screen (Figma Suggestion Strip Chip,
+  /// `Deterministic`). The padding gives the extra width back so the chip
+  /// measures the same as a solid one.
+  highlight,
 }
 
 /// A selectable chip that supports three sizes, an optional leading icon,
@@ -233,11 +240,13 @@ class _CoreChipState extends State<CoreChip> {
                                     colors: colors,
                                   ),
                                   padding: CoreChipTheme.padding(widget.size) -
-                                          (activeFocused
-                                              ? const EdgeInsets.all(
-                                                  CoreChipTheme.borderWidth)
-                                              : EdgeInsets.zero)
-                                      as EdgeInsetsGeometry,
+                                      EdgeInsets.all(
+                                        CoreChipTheme.borderWidthFor(
+                                              isFocused: activeFocused,
+                                              outline: widget.outline,
+                                            ) -
+                                            CoreChipTheme.borderWidth,
+                                      ) as EdgeInsetsGeometry,
                                   decoration: BoxDecoration(
                                     color: CoreChipTheme.background(
                                       size: widget.size,
@@ -260,6 +269,7 @@ class _CoreChipState extends State<CoreChip> {
                                         ),
                                         width: CoreChipTheme.borderWidthFor(
                                           isFocused: activeFocused,
+                                          outline: widget.outline,
                                         ),
                                       ),
                                     ),

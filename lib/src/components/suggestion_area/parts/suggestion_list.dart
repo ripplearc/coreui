@@ -9,12 +9,15 @@ enum SuggestionMode {
   conversion,
 }
 
-/// The kind of a [SuggestionData], mirroring the calculator's four suggestion
-/// sources. Only [bind] changes how the chip looks; the others exist so the
+/// The kind of a [SuggestionData], mirroring the calculator's suggestion
+/// sources and the Figma Suggestion Strip Chip variants. [deterministic],
+/// [bind] and [memory] change how the chip looks; every kind exists so the
 /// app can attach the right accept behaviour without re-deriving it from text.
 enum SuggestionKind {
   /// A rule that fired from named dimensions (Area from Length × Width).
-  /// Accepting adds a result.
+  /// Accepting adds a result. Renders with the highlight outline
+  /// ([CoreChipOutline.highlight]) so the rung that fired stands out from a
+  /// guess.
   deterministic,
 
   /// A context proposal (a material count, a cost, a weight, a recent value).
@@ -29,6 +32,11 @@ enum SuggestionKind {
   /// The value on screen re-expressed in another unit. Accepting replaces the
   /// value in place.
   conversion,
+
+  /// A value recalled from the calculator's memory slots (M1–M3). Accepting
+  /// adds a result. Renders value-first behind a leading [CoreIcons.history]
+  /// icon; pass an empty [SuggestionData.label] to show the value alone.
+  memory,
 }
 
 /// Data representation for a single suggestion chip.
@@ -146,16 +154,25 @@ class _SuggestionListState extends State<_SuggestionList> {
         ...suggestions.asMap().entries.map((entry) {
           final data = entry.value;
           final isBind = data.kind == SuggestionKind.bind;
+          final isMemory = data.kind == SuggestionKind.memory;
           final unit = data.unit;
           return CoreChip(
             key: ValueKey(
                 '${data.label}_${data.value}_${data.unit}_${data.kind.name}_${entry.key}'),
-            label: data.label,
+            label: isMemory && data.label.isEmpty ? null : data.label,
+            icon: isMemory ? CoreIcons.history : null,
             value: isBind && unit == null
                 ? '${data.value} ${widget.bindSuffix}'
                 : data.value,
             unit: isBind && unit != null ? '$unit ${widget.bindSuffix}' : unit,
-            outline: isBind ? CoreChipOutline.dashed : CoreChipOutline.solid,
+            outline: switch (data.kind) {
+              SuggestionKind.bind => CoreChipOutline.dashed,
+              SuggestionKind.deterministic => CoreChipOutline.highlight,
+              SuggestionKind.predictive ||
+              SuggestionKind.conversion ||
+              SuggestionKind.memory =>
+                CoreChipOutline.solid,
+            },
             semanticsLabel: data.semanticsLabel,
             selected: _smartChipUnselected,
             onTap: () {

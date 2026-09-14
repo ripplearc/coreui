@@ -1,6 +1,6 @@
 # CoreSuggestionArea
 
-A specialized widget that provides a dedicated area for presenting smart recommendations to the user, including AI-driven insights (e.g. Area calculation) and contextual unit conversions. It elegantly handles overflow, expands into a scrollable list, and toggles between multiple sets of suggestions. Each suggestion carries a `SuggestionKind`; a **bind** offer renders with a dashed outline and a trailing `?` because accepting it relabels an existing chip instead of adding a result.
+A specialized widget that provides a dedicated area for presenting smart recommendations to the user, including AI-driven insights (e.g. Area calculation) and contextual unit conversions. It elegantly handles overflow, expands into a scrollable list, and toggles between multiple sets of suggestions. Each suggestion carries a `SuggestionKind`, mirroring the Figma Suggestion Strip Chip variants: a **deterministic** rung renders with the highlight outline, a **bind** offer with a dashed outline and a trailing `?` because accepting it relabels an existing chip instead of adding a result, and a **memory** recall with a leading history icon.
 
 ## Usage
 
@@ -56,19 +56,20 @@ CoreSuggestionArea(
 | `value` | `String` | Yes | - | The value shown after the label. |
 | `unit` | `String?` | No | `null` | Optional unit shown after the value in heavy weight. |
 | `onTap` | `VoidCallback` | Yes | - | Called when the chip is accepted. |
-| `kind` | `SuggestionKind` | No | `predictive` | Which suggestion source produced the chip: `deterministic`, `predictive`, `bind`, `conversion`. |
+| `kind` | `SuggestionKind` | No | `predictive` | Which suggestion source produced the chip: `deterministic`, `predictive`, `bind`, `conversion`, `memory`. |
 | `semanticsLabel` | `String?` | No | `null` | Overrides the announced text when the visible text does not read well aloud (`'12.57yd²'` → "Convert to 12.57 square yards"). |
 
 ## Suggestion kinds
 
 | Kind | Meaning | Accepting it | Look |
 | :--- | :--- | :--- | :--- |
-| `deterministic` | A rule fired from named dimensions (Area from Length × Width). | Adds a result. | Solid |
+| `deterministic` | A rule fired from named dimensions (Area from Length × Width). | Adds a result. | `CoreChipOutline.highlight` — 2 px `lineHighlight` outline |
 | `predictive` | A context proposal (material count, cost, weight, recent value). | Adds a result. | Solid |
-| `bind` | An offer to name an orphan value (`Height: 8ft ?`). | Relabels the existing chip instead of adding one. | Dashed `outlineFocus` outline on `backgroundBlueLight` + trailing `bindSuffix` |
+| `bind` | An offer to name an orphan value (`Height: 8ft ?`). | Relabels the existing chip instead of adding one. | `CoreChipOutline.dashed` — dashed `outlineFocus` outline + trailing `bindSuffix` |
 | `conversion` | The value on screen re-expressed in another unit. | Replaces the value in place. | Solid |
+| `memory` | A value recalled from the calculator's memory slots (M1–M3). | Adds a result. | Solid, leading `CoreIcons.history` icon; an empty `label` shows the value alone |
 
-Only `bind` changes how the chip looks; the other kinds exist so the app can attach the right accept behaviour without re-deriving it from the label text. The dashed look is `CoreChip`'s `CoreChipOutline.dashed`, which reuses `CoreDashedBorderDecoration` from `CoreCalculatorChip`'s dashed variant.
+The looks follow the Figma **Suggestion Strip Chip** component set (Design System page, node `66225:151222`, variants `Deterministic` / `Predictive` / `Conversion` / `Bind` / `Memory`): every strip chip is the plain 48 px chip, `Deterministic` adds a 2 px highlight outline, `Bind` a dashed teal outline, `Memory` a leading history icon; the spec's 1.5 px / 4-3 dash is rendered here at the chip's 1 px / 4-4 dash. `predictive` and `conversion` exist so the app can attach the right accept behaviour without re-deriving it from the label text. The dashed look reuses `CoreDashedBorderDecoration` from `CoreCalculatorChip`'s dashed variant.
 
 ## Features
 
