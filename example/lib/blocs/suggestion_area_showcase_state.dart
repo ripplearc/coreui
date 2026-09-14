@@ -78,7 +78,7 @@ class SuggestionAreaShowcaseState {
   }) {
     return SuggestionAreaShowcaseState(
       activeInputLabel:
-      activeInputLabel != null ? activeInputLabel() : this.activeInputLabel,
+          activeInputLabel != null ? activeInputLabel() : this.activeInputLabel,
       currentInputValue: currentInputValue ?? this.currentInputValue,
       currentNumericValue: currentNumericValue ?? this.currentNumericValue,
       isTyping: isTyping ?? this.isTyping,
@@ -89,7 +89,7 @@ class SuggestionAreaShowcaseState {
       resultChip: resultChip != null ? resultChip() : this.resultChip,
       aiSuggestions: aiSuggestions ?? this.aiSuggestions,
       conversionSuggestions:
-      conversionSuggestions ?? this.conversionSuggestions,
+          conversionSuggestions ?? this.conversionSuggestions,
     );
   }
 }

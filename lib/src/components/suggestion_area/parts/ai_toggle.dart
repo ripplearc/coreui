@@ -4,10 +4,12 @@ class _AIToggle extends StatelessWidget {
   const _AIToggle({
     required this.mode,
     required this.onChanged,
+    required this.semanticsLabel,
   });
 
   final SuggestionMode mode;
   final ValueChanged<SuggestionMode> onChanged;
+  final String semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class _AIToggle extends StatelessWidget {
     final isAiMode = mode == SuggestionMode.ai;
 
     return Semantics(
-      label: 'Toggle suggestion mode',
+      label: semanticsLabel,
       button: true,
       toggled: isAiMode,
       child: GestureDetector(

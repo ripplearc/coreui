@@ -19,6 +19,25 @@ enum CoreChipSize {
   large,
 }
 
+/// The outline style of a [CoreChip].
+enum CoreChipOutline {
+  /// A solid 1px border resolved by [CoreChipTheme.borderColor].
+  solid,
+
+  /// A dashed `outlineFocus` outline over the chip's usual fill — the look of
+  /// a tentative offer, such as a bind suggestion in [CoreSuggestionArea] that
+  /// relabels an existing value instead of adding one. Painted by
+  /// [CoreDashedBorderDecoration].
+  dashed,
+
+  /// A solid `lineHighlight` outline at twice the border width — the look of
+  /// a deterministic suggestion in [CoreSuggestionArea], the rule that fired
+  /// from the named dimensions on screen (Figma Suggestion Strip Chip,
+  /// `Deterministic`). The padding gives the extra width back so the chip
+  /// measures the same as a solid one.
+  highlight,
+}
+
 /// A selectable chip that supports three sizes, an optional leading icon,
 /// a persistent close (×) button, and animated visual feedback for default,
 /// pressed, and selected states.
@@ -26,6 +45,10 @@ enum CoreChipSize {
 /// ## Sizes
 /// [CoreChipSize.small] and [CoreChipSize.medium] share the same visual.
 /// [CoreChipSize.large] uses a white surface with a drop shadow.
+///
+/// ## Outline
+/// [CoreChipOutline.dashed] swaps the solid border for a dashed offer outline
+/// while keeping every size, state and animation the same.
 ///
 /// ## State ownership
 /// The caller owns **selection** via [selected] ([ValueNotifier<bool>]).
@@ -57,6 +80,8 @@ class CoreChip extends StatefulWidget {
     this.onRemove,
     this.withCloseIcon = false,
     this.isSmartChip = false,
+    this.outline = CoreChipOutline.solid,
+    this.semanticsLabel,
     this.focusNode,
     this.autofocus = false,
   }) : assert(
@@ -73,6 +98,16 @@ class CoreChip extends StatefulWidget {
 
   /// Whether this chip acts as a "smart chip" (briefly highlights on tap instead of toggling selection).
   final bool isSmartChip;
+
+  /// The outline style. Defaults to [CoreChipOutline.solid].
+  final CoreChipOutline outline;
+
+  /// Overrides the label announced by screen readers.
+  ///
+  /// Defaults to [label], [value] and [unit] joined with spaces. Pass a
+  /// localised string when the visible text does not read well aloud
+  /// (`'12.57yd²'` → "Convert to 12.57 square yards").
+  final String? semanticsLabel;
 
   /// The primary text displayed on the chip.
   final String? label;
@@ -172,9 +207,10 @@ class _CoreChipState extends State<CoreChip> {
                   builder: (context, isFocused, ___) {
                     final activeFocused = isFocused || isHighlighted;
                     return Semantics(
-                        label: [widget.label, widget.value, widget.unit]
-                            .where((e) => e != null)
-                            .join(' '),
+                        label: widget.semanticsLabel ??
+                            [widget.label, widget.value, widget.unit]
+                                .where((e) => e != null)
+                                .join(' '),
                         button: true,
                         container: true,
                         selected: isSelected,
@@ -197,12 +233,20 @@ class _CoreChipState extends State<CoreChip> {
                                 ),
                                 child: AnimatedContainer(
                                   duration: CoreChipTheme.animationDuration,
+                                  foregroundDecoration:
+                                      CoreChipTheme.dashedOutline(
+                                    outline: widget.outline,
+                                    isFocused: activeFocused,
+                                    colors: colors,
+                                  ),
                                   padding: CoreChipTheme.padding(widget.size) -
-                                          (activeFocused
-                                              ? const EdgeInsets.all(
-                                                  CoreChipTheme.borderWidth)
-                                              : EdgeInsets.zero)
-                                      as EdgeInsetsGeometry,
+                                      EdgeInsets.all(
+                                        CoreChipTheme.borderWidthFor(
+                                              isFocused: activeFocused,
+                                              outline: widget.outline,
+                                            ) -
+                                            CoreChipTheme.borderWidth,
+                                      ) as EdgeInsetsGeometry,
                                   decoration: BoxDecoration(
                                     color: CoreChipTheme.background(
                                       size: widget.size,
@@ -210,6 +254,7 @@ class _CoreChipState extends State<CoreChip> {
                                       isPressed: isPressed,
                                       isFocused: activeFocused,
                                       colors: colors,
+                                      outline: widget.outline,
                                     ),
                                     borderRadius: chipRadius,
                                     border: Border.fromBorderSide(
@@ -220,9 +265,11 @@ class _CoreChipState extends State<CoreChip> {
                                           isPressed: isPressed,
                                           isFocused: activeFocused,
                                           colors: colors,
+                                          outline: widget.outline,
                                         ),
                                         width: CoreChipTheme.borderWidthFor(
                                           isFocused: activeFocused,
+                                          outline: widget.outline,
                                         ),
                                       ),
                                     ),
