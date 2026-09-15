@@ -32,6 +32,10 @@ CoreSuggestionArea testCoreSuggestionArea({
       testConversionsExpandToggleSemantics,
   String? conversionsCollapseToggleSemanticsLabel =
       testConversionsCollapseToggleSemantics,
+  String conversionsRowTagLabel =
+      CoreSuggestionArea.defaultConversionsRowTagLabel,
+  String conversionsRowSemanticsLabel =
+      CoreSuggestionArea.defaultConversionsRowSemanticsLabel,
 }) {
   return CoreSuggestionArea(
     key: key,
@@ -50,6 +54,8 @@ CoreSuggestionArea testCoreSuggestionArea({
         conversionsExpandToggleSemanticsLabelBuilder,
     conversionsCollapseToggleSemanticsLabel:
         conversionsCollapseToggleSemanticsLabel,
+    conversionsRowTagLabel: conversionsRowTagLabel,
+    conversionsRowSemanticsLabel: conversionsRowSemanticsLabel,
   );
 }
 

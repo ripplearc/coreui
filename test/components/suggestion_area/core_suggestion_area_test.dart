@@ -749,12 +749,13 @@ void main() {
             onTap: () {},
           ),
         ];
-    List<SuggestionData> overflow(String prefix, SuggestionKind kind) =>
+    List<SuggestionData> overflow(String prefix, SuggestionKind kind,
+            {String valuePrefix = ''}) =>
         List.generate(
           5,
           (index) => SuggestionData(
             label: '$prefix $index',
-            value: '$index',
+            value: '$valuePrefix$index',
             kind: kind,
             onTap: () {},
           ),
@@ -776,12 +777,83 @@ void main() {
           ));
 
       expect(find.text('Area:'), findsOneWidget);
-      expect(find.text('Conv:'), findsOneWidget);
+      expect(find.text('264'), findsOneWidget);
       expect(find.bySemanticsLabel(testToggleSemanticsLabel), findsNothing);
       expect(
-        tester.getTopLeft(find.text('Conv:')).dy,
+        tester.getTopLeft(find.text('264')).dy,
         greaterThan(tester.getBottomLeft(find.text('Area:')).dy),
         reason: 'conversions sit on their own row below the primary row',
+      );
+    });
+
+    testWidgets(
+        'the conversions row is secondary: one tag, then value-only mini chips',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: ai(),
+            conversionSuggestions: conv(),
+          ));
+
+      final tag = find.text(CoreSuggestionArea.defaultConversionsRowTagLabel);
+      expect(tag, findsOneWidget);
+      expect(find.text('Conv:'), findsNothing,
+          reason: 'the tag says conversion once, so the chip drops its label');
+      expect(find.text('264'), findsOneWidget);
+      expect(find.text('in'), findsOneWidget);
+
+      final chips = tester.widgetList<CoreChip>(find.byType(CoreChip));
+      final primary = chips.firstWhere((chip) => chip.label == 'Area:');
+      final conversion = chips.firstWhere((chip) => chip.value == '264');
+      expect(primary.size, CoreChipSize.large);
+      expect(conversion.size, CoreChipSize.mini);
+      expect(conversion.label, isNull);
+      expect(conversion.unit, 'in');
+      expect(
+        tester.getTopLeft(tag).dx,
+        lessThan(tester.getTopLeft(find.text('264')).dx),
+        reason: 'the tag leads the row',
+      );
+      expect(
+        tester.getSize(find.byType(CoreChip).last).height,
+        lessThan(tester.getSize(find.byType(CoreChip).first).height),
+        reason: 'a mini chip is shorter than the full-size chip above it',
+      );
+    });
+
+    testWidgets('conversionsRowTagLabel is configurable',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: ai(),
+            conversionSuggestions: conv(),
+            conversionsRowTagLabel: 'als',
+          ));
+
+      expect(find.text('als'), findsOneWidget);
+      expect(
+        find.text(CoreSuggestionArea.defaultConversionsRowTagLabel),
+        findsNothing,
+      );
+    });
+
+    testWidgets('the toggle layout keeps full-size labelled conversion chips',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester, testCoreSuggestionArea(conversionSuggestions: conv()));
+
+      expect(find.text('Conv:'), findsOneWidget);
+      expect(
+        find.text(CoreSuggestionArea.defaultConversionsRowTagLabel),
+        findsNothing,
+      );
+      expect(
+        tester.widget<CoreChip>(find.byType(CoreChip)).size,
+        CoreChipSize.large,
       );
     });
 
@@ -794,7 +866,7 @@ void main() {
             conversionSuggestions: conv(),
           ));
 
-      expect(find.text('Conv:'), findsOneWidget);
+      expect(find.text('264'), findsOneWidget);
       expect(find.byType(CoreChip), findsOneWidget);
       expect(
         find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
@@ -811,18 +883,18 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Conv:'), findsOneWidget);
+      expect(find.text('c0'), findsOneWidget);
 
       final host = tester.state<_TwoRowHostState>(find.byType(_TwoRowHost));
       host.setSecondRowHidden(true);
       await tester.pumpAndSettle();
 
       expect(find.text('Area:'), findsOneWidget);
-      expect(find.text('Conv:'), findsNothing);
+      expect(find.text('c0'), findsNothing);
 
       host.setSecondRowHidden(false);
       await tester.pumpAndSettle();
-      expect(find.text('Conv:'), findsOneWidget);
+      expect(find.text('c0'), findsOneWidget);
     });
 
     testWidgets('the conversions row animates over the shared duration',
@@ -843,7 +915,7 @@ void main() {
       await tester.pump(CoreSuggestionArea.animationDuration ~/ 2);
 
       final areaHeightMidway = tester.getSize(find.byType(CoreSuggestionArea));
-      expect(find.text('Conv:'), findsNothing,
+      expect(find.text('c0'), findsNothing,
           reason: 'the row content is gone as soon as it is hidden');
       expect(areaHeightMidway.height, greaterThan(convHeightBefore),
           reason: 'midway through the fold the area is still taller than one '
@@ -897,7 +969,8 @@ void main() {
             layout: CoreSuggestionLayout.twoRows,
             onExpandedChanged: (value) => lastExpanded = value,
             aiSuggestions: overflow('Smart', SuggestionKind.predictive),
-            conversionSuggestions: overflow('Conv', SuggestionKind.conversion),
+            conversionSuggestions:
+                overflow('Conv', SuggestionKind.conversion, valuePrefix: 'c'),
           ));
       await tester.pumpAndSettle();
       await tester.pump();
@@ -915,12 +988,12 @@ void main() {
       expect(_conversionsExpandToggleFinder, findsOneWidget,
           reason: 'the conversions row still offers its own expand toggle');
       expect(tester.getTopLeft(find.text('Smart 1')).dy, greaterThan(0));
-      expect(tester.getTopLeft(find.text('Conv 1')).dy, lessThan(0),
+      expect(tester.getTopLeft(find.text('c1')).dy, lessThan(0),
           reason: 'the conversions row is still collapsed');
 
       await tester.tap(_conversionsExpandToggleFinder);
       await tester.pumpAndSettle();
-      expect(tester.getTopLeft(find.text('Conv 1')).dy, greaterThan(0));
+      expect(tester.getTopLeft(find.text('c1')).dy, greaterThan(0));
       expect(find.bySemanticsLabel(testConversionsCollapseToggleSemantics),
           findsOneWidget);
 
@@ -947,7 +1020,8 @@ void main() {
             conversionsExpandToggleSemanticsLabelBuilder: null,
             conversionsCollapseToggleSemanticsLabel: null,
             aiSuggestions: overflow('Smart', SuggestionKind.predictive),
-            conversionSuggestions: overflow('Conv', SuggestionKind.conversion),
+            conversionSuggestions:
+                overflow('Conv', SuggestionKind.conversion, valuePrefix: 'c'),
           ));
       await tester.pumpAndSettle();
 
@@ -1141,11 +1215,12 @@ class _TwoRowHostState extends State<_TwoRowHost> {
     setState(() => generation++);
   }
 
-  List<SuggestionData> _list(String prefix) => List.generate(
+  List<SuggestionData> _list(String prefix, {String valuePrefix = ''}) =>
+      List.generate(
         widget.overflow ? 5 : 1,
         (index) => SuggestionData(
           label: '$prefix${widget.overflow ? ' $index' : ''}',
-          value: '$generation',
+          value: '$valuePrefix$generation',
           onTap: () {},
         ),
       );
@@ -1157,7 +1232,7 @@ class _TwoRowHostState extends State<_TwoRowHost> {
         layout: layout,
         secondRowHidden: secondRowHidden,
         aiSuggestions: _list('Area:'),
-        conversionSuggestions: _list('Conv:'),
+        conversionSuggestions: _list('Conv:', valuePrefix: 'c'),
         onExpandedChanged: (expanded) => lastExpanded = expanded,
       ),
     );

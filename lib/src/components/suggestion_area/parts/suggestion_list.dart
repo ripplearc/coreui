@@ -84,6 +84,7 @@ class _SuggestionList extends StatefulWidget {
   final String collapseToggleSemanticsLabel;
   final String bindSuffix;
   final Widget? leadingWidget;
+  final bool isSecondary;
 
   const _SuggestionList({
     super.key,
@@ -95,6 +96,7 @@ class _SuggestionList extends StatefulWidget {
     required this.collapseToggleSemanticsLabel,
     required this.bindSuffix,
     this.leadingWidget,
+    this.isSecondary = false,
   });
 
   @override
@@ -157,10 +159,12 @@ class _SuggestionListState extends State<_SuggestionList> {
           final isBind = data.kind == SuggestionKind.bind;
           final isMemory = data.kind == SuggestionKind.memory;
           final unit = data.unit;
+          final hidesLabel =
+              widget.isSecondary || (isMemory && data.label.isEmpty);
           return CoreChip(
             key: ValueKey(
                 '${data.label}_${data.value}_${data.unit}_${data.kind.name}_${entry.key}'),
-            label: isMemory && data.label.isEmpty ? null : data.label,
+            label: hidesLabel ? null : data.label,
             icon: isMemory ? CoreIcons.history : null,
             value: isBind && unit == null
                 ? '${data.value} ${widget.bindSuffix}'
@@ -183,7 +187,7 @@ class _SuggestionListState extends State<_SuggestionList> {
               }
             },
             isSmartChip: true,
-            size: CoreChipSize.large,
+            size: widget.isSecondary ? CoreChipSize.mini : CoreChipSize.large,
           );
         }),
         _ToggleButton(
