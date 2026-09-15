@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 part 'parts/ai_toggle.dart';
+part 'parts/conversions_tag.dart';
 part 'parts/suggestion_list.dart';
 part 'parts/toggle_button.dart';
 
@@ -15,8 +16,10 @@ enum CoreSuggestionLayout {
   toggle,
 
   /// Two rows, both visible at once with independent overflow: row 1 is the
-  /// rung that fired (Area / Sheets / Cost…), row 2 is unit conversions of the
-  /// value on screen. No toggle. The calculator's default (prototype
+  /// rung that fired (Area / Sheets / Cost…) at full size, row 2 is unit
+  /// conversions of the value on screen as a visibly secondary row — one
+  /// leading [CoreSuggestionArea.conversionsRowTagLabel] tag, then value-only
+  /// [CoreChipSize.mini] chips. No toggle. The calculator's default (prototype
   /// `strip: 'tworow'`).
   twoRows,
 }
@@ -29,7 +32,11 @@ enum CoreSuggestionLayout {
 /// calculator's two-row presentation, where the primary row and the
 /// conversions row are visible together and overflow independently;
 /// [secondRowHidden] lets the app fold the conversions row away when the
-/// dependent-key band under the value needs the space.
+/// dependent-key band under the value needs the space. In two rows the
+/// conversions row is the secondary one: a leading [conversionsRowTagLabel]
+/// tag says "conversion" once, so its chips carry only the re-expressed value
+/// at [CoreChipSize.mini], and the row announces [conversionsRowSemanticsLabel]
+/// as a group.
 ///
 /// Each [SuggestionData] carries a [SuggestionKind]; a [SuggestionKind.bind]
 /// offer renders with the dashed [CoreChipOutline.dashed] look and a trailing
@@ -54,11 +61,22 @@ class CoreSuggestionArea extends StatefulWidget {
     this.secondRowHidden = false,
     this.conversionsExpandToggleSemanticsLabelBuilder,
     this.conversionsCollapseToggleSemanticsLabel,
+    this.conversionsRowTagLabel = defaultConversionsRowTagLabel,
+    this.conversionsRowSemanticsLabel = defaultConversionsRowSemanticsLabel,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
   static const String defaultSuggestionAreaPlaceholder =
       'Here you can see smart suggestions from us';
+
+  /// The default text of the tag that leads the conversions row in
+  /// [CoreSuggestionLayout.twoRows].
+  static const String defaultConversionsRowTagLabel = 'as';
+
+  /// The default group label the conversions row announces in
+  /// [CoreSuggestionLayout.twoRows].
+  static const String defaultConversionsRowSemanticsLabel =
+      'Convert to other units';
 
   /// Duration of every size transition in the area — expanding a row, folding
   /// the conversions row away, the container itself. Matches the display
@@ -136,6 +154,21 @@ class CoreSuggestionArea extends StatefulWidget {
   /// [CoreSuggestionLayout.toggle].
   final String? conversionsCollapseToggleSemanticsLabel;
 
+  /// Text of the tag that leads the conversions row in
+  /// [CoreSuggestionLayout.twoRows] — a small ruler icon and this word, so
+  /// "conversion" is said once for the row and its chips show only the
+  /// re-expressed value ("as 264in 7.33yd"). Decorative: excluded from
+  /// semantics, the row's [conversionsRowSemanticsLabel] speaks instead.
+  /// Defaults to [defaultConversionsRowTagLabel]; override it per locale.
+  /// Ignored in [CoreSuggestionLayout.toggle].
+  final String conversionsRowTagLabel;
+
+  /// Group label a screen reader announces on entering the conversions row
+  /// in [CoreSuggestionLayout.twoRows], giving its value-only chips their
+  /// context. Defaults to [defaultConversionsRowSemanticsLabel]; override it
+  /// per locale. Ignored in [CoreSuggestionLayout.toggle].
+  final String conversionsRowSemanticsLabel;
+
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
@@ -205,6 +238,7 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     Widget? leadingWidget,
     String Function(int hiddenCount)? expandToggleSemanticsLabelBuilder,
     String? collapseToggleSemanticsLabel,
+    bool isSecondary = false,
   }) {
     return _SuggestionList(
       key: key,
@@ -218,6 +252,7 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
           collapseToggleSemanticsLabel ?? widget.collapseToggleSemanticsLabel,
       bindSuffix: widget.bindSuffix,
       leadingWidget: leadingWidget,
+      isSecondary: isSecondary,
     );
   }
 
@@ -281,16 +316,24 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
         ),
         _animatedSize(
           child: showSecondRow
-              ? _buildRow(
-                  key: const ValueKey('suggestion_row_conversions'),
-                  suggestions: widget.conversionSuggestions,
-                  isExpanded: _isSecondaryExpanded,
-                  onExpandedChanged: (expanded) =>
-                      _setExpanded(secondary: expanded),
-                  expandToggleSemanticsLabelBuilder:
-                      widget.conversionsExpandToggleSemanticsLabelBuilder,
-                  collapseToggleSemanticsLabel:
-                      widget.conversionsCollapseToggleSemanticsLabel,
+              ? Semantics(
+                  container: true,
+                  explicitChildNodes: true,
+                  label: widget.conversionsRowSemanticsLabel,
+                  child: _buildRow(
+                    key: const ValueKey('suggestion_row_conversions'),
+                    suggestions: widget.conversionSuggestions,
+                    isExpanded: _isSecondaryExpanded,
+                    onExpandedChanged: (expanded) =>
+                        _setExpanded(secondary: expanded),
+                    leadingWidget:
+                        _ConversionsTag(label: widget.conversionsRowTagLabel),
+                    expandToggleSemanticsLabelBuilder:
+                        widget.conversionsExpandToggleSemanticsLabelBuilder,
+                    collapseToggleSemanticsLabel:
+                        widget.conversionsCollapseToggleSemanticsLabel,
+                    isSecondary: true,
+                  ),
                 )
               : const SizedBox.shrink(),
         ),

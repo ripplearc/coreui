@@ -7,7 +7,8 @@ import 'core_chip_theme.dart';
 ///
 /// [small] and [medium] share the same visual appearance (light grey
 /// background, no shadow). [large] uses a white/inverse background with a
-/// drop shadow.
+/// drop shadow. [mini] is the large chip's secondary form: the same surface
+/// and outline at the medium chip's height, with no shadow.
 enum CoreChipSize {
   /// Small size variant.
   small,
@@ -17,6 +18,13 @@ enum CoreChipSize {
 
   /// Large size variant.
   large,
+
+  /// The large chip's secondary form: its page-background surface and
+  /// `lineMid` outline at the medium chip's padding, no shadow, and a
+  /// semibold value instead of the heavy unit. The value-only chips on the
+  /// conversions row of a two-row [CoreSuggestionArea] (calculator prototype
+  /// `sc-mini`), which read as a quieter echo of the full-size row above.
+  mini,
 }
 
 /// The outline style of a [CoreChip].
@@ -44,7 +52,9 @@ enum CoreChipOutline {
 ///
 /// ## Sizes
 /// [CoreChipSize.small] and [CoreChipSize.medium] share the same visual.
-/// [CoreChipSize.large] uses a white surface with a drop shadow.
+/// [CoreChipSize.large] uses a white surface with a drop shadow, and
+/// [CoreChipSize.mini] keeps that surface at the medium height without the
+/// shadow. Text styles are resolved per size by [CoreChipTheme].
 ///
 /// ## Outline
 /// [CoreChipOutline.dashed] swaps the solid border for a dashed offer outline
@@ -303,10 +313,10 @@ class _CoreChipState extends State<CoreChip> {
                                                   Flexible(
                                                     child: Text(
                                                       label,
-                                                      style: typography
-                                                          .bodyMediumMedium
-                                                          .copyWith(
-                                                        color: colors.textBody,
+                                                      style: CoreChipTheme
+                                                          .labelStyle(
+                                                        typography: typography,
+                                                        colors: colors,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -323,10 +333,11 @@ class _CoreChipState extends State<CoreChip> {
                                                   Flexible(
                                                     child: Text(
                                                       value,
-                                                      style: typography
-                                                          .bodyMediumMedium
-                                                          .copyWith(
-                                                        color: colors.textDark,
+                                                      style: CoreChipTheme
+                                                          .valueStyle(
+                                                        size: widget.size,
+                                                        typography: typography,
+                                                        colors: colors,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -337,12 +348,11 @@ class _CoreChipState extends State<CoreChip> {
                                                   Flexible(
                                                     child: Text(
                                                       unit,
-                                                      style: typography
-                                                          .bodyMediumSemiBold
-                                                          .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                        color: colors.textDark,
+                                                      style: CoreChipTheme
+                                                          .unitStyle(
+                                                        size: widget.size,
+                                                        typography: typography,
+                                                        colors: colors,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,

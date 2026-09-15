@@ -25,11 +25,11 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 960x192 @ 2.0 => 480x96 logical: one row of a highlight large, a solid
-    // large, a dashed large and a dashed medium chip (64 tall including the
-    // chip's own space2 vertical padding) with space4 padding and no dead
-    // space.
-    tester.view.physicalSize = const Size(960, 192);
+    // 1120x192 @ 2.0 => 560x96 logical: one row of a highlight large, a solid
+    // large, a dashed large, a dashed medium and a solid mini chip (64 tall
+    // including the chip's own space2 vertical padding) with space4 padding
+    // and no dead space.
+    tester.view.physicalSize = const Size(1120, 192);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -76,6 +76,13 @@ void main() {
                   selected: unselected,
                   size: CoreChipSize.medium,
                   outline: CoreChipOutline.dashed,
+                ),
+                const SizedBox(width: CoreSpacing.space3),
+                CoreChip(
+                  value: '264',
+                  unit: 'in',
+                  selected: unselected,
+                  size: CoreChipSize.mini,
                 ),
               ],
             ),

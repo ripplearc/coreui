@@ -342,6 +342,54 @@ void main() {
       expect(find.byType(CoreChip), findsNWidgets(2));
     });
 
+    testWidgets('the conversions row announces its group label, not the tag',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(tester, twoRowArea());
+
+      expect(
+        find.bySemanticsLabel(
+            CoreSuggestionArea.defaultConversionsRowSemanticsLabel),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(CoreSuggestionArea.defaultConversionsRowTagLabel),
+        findsNothing,
+        reason: 'the tag is decorative; the row label gives the context',
+      );
+      expect(find.bySemanticsLabel('264 in'), findsOneWidget,
+          reason: 'a value-only chip still announces its value and unit');
+    });
+
+    testWidgets('conversionsRowSemanticsLabel is configurable',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: twoRowArea().aiSuggestions,
+            conversionSuggestions: twoRowArea().conversionSuggestions,
+            conversionsRowSemanticsLabel: 'In andere Einheiten umrechnen',
+          ));
+
+      expect(
+        find.bySemanticsLabel('In andere Einheiten umrechnen'),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(
+            CoreSuggestionArea.defaultConversionsRowSemanticsLabel),
+        findsNothing,
+      );
+    });
+
     testWidgets('each row announces its own overflow controls',
         (WidgetTester tester) async {
       await setupA11yTest(

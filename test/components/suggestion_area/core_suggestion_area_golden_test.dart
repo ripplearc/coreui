@@ -365,9 +365,10 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 1236x384 @ 3.0 => 412x128 logical: the primary row over the conversions
-    // row, each 64 tall (48 chip + its own space2 vertical padding).
-    tester.view.physicalSize = const Size(1236, 384);
+    // 1236x348 @ 3.0 => 412x116 logical: the 62-tall primary row (large chips
+    // plus their own space2 vertical padding) over the 54-tall conversions row
+    // (the `as` tag and mini chips), with no dead space.
+    tester.view.physicalSize = const Size(1236, 348);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();

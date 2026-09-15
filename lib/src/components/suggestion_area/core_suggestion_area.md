@@ -51,6 +51,8 @@ CoreSuggestionArea(
 | `secondRowHidden` | `bool` | No | `false` | In `twoRows`, folds the conversions row away (an `AnimatedSize` over `CoreSuggestionArea.animationDuration`, 300 ms) so the display area's dependent-key band can take the space. Ignored in `toggle`. |
 | `conversionsExpandToggleSemanticsLabelBuilder` | `String Function(int count)?` | No | `null` | In `twoRows`, semantics label for the conversions row's expand control, so a screen reader can tell it from the primary row's. Falls back to `expandToggleSemanticsLabelBuilder`. Ignored in `toggle`. |
 | `conversionsCollapseToggleSemanticsLabel` | `String?` | No | `null` | In `twoRows`, semantics label for the conversions row's collapse control. Falls back to `collapseToggleSemanticsLabel`. Ignored in `toggle`. |
+| `conversionsRowTagLabel` | `String` | No | `'as'` | In `twoRows`, the word of the tag (ruler icon + text) that leads the conversions row, so "conversion" is said once and the chips show only their value. Decorative — excluded from semantics. Override per locale. Ignored in `toggle`. |
+| `conversionsRowSemanticsLabel` | `String` | No | `'Convert to other units'` | In `twoRows`, the group label a screen reader announces on entering the conversions row, giving its value-only chips their context. Override per locale. Ignored in `toggle`. |
 
 ### SuggestionData
 
@@ -70,7 +72,7 @@ CoreSuggestionArea(
 | `deterministic` | A rule fired from named dimensions (Area from Length × Width). | Adds a result. | `CoreChipOutline.highlight` — 2 px `lineHighlight` outline |
 | `predictive` | A context proposal (material count, cost, weight, recent value). | Adds a result. | Solid |
 | `bind` | An offer to name an orphan value (`Height: 8ft ?`). | Relabels the existing chip instead of adding one. | `CoreChipOutline.dashed` — dashed `outlineFocus` outline + trailing `bindSuffix` |
-| `conversion` | The value on screen re-expressed in another unit. | Replaces the value in place. | Solid |
+| `conversion` | The value on screen re-expressed in another unit. | Replaces the value in place. | Solid; on the `twoRows` conversions row every chip is a value-only `CoreChipSize.mini` behind the row's `as` tag |
 | `memory` | A value recalled from the calculator's memory slots (M1–M3). | Adds a result. | Solid, leading `CoreIcons.history` icon; an empty `label` shows the value alone |
 
 The looks follow the Figma **Suggestion Strip Chip** component set (Design System page, node `66225:151222`, variants `Deterministic` / `Predictive` / `Conversion` / `Bind` / `Memory`): every strip chip is the plain 48 px chip, `Deterministic` adds a 2 px highlight outline, `Bind` a dashed teal outline, `Memory` a leading history icon; the spec's 1.5 px / 4-3 dash is rendered here at the chip's 1 px / 4-4 dash. `predictive` and `conversion` exist so the app can attach the right accept behaviour without re-deriving it from the label text. The dashed look reuses `CoreDashedBorderDecoration` from `CoreCalculatorChip`'s dashed variant.
@@ -80,11 +82,11 @@ The looks follow the Figma **Suggestion Strip Chip** component set (Design Syste
 | Layout | Rows | Toggle | Overflow | When |
 | :--- | :--- | :--- | :--- | :--- |
 | `toggle` (default) | One | Shown when both lists are provided | One `+N` chip for the visible list | The original layout; the calculator keeps it behind its "Strip layout" preference |
-| `twoRows` | Row 1 `aiSuggestions` (the rung that fired), row 2 `conversionSuggestions` | Never | Each row has its own `+N` chip and expands on its own | The calculator's default (prototype `strip: 'tworow'`) |
+| `twoRows` | Row 1 `aiSuggestions` (the rung that fired) at full size, row 2 `conversionSuggestions` as a secondary row: one `as` tag, then value-only `mini` chips | Never | Each row has its own `+N` chip and expands on its own | The calculator's default (prototype `strip: 'tworow'`) |
 
 In `twoRows` a single non-empty list renders as a single row (no empty shelf), and `onExpandedChanged` reports `true` while **either** row is expanded and `false` once both are collapsed. `secondRowHidden` animates row 2 out over `CoreSuggestionArea.animationDuration` — the same 300 ms as the display area's stage transitions, so the two surfaces move together — and collapses it if it was expanded; with only conversions present and the row hidden, the placeholder shows. Pass `conversionsExpandToggleSemanticsLabelBuilder` and `conversionsCollapseToggleSemanticsLabel` so a screen-reader user hears which row a `+N` control belongs to; without them the conversions row reuses the primary row's labels.
 
-Row 2 follows the Figma calculator frames (`61933:62752`, `61665:80039`): standard 48 px chips, each prefixed `Conv:`, with no leading row icon. The prototype instead renders row 2 as value-only mini chips behind a single "as" tag; that treatment is not in Figma, so adopting it is a design decision rather than a follow-up of this component.
+Row 2 follows the calculator prototype's two-row strip (design decision, 2026-09-15): a leading tag — `CoreIcons.ruler` at `space4` in `iconGrayMid` plus `conversionsRowTagLabel` in `bodySmallRegular` — says "conversion" once for the row, and every chip on it is a value-only `CoreChipSize.mini` (the large chip's surface and outline at the medium height, semibold value, no shadow), so the row reads as a quieter echo of the full-size row above. The tag is excluded from semantics; the row is a semantics container labelled `conversionsRowSemanticsLabel`, and each chip still announces its value and unit (or its `semanticsLabel`). Figma differs here: its Suggestion Strip Chip `Conversion` variant (`66225:151222`) is a full 48 px chip labelled `as`, and the older calculator frames (`61933:62752`, `61665:80039`) show 48 px `Conv:` chips built from the generic Smart Chip; the prototype's secondary treatment is what the product owner chose. The `toggle` layout keeps full-size labelled conversion chips behind the ruler side of the switch, as the prototype does.
 
 ## Features
 
@@ -137,6 +139,8 @@ CoreSuggestionArea(
   collapseToggleSemanticsLabel: 'Collapse',
   conversionsExpandToggleSemanticsLabelBuilder: (count) => 'Show $count more conversions',
   conversionsCollapseToggleSemanticsLabel: 'Collapse conversions',
+  conversionsRowTagLabel: 'as',                              // row 2 reads: [ruler] as  264in  7.33yd
+  conversionsRowSemanticsLabel: 'Convert to other units',
   toggleSemanticsLabel: 'Toggle suggestion mode',
 )
 ```
