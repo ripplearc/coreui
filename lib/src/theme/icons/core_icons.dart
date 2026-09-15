@@ -42,6 +42,7 @@ class CoreIcons {
   static const add = CoreMaterialIcons.add;
   static const minus = CoreMaterialIcons.minus;
   static const edit = CoreMaterialIcons.edit;
+  static const swapHorizontal = CoreMaterialIcons.swapHorizontal;
   static const delete = CoreIconData.svg(CoreSvgIcons.delete); // SVG version
   static const rename = CoreIconData.svg(CoreSvgIcons.rename); // SVG version
   static const close = CoreMaterialIcons.close;
