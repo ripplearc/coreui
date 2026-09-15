@@ -357,4 +357,99 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  Future<void> pumpTwoRows(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 1236x348 @ 3.0 => 412x116 logical: the 62-tall primary row (large chips
+    // plus their own space2 vertical padding) over the 54-tall conversions row
+    // (the `as` tag and mini chips), with no dead space.
+    tester.view.physicalSize = const Size(1236, 348);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: [
+              SuggestionData(
+                label: 'Area:',
+                value: '410.67',
+                unit: 'ft²',
+                kind: SuggestionKind.deterministic,
+                onTap: () {},
+              ),
+              SuggestionData(
+                label: 'Cost:',
+                value: '\$84.25',
+                kind: SuggestionKind.predictive,
+                onTap: () {},
+              ),
+            ],
+            conversionSuggestions: [
+              SuggestionData(
+                label: 'Conv:',
+                value: '264',
+                unit: 'in',
+                kind: SuggestionKind.conversion,
+                onTap: () {},
+              ),
+              SuggestionData(
+                label: 'Conv:',
+                value: '7.33',
+                unit: 'yd',
+                kind: SuggestionKind.conversion,
+                onTap: () {},
+              ),
+              SuggestionData(
+                label: 'Conv:',
+                value: '6.71',
+                unit: 'm',
+                kind: SuggestionKind.conversion,
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+  }
+
+  testWidgets('SuggestionArea two rows Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpTwoRows(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_two_rows_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('SuggestionArea two rows Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpTwoRows(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_two_rows_dark.png'),
+    );
+    debugDisableShadows = true;
+  });
 }
