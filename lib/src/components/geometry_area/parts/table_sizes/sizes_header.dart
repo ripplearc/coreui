@@ -8,7 +8,7 @@ class _SizesHeader extends StatelessWidget {
   });
 
   final String titleLabel;
-  final String addSizeLabel;
+  final String? addSizeLabel;
   final VoidCallback? onAddTap;
 
   @override
@@ -32,34 +32,36 @@ class _SizesHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: CoreSpacing.space1),
-          Semantics(
-            button: true,
-            label: addSizeLabel,
-            excludeSemantics: true,
-            child: GestureDetector(
-              onTap: onAddTap,
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: CoreIconWidget(
-                      icon: CoreIcons.add,
-                      color: colors.iconDark,
-                      size: CoreIconSize.size24,
+          if (onAddTap != null && addSizeLabel != null) ...[
+            const SizedBox(width: CoreSpacing.space1),
+            Semantics(
+              button: true,
+              label: addSizeLabel,
+              excludeSemantics: true,
+              child: GestureDetector(
+                onTap: onAddTap,
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ExcludeSemantics(
+                      child: CoreIconWidget(
+                        icon: CoreIcons.add,
+                        color: colors.iconDark,
+                        size: CoreIconSize.size24,
+                      ),
                     ),
-                  ),
-                  Text(
-                    addSizeLabel,
-                    style: typography.bodyMediumSemiBold.copyWith(
-                      color: colors.textLink,
+                    Text(
+                      addSizeLabel ?? '',
+                      style: typography.bodyMediumSemiBold.copyWith(
+                        color: colors.textLink,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
