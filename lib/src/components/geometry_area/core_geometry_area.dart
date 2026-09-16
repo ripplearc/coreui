@@ -94,6 +94,12 @@ class CoreSizesTableData {
           onAdd == null || addLabel != null,
           'CoreSizesTableData: onAdd has no effect without addLabel, which is '
           'what renders the add action.',
+        ),
+        assert(
+          addLabel == null || onAdd != null || onSaved != null,
+          'CoreSizesTableData: addLabel needs onAdd or onSaved to act on. '
+          'With neither, the add action has nothing to do and is not rendered, '
+          'so the label would silently go missing.',
         );
 
   /// The title displayed above the table.
@@ -131,9 +137,11 @@ class CoreSizesTableData {
   /// from the app layer.
   final String? dragHandleLabel;
 
-  /// Invoked when the user taps this table's add action.
+  /// Invoked when the user taps this table's add action, taking ownership of
+  /// the add flow.
   ///
-  /// When null the add action is not rendered.
+  /// When null the add action falls back to the built-in entry sheet, which
+  /// reports through [onSaved]. [addLabel] is what renders the action at all.
   final VoidCallback? onAdd;
 
   /// Invoked when the user saves a row from the entry bottom sheet.
@@ -304,7 +312,17 @@ class CoreGeometryArea extends StatelessWidget {
           for (final table in tables)
             if (table.columns.isNotEmpty) ...[
               const SizedBox(height: CoreSpacing.space2),
-              _SizesTable(table: table),
+              // Keyed on the column titles, which identify the table
+              // structurally and stay put while its own title interpolates a
+              // changing result. Without a key the tables are matched by
+              // position, so removing one would hand its drop-highlight state
+              // to an unrelated table.
+              _SizesTable(
+                key: ValueKey(
+                  table.columns.map((column) => column.title).join('|'),
+                ),
+                table: table,
+              ),
             ],
           const SizedBox(height: CoreSpacing.space2),
           _AttachmentsSection(

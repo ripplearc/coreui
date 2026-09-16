@@ -17,7 +17,7 @@ class _TableLayout {
 }
 
 class _SizesTable extends StatefulWidget {
-  const _SizesTable({required this.table});
+  const _SizesTable({super.key, required this.table});
 
   final CoreSizesTableData table;
 
@@ -63,12 +63,12 @@ class _SizesTableState extends State<_SizesTable> {
 
   static const _highlightDuration = 500;
 
-  /// The column header strings, in display order.
+  // The column header strings, in display order.
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
 
-  /// Opens the entry sheet, pre-filled when [row] is given, and reports the
-  /// result to the table's `onSaved`.
+  // Opens the entry sheet, pre-filled when a row is given, and reports the
+  // result to the table's onSaved.
   Future<void> _openEntrySheet({CoreSizeCardData? row, int? index}) async {
     final table = widget.table;
     final result = await SizeEntryBottomSheet.show(
@@ -84,9 +84,9 @@ class _SizesTableState extends State<_SizesTable> {
     }
   }
 
-  /// Builds one card per row. Rows keep their [Dismissible] and semantics
-  /// wrappers whether or not the table is reorderable, so swipe-to-delete
-  /// works on static tables too.
+  // Builds one card per row. Rows keep their Dismissible and semantics
+  // wrappers whether or not the table is reorderable, so swipe-to-delete
+  // works on static tables too.
   List<Widget> _buildRows(
     BuildContext context,
     _TableLayout layout,
@@ -102,11 +102,15 @@ class _SizesTableState extends State<_SizesTable> {
 
       return Semantics(
         key: ValueKey(row.id),
-        customSemanticsActions: {
-          if (table.onDeleted != null)
-            CustomSemanticsAction(label: localizations.deleteButtonTooltip):
-                () => table.onDeleted?.call(row.id),
-        },
+        // An empty map still sets SemanticsAction.customAction, which makes a
+        // read-only row announce "actions available" and open an empty menu,
+        // so pass null when there is nothing to offer.
+        customSemanticsActions: table.onDeleted == null
+            ? null
+            : {
+                CustomSemanticsAction(label: localizations.deleteButtonTooltip):
+                    () => table.onDeleted?.call(row.id),
+              },
         child: Dismissible(
           // 'dismiss_' prefix distinguishes Dismissible's key from the inner
           // Semantics key; ReorderableListView uses the Dismissible key for

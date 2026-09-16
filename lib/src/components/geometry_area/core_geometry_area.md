@@ -7,11 +7,11 @@ A robust, multi-faceted component used to display geometry properties, configura
 `CoreGeometryArea` provides an interactive, stateful interface designed to sit above or alongside a software keyboard. It is split into logical vertical sections: Dimensions, Sizes Table, and Attachments. The component supports an expandable/collapsible state to manage screen real estate effectively.
 
 ### Key Features
-- **Expandable Dimensions**: The top section displays high-level calculated metrics (e.g., Area, Diameter, Radius) passing through `CoreDimensionData`. An expand/collapse toggle controls visibility of the underlying data table and attachments.
+- **Expandable Dimensions**: The top section displays high-level calculated metrics (e.g., Area, Diameter, Radius) passing through `CoreDimensionData`. An expand/collapse toggle controls how many dimension cards are shown.
 - **Multiple Interactive Tables**: Renders one table per `CoreSizesTableData` entry in `tables`, each with its own title, columns, rows and callbacks. Every callback is optional, and a null callback hides the affordance it drives:
   - **Drag-and-Drop Reordering**: Available only when `onReordered` is provided; otherwise no drag handles render.
   - **Swipe-to-Delete**: Available only when `onDeleted` is provided.
-  - **Add**: The add action renders only when `addLabel` is set.
+  - **Add**: The add action renders when `addLabel` is set, and needs `onAdd` or `onSaved` to act on.
 
   That lets the same widget express a reorderable, extendable sizes table and a fixed, read-only rates table side by side.
 - **Attachments Section**: An integrated section at the bottom to host action buttons for Media, Documents, and a View All callback for external file management.
@@ -98,11 +98,11 @@ CoreGeometryArea(
 
 ## Behavior & Interaction Mechanics
 
-- **Collapsing**: When `isCollapsed` is true, the GeometryArea hides the tables and attachments section, leaving only the primary dimensions summary visible. A visual indicator (arrow icon) animates to reflect the state.
+- **Collapsing**: `isCollapsed` affects the dimensions section only. When true, the dimensions grid is truncated to its first two cards behind a fade; the tables and the attachments section always render. A visual indicator (arrow icon) animates to reflect the state.
 - **Drag Reordering**: Powered by `ReorderableListView`, and only when a table supplies `onReordered`. When a card is dragged, it elevates visually (shadow & border); `onReordered` provides standard `oldIndex` and `newIndex` integers to sync backend state. A table without `onReordered` renders a plain column with no drag handles.
 - **Swipe Deletion**: Utilizing `Dismissible`, cards can be swiped horizontally when a table supplies `onDeleted`. Triggering a full swipe fires `onDeleted` passing the unique string ID.
 - **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `SizeEntryBottomSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
-- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` with `onSaved`, `addLabel` with `onAdd`. This fails loudly in debug rather than shipping an unlabelled drag handle or a titleless entry sheet.
+- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` with `onSaved`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
 
 ---
 
@@ -111,7 +111,7 @@ CoreGeometryArea(
 ### Layout & Text Properties
 | Property | Type | Default         | Description |
 | :--- | :--- |:----------------| :--- |
-| `isCollapsed` | `bool` | `true`          | When true, hides the tables and attachments section. |
+| `isCollapsed` | `bool` | `true`          | When true, truncates the dimensions grid to two cards. Does not hide the tables or attachments. |
 | `dimensionsLabel` | `String` | `'Dimensions'`  | Title for the top dimensions summary section. |
 | `expandLabel` | `String` | `'Expand'`      | Semantic label applied to the expand/collapse toggle icon. |
 | `collapseLabel` | `String` | `'Collapse'`    | Semantic label applied to the toggle in its expanded state. |
@@ -139,7 +139,7 @@ CoreGeometryArea(
 | `title` | `String` | required | The table's header title. Normally interpolates the result it describes, e.g. `'Sheet quantities for 180ft²'`, so it has no default — pass a localised string. |
 | `columns` | `List<CoreSizesColumn>` | required | The columns, in display order. Each row must supply one value per column. |
 | `rows` | `List<CoreSizeCardData>` | required | Ordered rows. Identifiers must be unique within the table to support reliable reordering. |
-| `addLabel` | `String?` | `null` | Text for the add action. The action renders only when this is set. Required with `onAdd`. |
+| `addLabel` | `String?` | `null` | Text for the add action, which renders only when this is set. Requires `onAdd` or `onSaved` to act on. |
 | `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. Required with `onSaved`. |
 | `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |
 | `onAdd` | `VoidCallback?` | `null` | If provided, the app owns the add flow and the built-in entry sheet is not opened. |
