@@ -22,9 +22,10 @@
     localization ownership to the consuming app
 - **Affordances are now driven by their callbacks.** A table renders drag handles
   only when `onReordered` is given, allows swipe-to-delete only when `onDeleted`
-  is given, and shows the add action only when `addLabel` is set. Previously drag
-  handles and the add action rendered unconditionally and a swipe was always
-  armed, even with no callback to receive it
+  is given, and shows the add action only when `addLabel` is set, which in turn
+  needs `onAdd` or `onSaved` to act on. Previously drag handles and the add
+  action rendered unconditionally and a swipe was always armed, even with no
+  callback to receive it
   - Migration: a table that should stay reorderable or deletable must pass those
     callbacks explicitly
 
@@ -44,6 +45,9 @@
   its id
 - Coverage for each affordance disappearing with its callback — hidden drag
   handles, hidden add action
+- Each user-facing label is asserted alongside the callback that makes it
+  reachable, so a nullable label cannot silently ship an unlabelled drag handle
+  or a titleless entry sheet
 - Golden and a11y fixtures moved onto shared table builders; the drag and delete
   goldens now pass the callbacks their affordances require
 

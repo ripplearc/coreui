@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -328,6 +329,38 @@ void main() {
 
       expect(deleted, ['a']);
       expect(find.text('A1'), findsNothing);
+    });
+
+    testWidgets('a read-only row advertises no custom semantics actions',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              columnTitles: const ['Per unit'],
+              rows: const [
+                CoreSizeCardData(id: 'ft3', values: [r'$6.5']),
+              ],
+            ),
+          ],
+        )),
+      );
+
+      // An empty customSemanticsActions map still sets
+      // SemanticsAction.customAction, which makes a screen reader offer an
+      // empty actions menu on every read-only row.
+      expect(
+        tester.getSemantics(find.text(r'$6.5')).getSemanticsData().hasAction(
+              SemanticsAction.customAction,
+            ),
+        isFalse,
+      );
+
+      handle.dispose();
     });
 
     group('label and callback pairing', () {
