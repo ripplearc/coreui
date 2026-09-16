@@ -22,6 +22,32 @@ class _GeometryAreaShowcaseScreenState
   /// Extra scroll space reserved so content isn't hidden behind [CoreKeyboard].
   static const double _keyboardScrollBuffer = 350;
 
+  /// A read-only table: with no add, delete or reorder callbacks it renders
+  /// without an add action, drag handles or swipe-to-delete.
+  static const CoreSizesTableData _ratesAndWasteTable = CoreSizesTableData(
+    title: 'Rates & waste for 1,750.7yd³',
+    columns: [
+      CoreSizesColumn(title: 'Per unit'),
+      CoreSizesColumn(title: 'Rate'),
+      CoreSizesColumn(title: 'Waste'),
+      CoreSizesColumn(title: 'Cost'),
+    ],
+    rows: [
+      CoreSizeCardData(
+        id: 'ft3',
+        values: ['ft³', r'$6.5', '0%', r'$307,247.85'],
+      ),
+      CoreSizeCardData(
+        id: 'yd3',
+        values: ['yd³', r'$150', '7%', r'$280,987.35'],
+      ),
+      CoreSizeCardData(
+        id: 'm3',
+        values: ['m³', r'$196', '0%', r'$262,346.78'],
+      ),
+    ],
+  );
+
   static const GroupNameType _basicGeometryGroup = GroupNameType(
     id: 'Basic Geometry',
     label: 'Basic Geometry',
@@ -137,19 +163,31 @@ class _GeometryAreaShowcaseScreenState
                                   ),
                                   CoreGeometryArea(
                                     isCollapsed: false,
-                                    sizesTitleLabel: 'Circle measurements',
-                                    addSizeLabel: 'Add size',
-                                    editSizeLabel: 'Edit size',
-                                    sizesTableTitles: const ['Length', 'Width'],
-                                    sizesTableData: state.sizesTableData,
-                                    onSizeDeleted: (id) =>
-                                        bloc.add(SizeDeleted(id)),
-                                    onSizesReordered: (oldIndex, newIndex) =>
-                                        bloc.add(
-                                      SizesReordered(oldIndex, newIndex),
-                                    ),
-                                    onSizeSaved: (result) =>
-                                        bloc.add(SizeSaved(result)),
+                                    tables: [
+                                      CoreSizesTableData(
+                                        title: 'Circle measurements',
+                                        addLabel: 'Add size',
+                                        editLabel: 'Edit size',
+                                        dragHandleLabel: 'Reorder',
+                                        columns: const [
+                                          CoreSizesColumn(title: 'Length'),
+                                          CoreSizesColumn(title: 'Width'),
+                                        ],
+                                        rows: state.sizesTableData,
+                                        onDeleted: (id) =>
+                                            bloc.add(SizeDeleted(id)),
+                                        onReordered: (oldIndex, newIndex) =>
+                                            bloc.add(
+                                          SizesReordered(oldIndex, newIndex),
+                                        ),
+                                        onSaved: (result) =>
+                                            bloc.add(SizeSaved(result)),
+                                      ),
+                                      // A fixed table: no add, delete or
+                                      // reorder callbacks, so none of those
+                                      // affordances render.
+                                      _ratesAndWasteTable,
+                                    ],
                                     dimensions: state.dimensions,
                                     onViewAllAttachmentsPressed: () {},
                                     onMediaButtonPressed: () {},

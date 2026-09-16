@@ -9,6 +9,7 @@ class _SizeCard extends StatelessWidget {
     required this.layout,
     required this.values,
     required this.dragHandleLabel,
+    required this.isReorderable,
     this.isHighlighted = false,
   }) : assert(
           values.length == layout.columnWidths.length,
@@ -19,7 +20,8 @@ class _SizeCard extends StatelessWidget {
   final int index;
   final _TableLayout layout;
   final List<String> values;
-  final String dragHandleLabel;
+  final String? dragHandleLabel;
+  final bool isReorderable;
   final bool isHighlighted;
 
   static const _borderWidth = 1.5;
@@ -47,26 +49,31 @@ class _SizeCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ReorderableDragStartListener(
-            index: index,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.grab,
-              child: SizedBox(
-                width: layout.leadingSpace - CoreSpacing.space4,
-                child: Center(
-                  child: RotatedBox(
-                    quarterTurns: 1,
-                    child: CoreIconWidget(
-                      icon: CoreIcons.dragIndicator,
-                      size: CoreIconSize.size20,
-                      color: colors.lineDarkOutline,
-                      semanticLabel: dragHandleLabel,
+          if (isReorderable)
+            ReorderableDragStartListener(
+              index: index,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: SizedBox(
+                  width: layout.leadingSpace - CoreSpacing.space4,
+                  child: Center(
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: CoreIconWidget(
+                        icon: CoreIcons.dragIndicator,
+                        size: CoreIconSize.size20,
+                        color: colors.lineDarkOutline,
+                        semanticLabel: dragHandleLabel,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            )
+          else
+            // Keeps the value columns aligned with the header, which always
+            // indents by the full leading space.
+            SizedBox(width: layout.leadingSpace - CoreSpacing.space4),
           ...values.asMap().entries.map(
                 (entry) => Expanded(
                   child: Padding(

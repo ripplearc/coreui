@@ -40,6 +40,105 @@ class CoreSizeCardData {
   int get hashCode => Object.hashAll(values);
 }
 
+/// Describes a single column of a [CoreSizesTableData].
+///
+/// A column is a header title plus, in a later release, whether its cells are
+/// individually editable. Columns whose values are computed from the row carry
+/// no edit affordance.
+class CoreSizesColumn {
+  const CoreSizesColumn({
+    required this.title,
+  });
+
+  /// The header text displayed above this column.
+  ///
+  /// Pass a localised string from the app layer:
+  /// ```dart
+  /// CoreSizesColumn(title: AppLocalizations.of(context).sizeColumnTitle),
+  /// ```
+  final String title;
+}
+
+/// Describes one titled table rendered inside a [CoreGeometryArea].
+///
+/// A [CoreGeometryArea] renders one table per entry in its `tables` list, each
+/// with its own columns, rows and callbacks. Every callback is optional, and a
+/// null callback hides the affordance that drives it: a table with no
+/// [onReordered] renders no drag handles, and a table with no [onAdd] renders
+/// no add action. That lets the same widget express a reorderable, extendable
+/// sizes table and a fixed, read-only rates table.
+class CoreSizesTableData {
+  const CoreSizesTableData({
+    required this.title,
+    required this.columns,
+    required this.rows,
+    this.addLabel,
+    this.editLabel,
+    this.dragHandleLabel,
+    this.onAdd,
+    this.onSaved,
+    this.onDeleted,
+    this.onReordered,
+  });
+
+  /// The title displayed above the table.
+  ///
+  /// Titles normally interpolate the result they describe, e.g.
+  /// `'Sheet quantities for 180ft²'`, so this is required and has no default.
+  /// Pass a localised string from the app layer.
+  final String title;
+
+  /// The columns rendered in this table, in display order.
+  ///
+  /// Each row in [rows] must supply exactly one value per column.
+  final List<CoreSizesColumn> columns;
+
+  /// The data rows displayed in this table.
+  ///
+  /// Identifiers must be unique within the table to support reliable
+  /// reordering.
+  final List<CoreSizeCardData> rows;
+
+  /// The text displayed for this table's add action.
+  ///
+  /// Required in practice whenever [onAdd] is provided, since it labels the
+  /// button. Pass a localised string from the app layer.
+  final String? addLabel;
+
+  /// The title shown by the entry bottom sheet when editing an existing row.
+  ///
+  /// Pass a localised string from the app layer.
+  final String? editLabel;
+
+  /// The semantic label announced for this table's drag handles.
+  ///
+  /// Only meaningful when [onReordered] is provided. Pass a localised string
+  /// from the app layer.
+  final String? dragHandleLabel;
+
+  /// Invoked when the user taps this table's add action.
+  ///
+  /// When null the add action is not rendered.
+  final VoidCallback? onAdd;
+
+  /// Invoked when the user saves a row from the entry bottom sheet.
+  ///
+  /// The parent should update its data by adding a new row or replacing an
+  /// existing one.
+  final void Function(SizeEntryResult result)? onSaved;
+
+  /// Invoked when the user deletes a row, passing the row's id.
+  ///
+  /// When null the row cannot be deleted.
+  final void Function(String id)? onDeleted;
+
+  /// Invoked when the user drags a row to a new position.
+  ///
+  /// The parent should update its data to reflect the new order. When null the
+  /// table renders no drag handles and rows cannot be reordered.
+  final void Function(int oldIndex, int newIndex)? onReordered;
+}
+
 /// Data class for a single dimension to display in the [CoreGeometryArea].
 class CoreDimensionData {
   const CoreDimensionData({
@@ -69,18 +168,6 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the collapse button.
   static const String defaultCollapseLabel = 'Collapse';
 
-  /// The default text shown for the sizes table title.
-  static const String defaultSizesTitleLabel = 'Concrete volumes';
-
-  /// The default text shown for the add size button.
-  static const String defaultAddSizeLabel = 'Add size';
-
-  /// The default text shown for the edit size bottom sheet title.
-  static const String defaultEditSizeLabel = 'Edit size';
-
-  /// The default text shown for the drag handle semantic label.
-  static const String defaultDragHandleLabel = 'Reorder';
-
   /// The default text shown for the attachments section title.
   static const String defaultAttachmentsTitleLabel = 'Attachments';
 
@@ -98,37 +185,17 @@ class CoreGeometryArea extends StatelessWidget {
     this.dimensionsLabel = defaultDimensionsLabel,
     this.expandLabel = defaultExpandLabel,
     this.collapseLabel = defaultCollapseLabel,
-    this.sizesTitleLabel = defaultSizesTitleLabel,
-    this.addSizeLabel = defaultAddSizeLabel,
-    this.editSizeLabel = defaultEditSizeLabel,
     this.attachmentsTitleLabel = defaultAttachmentsTitleLabel,
     this.viewAllAttachmentsLabel = defaultViewAllAttachmentsLabel,
     this.mediaButtonLabel = defaultMediaButtonLabel,
     this.documentButtonLabel = defaultDocumentButtonLabel,
     this.dimensions = const [],
-    this.sizesTableTitles = const [],
-    this.sizesTableData = const [],
+    this.tables = const [],
     this.isCollapsed = true,
-    this.dragHandleLabel = defaultDragHandleLabel,
-    this.onSizesReordered,
-    this.onSizeDeleted,
-    this.onSizeSaved,
     this.onViewAllAttachmentsPressed,
     this.onMediaButtonPressed,
     this.onDocumentButtonPressed,
   });
-
-  /// Optional callback invoked when the user drags and drops a size card to reorder it.
-  /// The parent should update its data list to reflect the new order.
-  final void Function(int oldIndex, int newIndex)? onSizesReordered;
-
-  /// Optional callback invoked when the user swipes a size card to delete it.
-  /// The parent should update its data list to remove the item with the given ID.
-  final void Function(String id)? onSizeDeleted;
-
-  /// Optional callback invoked when the user saves a size from the bottom sheet.
-  /// The parent should update its data list by adding a new item or editing an existing one.
-  final void Function(SizeEntryResult result)? onSizeSaved;
 
   /// The text displayed in the dimensions section.
   ///
@@ -156,33 +223,6 @@ class CoreGeometryArea extends StatelessWidget {
   /// collapseLabel: AppLocalizations.of(context).collapseLabel,
   /// ```
   final String collapseLabel;
-
-  /// The text displayed for the sizes table title.
-  ///
-  /// Defaults to [defaultSizesTitleLabel]. Pass a localised string from
-  /// the app layer:
-  /// ```dart
-  /// sizesTitleLabel: AppLocalizations.of(context).sizesTitleLabel,
-  /// ```
-  final String sizesTitleLabel;
-
-  /// The text displayed for the add size button.
-  ///
-  /// Defaults to [defaultAddSizeLabel]. Pass a localised string from
-  /// the app layer:
-  /// ```dart
-  /// addSizeLabel: AppLocalizations.of(context).addSizeLabel,
-  /// ```
-  final String addSizeLabel;
-
-  /// The text displayed for the edit size bottom sheet title.
-  ///
-  /// Defaults to [defaultEditSizeLabel]. Pass a localised string from
-  /// the app layer:
-  /// ```dart
-  /// editSizeLabel: AppLocalizations.of(context).editSizeLabel,
-  /// ```
-  final String editSizeLabel;
 
   /// The text displayed for the attachments section title.
   ///
@@ -217,29 +257,11 @@ class CoreGeometryArea extends StatelessWidget {
   /// Callback invoked when the user taps on the "Document" button.
   final VoidCallback? onDocumentButtonPressed;
 
-  /// The column header titles displayed in the sizes table.
+  /// The tables rendered below the dimensions section, in display order.
   ///
-  /// Defaults to an empty list (no header row rendered). Pass localised
-  /// strings from the app layer:
-  /// ```dart
-  /// sizesTableTitles: AppLocalizations.of(context).sizeColumnTitles,
-  /// ```
-  final List<String> sizesTableTitles;
-
-  /// The text displayed for the drag handle's semantic label.
-  ///
-  /// Defaults to [defaultDragHandleLabel]. Pass a localised string from
-  /// the app layer:
-  /// ```dart
-  /// dragHandleLabel: AppLocalizations.of(context).dragHandleLabel,
-  /// ```
-  final String dragHandleLabel;
-
-  /// The data rows displayed within the sizes table.
-  ///
-  /// Defaults to an empty list (no data rows rendered). Each entry creates
-  /// a draggable size card under the table header.
-  final List<CoreSizeCardData> sizesTableData;
+  /// Defaults to an empty list (no tables rendered). Each entry is configured
+  /// independently — see [CoreSizesTableData].
+  final List<CoreSizesTableData> tables;
 
   /// The list of dimensions to display.
   final List<CoreDimensionData> dimensions;
@@ -264,20 +286,11 @@ class CoreGeometryArea extends StatelessWidget {
             dimensions: dimensions,
             isCollapsed: isCollapsed,
           ),
-          if (sizesTableTitles.isNotEmpty) ...[
-            const SizedBox(height: CoreSpacing.space2),
-            _SizesTable(
-              sizesTitleLabel: sizesTitleLabel,
-              addSizeLabel: addSizeLabel,
-              editSizeLabel: editSizeLabel,
-              dragHandleLabel: dragHandleLabel,
-              titles: sizesTableTitles,
-              sizesTableData: sizesTableData,
-              onSizesReordered: onSizesReordered,
-              onSizeDeleted: onSizeDeleted,
-              onSizeSaved: onSizeSaved,
-            ),
-          ],
+          for (final table in tables)
+            if (table.columns.isNotEmpty) ...[
+              const SizedBox(height: CoreSpacing.space2),
+              _SizesTable(table: table),
+            ],
           const SizedBox(height: CoreSpacing.space2),
           _AttachmentsSection(
             attachmentsTitleLabel: attachmentsTitleLabel,

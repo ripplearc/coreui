@@ -11,6 +11,32 @@ Future<void> setTestViewport(WidgetTester tester) async {
   tester.view.physicalSize = const ui.Size(1100, 1600);
 }
 
+const String _sizesTitle = 'Concrete volumes';
+const String _addSizeLabel = 'Add size';
+const String _dragHandleLabel = 'Reorder';
+
+/// The fixture table used across the accessibility tests.
+CoreSizesTableData _a11yTable({
+  required List<CoreSizeCardData> rows,
+  void Function(String id)? onDeleted,
+  void Function(int oldIndex, int newIndex)? onReordered,
+}) {
+  return CoreSizesTableData(
+    title: _sizesTitle,
+    addLabel: _addSizeLabel,
+    editLabel: 'Edit size',
+    dragHandleLabel: _dragHandleLabel,
+    columns: const [
+      CoreSizesColumn(title: 'area'),
+      CoreSizesColumn(title: 'volume'),
+    ],
+    rows: rows,
+    onSaved: (_) {},
+    onDeleted: onDeleted,
+    onReordered: onReordered,
+  );
+}
+
 void main() {
   group('CoreGeometryArea – accessibility', () {
     testWidgets('meets basic accessibility guidelines',
@@ -47,10 +73,9 @@ void main() {
           dimensions: [
             const CoreDimensionData(label: 'Area', value: '50.27ft²'),
           ],
-          sizesTableTitles: const ['area', 'volume'],
-          sizesTableData: const [
+          tables: [_a11yTable(rows: const [
             CoreSizeCardData(id: '1', values: ['10', '20']),
-          ],
+          ])],
         ),
         find.byType(CoreGeometryArea),
         checkTapTargetSize: false,
@@ -74,10 +99,15 @@ void main() {
               dimensions: [
                 const CoreDimensionData(label: 'Area', value: '50.27ft²'),
               ],
-              sizesTableTitles: const ['area', 'volume'],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['10', '20']),
-                CoreSizeCardData(id: '2', values: ['30', '40']),
+              tables: [
+                _a11yTable(
+                  rows: const [
+                    CoreSizeCardData(id: '1', values: ['10', '20']),
+                    CoreSizeCardData(id: '2', values: ['30', '40']),
+                  ],
+                  onDeleted: (_) {},
+                  onReordered: (_, __) {},
+                ),
               ],
             ),
           ),
@@ -86,8 +116,8 @@ void main() {
 
       final dimensionsText = find.text(CoreGeometryArea.defaultDimensionsLabel);
       final expandText = find.text(CoreGeometryArea.defaultExpandLabel);
-      final sizesTitleText = find.text(CoreGeometryArea.defaultSizesTitleLabel);
-      final addSizeText = find.text(CoreGeometryArea.defaultAddSizeLabel);
+      final sizesTitleText = find.text(_sizesTitle);
+      final addSizeText = find.text(_addSizeLabel);
       final attachmentsText =
           find.text(CoreGeometryArea.defaultAttachmentsTitleLabel);
       final viewAllText =
@@ -115,14 +145,13 @@ void main() {
       expect(dimSemantics.label, CoreGeometryArea.defaultDimensionsLabel);
 
       final sizesTitleSemantics = tester.getSemantics(sizesTitleText);
-      expect(
-          sizesTitleSemantics.label, CoreGeometryArea.defaultSizesTitleLabel);
+      expect(sizesTitleSemantics.label, _sizesTitle);
 
       final expSemantics = tester.getSemantics(expandText);
       expect(expSemantics.label, CoreGeometryArea.defaultExpandLabel);
 
       final addSizeSemantics = tester.getSemantics(addSizeText);
-      expect(addSizeSemantics.label, CoreGeometryArea.defaultAddSizeLabel);
+      expect(addSizeSemantics.label, _addSizeLabel);
 
       final allIconsFinder = find.byType(CoreIconWidget);
       expect(allIconsFinder, findsNWidgets(8));
@@ -178,7 +207,7 @@ void main() {
             widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
       );
       expect(tester.getSemantics(dragHandleFinder.first).label,
-          startsWith(CoreGeometryArea.defaultDragHandleLabel));
+          startsWith(_dragHandleLabel));
     });
   });
 }
