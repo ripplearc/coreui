@@ -295,6 +295,85 @@ void main() {
       expect(find.text('Add size'), findsNothing);
     });
 
+    testWidgets('a non-reorderable table still supports swipe-to-delete',
+        (tester) async {
+      final deleted = <String>[];
+      final rows = <CoreSizeCardData>[
+        const CoreSizeCardData(id: 'a', values: ['A1', 'A2']),
+        const CoreSizeCardData(id: 'b', values: ['B1', 'B2']),
+      ];
+
+      await tester.pumpWidget(
+        _app(StatefulBuilder(
+          builder: (context, setState) => CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: rows,
+                onDeleted: (id) {
+                  deleted.add(id);
+                  setState(() => rows.removeWhere((r) => r.id == id));
+                },
+              ),
+            ],
+          ),
+        )),
+      );
+
+      expect(_dragHandles, findsNothing);
+
+      await tester.drag(find.text('A1'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+
+      expect(deleted, ['a']);
+      expect(find.text('A1'), findsNothing);
+    });
+
+    group('label and callback pairing', () {
+      test('a reorderable table requires dragHandleLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            title: 'Reorderable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            dragHandleLabel: null,
+            onReordered: (_, __) {},
+          ),
+          throwsAssertionError,
+          reason: 'an unlabelled drag handle announces the row text instead',
+        );
+      });
+
+      test('a table with onSaved requires editLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            title: 'Editable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            editLabel: null,
+            onSaved: (_) {},
+          ),
+          throwsAssertionError,
+          reason: 'the entry sheet would open with no title',
+        );
+      });
+
+      test('onAdd requires addLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            title: 'Addable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            addLabel: null,
+            onAdd: () {},
+          ),
+          throwsAssertionError,
+          reason: 'addLabel is what renders the add action',
+        );
+      });
+    });
+
     testWidgets('hides drag handles when onReordered is null', (tester) async {
       await tester.pumpWidget(
         _app(CoreGeometryArea(

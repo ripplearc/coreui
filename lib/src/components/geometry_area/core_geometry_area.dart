@@ -79,7 +79,22 @@ class CoreSizesTableData {
     this.onSaved,
     this.onDeleted,
     this.onReordered,
-  });
+  })  : assert(
+          onReordered == null || dragHandleLabel != null,
+          'CoreSizesTableData: a reorderable table must supply '
+          'dragHandleLabel, otherwise its drag handles reach screen readers '
+          'unlabelled and announce the row text instead.',
+        ),
+        assert(
+          onSaved == null || editLabel != null,
+          'CoreSizesTableData: a table with onSaved must supply editLabel, '
+          'otherwise tapping a row opens the entry sheet with no title.',
+        ),
+        assert(
+          onAdd == null || addLabel != null,
+          'CoreSizesTableData: onAdd has no effect without addLabel, which is '
+          'what renders the add action.',
+        );
 
   /// The title displayed above the table.
   ///

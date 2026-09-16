@@ -102,6 +102,7 @@ CoreGeometryArea(
 - **Drag Reordering**: Powered by `ReorderableListView`, and only when a table supplies `onReordered`. When a card is dragged, it elevates visually (shadow & border); `onReordered` provides standard `oldIndex` and `newIndex` integers to sync backend state. A table without `onReordered` renders a plain column with no drag handles.
 - **Swipe Deletion**: Utilizing `Dismissible`, cards can be swiped horizontally when a table supplies `onDeleted`. Triggering a full swipe fires `onDeleted` passing the unique string ID.
 - **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `SizeEntryBottomSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
+- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` with `onSaved`, `addLabel` with `onAdd`. This fails loudly in debug rather than shipping an unlabelled drag handle or a titleless entry sheet.
 
 ---
 
@@ -138,9 +139,9 @@ CoreGeometryArea(
 | `title` | `String` | required | The table's header title. Normally interpolates the result it describes, e.g. `'Sheet quantities for 180ft²'`, so it has no default — pass a localised string. |
 | `columns` | `List<CoreSizesColumn>` | required | The columns, in display order. Each row must supply one value per column. |
 | `rows` | `List<CoreSizeCardData>` | required | Ordered rows. Identifiers must be unique within the table to support reliable reordering. |
-| `addLabel` | `String?` | `null` | Text for the add action. The action renders only when this is set. |
-| `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. |
-| `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. |
+| `addLabel` | `String?` | `null` | Text for the add action. The action renders only when this is set. Required with `onAdd`. |
+| `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. Required with `onSaved`. |
+| `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |
 | `onAdd` | `VoidCallback?` | `null` | If provided, the app owns the add flow and the built-in entry sheet is not opened. |
 | `onSaved` | `void Function(SizeEntryResult)?` | `null` | Fired when a row is saved from the built-in entry sheet. |
 | `onDeleted` | `void Function(String)?` | `null` | Fired when a row is deleted, passing its `id`. When null the row cannot be swiped away. |
