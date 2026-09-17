@@ -99,6 +99,12 @@ class CoreSuggestionArea extends StatefulWidget {
   final List<SuggestionData>? aiSuggestions;
 
   /// The list of conversion metrics to display. Nullable.
+  ///
+  /// Expected to carry [SuggestionKind.conversion] data only. In
+  /// [CoreSuggestionLayout.twoRows] this list is the secondary row, and that
+  /// row drops every chip's label by position, not by kind — a `bind` or
+  /// `memory` suggestion routed here would render as a bare value behind the
+  /// [conversionsRowTagLabel] tag. Put such suggestions in [aiSuggestions].
   final List<SuggestionData>? conversionSuggestions;
 
   /// Called when the suggestion area expands or collapses.
