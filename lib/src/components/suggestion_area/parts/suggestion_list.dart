@@ -9,6 +9,36 @@ enum SuggestionMode {
   conversion,
 }
 
+/// The kind of a [SuggestionData], mirroring the calculator's suggestion
+/// sources and the Figma Suggestion Strip Chip variants. [deterministic],
+/// [bind] and [memory] change how the chip looks; every kind exists so the
+/// app can attach the right accept behaviour without re-deriving it from text.
+enum SuggestionKind {
+  /// A rule that fired from named dimensions (Area from Length × Width).
+  /// Accepting adds a result. Renders with the highlight outline
+  /// ([CoreChipOutline.highlight]) so the rung that fired stands out from a
+  /// guess.
+  deterministic,
+
+  /// A context proposal (a material count, a cost, a weight, a recent value).
+  /// Accepting adds a result.
+  predictive,
+
+  /// An offer to name an orphan value ("Height: 8ft ?"). Accepting relabels
+  /// the existing chip instead of adding one, so the chip renders with the
+  /// dashed offer outline and a trailing [CoreSuggestionArea.bindSuffix].
+  bind,
+
+  /// The value on screen re-expressed in another unit. Accepting replaces the
+  /// value in place.
+  conversion,
+
+  /// A value recalled from the calculator's memory slots (M1–M3). Accepting
+  /// adds a result. Renders value-first behind a leading [CoreIcons.history]
+  /// icon; pass an empty [SuggestionData.label] to show the value alone.
+  memory,
+}
+
 /// Data representation for a single suggestion chip.
 class SuggestionData {
   /// The display label of the suggestion chip.
@@ -23,12 +53,25 @@ class SuggestionData {
   /// The callback invoked when the suggestion chip is tapped.
   final VoidCallback onTap;
 
+  /// Which of the calculator's suggestion sources produced this chip.
+  /// Defaults to [SuggestionKind.predictive].
+  final SuggestionKind kind;
+
+  /// Overrides the text screen readers announce for the chip.
+  ///
+  /// Defaults to the visible label, value and unit. Pass a localised string
+  /// when the visible text does not read well aloud (`'12.57yd²'` →
+  /// "Convert to 12.57 square yards").
+  final String? semanticsLabel;
+
   /// Creates a [SuggestionData] instance.
   SuggestionData({
     required this.label,
     required this.value,
     this.unit,
     required this.onTap,
+    this.kind = SuggestionKind.predictive,
+    this.semanticsLabel,
   });
 }
 
@@ -39,6 +82,7 @@ class _SuggestionList extends StatefulWidget {
   final String Function(int) hiddenChipsTextBuilder;
   final String Function(int hiddenCount) expandToggleSemanticsLabelBuilder;
   final String collapseToggleSemanticsLabel;
+  final String bindSuffix;
   final Widget? leadingWidget;
 
   const _SuggestionList({
@@ -48,6 +92,7 @@ class _SuggestionList extends StatefulWidget {
     required this.hiddenChipsTextBuilder,
     required this.expandToggleSemanticsLabelBuilder,
     required this.collapseToggleSemanticsLabel,
+    required this.bindSuffix,
     this.leadingWidget,
   });
 
@@ -106,24 +151,40 @@ class _SuggestionListState extends State<_SuggestionList> {
       onLayoutMetrics: _onLayoutMetrics,
       children: [
         if (leadingWidget != null) leadingWidget,
-        ...suggestions.asMap().entries.map(
-              (entry) => CoreChip(
-                key: ValueKey(
-                    '${entry.value.label}_${entry.value.value}_${entry.value.unit}_${entry.key}'),
-                label: entry.value.label,
-                value: entry.value.value,
-                unit: entry.value.unit,
-                selected: _smartChipUnselected,
-                onTap: () {
-                  entry.value.onTap();
-                  if (widget.isExpanded) {
-                    widget.onExpandedChanged?.call(false);
-                  }
-                },
-                isSmartChip: true,
-                size: CoreChipSize.large,
-              ),
-            ),
+        ...suggestions.asMap().entries.map((entry) {
+          final data = entry.value;
+          final isBind = data.kind == SuggestionKind.bind;
+          final isMemory = data.kind == SuggestionKind.memory;
+          final unit = data.unit;
+          return CoreChip(
+            key: ValueKey(
+                '${data.label}_${data.value}_${data.unit}_${data.kind.name}_${entry.key}'),
+            label: isMemory && data.label.isEmpty ? null : data.label,
+            icon: isMemory ? CoreIcons.history : null,
+            value: isBind && unit == null
+                ? '${data.value} ${widget.bindSuffix}'
+                : data.value,
+            unit: isBind && unit != null ? '$unit ${widget.bindSuffix}' : unit,
+            outline: switch (data.kind) {
+              SuggestionKind.bind => CoreChipOutline.dashed,
+              SuggestionKind.deterministic => CoreChipOutline.highlight,
+              SuggestionKind.predictive ||
+              SuggestionKind.conversion ||
+              SuggestionKind.memory =>
+                CoreChipOutline.solid,
+            },
+            semanticsLabel: data.semanticsLabel,
+            selected: _smartChipUnselected,
+            onTap: () {
+              data.onTap();
+              if (widget.isExpanded) {
+                widget.onExpandedChanged?.call(false);
+              }
+            },
+            isSmartChip: true,
+            size: CoreChipSize.large,
+          );
+        }),
         _ToggleButton(
           hiddenCount: toggleHiddenCount,
           isExpanded: widget.isExpanded,

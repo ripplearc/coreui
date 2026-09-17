@@ -30,6 +30,8 @@ CoreChip(
 | `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
 | `isSmartChip` | `bool` | No | `false` | If true, the chip acts as a "smart chip" that highlights on tap for 1 second instead of toggling selection. |
 | `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
+| `outline` | `CoreChipOutline` | No | `CoreChipOutline.solid` | Outline style: `solid`; `dashed` for a tentative offer (a bind suggestion); `highlight` for the rule that fired (a deterministic suggestion). |
+| `semanticsLabel` | `String?` | No | `null` | Overrides the announced text; defaults to `label`, `value` and `unit` joined with spaces. |
 
 Notes:
 
@@ -150,6 +152,21 @@ CoreChip(
 );
 ```
 
+### Dashed offer chip
+
+```dart
+final isSelected = ValueNotifier<bool>(false);
+
+CoreChip(
+  label: 'Height:',
+  value: '8ft ?',
+  selected: isSelected,
+  size: CoreChipSize.large,
+  outline: CoreChipOutline.dashed,
+  isSmartChip: true,
+);
+```
+
 ### Smart chip
 
 ```dart
@@ -200,3 +217,21 @@ Priority: selected → pressed → focused → default.
 
 - Default: `CoreChipTheme.borderWidth` (`1px`)
 - Focused: `CoreChipTheme.borderWidthFor(isFocused: true)` (`2px`)
+
+### Dashed outline
+
+`CoreChipOutline.dashed` keeps every size, state and animation and swaps only the border:
+
+- Background: unchanged — the chip's usual fill for its size (Figma Suggestion Strip Chip `Bind`)
+- Solid border: `colors.transparent` at the normal width, so the chip measures the same
+- Outline: `CoreDashedBorderDecoration` in `colors.outlineFocus`, `CoreChipTheme.dashLength` / `gapLength` (`4px` / `4px`), stroke following `borderWidthFor` so a focused chip thickens like a solid one
+
+The dashes are the chip's `foregroundDecoration`, so the solid border and its animation are untouched.
+
+### Highlight outline
+
+`CoreChipOutline.highlight` is the Figma Suggestion Strip Chip `Deterministic` look — the rung that fired from the named dimensions on screen:
+
+- Border: `colors.lineHighlight` at `CoreChipTheme.borderWidthFor(outline: highlight)` (`2px`, the focus width); selected and pressed colours still win
+- Padding: the extra border width is taken from the padding, so a highlight chip measures the same as a solid one
+- Background: unchanged

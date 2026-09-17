@@ -110,7 +110,7 @@ void main() {
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
         tester,
         (theme) => suggestionAreaWithToggle,
-        find.bySemanticsLabel('Toggle suggestion mode'),
+        find.bySemanticsLabel(testToggleSemanticsLabel),
         checkTapTargetSize: true,
         checkLabeledTapTarget: true,
         checkTextContrast: false,
@@ -242,6 +242,48 @@ void main() {
         checkLabeledTapTarget: true,
         checkTextContrast: false,
       );
+    });
+  });
+
+  group('CoreSuggestionArea bind offer – accessibility', () {
+    CoreSuggestionArea bindArea() => testCoreSuggestionArea(
+          aiSuggestions: [
+            SuggestionData(
+              label: 'Height:',
+              value: '8ft',
+              kind: SuggestionKind.bind,
+              onTap: () {},
+            ),
+          ],
+        );
+
+    testWidgets('bind chip meets tap target, label and contrast guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => bindArea(),
+        find.byType(CoreChip),
+        checkTapTargetSize: true,
+        checkLabeledTapTarget: true,
+        checkTextContrast: true,
+      );
+    });
+
+    testWidgets('bind chip announces its label, value and suffix',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(tester, bindArea());
+
+      final semantics = tester.getSemantics(find.byType(CoreChip));
+      expect(semantics.label, 'Height: 8ft ?');
+      expect(semantics.flagsCollection.isButton, isTrue);
     });
   });
 }
