@@ -23,24 +23,29 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
       isScrollControlled: true,
       backgroundColor: AppColorsExtension.of(context).transparent,
       builder: (sheetContext) {
-        GroupNameType currentGroup = GroupNameType(id: "Basic Geometry", label: "Basic Geometry");
+        GroupNameType currentGroup =
+            GroupNameType(id: "Basic Geometry", label: "Basic Geometry");
         UnitSystem currentUnitSystem = UnitSystem.imperial;
 
-        final List<FunctionGroup> groups = const [
-          FunctionGroup(
+        final List<FunctionGroup> groups = [
+          const FunctionGroup(
             name: GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
             keys: [
               KeyType(groupName: 'Basic Geometry', id: 'Width', label: 'Width'),
-              KeyType(groupName: 'Basic Geometry', id: 'Length', label: 'Length'),
-              KeyType(groupName: 'Basic Geometry', id: 'Height', label: 'Height'),
+              KeyType(
+                  groupName: 'Basic Geometry', id: 'Length', label: 'Length'),
+              KeyType(
+                  groupName: 'Basic Geometry', id: 'Height', label: 'Height'),
               KeyType(groupName: 'Basic Geometry', id: 'Pitch', label: 'Pitch'),
-              KeyType(groupName: 'Basic Geometry', id: 'Circle', label: 'Circle'),
+              KeyType(
+                  groupName: 'Basic Geometry', id: 'Circle', label: 'Circle'),
               KeyType(groupName: 'Basic Geometry', id: 'Rise', label: 'Rise'),
               KeyType(groupName: 'Basic Geometry', id: 'Run', label: 'Run'),
-              KeyType(groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
+              KeyType(
+                  groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
             ],
           ),
-          FunctionGroup(
+          const FunctionGroup(
             name: GroupNameType(id: "Materials", label: "Materials"),
             keys: [
               KeyType(groupName: 'Materials', id: 'Lbs', label: 'Lbs'),
@@ -49,7 +54,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
               KeyType(groupName: 'Materials', id: 'Drywall', label: 'Drywall'),
             ],
           ),
-          FunctionGroup(
+          const FunctionGroup(
             name: GroupNameType(id: "Trigonometry", label: "Trigonometry"),
             keys: [
               KeyType(groupName: 'Trigonometry', id: 'SIN', label: 'SIN'),
@@ -85,6 +90,13 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
             log('Unit system switched to: ${system.label}');
           }
 
+          void onGroupsReordered(int oldIndex, int newIndex) {
+            sheetSetState(() {
+              groups.insert(newIndex, groups.removeAt(oldIndex));
+            });
+            log('Groups reordered: ${groups.map((g) => g.name.label).join(', ')}');
+          }
+
           void onFunctionKeyTapped(KeyType key) {
             log('Function key tapped: ${key.label}');
             FunctionGroup? matched;
@@ -94,16 +106,19 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                 break;
               }
             }
-            final newGroup =
-                matched?.name ?? GroupNameType(id: key.groupName, label: key.groupName);
+            final newGroup = matched?.name ??
+                GroupNameType(id: key.groupName, label: key.groupName);
             sheetSetState(() => currentGroup = newGroup);
           }
 
           final colors = AppColorsExtension.of(sheetContext);
           final Map<GroupNameType, Color> groupAccentColors = {
-            GroupNameType(id: "Basic Geometry", label: "Basic Geometry"): colors.keyboardFunctions,
-            GroupNameType(id: "Materials", label: "Materials"): colors.keyboardUnits,
-            GroupNameType(id: "Trigonometry", label: "Trigonometry"): colors.textSuccess,
+            GroupNameType(id: "Basic Geometry", label: "Basic Geometry"):
+                colors.keyboardFunctions,
+            GroupNameType(id: "Materials", label: "Materials"):
+                colors.keyboardUnits,
+            GroupNameType(id: "Trigonometry", label: "Trigonometry"):
+                colors.textSuccess,
           };
 
           return Padding(
@@ -125,6 +140,8 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                 currentUnitSystem: currentUnitSystem,
                 onUnitSystemChanged: onUnitSystemChanged,
                 groupAccentColors: groupAccentColors,
+                onGroupsReordered: onGroupsReordered,
+                reorderSemanticsLabelBuilder: (label) => 'Reorder $label group',
               ),
             ),
           );

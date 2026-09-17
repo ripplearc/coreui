@@ -8,22 +8,27 @@ void main() {
       FunctionGroup(
         name: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
         keys: [
-          KeyType(groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
-          KeyType(groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'sin', label: 'sin', action: () {}),
+          KeyType(
+              groupName: 'Trigonomety', id: 'cos', label: 'cos', action: () {}),
         ],
       ),
       FunctionGroup(
         name: const GroupNameType(id: 'Materials', label: 'Materials'),
         keys: [
-          KeyType(groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
+          KeyType(
+              groupName: 'Materials', id: 'Wood', label: 'Wood', action: () {}),
         ],
       ),
     ];
 
     final colors = AppColorsExtension.create();
     final testAccentColors = {
-      const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'): colors.backgroundDarkGray,
-      const GroupNameType(id: 'Materials', label: 'Materials'): colors.orientMid,
+      const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'):
+          colors.backgroundDarkGray,
+      const GroupNameType(id: 'Materials', label: 'Materials'):
+          colors.orientMid,
     };
 
     testWidgets('calls onKeyTapped when key is tapped', (tester) async {
@@ -35,7 +40,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (key) => tappedKey = key,
             ),
@@ -60,7 +66,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (group) => selectedGroup = group,
               onKeyTapped: (_) {},
             ),
@@ -71,7 +78,8 @@ void main() {
       await tester.tap(find.text('Materials group'));
       await tester.pumpAndSettle();
 
-      expect(selectedGroup, equals(const GroupNameType(id: 'Materials', label: 'Materials')));
+      expect(selectedGroup,
+          equals(const GroupNameType(id: 'Materials', label: 'Materials')));
     });
 
     testWidgets('shows unit toggle when showUnitToggle is true',
@@ -83,7 +91,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               showUnitToggle: true,
@@ -106,7 +115,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               showUnitToggle: false,
@@ -128,7 +138,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               currentUnitSystem: UnitSystem.imperial,
@@ -160,7 +171,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
             ),
@@ -173,34 +185,53 @@ void main() {
       expect(semantics.hint, contains('Tap to use sin function'));
     });
 
-    testWidgets(
-        'dragging a group to a later, non-adjacent position drops it at '
-        'the correct final index', (tester) async {
-      final reorderGroups = [
-        FunctionGroup(
-          name: const GroupNameType(id: 'Group A', label: 'Group A'),
-          keys: [KeyType(groupName: 'Group A', id: 'A1', label: 'A1', action: () {})],
-        ),
-        FunctionGroup(
-          name: const GroupNameType(id: 'Group B', label: 'Group B'),
-          keys: [KeyType(groupName: 'Group B', id: 'B1', label: 'B1', action: () {})],
-        ),
-        FunctionGroup(
-          name: const GroupNameType(id: 'Group C', label: 'Group C'),
-          keys: [KeyType(groupName: 'Group C', id: 'C1', label: 'C1', action: () {})],
-        ),
-      ];
+    List<FunctionGroup> reorderGroups() => [
+          FunctionGroup(
+            name: const GroupNameType(id: 'Group A', label: 'Group A'),
+            keys: [
+              KeyType(
+                  groupName: 'Group A', id: 'A1', label: 'A1', action: () {})
+            ],
+          ),
+          FunctionGroup(
+            name: const GroupNameType(id: 'Group B', label: 'Group B'),
+            keys: [
+              KeyType(
+                  groupName: 'Group B', id: 'B1', label: 'B1', action: () {})
+            ],
+          ),
+          FunctionGroup(
+            name: const GroupNameType(id: 'Group C', label: 'Group C'),
+            keys: [
+              KeyType(
+                  groupName: 'Group C', id: 'C1', label: 'C1', action: () {})
+            ],
+          ),
+        ];
 
+    List<String> renderedHeaders(WidgetTester tester) => tester
+        .widgetList<Text>(find.textContaining(' group'))
+        .map((t) => t.data)
+        .whereType<String>()
+        .toList();
+
+    testWidgets(
+        'dragging a group reports its final index through onGroupsReordered '
+        'and leaves the rendered order to the consumer', (tester) async {
+      final reorders = <(int, int)>[];
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreFunctionKeyBottomSheet(
-              groups: reorderGroups,
+              groups: reorderGroups(),
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Group A', label: 'Group A'),
+              selectedGroup:
+                  const GroupNameType(id: 'Group A', label: 'Group A'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
+              onGroupsReordered: (oldIndex, newIndex) =>
+                  reorders.add((oldIndex, newIndex)),
               showUnitToggle: false,
             ),
           ),
@@ -212,16 +243,120 @@ void main() {
       );
       expect(dragHandles, findsNWidgets(3));
 
-      // Drag the first group past the second so it lands on the last slot,
-      // not just the adjacent one.
+      await tester.drag(
+          dragHandles.first, const Offset(0, CoreSpacing.space56));
+      await tester.pumpAndSettle();
+
+      expect(reorders, [(0, 2)]);
+      expect(
+        renderedHeaders(tester),
+        ['Group A group', 'Group B group', 'Group C group'],
+        reason: 'the sheet holds no order of its own',
+      );
+    });
+
+    testWidgets('renders the consumer\'s order once the groups are reordered',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: _ReorderingSheetHost(
+            groups: reorderGroups(),
+            accentColors: testAccentColors,
+          ),
+        ),
+      );
+
+      final dragHandles = find.byWidgetPredicate(
+        (widget) => widget is Icon && widget.icon == Icons.drag_indicator,
+      );
       await tester.drag(dragHandles.first, const Offset(0, 220));
       await tester.pumpAndSettle();
 
-      final groupHeaders = tester
-          .widgetList<Text>(find.textContaining(' group'))
-          .map((t) => t.data)
-          .toList();
-      expect(groupHeaders, ['Group B group', 'Group C group', 'Group A group']);
+      expect(
+        renderedHeaders(tester),
+        ['Group B group', 'Group C group', 'Group A group'],
+      );
+    });
+
+    testWidgets('shows no drag handles without onGroupsReordered',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: reorderGroups(),
+              groupAccentColors: testAccentColors,
+              selectedGroup:
+                  const GroupNameType(id: 'Group A', label: 'Group A'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              showUnitToggle: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Icon && widget.icon == Icons.drag_indicator,
+        ),
+        findsNothing,
+      );
+      expect(find.text('Group A group'), findsOneWidget);
+    });
+
+    testWidgets('drag handle label defaults and follows the builder',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: reorderGroups(),
+              groupAccentColors: testAccentColors,
+              selectedGroup:
+                  const GroupNameType(id: 'Group A', label: 'Group A'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onGroupsReordered: (_, __) {},
+              showUnitToggle: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.bySemanticsLabel(RegExp('Drag indicator for Group A group')),
+          findsOneWidget);
+      expect(
+        CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel('Group A'),
+        'Drag indicator for Group A group',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: reorderGroups(),
+              groupAccentColors: testAccentColors,
+              selectedGroup:
+                  const GroupNameType(id: 'Group A', label: 'Group A'),
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onGroupsReordered: (_, __) {},
+              reorderSemanticsLabelBuilder: (label) => 'Reordenar $label',
+              showUnitToggle: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+          find.bySemanticsLabel(RegExp('Reordenar Group A')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Drag indicator for Group A group')),
+          findsNothing);
     });
 
     testWidgets('has proper semantics for unit toggle', (tester) async {
@@ -232,7 +367,8 @@ void main() {
             body: CoreFunctionKeyBottomSheet(
               groups: testGroups,
               groupAccentColors: testAccentColors,
-              selectedGroup: const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
+              selectedGroup:
+                  const GroupNameType(id: 'Trigonomety', label: 'Trigonomety'),
               onGroupSelected: (_) {},
               onKeyTapped: (_) {},
               currentUnitSystem: UnitSystem.imperial,
@@ -324,4 +460,38 @@ void main() {
       );
     });
   });
+}
+
+class _ReorderingSheetHost extends StatefulWidget {
+  const _ReorderingSheetHost({
+    required this.groups,
+    required this.accentColors,
+  });
+
+  final List<FunctionGroup> groups;
+  final Map<GroupNameType, Color> accentColors;
+
+  @override
+  State<_ReorderingSheetHost> createState() => _ReorderingSheetHostState();
+}
+
+class _ReorderingSheetHostState extends State<_ReorderingSheetHost> {
+  late List<FunctionGroup> groups = List.of(widget.groups);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CoreFunctionKeyBottomSheet(
+        groups: groups,
+        groupAccentColors: widget.accentColors,
+        selectedGroup: groups.first.name,
+        onGroupSelected: (_) {},
+        onKeyTapped: (_) {},
+        onGroupsReordered: (oldIndex, newIndex) => setState(() {
+          groups.insert(newIndex, groups.removeAt(oldIndex));
+        }),
+        showUnitToggle: false,
+      ),
+    );
+  }
 }

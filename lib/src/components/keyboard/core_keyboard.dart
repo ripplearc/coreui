@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -19,6 +20,15 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [customResultLabel] is an optional custom label for the result button.
+///
+/// ## Group swipe
+/// A horizontal swipe on the function-key strip selects the previous (swipe
+/// right) or next (swipe left) group in [allGroups] through [onGroupSelected],
+/// wrapping at either end. One gesture selects one group, a drag shorter than
+/// [groupSwipeThreshold] is ignored, and a tap on a key never counts as a
+/// swipe. The "View all" sheet stays the non-gesture equivalent, and the
+/// keyboard holds no group order of its own: a reorder made in that sheet
+/// reaches the consumer through [onGroupsReordered].
 class CoreKeyboard extends StatefulWidget {
   const CoreKeyboard({
     super.key,
@@ -37,7 +47,14 @@ class CoreKeyboard extends StatefulWidget {
     this.groupAccentColors = const {},
     this.customResultLabel,
     this.onCollapseChanged,
+    this.onGroupsReordered,
+    this.reorderSemanticsLabelBuilder,
   });
+
+  /// Minimum horizontal travel for a drag on the function-key strip to count
+  /// as a group swipe; anything shorter is ignored so a wobbly tap never
+  /// changes the group.
+  static const double groupSwipeThreshold = CoreSpacing.space16;
 
   final GroupNameType currentGroup;
   final List<FunctionGroup> allGroups;
@@ -55,15 +72,31 @@ class CoreKeyboard extends StatefulWidget {
   final String? customResultLabel;
   final ValueChanged<bool>? onCollapseChanged;
 
+  /// Called when the user drags a group to a new position in the "View all"
+  /// sheet, with its old index and its final index; both are in range for
+  /// [allGroups]. The consumer reorders [allGroups] — in place or as a new
+  /// list — and rebuilds; the sheet re-renders while open whenever
+  /// [allGroups] or the order of its groups changes.
+  final void Function(int oldIndex, int newIndex)? onGroupsReordered;
+
+  /// Builds the screen-reader label of a group's drag handle in the "View
+  /// all" sheet from the group label. Defaults to
+  /// [CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel].
+  final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
+
   @override
   State<CoreKeyboard> createState() => _CoreKeyboardState();
 }
 
-class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderStateMixin {
+class _CoreKeyboardState extends State<CoreKeyboard>
+    with SingleTickerProviderStateMixin {
   static const double _dragIndicatorHeight = CoreSpacing.space2;
   static const double _dragIndicatorWidth = CoreSpacing.space8;
 
   bool _isCollapsed = false;
+  double _groupSwipeDistance = 0;
+  _FunctionsSheetHostState? _openFunctionsSheet;
+  List<GroupNameType> _groupOrder = const [];
 
   late final AnimationController _controller;
   final GlobalKey _contentKey = GlobalKey();
@@ -72,6 +105,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+    _groupOrder = _orderOf(widget.allGroups);
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -85,8 +119,49 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(CoreKeyboard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final order = _orderOf(widget.allGroups);
+    final groupsChanged = !identical(widget.allGroups, oldWidget.allGroups) ||
+        !listEquals(order, _groupOrder);
+    _groupOrder = order;
+    final sheet = _openFunctionsSheet;
+    if (groupsChanged && sheet != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => sheet.refresh());
+    }
+  }
+
+  static List<GroupNameType> _orderOf(List<FunctionGroup> groups) =>
+      [for (final group in groups) group.name];
+
+  void _handleGroupSwipeUpdate(DragUpdateDetails details) {
+    _groupSwipeDistance += details.delta.dx;
+  }
+
+  void _handleGroupSwipeEnd(DragEndDetails details) {
+    final distance = _groupSwipeDistance;
+    _groupSwipeDistance = 0;
+    if (distance.abs() < CoreKeyboard.groupSwipeThreshold) return;
+    _selectNeighborGroup(forward: distance < 0);
+  }
+
+  void _handleGroupSwipeCancel() {
+    _groupSwipeDistance = 0;
+  }
+
+  void _selectNeighborGroup({required bool forward}) {
+    final groups = widget.allGroups;
+    if (groups.length < 2) return;
+    final current = groups.indexWhere((g) => g.name == widget.currentGroup);
+    final step = forward ? 1 : groups.length - 1;
+    final next = ((current < 0 ? 0 : current) + step) % groups.length;
+    widget.onGroupSelected(groups[next].name);
+  }
+
   void _updateContentHeight() {
-    final RenderBox? renderBox = _contentKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _contentKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null && renderBox.size.height > 0) {
       _contentHeight = renderBox.size.height;
     }
@@ -214,11 +289,12 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                               width: double.infinity,
                               padding: EdgeInsets.only(
                                   top: CoreSpacing.space1,
-                                  bottom: CoreSpacing.space1 * (1.0 - _controller.value)),
+                                  bottom: CoreSpacing.space1 *
+                                      (1.0 - _controller.value)),
                               child: Center(
                                 child: CustomPaint(
-                                  size: const Size(
-                                      _dragIndicatorWidth, _dragIndicatorHeight),
+                                  size: const Size(_dragIndicatorWidth,
+                                      _dragIndicatorHeight),
                                   painter: _CurvedDragHandlePainter(
                                     color: colors.lineDarkOutline,
                                     collapseProgress: 1.0 - _controller.value,
@@ -239,11 +315,17 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _FunctionKeyStrip(
-                            group: group,
-                            onKeyTapped: widget.onKeyTapped,
-                            accentColor: accent,
-                            onViewAll: () => _showFunctionsSheet(context),
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onHorizontalDragUpdate: _handleGroupSwipeUpdate,
+                            onHorizontalDragEnd: _handleGroupSwipeEnd,
+                            onHorizontalDragCancel: _handleGroupSwipeCancel,
+                            child: _FunctionKeyStrip(
+                              group: group,
+                              onKeyTapped: widget.onKeyTapped,
+                              accentColor: accent,
+                              onViewAll: () => _showFunctionsSheet(context),
+                            ),
                           ),
                           SizedBox(height: functionStripSpacing),
                           _buildColumnLayout(
@@ -251,8 +333,7 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
                             buttonWidth: finalButtonWidth,
                             buttonHeight: finalButtonHeight,
                             buttonSpacing: finalSpacing,
-                            heightSpacing:
-                                min(finalSpacing, maxHeightSpacing),
+                            heightSpacing: min(finalSpacing, maxHeightSpacing),
                           ),
                         ],
                       ),
@@ -503,26 +584,68 @@ class _CoreKeyboardState extends State<CoreKeyboard> with SingleTickerProviderSt
             BorderRadius.vertical(top: Radius.circular(CoreSpacing.space6)),
       ),
       builder: (context) {
-        return CoreFunctionKeyBottomSheet(
-          groups: widget.allGroups,
-          groupAccentColors: widget.groupAccentColors,
-          selectedGroup: widget.currentGroup,
-          onGroupSelected: (groupName) {
-            widget.onGroupSelected(groupName);
-            Navigator.of(context).pop();
-          },
-          onKeyTapped: (key) {
-            widget.onKeyTapped(key);
-            Navigator.of(context).pop();
-          },
-          currentUnitSystem: widget.currentUnitSystem,
-          onUnitSystemChanged: (system) {
-            widget.onUnitSystemChanged(system);
-          },
+        return _FunctionsSheetHost(
+          onAttach: (sheet) => _openFunctionsSheet = sheet,
+          onDetach: () => _openFunctionsSheet = null,
+          builder: (context) => CoreFunctionKeyBottomSheet(
+            groups: widget.allGroups,
+            groupAccentColors: widget.groupAccentColors,
+            selectedGroup: widget.currentGroup,
+            onGroupSelected: (groupName) {
+              widget.onGroupSelected(groupName);
+              Navigator.of(context).pop();
+            },
+            onKeyTapped: (key) {
+              widget.onKeyTapped(key);
+              Navigator.of(context).pop();
+            },
+            onGroupsReordered: widget.onGroupsReordered,
+            reorderSemanticsLabelBuilder: widget.reorderSemanticsLabelBuilder,
+            currentUnitSystem: widget.currentUnitSystem,
+            onUnitSystemChanged: (system) {
+              widget.onUnitSystemChanged(system);
+            },
+          ),
         );
       },
     );
   }
+}
+
+class _FunctionsSheetHost extends StatefulWidget {
+  const _FunctionsSheetHost({
+    required this.onAttach,
+    required this.onDetach,
+    required this.builder,
+  });
+
+  final ValueChanged<_FunctionsSheetHostState> onAttach;
+  final VoidCallback onDetach;
+  final WidgetBuilder builder;
+
+  @override
+  State<_FunctionsSheetHost> createState() => _FunctionsSheetHostState();
+}
+
+class _FunctionsSheetHostState extends State<_FunctionsSheetHost> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onAttach(this);
+  }
+
+  @override
+  void dispose() {
+    widget.onDetach();
+    super.dispose();
+  }
+
+  void refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }
 
 class _FunctionKeyStrip extends StatelessWidget {
@@ -668,7 +791,7 @@ class _CurvedDragHandlePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    
+
     final startY = size.height * 0.2 + (size.height * 0.6 * collapseProgress);
     final controlY = size.height - (size.height * collapseProgress);
 
@@ -685,6 +808,7 @@ class _CurvedDragHandlePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _CurvedDragHandlePainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.collapseProgress != collapseProgress;
+    return oldDelegate.color != color ||
+        oldDelegate.collapseProgress != collapseProgress;
   }
 }
