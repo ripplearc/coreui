@@ -20,9 +20,10 @@ class ToastShowcaseScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Our toast system provides feedback to users through non-intrusive titles.',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'Our toast system provides feedback to users through '
+              'non-intrusive titles.',
+              style: Theme.of(context).coreTypography.bodyLargeRegular,
             ),
             const SizedBox(height: 32),
 
@@ -84,12 +85,31 @@ class ToastShowcaseScreen extends StatelessWidget {
               ),
             ),
 
+            // Receipt Toast
+            _buildToastSection(
+              context,
+              title: 'Receipt Toast',
+              toast: Toast.receipt(
+                description: 'Saved to history',
+                highlight: 'Calc 60ft²',
+                actionLabel: 'Undo',
+                onAction: () {},
+                // Static preview: the live one is behind the button below.
+                duration: null,
+              ),
+            ),
+
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 _showAllToasts(context);
               },
               child: const Text('Show All Toasts'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _showReceiptToast(context),
+              child: const Text('Show Receipt Toast (dismisses in 5s)'),
             ),
           ],
         ),
@@ -113,6 +133,25 @@ class ToastShowcaseScreen extends StatelessWidget {
         toast,
         const SizedBox(height: 32),
       ],
+    );
+  }
+
+  // The live receipt: it banks itself after five seconds unless an action
+  // answers it first.
+  void _showReceiptToast(BuildContext context) {
+    CoreToast.showReceipt(
+      context,
+      'Saved to history',
+      'Undo',
+      () => _report(context, 'Undo tapped — the session comes back'),
+      highlight: 'Calc 60ft²',
+    );
+  }
+
+  void _report(BuildContext context, String message) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 
@@ -188,7 +227,7 @@ class ToastShowcaseScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: toast,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Theme.of(context).coreColors.transparent,
               elevation: 0,
               duration: const Duration(seconds: 4),
             ),
