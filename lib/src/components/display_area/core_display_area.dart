@@ -17,6 +17,14 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// [hasError] toggles the error state. When true, [errorTitle] replaces the
 /// value display and [errorMessage] appears as an error chip.
 ///
+/// ## Dependent keys
+///
+/// An answer keeps its assumption on screen: [dependentKeys] renders a row of
+/// pills under the value — editable assumptions (`Rate: $12.3/ft²`), toggles
+/// that respell the value (`Shown as: in/12in`), and one-time offers
+/// (`Re-input 38.30° as 38°30′`). The row is end-aligned and scrolls
+/// horizontally when the pills outgrow the width.
+///
 /// ## Swipe interaction
 ///
 /// **When chips fit in two rows or fewer** (`chipsList.length ≤ 5`):
@@ -49,8 +57,15 @@ class CoreDisplayArea extends StatefulWidget {
     this.hasError = false,
     this.errorMessage = '',
     this.errorTitle = '',
+    this.dependentKeys = const [],
+    @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+        'next minor release.')
     this.dependentKeyLabel,
+    @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+        'next minor release.')
     this.dependentKeyValue,
+    @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+        'next minor release.')
     this.onPressedDependentKey,
     this.onStageChanged,
   });
@@ -105,14 +120,59 @@ class CoreDisplayArea extends StatefulWidget {
   /// Defaults to 'Error'.
   final String errorTitle;
 
-  /// Label for the dependent key button in the value section. Defaults to `null`.
+  /// The pills rendered under the value, in order. Defaults to an empty list.
+  ///
+  /// The row is end-aligned and scrolls horizontally: when the pills outgrow
+  /// the width the trailing pill stays in view and the leading ones scroll in
+  /// from the start edge. Every user-facing string on a pill comes from the
+  /// consumer: the label, the value and the optional
+  /// [CoreDependentKeyData.semanticsLabel].
+  final List<CoreDependentKeyData> dependentKeys;
+
+  /// Label for the legacy single dependent-key pill. Defaults to `null`.
+  ///
+  /// Deprecated adapter: rendered as one [CoreDependentKeyKind.editable] pill
+  /// appended after [dependentKeys]. Use [dependentKeys] instead.
+  @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+      'next minor release.')
   final String? dependentKeyLabel;
 
-  /// Value for the dependent key button in the value section. Defaults to `null`.
+  /// Value for the legacy single dependent-key pill. Defaults to `null`.
+  ///
+  /// Deprecated adapter: see [dependentKeyLabel].
+  @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+      'next minor release.')
   final String? dependentKeyValue;
 
-  /// Called when the user taps the dependent key button.
+  /// Called when the user taps the legacy single dependent-key pill.
+  ///
+  /// Deprecated adapter: see [dependentKeyLabel].
+  @Deprecated('Use dependentKeys. The single-pill adapter is removed in the '
+      'next minor release.')
   final VoidCallback? onPressedDependentKey;
+
+  /// The pills `build` renders: [dependentKeys] followed by the legacy
+  /// single pill when [dependentKeyLabel] or [dependentKeyValue] is set.
+  ///
+  /// Exposed so tests can assert the adapter without reaching into the
+  /// widget tree; `build` consumes this same getter.
+  @visibleForTesting
+  List<CoreDependentKeyData> get resolvedDependentKeys {
+    final legacyLabel = dependentKeyLabel;
+    final legacyValue = dependentKeyValue;
+    final hasLegacy = (legacyLabel?.isNotEmpty ?? false) ||
+        (legacyValue?.isNotEmpty ?? false);
+    return [
+      ...dependentKeys,
+      if (hasLegacy)
+        CoreDependentKeyData(
+          label: legacyLabel ?? '',
+          value: legacyValue ?? '',
+          kind: CoreDependentKeyKind.editable,
+          onPressed: onPressedDependentKey,
+        ),
+    ];
+  }
 
   /// Called whenever the expansion stage changes.
   ///
@@ -164,6 +224,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final mq = MediaQuery.of(context);
+    final dependentKeys = widget.resolvedDependentKeys;
 
     final columnChildren = <Widget>[
       Flexible(
@@ -210,15 +271,12 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
                 _LabelSection(label: widget.label, isTyping: widget.isTyping),
               if ((widget.value?.isNotEmpty ?? false) ||
                   widget.hasError ||
-                  (widget.dependentKeyLabel?.isNotEmpty ?? false) ||
-                  (widget.dependentKeyValue?.isNotEmpty ?? false))
+                  dependentKeys.isNotEmpty)
                 _ValueSection(
                   value: widget.value,
                   hasError: widget.hasError,
                   errorTitle: widget.errorTitle,
-                  dependentKeyLabel: widget.dependentKeyLabel,
-                  dependentKeyValue: widget.dependentKeyValue,
-                  onPressedDependentKey: widget.onPressedDependentKey,
+                  dependentKeys: dependentKeys,
                 ),
               if (_stage != DisplayAreaStage.collapsed)
                 const SizedBox(height: CoreSpacing.space5),

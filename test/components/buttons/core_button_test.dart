@@ -222,4 +222,57 @@ void main() {
       expect(outerDecoration.boxShadow, isNull);
     });
   });
+
+  group('CoreButton border overrides', () {
+    BorderSide sideOf(WidgetTester tester) {
+      final decoratedBoxes = tester.widgetList<DecoratedBox>(
+        find.descendant(
+          of: find.byType(CoreButton),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      final decoration =
+          decoratedBoxes.elementAt(1).decoration as BoxDecoration;
+      return (decoration.border as Border).top;
+    }
+
+    testWidgets('a secondary button keeps its 2px variant border by default',
+        (tester) async {
+      final colors = AppColorsExtension.create();
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          CoreButton(
+            label: 'Secondary',
+            variant: CoreButtonVariant.secondary,
+            onPressed: () {},
+          ),
+        ),
+      );
+
+      final side = sideOf(tester);
+      expect(side.color, colors.buttonSurface);
+      expect(side.width, 2);
+    });
+
+    testWidgets('borderColor and borderWidth override the variant border',
+        (tester) async {
+      final colors = AppColorsExtension.create();
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          CoreButton(
+            label: 'Hairline',
+            variant: CoreButtonVariant.secondary,
+            onPressed: () {},
+            shadows: CoreShadows.small,
+            borderColor: colors.lineMid,
+            borderWidth: CoreButton.hairlineBorderWidth,
+          ),
+        ),
+      );
+
+      final side = sideOf(tester);
+      expect(side.color, colors.lineMid);
+      expect(side.width, CoreButton.hairlineBorderWidth);
+    });
+  });
 }
