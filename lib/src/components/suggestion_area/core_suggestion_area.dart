@@ -45,6 +45,14 @@ enum CoreSuggestionLayout {
 ///
 /// Displays [suggestionAreaPlaceholder] when nothing is visible: both lists
 /// are null or empty, or only conversions exist and [secondRowHidden] is set.
+///
+/// ## Accessibility
+///
+/// The area is a live region labelled with the suggestions on screen, so a
+/// screen reader announces a new rung or a fresh set of conversions without
+/// moving focus; [suggestionsSemanticsLabelBuilder] builds that text. Each
+/// chip keeps its own node inside the region, and the placeholder is a live
+/// region of its own, so an emptied strip is heard too.
 class CoreSuggestionArea extends StatefulWidget {
   const CoreSuggestionArea({
     super.key,
@@ -63,6 +71,7 @@ class CoreSuggestionArea extends StatefulWidget {
     this.conversionsCollapseToggleSemanticsLabel,
     this.conversionsRowTagLabel = defaultConversionsRowTagLabel,
     this.conversionsRowSemanticsLabel = defaultConversionsRowSemanticsLabel,
+    this.suggestionsSemanticsLabelBuilder,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
@@ -85,6 +94,21 @@ class CoreSuggestionArea extends StatefulWidget {
 
   /// The default trailing marker of a [SuggestionKind.bind] chip.
   static const String defaultBindSuffix = '?';
+
+  /// The live-region text used when [suggestionsSemanticsLabelBuilder] is
+  /// null: each suggestion's [SuggestionData.semanticsLabel], or its label,
+  /// value and unit, joined with commas (`Area: 220 ft², Cost: $84.25`).
+  static String defaultSuggestionsSemanticsLabel(
+      List<SuggestionData> suggestions) {
+    return suggestions
+        .map((data) =>
+            data.semanticsLabel ??
+            [data.label, data.value, data.unit]
+                .whereType<String>()
+                .where((part) => part.isNotEmpty)
+                .join(' '))
+        .join(', ');
+  }
 
   /// Placeholder text shown in the suggestion area.
   ///
@@ -174,6 +198,19 @@ class CoreSuggestionArea extends StatefulWidget {
   /// context. Defaults to [defaultConversionsRowSemanticsLabel]; override it
   /// per locale. Ignored in [CoreSuggestionLayout.toggle].
   final String conversionsRowSemanticsLabel;
+
+  /// Builds the text a screen reader announces when the visible suggestions
+  /// change. The area is a live region labelled with this text, so a new
+  /// rung or a fresh set of conversions is heard without moving focus. The
+  /// list holds the suggestions on screen in reading order — the active list
+  /// in [CoreSuggestionLayout.toggle], both rows in
+  /// [CoreSuggestionLayout.twoRows] with the conversions row left out while
+  /// [secondRowHidden]; chips folded behind the `+N` control are included,
+  /// as that control reveals them. Defaults to
+  /// [defaultSuggestionsSemanticsLabel]; pass a localised builder when the
+  /// joined chip text does not read well aloud.
+  final String Function(List<SuggestionData> suggestions)?
+      suggestionsSemanticsLabelBuilder;
 
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
@@ -273,18 +310,38 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     );
   }
 
+  List<SuggestionData>? _activeToggleList({
+    required bool hasAi,
+    required bool hasConv,
+  }) {
+    if (hasAi && hasConv) {
+      return _mode == SuggestionMode.ai
+          ? widget.aiSuggestions
+          : widget.conversionSuggestions;
+    }
+    return hasAi ? widget.aiSuggestions : widget.conversionSuggestions;
+  }
+
+  List<SuggestionData> _announcedSuggestions({
+    required bool hasAi,
+    required bool hasConv,
+  }) {
+    if (widget.layout == CoreSuggestionLayout.toggle) {
+      return _activeToggleList(hasAi: hasAi, hasConv: hasConv) ?? const [];
+    }
+    return [
+      ...?widget.aiSuggestions,
+      if (!widget.secondRowHidden) ...?widget.conversionSuggestions,
+    ];
+  }
+
   Widget _buildToggleLayout({required bool hasAi, required bool hasConv}) {
     final bool hasBothLists = hasAi && hasConv;
-    final activeList = hasBothLists
-        ? (_mode == SuggestionMode.ai
-            ? widget.aiSuggestions
-            : widget.conversionSuggestions)
-        : (hasAi ? widget.aiSuggestions : widget.conversionSuggestions);
 
     return _animatedSize(
       child: _buildRow(
         key: const ValueKey('suggestion_row_toggle'),
-        suggestions: activeList,
+        suggestions: _activeToggleList(hasAi: hasAi, hasConv: hasConv),
         isExpanded: _isExpanded,
         onExpandedChanged: (expanded) => _setExpanded(primary: expanded),
         leadingWidget: hasBothLists
@@ -367,15 +424,27 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
         alignment: AlignmentDirectional.centerStart,
         heightFactor: 1.0,
         child: !hasVisible
-            ? Text(
-                widget.suggestionAreaPlaceholder,
-                style: typography.bodyMediumRegular.copyWith(
-                  color: colors.textDark,
+            ? Semantics(
+                container: true,
+                liveRegion: true,
+                child: Text(
+                  widget.suggestionAreaPlaceholder,
+                  style: typography.bodyMediumRegular.copyWith(
+                    color: colors.textDark,
+                  ),
                 ),
               )
-            : isTwoRows
-                ? _buildTwoRowLayout(hasAi: hasAi, hasConv: hasConv)
-                : _buildToggleLayout(hasAi: hasAi, hasConv: hasConv),
+            : Semantics(
+                container: true,
+                explicitChildNodes: true,
+                liveRegion: true,
+                label: (widget.suggestionsSemanticsLabelBuilder ??
+                        CoreSuggestionArea.defaultSuggestionsSemanticsLabel)(
+                    _announcedSuggestions(hasAi: hasAi, hasConv: hasConv)),
+                child: isTwoRows
+                    ? _buildTwoRowLayout(hasAi: hasAi, hasConv: hasConv)
+                    : _buildToggleLayout(hasAi: hasAi, hasConv: hasConv),
+              ),
       ),
     );
   }

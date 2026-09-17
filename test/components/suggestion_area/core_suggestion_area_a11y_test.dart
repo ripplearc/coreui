@@ -431,4 +431,169 @@ void main() {
           findsOneWidget);
     });
   });
+
+  group('CoreSuggestionArea live region – accessibility', () {
+    List<SuggestionData> rung() => [
+          SuggestionData(
+            label: 'Area:',
+            value: '220',
+            unit: 'ft²',
+            kind: SuggestionKind.deterministic,
+            onTap: () {},
+          ),
+          SuggestionData(
+            label: 'Cost:',
+            value: '\$84.25',
+            kind: SuggestionKind.predictive,
+            onTap: () {},
+          ),
+        ];
+    List<SuggestionData> conversions() => [
+          SuggestionData(
+            label: 'Conv:',
+            value: '264',
+            unit: 'in',
+            kind: SuggestionKind.conversion,
+            semanticsLabel: 'Convert to 264 inches',
+            onTap: () {},
+          ),
+          SuggestionData(
+            label: 'Conv:',
+            value: '7.33',
+            unit: 'yd',
+            kind: SuggestionKind.conversion,
+            semanticsLabel: 'Convert to 7.33 yards',
+            onTap: () {},
+          ),
+        ];
+    const rungLabel = 'Area: 220 ft², Cost: \$84.25';
+    const conversionsLabel = 'Convert to 264 inches, Convert to 7.33 yards';
+
+    testWidgets('the area is a live region labelled with its suggestions',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester, testCoreSuggestionArea(aiSuggestions: rung()));
+
+      final region = tester.getSemantics(find.bySemanticsLabel(rungLabel));
+      expect(region.flagsCollection.isLiveRegion, isTrue);
+      expect(find.bySemanticsLabel('Area: 220 ft²'), findsOneWidget,
+          reason: 'each chip keeps its own node inside the region');
+      expect(
+          tester
+              .getSemantics(find.bySemanticsLabel('Area: 220 ft²'))
+              .flagsCollection
+              .isButton,
+          isTrue);
+    });
+
+    testWidgets('the announcement follows a suggestion change',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester, testCoreSuggestionArea(aiSuggestions: rung()));
+      expect(find.bySemanticsLabel(rungLabel), findsOneWidget);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(aiSuggestions: [
+            SuggestionData(label: 'Sheets:', value: '13', onTap: () {}),
+            SuggestionData(label: 'Cost:', value: '\$84.25', onTap: () {}),
+          ]));
+      await tester.pumpAndSettle();
+
+      expect(find.bySemanticsLabel(rungLabel), findsNothing);
+      expect(
+          find.bySemanticsLabel('Sheets: 13, Cost: \$84.25'), findsOneWidget);
+    });
+
+    testWidgets('the toggle layout announces the active list',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: rung(),
+            conversionSuggestions: conversions(),
+          ));
+      expect(find.bySemanticsLabel(rungLabel), findsOneWidget);
+      expect(find.bySemanticsLabel(conversionsLabel), findsNothing);
+
+      await tester.tap(find.bySemanticsLabel(testToggleSemanticsLabel));
+      await tester.pumpAndSettle();
+
+      expect(find.bySemanticsLabel(rungLabel), findsNothing);
+      expect(find.bySemanticsLabel(conversionsLabel), findsOneWidget);
+    });
+
+    testWidgets(
+        'two rows announce both rows and leave a hidden conversions row out',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: rung(),
+            conversionSuggestions: conversions(),
+          ));
+      expect(find.bySemanticsLabel('$rungLabel, $conversionsLabel'),
+          findsOneWidget);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            secondRowHidden: true,
+            aiSuggestions: rung(),
+            conversionSuggestions: conversions(),
+          ));
+      await tester.pumpAndSettle();
+
+      expect(find.bySemanticsLabel(rungLabel), findsOneWidget);
+      expect(
+          find.bySemanticsLabel('$rungLabel, $conversionsLabel'), findsNothing);
+    });
+
+    testWidgets('suggestionsSemanticsLabelBuilder replaces the announced text',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            aiSuggestions: rung(),
+            suggestionsSemanticsLabelBuilder: (suggestions) =>
+                '${suggestions.length} neue Vorschläge',
+          ));
+
+      final region =
+          tester.getSemantics(find.bySemanticsLabel('2 neue Vorschläge'));
+      expect(region.flagsCollection.isLiveRegion, isTrue);
+      expect(find.bySemanticsLabel(rungLabel), findsNothing);
+    });
+
+    testWidgets('the placeholder is a live region',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await pumpSuggestionArea(tester, testCoreSuggestionArea());
+
+      final placeholder = tester.getSemantics(
+          find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder));
+      expect(placeholder.label,
+          CoreSuggestionArea.defaultSuggestionAreaPlaceholder);
+      expect(placeholder.flagsCollection.isLiveRegion, isTrue);
+    });
+  });
 }

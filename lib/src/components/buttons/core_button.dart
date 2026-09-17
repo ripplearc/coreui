@@ -46,6 +46,10 @@ class CoreButton extends StatefulWidget {
   final List<BoxShadow>? shadows;
   final String? semanticsLabel;
 
+  /// Screen-reader hint announced after the label — what a tap does
+  /// (`'Edits the rate'`). Pass a localised string; `null` announces none.
+  final String? semanticsHint;
+
   /// Overrides the border colour the [variant] resolves for every state.
   /// `null` keeps the variant's own pressed / focused / resting colours.
   final Color? borderColor;
@@ -77,6 +81,7 @@ class CoreButton extends StatefulWidget {
     this.autofocus = false,
     this.shadows,
     this.semanticsLabel,
+    this.semanticsHint,
     this.borderColor,
     this.borderWidth,
   }) : assert(
@@ -325,6 +330,7 @@ class _CoreButtonState extends State<CoreButton> {
 
     return Semantics(
       label: widget.semanticsLabel ?? widget.label,
+      hint: widget.semanticsHint,
       button: true,
       enabled: isEnabled,
       // Exclude semantics from children to ensure the button is treated as a

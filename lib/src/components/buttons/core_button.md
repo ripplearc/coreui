@@ -32,6 +32,7 @@ CoreButton(
 | `shadows` | `List<BoxShadow>?` | No | `null` | Optional list of shadows to apply to the button. |
 | `borderColor` | `Color?` | No | `null` | Overrides the border colour the variant resolves, in every state. |
 | `borderWidth` | `double?` | No | `null` | Overrides the border width the variant resolves (`0` primary, `2` otherwise). `CoreButton.hairlineBorderWidth` is the 1 px chip-style edge. |
+| `semanticsHint` | `String?` | No | `null` | Screen-reader hint announced after the label — what a tap does (`'Edits the rate'`). Pass a localised string. |
 | `focusNode` | `FocusNode?` | No | `null` | Optional focus node to control button focus state. |
 | `autofocus` | `bool` | No | `false` | Whether the button should be auto-focused. |
 

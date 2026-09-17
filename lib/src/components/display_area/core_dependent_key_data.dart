@@ -33,6 +33,7 @@ class CoreDependentKeyData {
     required this.kind,
     this.onPressed,
     this.semanticsLabel,
+    this.semanticsHint,
   });
 
   /// The descriptive prefix (`Rate`, `Shown as`, `Re-input 38.30° as`).
@@ -58,4 +59,10 @@ class CoreDependentKeyData {
   /// Defaults to the visible label and value. Pass a localised string when
   /// the visible text does not read well aloud.
   final String? semanticsLabel;
+
+  /// Screen-reader hint announced after the label — what tapping the pill
+  /// does, since the trailing icon that tells a sighted user is not spoken
+  /// (`'Edits the rate'`, `'Changes how the pitch is shown'`, `'Rewrites the
+  /// value'`). Pass a localised string; the row holds no default.
+  final String? semanticsHint;
 }
