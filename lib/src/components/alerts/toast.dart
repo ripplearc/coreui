@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
+import '../../theme/icon_sizes.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
@@ -27,12 +28,14 @@ enum _ToastType {
 ///
 /// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
 /// factory constructors to create a toast with the appropriate visual style.
-class Toast extends StatelessWidget {
+class Toast extends StatefulWidget {
   final String? title;
   final String description;
   final VoidCallback? onClose;
   final String closeLabel;
   final _ToastType _type;
+
+  static const double _radius = CoreSpacing.space2;
 
   const Toast._({
     required this.description,
@@ -102,8 +105,13 @@ class Toast extends StatelessWidget {
     );
   }
 
+  @override
+  State<Toast> createState() => _ToastState();
+}
+
+class _ToastState extends State<Toast> {
   CoreIconData get _icon {
-    switch (_type) {
+    switch (widget._type) {
       case _ToastType.error:
         return CoreIcons.error;
       case _ToastType.warning:
@@ -116,7 +124,7 @@ class Toast extends StatelessWidget {
   }
 
   Color _getBackgroundColor(AppColorsExtension colors) {
-    switch (_type) {
+    switch (widget._type) {
       case _ToastType.error:
         return colors.alertRed;
       case _ToastType.warning:
@@ -129,7 +137,7 @@ class Toast extends StatelessWidget {
   }
 
   Color _getIconColor(AppColorsExtension colors) {
-    switch (_type) {
+    switch (widget._type) {
       case _ToastType.error:
         return colors.iconRed;
       case _ToastType.warning:
@@ -145,22 +153,20 @@ class Toast extends StatelessWidget {
   Widget build(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
-    final backgroundColor = _getBackgroundColor(colors);
-    final iconColor = _getIconColor(colors);
 
     return Semantics(
       container: true,
-      button: onClose != null,
-      label: title ?? description,
-      hint: title != null ? description : null,
+      button: widget.onClose != null,
+      label: widget.title ?? widget.description,
+      hint: widget.title != null ? widget.description : null,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: CoreSpacing.space4,
           vertical: CoreSpacing.space3,
         ),
         decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(8),
+          color: _getBackgroundColor(colors),
+          borderRadius: BorderRadius.circular(Toast._radius),
           boxShadow: CoreShadows.medium,
         ),
         child: Row(
@@ -169,69 +175,81 @@ class Toast extends StatelessWidget {
           children: [
             CoreIconWidget(
               icon: _icon,
-              size: 24,
-              color: iconColor,
+              size: CoreIconSize.size24,
+              color: _getIconColor(colors),
             ),
             const SizedBox(width: CoreSpacing.space3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title ?? description,
-                    style: typography.bodyLargeMedium.copyWith(
-                      color: colors.textDark,
-                    ),
-                  ),
-                  if (title != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: CoreSpacing.space1),
-                      child: Text(
-                        description,
-                        style: typography.bodySmallRegular.copyWith(
-                          color: colors.textBody,
-                        ),
-                      ),
-                    ),
-                ],
+            Expanded(child: _buildStackedText(typography, colors)),
+            const SizedBox(width: CoreSpacing.space3),
+            _buildCloseButton(typography, colors),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStackedText(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          widget.title ?? widget.description,
+          style: typography.bodyLargeMedium.copyWith(
+            color: colors.textDark,
+          ),
+        ),
+        if (widget.title != null)
+          Padding(
+            padding: const EdgeInsets.only(top: CoreSpacing.space1),
+            child: Text(
+              widget.description,
+              style: typography.bodySmallRegular.copyWith(
+                color: colors.textBody,
               ),
             ),
-            const SizedBox(width: CoreSpacing.space3),
-            GestureDetector(
-              key: const Key('toast_close_button'),
-              onTap: onClose ?? () => Navigator.of(context).pop(),
-              child: Semantics(
-                button: true,
-                label: closeLabel,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: CoreSpacing.space12,
-                    minHeight: CoreSpacing.space12,
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          closeLabel,
-                          style: typography.bodyMediumSemiBold.copyWith(
-                            color: colors.textLink,
-                          ),
-                        ),
-                        const SizedBox(width: CoreSpacing.space2),
-                        CoreIconWidget(
-                          icon: CoreIcons.close,
-                          size: 24,
-                          color: colors.iconDark,
-                        ),
-                      ],
-                    ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCloseButton(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+  ) {
+    return GestureDetector(
+      key: const Key('toast_close_button'),
+      onTap: widget.onClose ?? () => Navigator.of(context).pop(),
+      child: Semantics(
+        button: true,
+        label: widget.closeLabel,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: CoreSpacing.space12,
+            minHeight: CoreSpacing.space12,
+          ),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.closeLabel,
+                  style: typography.bodyMediumSemiBold.copyWith(
+                    color: colors.textLink,
                   ),
                 ),
-              ),
+                const SizedBox(width: CoreSpacing.space2),
+                CoreIconWidget(
+                  icon: CoreIcons.close,
+                  size: CoreIconSize.size24,
+                  color: colors.iconDark,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
