@@ -117,8 +117,15 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                           },
                           dependentKeys: state.dependentKeys,
                           chipsList: chips,
+                          onPreviousSessionTapped: (id) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Restore session $id')),
+                            );
+                          },
+                          restoreSemanticsLabel: 'Restore this calculation',
                           previousSessions: [
                             CoreHistorySessionData(
+                              id: 'session-may-24',
                               dateLabel: 'May 24, 2026',
                               value: '12.0',
                               chipsList: [
@@ -135,6 +142,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                               ],
                             ),
                             CoreHistorySessionData(
+                              id: 'session-yesterday',
                               dateLabel: 'Yesterday',
                               value: '10.5',
                               chipsList: [
