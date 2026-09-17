@@ -187,6 +187,10 @@ class _GeometryAreaShowcaseScreenState
                                         addLabel: 'Add size',
                                         editLabel: 'Edit size',
                                         dragHandleLabel: 'Reorder',
+                                        editRowSemanticsLabelBuilder: (row) =>
+                                            'Edit ${row.values.first}',
+                                        deleteRowSemanticsLabelBuilder: (row) =>
+                                            'Delete ${row.values.first}',
                                         columns: const [
                                           CoreSizesColumn(title: 'Length'),
                                           CoreSizesColumn(title: 'Width'),
