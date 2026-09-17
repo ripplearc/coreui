@@ -460,6 +460,42 @@ void main() {
       );
     });
   });
+
+  group('CoreFunctionKeyBottomSheet test keys', () {
+    testWidgets('sheet tiles carry the function key test keys', (tester) async {
+      const basic = GroupNameType(id: 'basic', label: 'Basic Geometry');
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreFunctionKeyBottomSheet(
+              groups: const [
+                FunctionGroup(
+                  name: basic,
+                  keys: [
+                    KeyType(groupName: 'basic', id: 'Area', label: 'Area'),
+                    KeyType(
+                      groupName: 'basic',
+                      id: 'Length',
+                      label: 'Length',
+                      testKey: ValueKey('calc_key_length'),
+                    ),
+                  ],
+                ),
+              ],
+              groupAccentColors: const {},
+              selectedGroup: basic,
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byKey(const ValueKey('calc_key_Area')), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_key_length')), findsOneWidget);
+    });
+  });
 }
 
 class _ReorderingSheetHost extends StatefulWidget {

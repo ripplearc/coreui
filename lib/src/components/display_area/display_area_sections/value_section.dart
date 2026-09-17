@@ -55,7 +55,7 @@ class _DependentKeyRow extends StatelessWidget {
         children: [
           for (var i = 0; i < dependentKeys.length; i++) ...[
             if (i > 0) const SizedBox(width: CoreSpacing.space2),
-            _DependentKeyPill(data: dependentKeys[i]),
+            _DependentKeyPill(data: dependentKeys[i], index: i),
           ],
         ],
       ),
@@ -64,9 +64,10 @@ class _DependentKeyRow extends StatelessWidget {
 }
 
 class _DependentKeyPill extends StatelessWidget {
-  const _DependentKeyPill({required this.data});
+  const _DependentKeyPill({required this.data, required this.index});
 
   final CoreDependentKeyData data;
+  final int index;
 
   String get _formattedLabel {
     final label = data.label.trimRight();
@@ -89,6 +90,7 @@ class _DependentKeyPill extends StatelessWidget {
     final trailingIcon = _trailingIcon;
 
     return CoreButton(
+      key: data.testKey ?? CoreDisplayArea.dependentKeyTestKey(index),
       onPressed: data.onPressed,
       semanticsLabel: data.semanticsLabel ?? '$formattedLabel${data.value}',
       semanticsHint: data.semanticsHint,

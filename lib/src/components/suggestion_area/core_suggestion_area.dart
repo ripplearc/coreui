@@ -53,6 +53,12 @@ enum CoreSuggestionLayout {
 /// moving focus; [suggestionsSemanticsLabelBuilder] builds that text. Each
 /// chip keeps its own node inside the region, and the placeholder is a live
 /// region of its own, so an emptied strip is heard too.
+///
+/// ## Test keys
+///
+/// Every chip carries a stable [Key] for Patrol and widget tests:
+/// [SuggestionData.testKey], or [chipTestKey] / [conversionChipTestKey] by
+/// position in its row.
 class CoreSuggestionArea extends StatefulWidget {
   const CoreSuggestionArea({
     super.key,
@@ -94,6 +100,17 @@ class CoreSuggestionArea extends StatefulWidget {
 
   /// The default trailing marker of a [SuggestionKind.bind] chip.
   static const String defaultBindSuffix = '?';
+
+  /// The default [Key] of the chip at [index] on the primary row, and on the
+  /// single row of [CoreSuggestionLayout.toggle]: `calc_strip_chip_<index>`.
+  /// [SuggestionData.testKey] overrides it.
+  static Key chipTestKey(int index) => ValueKey('calc_strip_chip_$index');
+
+  /// The default [Key] of the chip at [index] on the conversions row of
+  /// [CoreSuggestionLayout.twoRows]: `calc_strip_conversion_<index>`, so the
+  /// two rows never share a key. [SuggestionData.testKey] overrides it.
+  static Key conversionChipTestKey(int index) =>
+      ValueKey('calc_strip_conversion_$index');
 
   /// The live-region text used when [suggestionsSemanticsLabelBuilder] is
   /// null: each suggestion's [SuggestionData.semanticsLabel], or its label,

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -203,6 +204,7 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
             value: readingLabel,
             kind: CoreDependentKeyKind.toggle,
             semanticsHint: 'Changes how the pitch is shown',
+            testKey: const ValueKey('calc_dep_pill_shown_as'),
             onPressed: () => add(const DependentKeyPressed(_shownAsPillId)),
           ),
         ],
@@ -240,6 +242,7 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
           value: '${_trim(currentState.fenceOcFeet)}ft',
           kind: CoreDependentKeyKind.editable,
           semanticsHint: 'Edits the on-centre spacing',
+          testKey: const ValueKey('calc_dep_pill_oc'),
           onPressed: () => add(const DependentKeyPressed(_ocPillId)),
         ),
       ],
@@ -274,6 +277,7 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
           value: '\$${_trim(currentState.ratePerSqFt)}/ft²',
           kind: CoreDependentKeyKind.editable,
           semanticsHint: 'Edits the rate',
+          testKey: const ValueKey('calc_dep_pill_rate'),
           onPressed: () => add(const DependentKeyPressed(_ratePillId)),
         ),
         CoreDependentKeyData(
@@ -281,6 +285,7 @@ class DisplayAreaBloc extends Bloc<DisplayAreaEvent, DisplayAreaState> {
           value: '${_trim(currentState.wastePercent)}%',
           kind: CoreDependentKeyKind.editable,
           semanticsHint: 'Edits the waste allowance',
+          testKey: const ValueKey('calc_dep_pill_waste'),
           onPressed: () => add(const DependentKeyPressed(_wastePillId)),
         ),
       ],

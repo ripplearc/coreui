@@ -64,6 +64,14 @@ class SuggestionData {
   /// "Convert to 12.57 square yards").
   final String? semanticsLabel;
 
+  /// The [Key] the chip carries, for Patrol and widget tests. `null` takes
+  /// the row's default: [CoreSuggestionArea.chipTestKey] (`calc_strip_chip_0`)
+  /// on the primary row and on the single row of
+  /// [CoreSuggestionLayout.toggle], [CoreSuggestionArea.conversionChipTestKey]
+  /// (`calc_strip_conversion_0`) on the conversions row of
+  /// [CoreSuggestionLayout.twoRows].
+  final Key? testKey;
+
   /// Creates a [SuggestionData] instance.
   SuggestionData({
     required this.label,
@@ -72,6 +80,7 @@ class SuggestionData {
     required this.onTap,
     this.kind = SuggestionKind.predictive,
     this.semanticsLabel,
+    this.testKey,
   });
 }
 
@@ -161,33 +170,40 @@ class _SuggestionListState extends State<_SuggestionList> {
           final unit = data.unit;
           final hidesLabel =
               widget.isSecondary || (isMemory && data.label.isEmpty);
-          return CoreChip(
+          return KeyedSubtree(
             key: ValueKey(
                 '${data.label}_${data.value}_${data.unit}_${data.kind.name}_${entry.key}'),
-            label: hidesLabel ? null : data.label,
-            icon: isMemory ? CoreIcons.history : null,
-            value: isBind && unit == null
-                ? '${data.value} ${widget.bindSuffix}'
-                : data.value,
-            unit: isBind && unit != null ? '$unit ${widget.bindSuffix}' : unit,
-            outline: switch (data.kind) {
-              SuggestionKind.bind => CoreChipOutline.dashed,
-              SuggestionKind.deterministic => CoreChipOutline.highlight,
-              SuggestionKind.predictive ||
-              SuggestionKind.conversion ||
-              SuggestionKind.memory =>
-                CoreChipOutline.solid,
-            },
-            semanticsLabel: data.semanticsLabel,
-            selected: _smartChipUnselected,
-            onTap: () {
-              data.onTap();
-              if (widget.isExpanded) {
-                widget.onExpandedChanged?.call(false);
-              }
-            },
-            isSmartChip: true,
-            size: widget.isSecondary ? CoreChipSize.mini : CoreChipSize.large,
+            child: CoreChip(
+              key: data.testKey ??
+                  (widget.isSecondary
+                      ? CoreSuggestionArea.conversionChipTestKey(entry.key)
+                      : CoreSuggestionArea.chipTestKey(entry.key)),
+              label: hidesLabel ? null : data.label,
+              icon: isMemory ? CoreIcons.history : null,
+              value: isBind && unit == null
+                  ? '${data.value} ${widget.bindSuffix}'
+                  : data.value,
+              unit:
+                  isBind && unit != null ? '$unit ${widget.bindSuffix}' : unit,
+              outline: switch (data.kind) {
+                SuggestionKind.bind => CoreChipOutline.dashed,
+                SuggestionKind.deterministic => CoreChipOutline.highlight,
+                SuggestionKind.predictive ||
+                SuggestionKind.conversion ||
+                SuggestionKind.memory =>
+                  CoreChipOutline.solid,
+              },
+              semanticsLabel: data.semanticsLabel,
+              selected: _smartChipUnselected,
+              onTap: () {
+                data.onTap();
+                if (widget.isExpanded) {
+                  widget.onExpandedChanged?.call(false);
+                }
+              },
+              isSmartChip: true,
+              size: widget.isSecondary ? CoreChipSize.mini : CoreChipSize.large,
+            ),
           );
         }),
         _ToggleButton(
