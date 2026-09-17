@@ -37,6 +37,9 @@ class _SizesHeader extends StatelessWidget {
             Semantics(
               button: true,
               label: addLabel,
+              // See _SizeCard._actionButton: excludeSemantics drops the
+              // GestureDetector's tap action, so the node needs its own.
+              onTap: onAddTap,
               excludeSemantics: true,
               child: GestureDetector(
                 onTap: onAddTap,

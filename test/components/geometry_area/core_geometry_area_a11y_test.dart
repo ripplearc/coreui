@@ -213,6 +213,44 @@ void main() {
           startsWith(_dragHandleLabel));
     });
 
+    testWidgets('the row action buttons are activatable, not just labelled',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              tables: [
+                _a11yTable(
+                  rows: const [
+                    CoreSizeCardData(id: '1', values: ['10', '20']),
+                  ],
+                  onDeleted: (_) {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // excludeSemantics drops the GestureDetector's own node, so without an
+      // onTap on the Semantics itself these would announce as buttons that
+      // refuse to activate — and the tap-target guideline, which only inspects
+      // nodes carrying a tap action, would pass vacuously.
+      for (final label in ['Edit 10', 'Delete 10']) {
+        final data =
+            tester.getSemantics(find.bySemanticsLabel(label)).getSemanticsData();
+        expect(data.flagsCollection.isButton, isTrue, reason: label);
+        expect(data.hasAction(SemanticsAction.tap), isTrue, reason: label);
+      }
+
+      handle.dispose();
+    });
+
     testWidgets('a read-only row advertises no custom semantics actions',
         (WidgetTester tester) async {
       final handle = tester.ensureSemantics();

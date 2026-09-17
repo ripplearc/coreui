@@ -108,7 +108,7 @@ CoreGeometryArea(
 - **Swipe Deletion**: Utilizing `Dismissible`, cards can be swiped horizontally when a table supplies `onDeleted`. Triggering a full swipe fires `onDeleted` passing the unique string ID.
 - **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `SizeEntryBottomSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
 - **Row actions**: The pencil and trash are 48 dp tap targets around 20 px icons, so they clear `androidTapTargetGuideline`. Each claims horizontal drags that begin on it, so a swipe starting on a button cannot reach the row's `Dismissible`. A table that renders both reserves 96 dp of row width, which the header mirrors — wide tables therefore scroll horizontally sooner than before.
-- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` with `onSaved`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
+- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` and `editRowSemanticsLabelBuilder` with `onSaved`, `deleteRowSemanticsLabelBuilder` with `onDeleted`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
 
 ---
 
