@@ -16,6 +16,7 @@ void _noopReorder(int oldIndex, int newIndex) {}
 /// A fixed table: no callbacks and no add label, so it renders without drag
 /// handles, an add action or swipe-to-delete.
 const CoreSizesTableData _readOnlyTable = CoreSizesTableData(
+  id: 'read-only',
   title: 'Rates & waste for 1,750.7yd³',
   columns: [
     CoreSizesColumn(title: 'Per unit'),
@@ -35,6 +36,7 @@ CoreSizesTableData _fourColumnTable({
   void Function(int oldIndex, int newIndex)? onReordered = _noopReorder,
 }) {
   return CoreSizesTableData(
+    id: 'four-column',
     title: 'Concrete volumes for 70ft',
     addLabel: 'Add size',
     editLabel: 'Edit size',
@@ -61,6 +63,7 @@ CoreSizesTableData _twoColumnTable({
   void Function(int oldIndex, int newIndex)? onReordered = _noopReorder,
 }) {
   return CoreSizesTableData(
+    id: 'two-column',
     title: 'Concrete volumes for 70ft',
     addLabel: 'Add size',
     editLabel: 'Edit size',

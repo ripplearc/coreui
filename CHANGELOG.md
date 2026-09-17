@@ -31,9 +31,15 @@
 
 ### ✨ New
 
-- `CoreSizesTableData` — one titled table: `title`, `columns`, `rows`, optional
-  `addLabel` / `editLabel` / `dragHandleLabel`, and optional `onAdd`, `onSaved`,
-  `onDeleted`, `onReordered`
+- `CoreSizesTableData` — one titled table: `id`, `title`, `columns`, `rows`,
+  optional `addLabel` / `editLabel` / `dragHandleLabel`, and optional `onAdd`,
+  `onSaved`, `onDeleted`, `onReordered`
+  - `id` is a stable, locale-independent identity that must be unique among
+    sibling tables. It keys the table's widget so state follows the table rather
+    than its position when the list changes, and is deliberately separate from
+    the display strings: two tables can legitimately share column headers (a
+    rates and a waste table both showing `Per unit`), and a title changes
+    whenever the result it interpolates does
 - `CoreSizesColumn` — one column of a table; currently its header title
 - `CoreSizesTableData.onAdd` — when provided, the app owns the add flow and the
   built-in `SizeEntryBottomSheet` is not opened

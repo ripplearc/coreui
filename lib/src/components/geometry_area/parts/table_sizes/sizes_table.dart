@@ -100,6 +100,18 @@ class _SizesTableState extends State<_SizesTable> {
       final row = entry.value;
       final index = entry.key;
 
+      // Checked here rather than in the const CoreSizesTableData constructor,
+      // which cannot inspect the rows and stay const. Without this the
+      // mismatch surfaces inside _SizeCard, whose message names columnWidths —
+      // an internal the consumer has no name for.
+      assert(
+        row.values.length == table.columns.length,
+        'CoreSizesTableData "${table.id}": row "${row.id}" has '
+        '${row.values.length} values but the table declares '
+        '${table.columns.length} columns. Every row must supply exactly one '
+        'value per column.',
+      );
+
       return Semantics(
         key: ValueKey(row.id),
         // An empty map still sets SemanticsAction.customAction, which makes a

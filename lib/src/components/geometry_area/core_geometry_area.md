@@ -136,9 +136,10 @@ CoreGeometryArea(
 ### `CoreSizesTableData`
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
+| `id` | `String` | required | Stable, locale-independent identity, unique among sibling tables. Keys the table's widget so its state survives the list changing; kept separate from the display strings, which are neither unique nor stable. |
 | `title` | `String` | required | The table's header title. Normally interpolates the result it describes, e.g. `'Sheet quantities for 180ft²'`, so it has no default — pass a localised string. |
 | `columns` | `List<CoreSizesColumn>` | required | The columns, in display order. Each row must supply one value per column. |
-| `rows` | `List<CoreSizeCardData>` | required | Ordered rows. Identifiers must be unique within the table to support reliable reordering. |
+| `rows` | `List<CoreSizeCardData>` | required | Ordered rows, each supplying exactly one value per column. Identifiers must be unique within the table to support reliable reordering. |
 | `addLabel` | `String?` | `null` | Text for the add action, which renders only when this is set. Requires `onAdd` or `onSaved` to act on. |
 | `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. Required with `onSaved`. |
 | `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |

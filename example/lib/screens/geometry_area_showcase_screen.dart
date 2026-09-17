@@ -25,6 +25,7 @@ class _GeometryAreaShowcaseScreenState
   /// A read-only table: with no add, delete or reorder callbacks it renders
   /// without an add action, drag handles or swipe-to-delete.
   static const CoreSizesTableData _ratesAndWasteTable = CoreSizesTableData(
+    id: 'rates-and-waste',
     title: 'Rates & waste for 1,750.7yd³',
     columns: [
       CoreSizesColumn(title: 'Per unit'),
@@ -165,6 +166,7 @@ class _GeometryAreaShowcaseScreenState
                                     isCollapsed: false,
                                     tables: [
                                       CoreSizesTableData(
+                                        id: 'circle-measurements',
                                         title: 'Circle measurements',
                                         addLabel: 'Add size',
                                         editLabel: 'Edit size',

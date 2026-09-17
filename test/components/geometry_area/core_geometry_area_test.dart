@@ -6,6 +6,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// Builds a table whose affordances are all enabled unless overridden, so each
 /// test can turn a single callback off and assert what disappears.
 CoreSizesTableData _table({
+  String id = 'table',
   String title = 'Table title',
   List<String> columnTitles = const ['Col A', 'Col B'],
   List<CoreSizeCardData> rows = const [],
@@ -18,6 +19,7 @@ CoreSizesTableData _table({
   void Function(int oldIndex, int newIndex)? onReordered,
 }) {
   return CoreSizesTableData(
+    id: id,
     title: title,
     columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
     rows: rows,
@@ -237,6 +239,7 @@ void main() {
           onDocumentButtonPressed: () {},
           tables: [
             _table(
+              id: 'sheets',
               title: 'Sheet quantities',
               columnTitles: const ['Size'],
               rows: const [
@@ -246,6 +249,7 @@ void main() {
               onReordered: (o, n) => reorderCalls.add((o, n)),
             ),
             _table(
+              id: 'rates',
               title: 'Rates & waste',
               columnTitles: const ['Per unit'],
               rows: const [
@@ -254,6 +258,7 @@ void main() {
               addLabel: null,
             ),
             _table(
+              id: 'densities',
               title: 'Densities',
               columnTitles: const ['Material'],
               rows: const [
@@ -331,6 +336,40 @@ void main() {
       expect(find.text('A1'), findsNothing);
     });
 
+    testWidgets('two tables may share column titles', (tester) async {
+      // Keying the tables on their display strings made this throw
+      // "Duplicate keys found" — a rates and a waste table legitimately share
+      // headers, so identity has to come from the caller's id.
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              id: 'rates',
+              title: 'Rates',
+              columnTitles: const ['Per unit', 'Value'],
+              rows: const [
+                CoreSizeCardData(id: 'r1', values: ['ft3', r'$6.5']),
+              ],
+            ),
+            _table(
+              id: 'waste',
+              title: 'Waste',
+              columnTitles: const ['Per unit', 'Value'],
+              rows: const [
+                CoreSizeCardData(id: 'w1', values: ['ft3', '0%']),
+              ],
+            ),
+          ],
+        )),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Rates'), findsOneWidget);
+      expect(find.text('Waste'), findsOneWidget);
+    });
+
     testWidgets('a read-only row advertises no custom semantics actions',
         (tester) async {
       final handle = tester.ensureSemantics();
@@ -367,6 +406,7 @@ void main() {
       test('a reorderable table requires dragHandleLabel', () {
         expect(
           () => CoreSizesTableData(
+            id: 'reorderable',
             title: 'Reorderable',
             columns: const [CoreSizesColumn(title: 'Col')],
             rows: const [],
@@ -381,6 +421,7 @@ void main() {
       test('a table with onSaved requires editLabel', () {
         expect(
           () => CoreSizesTableData(
+            id: 'editable',
             title: 'Editable',
             columns: const [CoreSizesColumn(title: 'Col')],
             rows: const [],
@@ -395,6 +436,7 @@ void main() {
       test('onAdd requires addLabel', () {
         expect(
           () => CoreSizesTableData(
+            id: 'addable',
             title: 'Addable',
             columns: const [CoreSizesColumn(title: 'Col')],
             rows: const [],
