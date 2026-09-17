@@ -69,6 +69,7 @@ class CoreSizesColumn {
 /// sizes table and a fixed, read-only rates table.
 class CoreSizesTableData {
   const CoreSizesTableData({
+    required this.id,
     required this.title,
     required this.columns,
     required this.rows,
@@ -80,6 +81,11 @@ class CoreSizesTableData {
     this.onDeleted,
     this.onReordered,
   })  : assert(
+          id != '',
+          'CoreSizesTableData: id must not be empty — it identifies the table '
+          'across rebuilds and must be unique among sibling tables.',
+        ),
+        assert(
           onReordered == null || dragHandleLabel != null,
           'CoreSizesTableData: a reorderable table must supply '
           'dragHandleLabel, otherwise its drag handles reach screen readers '
@@ -101,6 +107,17 @@ class CoreSizesTableData {
           'With neither, the add action has nothing to do and is not rendered, '
           'so the label would silently go missing.',
         );
+
+  /// A stable, locale-independent identifier for this table.
+  ///
+  /// Must be unique among the tables in one [CoreGeometryArea]: it keys the
+  /// table's widget, so duplicates raise a "Duplicate keys found" error. It is
+  /// deliberately separate from [title] and [columns], which are display
+  /// strings — two tables can legitimately share column headers (a rates and a
+  /// waste table both showing `Per unit`), and a title changes whenever the
+  /// result it interpolates does, which would discard the state the key exists
+  /// to preserve.
+  final String id;
 
   /// The title displayed above the table.
   ///
@@ -312,17 +329,10 @@ class CoreGeometryArea extends StatelessWidget {
           for (final table in tables)
             if (table.columns.isNotEmpty) ...[
               const SizedBox(height: CoreSpacing.space2),
-              // Keyed on the column titles, which identify the table
-              // structurally and stay put while its own title interpolates a
-              // changing result. Without a key the tables are matched by
-              // position, so removing one would hand its drop-highlight state
-              // to an unrelated table.
-              _SizesTable(
-                key: ValueKey(
-                  table.columns.map((column) => column.title).join('|'),
-                ),
-                table: table,
-              ),
+              // Keyed on the caller's id. Without a key the tables are matched
+              // by position, so removing one would hand its drop-highlight
+              // state to an unrelated table.
+              _SizesTable(key: ValueKey(table.id), table: table),
             ],
           const SizedBox(height: CoreSpacing.space2),
           _AttachmentsSection(

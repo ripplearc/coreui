@@ -22,6 +22,7 @@ CoreSizesTableData _a11yTable({
   void Function(int oldIndex, int newIndex)? onReordered,
 }) {
   return CoreSizesTableData(
+    id: 'a11y-table',
     title: _sizesTitle,
     addLabel: _addSizeLabel,
     editLabel: 'Edit size',
