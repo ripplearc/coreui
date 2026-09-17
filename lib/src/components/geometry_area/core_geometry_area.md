@@ -36,14 +36,15 @@ CoreGeometryArea(
   documentButtonLabel: 'Document',
 
   dimensions: const [
-    CoreDimensionData(label: 'Area', value: '50.27ft\u00b2'),
+    CoreDimensionData(label: 'Area', value: '50.27ft²'),
     CoreDimensionData(label: 'Diameter', value: '8ft'),
   ],
 
   tables: [
     // A reorderable, extendable table.
     CoreSizesTableData(
-      title: 'Sheet quantities for 180ft\u00b2',
+      id: 'sheet-quantities',
+      title: 'Sheet quantities for 180ft²',
       addLabel: 'Add size',
       editLabel: 'Edit size',
       dragHandleLabel: 'Reorder',
@@ -69,7 +70,8 @@ CoreGeometryArea(
     // A fixed table: no callbacks, so no add action, drag handles or
     // swipe-to-delete render.
     const CoreSizesTableData(
-      title: 'Rates & waste for 1,750.7yd\u00b3',
+      id: 'rates-and-waste',
+      title: 'Rates & waste for 1,750.7yd³',
       columns: [
         CoreSizesColumn(title: 'Per unit'),
         CoreSizesColumn(title: 'Rate'),
@@ -77,7 +79,7 @@ CoreGeometryArea(
         CoreSizesColumn(title: 'Cost'),
       ],
       rows: [
-        CoreSizeCardData(id: 'ft3', values: ['ft\u00b3', r'$6.5', '0%', r'$307,247.85']),
+        CoreSizeCardData(id: 'ft3', values: ['ft³', r'$6.5', '0%', r'$307,247.85']),
       ],
     ),
   ],

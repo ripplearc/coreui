@@ -15,7 +15,9 @@
     constants
   - Migration: wrap the former arguments in a single `CoreSizesTableData`. Column
     titles become `CoreSizesColumn`s, `sizesTableData` becomes `rows`, and the
-    `onSize*` callbacks lose their prefix — `onSaved`, `onDeleted`, `onReordered`
+    `onSize*` callbacks lose their prefix — `onSaved`, `onDeleted`, `onReordered`.
+    Also supply the new required `id`: unlike the rest it has no predecessor to
+    map from, so it cannot be inferred from the old call — see ✨ New below
   - `CoreSizesTableData.title` is required and has no English default. Titles
     interpolate the result they describe (`'Sheet quantities for 180ft²'`), so
     they cannot be a package-level constant. This continues the 0.15.0 move of
