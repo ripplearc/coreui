@@ -29,6 +29,15 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// swipe. The "View all" sheet stays the non-gesture equivalent, and the
 /// keyboard holds no group order of its own: a reorder made in that sheet
 /// reaches the consumer through [onGroupsReordered].
+///
+/// ## Test keys
+/// Every key carries a stable [Key] for Patrol and widget tests. Digits,
+/// operators, units and controls take `calc_key_<enum name>` from
+/// [DigitTypeX.testKey], [OperatorTypeX.testKey], [UnitTypeX.testKey] and
+/// [ControlActionX.testKey]; the result button carries
+/// [CoreResultButton.testKey]; a function key carries
+/// [KeyType.resolvedTestKey] — `calc_key_<id>` unless [KeyType.testKey] is
+/// set — on the strip and in the "View all" sheet alike.
 class CoreKeyboard extends StatefulWidget {
   const CoreKeyboard({
     super.key,

@@ -1092,4 +1092,67 @@ void main() {
       expect(area.resolvedDependentKeys, isEmpty);
     });
   });
+
+  group('CoreDisplayArea dependent key test keys', () {
+    Widget host(List<CoreDependentKeyData> keys) => MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              value: '\$84.25',
+              dependentKeys: keys,
+            ),
+          ),
+        );
+
+    testWidgets('pills carry calc_dep_pill_<index> by default',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(host(const [
+        CoreDependentKeyData(
+          label: 'Rate',
+          value: '\$14.5/sheet',
+          kind: CoreDependentKeyKind.editable,
+        ),
+        CoreDependentKeyData(
+          label: 'Waste',
+          value: '10%',
+          kind: CoreDependentKeyKind.editable,
+        ),
+      ]));
+
+      expect(
+          find.byKey(CoreDisplayArea.dependentKeyTestKey(0)), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_dep_pill_1')), findsOneWidget);
+      expect(
+        tester
+            .widget<CoreButton>(
+                find.byKey(CoreDisplayArea.dependentKeyTestKey(1)))
+            .semanticsLabel,
+        'Waste: 10%',
+      );
+    });
+
+    testWidgets('CoreDependentKeyData.testKey overrides the default and taps',
+        (WidgetTester tester) async {
+      var pressed = false;
+      await tester.pumpWidget(host([
+        CoreDependentKeyData(
+          label: 'Sheet size',
+          value: '48in × 94.49in',
+          kind: CoreDependentKeyKind.editable,
+          testKey: const ValueKey('calc_dep_pill_sheet_size'),
+          onPressed: () => pressed = true,
+        ),
+      ]));
+
+      expect(find.byKey(const ValueKey('calc_dep_pill_sheet_size')),
+          findsOneWidget);
+      expect(find.byKey(CoreDisplayArea.dependentKeyTestKey(0)), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('calc_dep_pill_sheet_size')));
+      await tester.pumpAndSettle();
+      expect(pressed, isTrue);
+    });
+  });
 }

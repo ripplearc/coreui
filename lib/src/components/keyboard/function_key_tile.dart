@@ -12,6 +12,9 @@ import 'keyboard_models.dart';
 /// [onTap] is called when the key is tapped.
 /// [hasPadding] determines whether to add padding around the key (default: false).
 /// [customHint] is an optional custom semantic hint. If not provided, uses keyType.semanticLabel.
+///
+/// The rendered tile carries [KeyType.resolvedTestKey] (`calc_key_<id>`, or
+/// [KeyType.testKey]) for Patrol and widget tests.
 class FunctionKeyTile extends StatefulWidget {
   final KeyType keyType;
   final VoidCallback onTap;
@@ -129,6 +132,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
               BorderRadius.circular(CoreSpacing.space2);
 
           return GestureDetector(
+            key: widget.keyType.resolvedTestKey,
             behavior: HitTestBehavior.opaque,
             onTapDown: _handleTapDown,
             onTapUp: _handleTapUp,

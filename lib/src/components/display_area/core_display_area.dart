@@ -34,6 +34,12 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// [CoreDependentKeyData.semanticsHint], the spoken counterpart of the
 /// trailing icon that says what a tap does.
 ///
+/// ## Test keys
+///
+/// Every dependent-key pill carries a stable [Key] for Patrol and widget
+/// tests: [CoreDependentKeyData.testKey], or [dependentKeyTestKey] by
+/// position in the rendered row.
+///
 /// ## Swipe interaction
 ///
 /// **When chips fit in two rows or fewer** (`chipsList.length ≤ 5`):
@@ -52,6 +58,10 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 class CoreDisplayArea extends StatefulWidget {
   /// Chip-count threshold. More than this value activates the three-stage path.
   static const int _twoRowChipThreshold = 5;
+
+  /// The default [Key] of the pill at [index] in [resolvedDependentKeys]:
+  /// `calc_dep_pill_<index>`. [CoreDependentKeyData.testKey] overrides it.
+  static Key dependentKeyTestKey(int index) => ValueKey('calc_dep_pill_$index');
 
   const CoreDisplayArea({
     super.key,

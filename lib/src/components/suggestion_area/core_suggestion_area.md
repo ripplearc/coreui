@@ -65,6 +65,7 @@ CoreSuggestionArea(
 | `onTap` | `VoidCallback` | Yes | - | Called when the chip is accepted. |
 | `kind` | `SuggestionKind` | No | `predictive` | Which suggestion source produced the chip: `deterministic`, `predictive`, `bind`, `conversion`, `memory`. |
 | `semanticsLabel` | `String?` | No | `null` | Overrides the announced text when the visible text does not read well aloud (`'12.57yd²'` → "Convert to 12.57 square yards"). |
+| `testKey` | `Key?` | No | `null` | The key the chip carries for Patrol and widget tests. `null` takes the row's default: `CoreSuggestionArea.chipTestKey(index)` (`calc_strip_chip_<index>`) on the primary row and the toggle layout's single row, `CoreSuggestionArea.conversionChipTestKey(index)` (`calc_strip_conversion_<index>`) on the two-row layout's conversions row. |
 
 ## Suggestion kinds
 
@@ -92,6 +93,10 @@ Row 2 follows the calculator prototype's two-row strip (design decision, 2026-09
 ## Accessibility
 
 The area is a **live region**: its semantics node is labelled with the suggestions on screen (`suggestionsSemanticsLabelBuilder`, default `Area: 220 ft², Cost: $84.25`), so a screen reader announces a new rung or a fresh set of conversions without moving focus. Each chip keeps its own node inside the region, the conversions row keeps its `conversionsRowSemanticsLabel` group, and the placeholder is a live region of its own, so an emptied strip is heard too. Expanding or collapsing a row does not change the text, so the `+N` control is silent beyond its own label.
+
+## Test keys
+
+Every chip carries a stable `Key`, so a Patrol journey or a widget test taps it with `find.byKey`: `SuggestionData.testKey`, or by position in its row — `calc_strip_chip_<index>` on the primary row (and the single row of `toggle`, whichever list the switch shows), `calc_strip_conversion_<index>` on the conversions row of `twoRows`, so the two rows never share a key. The chip's element identity is unchanged: the label / value / unit / kind / index key that keeps a chip's tap highlight bound to its data sits on a `KeyedSubtree` around the chip, and the test key on the chip itself. The keyboard's keys (`calc_key_<enum name>` / `calc_key_<id>`) and the display area's pills (`calc_dep_pill_<index>`) follow the same scheme.
 
 ## Features
 

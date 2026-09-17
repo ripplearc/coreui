@@ -34,6 +34,7 @@ class CoreDependentKeyData {
     this.onPressed,
     this.semanticsLabel,
     this.semanticsHint,
+    this.testKey,
   });
 
   /// The descriptive prefix (`Rate`, `Shown as`, `Re-input 38.30° as`).
@@ -65,4 +66,9 @@ class CoreDependentKeyData {
   /// (`'Edits the rate'`, `'Changes how the pitch is shown'`, `'Rewrites the
   /// value'`). Pass a localised string; the row holds no default.
   final String? semanticsHint;
+
+  /// The [Key] the pill carries, for Patrol and widget tests
+  /// (`ValueKey('calc_dep_pill_sheet_size')`). `null` takes
+  /// [CoreDisplayArea.dependentKeyTestKey] for the pill's position in the row.
+  final Key? testKey;
 }

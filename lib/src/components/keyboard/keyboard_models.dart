@@ -68,6 +68,10 @@ extension DigitTypeX on DigitType {
         return '.';
     }
   }
+
+  /// The [Key] the digit's rendered button carries, for Patrol and widget
+  /// tests: `ValueKey('calc_key_seven')`.
+  Key get testKey => ValueKey('calc_key_$name');
 }
 
 /// Defines the types of mathematical operators available on the keyboard.
@@ -126,6 +130,10 @@ extension OperatorTypeX on OperatorType {
         return CoreIcons.percentOperator;
     }
   }
+
+  /// The [Key] the operator's rendered button carries, for Patrol and
+  /// widget tests: `ValueKey('calc_key_add')`.
+  Key get testKey => ValueKey('calc_key_$name');
 }
 
 /// Defines the types of measurement units available on the keyboard.
@@ -180,6 +188,10 @@ extension UnitTypeX on UnitType {
         return '/';
     }
   }
+
+  /// The [Key] the unit's rendered button carries, for Patrol and widget
+  /// tests: `ValueKey('calc_key_feet')`.
+  Key get testKey => ValueKey('calc_key_$name');
 }
 
 /// Defines control actions available on the keyboard.
@@ -210,6 +222,10 @@ extension ControlActionX on ControlAction {
         return CoreIcons.moreVert;
     }
   }
+
+  /// The [Key] the control's rendered button carries, for Patrol and
+  /// widget tests: `ValueKey('calc_key_clearAll')`.
+  Key get testKey => ValueKey('calc_key_$name');
 }
 
 /// Defines the types of function groups available on the keyboard.
@@ -315,6 +331,16 @@ class KeyType {
   /// Semantic label for accessibility.
   final String? semanticLabel;
 
+  /// The [Key] the rendered tile carries, for Patrol and widget tests.
+  /// `null` resolves to `calc_key_<id>` — see [resolvedTestKey].
+  final Key? testKey;
+
+  /// The key the tile is built with: [testKey], or `ValueKey('calc_key_$id')`
+  /// (`calc_key_Length`). The strip tile and the "View all" sheet's tile
+  /// for the same key share it, so a finder that runs while the sheet is
+  /// open scopes itself to the sheet or to the keyboard.
+  Key get resolvedTestKey => testKey ?? ValueKey('calc_key_$id');
+
   /// Creates a [KeyType] instance.
   const KeyType({
     required this.id,
@@ -323,6 +349,7 @@ class KeyType {
     this.icon,
     this.action,
     this.semanticLabel,
+    this.testKey,
   });
 }
 
