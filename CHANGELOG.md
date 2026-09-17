@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.21.0] - Calculator a11y: live regions and dependent-key pill hints
+
+### ✨ Features
+
+- **CoreSuggestionArea**: the area is a live region. Its semantics node is labelled with the suggestions on screen — the active list in `toggle`, both rows in `twoRows` minus the conversions row while `secondRowHidden` — so a screen reader announces a new rung or a fresh set of conversions without moving focus; each chip keeps its own node inside the region. `suggestionsSemanticsLabelBuilder(List<SuggestionData>)` (optional) builds that text; `CoreSuggestionArea.defaultSuggestionsSemanticsLabel` joins each suggestion's `semanticsLabel` — or label, value and unit — with commas (`Area: 220 ft², Cost: $84.25`). The placeholder is a live region too, so an emptied strip is heard as well (CA-1043)
+- **CoreDisplayArea**: the value text is a live region — a computed result, a typed value or the `errorTitle` is announced when it changes. `CoreDependentKeyData.semanticsHint` is announced after a pill's label and says what a tap does (`Edits the rate`, `Changes how the pitch is shown`), the spoken counterpart of the trailing ✎ / ⇄ icon; no default, in line with the row holding no strings of its own
+- **CoreButton**: `semanticsHint` passes through to the button's semantics node
+- Display area showcase: the Rate, Waste, O.C and Shown-as pills carry hints
+
+### 🧪 Tests
+
+- Suggestion area a11y: the region carries the live-region flag and the joined chip text; the text follows a suggestion change, the toggle's active list and `secondRowHidden`; the builder overrides it; the placeholder is a live region; the existing guideline tests run against the new tree
+- Display area a11y: the value node is a live region whose label follows the value, and the error title, on the same node; pills announce their hint
+- Button: `semanticsHint` reaches the semantics node
+
 ## [0.20.0] - CoreKeyboard group swipe and CoreFunctionKeyBottomSheet reorder callback
 
 ### ✨ Features

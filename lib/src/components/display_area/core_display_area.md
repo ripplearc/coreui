@@ -167,6 +167,7 @@ An answer keeps its assumption on screen. `dependentKeys` renders an end-aligned
 | `kind` | `CoreDependentKeyKind` | Yes | `editable`, `toggle` or `offer` — see below. |
 | `onPressed` | `VoidCallback?` | No | Tap handler. `null` renders the pill disabled. |
 | `semanticsLabel` | `String?` | No | Overrides the announced label; defaults to the visible label and value. |
+| `semanticsHint` | `String?` | No | Screen-reader hint announced after the label — what a tap does (`Edits the rate`, `Changes how the pitch is shown`), the spoken counterpart of the trailing icon. Pass a localised string; no default. |
 
 #### Kinds
 | Kind | Meaning | Trailing icon | Example |
@@ -186,6 +187,8 @@ The pill follows the Figma **Dependent Key Chip** component set (Design System p
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `closeSemanticLabel` | `String` | **required** | The semantic label announced by screen readers for the close icon. Has no default — pass a localized string so screen readers announce it in the user's language. |
+
+The value text is a **live region**: a screen reader announces the new value (or `errorTitle`) whenever it changes, so a result computed from the keyboard is heard without moving focus. Each dependent-key pill announces its label (or `CoreDependentKeyData.semanticsLabel`) followed by `CoreDependentKeyData.semanticsHint`.
 
 ---
 *Architectural Note: `CoreDisplayArea` heavily utilizes `AnimatedSize` aligned to `Alignment.topCenter` for its fluid layout transitions and relies on a deliberately calibrated swipe velocity threshold (`80px/sec`) to ensure intention-driven gestures without accidental triggers.*

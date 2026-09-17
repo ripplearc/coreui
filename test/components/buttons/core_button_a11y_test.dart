@@ -118,6 +118,29 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('semanticsHint is announced after the label', (tester) async {
+      final handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreButton(
+              label: 'Rate: \$14.5/sheet',
+              semanticsHint: 'Edits the rate',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreButton));
+      expect(semantics.label, 'Rate: \$14.5/sheet');
+      expect(semantics.hint, 'Edits the rate');
+
+      handle.dispose();
+    });
+
     testWidgets('large button meets a11y tap-target guidelines',
         (tester) async {
       await setupA11yTest(tester);
