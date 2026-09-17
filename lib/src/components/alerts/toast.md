@@ -153,6 +153,25 @@ The Toast component includes semantic labels for accessibility:
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
 - Receipt action: `CoreButton`, `primary`, `CoreButtonSize.large` (48 dp), not full width
 
+## Showing a receipt through CoreToast
+
+`CoreToast.showReceipt` puts a receipt in the overlay and wires its dismissal:
+
+```dart
+CoreToast.showReceipt(
+  context,
+  'Saved to history',
+  'Undo',
+  controller.undoBanking,
+  highlight: 'Calc 60ft²',
+);
+```
+
+The widget owns the timer, so `CoreToast` starts none of its own — a second
+timer could only disagree with it. `CoreToast.disableTimers()` still holds a
+receipt on screen, and `cleanup()` is safe to call at any point: the entry is
+removed exactly once whichever path gets there first.
+
 ## Design source
 
 The receipt variant follows `designs/CA-1042/01-receipt-toast.png`
