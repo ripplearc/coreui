@@ -63,12 +63,9 @@ class _SizesTableState extends State<_SizesTable> {
 
   static const _highlightDuration = 500;
 
-  // The column header strings, in display order.
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
 
-  // Opens the entry sheet, pre-filled when a row is given, and reports the
-  // result to the table's onSaved.
   Future<void> _openEntrySheet({CoreSizeCardData? row, int? index}) async {
     final table = widget.table;
     final result = await SizeEntryBottomSheet.show(
@@ -84,9 +81,8 @@ class _SizesTableState extends State<_SizesTable> {
     }
   }
 
-  // Builds one card per row. Rows keep their Dismissible and semantics
-  // wrappers whether or not the table is reorderable, so swipe-to-delete
-  // works on static tables too.
+  // Rows keep their Dismissible and semantics wrappers whether or not the
+  // table is reorderable, so swipe-to-delete works on static tables too.
   List<Widget> _buildRows(
     BuildContext context,
     _TableLayout layout,
