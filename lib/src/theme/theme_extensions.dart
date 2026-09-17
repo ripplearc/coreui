@@ -74,6 +74,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   // Alert Colors
   final Color alertRed;
+  final Color alertRedOutline;
   final Color alertOrange;
   final Color alertBlue;
   final Color alertGreen;
@@ -158,6 +159,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.chipBlue,
     required this.chipGreen,
     required this.alertRed,
+    required this.alertRedOutline,
     required this.alertOrange,
     required this.alertBlue,
     required this.alertGreen,
@@ -249,6 +251,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? chipBlue,
     Color? chipGreen,
     Color? alertRed,
+    Color? alertRedOutline,
     Color? alertOrange,
     Color? alertBlue,
     Color? alertGreen,
@@ -326,6 +329,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       chipBlue: chipBlue ?? this.chipBlue,
       chipGreen: chipGreen ?? this.chipGreen,
       alertRed: alertRed ?? this.alertRed,
+      alertRedOutline: alertRedOutline ?? this.alertRedOutline,
       alertOrange: alertOrange ?? this.alertOrange,
       alertBlue: alertBlue ?? this.alertBlue,
       alertGreen: alertGreen ?? this.alertGreen,
@@ -447,6 +451,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       chipBlue: Color.lerp(chipBlue, other.chipBlue, t) ?? chipBlue,
       chipGreen: Color.lerp(chipGreen, other.chipGreen, t) ?? chipGreen,
       alertRed: Color.lerp(alertRed, other.alertRed, t) ?? alertRed,
+      alertRedOutline: Color.lerp(alertRedOutline, other.alertRedOutline, t) ??
+          alertRedOutline,
       alertOrange: Color.lerp(alertOrange, other.alertOrange, t) ?? alertOrange,
       alertBlue: Color.lerp(alertBlue, other.alertBlue, t) ?? alertBlue,
       alertGreen: Color.lerp(alertGreen, other.alertGreen, t) ?? alertGreen,
