@@ -58,8 +58,68 @@ class SuggestionAreaShowcaseScreen extends StatelessWidget {
   }
 }
 
-class _SuggestionAreaShowcaseView extends StatelessWidget {
+class _SuggestionAreaShowcaseView extends StatefulWidget {
   const _SuggestionAreaShowcaseView();
+
+  @override
+  State<_SuggestionAreaShowcaseView> createState() =>
+      _SuggestionAreaShowcaseViewState();
+}
+
+class _SuggestionAreaShowcaseViewState
+    extends State<_SuggestionAreaShowcaseView> {
+  CoreSuggestionLayout _layout = CoreSuggestionLayout.twoRows;
+  bool _secondRowHidden = false;
+
+  Widget _layoutControls(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+    final labelStyle =
+        typography.bodySmallRegular.copyWith(color: colors.textBody);
+    final isTwoRows = _layout == CoreSuggestionLayout.twoRows;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CoreSpacing.space4,
+        CoreSpacing.space2,
+        CoreSpacing.space4,
+        0,
+      ),
+      child: Wrap(
+        spacing: CoreSpacing.space4,
+        runSpacing: CoreSpacing.space2,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Two rows', style: labelStyle),
+              const SizedBox(width: CoreSpacing.space2),
+              CoreSwitch(
+                value: isTwoRows,
+                onChanged: (value) => setState(() {
+                  _layout = value
+                      ? CoreSuggestionLayout.twoRows
+                      : CoreSuggestionLayout.toggle;
+                }),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Hide conversions row', style: labelStyle),
+              const SizedBox(width: CoreSpacing.space2),
+              CoreSwitch(
+                value: _secondRowHidden,
+                onChanged: (value) => setState(() => _secondRowHidden = value),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +165,9 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                         if (state.resultChip case final resultChip?) resultChip,
                       ],
                     ),
+                    _layoutControls(context),
                     AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
+                      duration: CoreSuggestionArea.animationDuration,
                       curve: Curves.easeInOut,
                       child: ClipRect(
                         child: SingleChildScrollView(
@@ -115,6 +176,8 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               CoreSuggestionArea(
+                                layout: _layout,
+                                secondRowHidden: _secondRowHidden,
                                 aiSuggestions: state.aiSuggestions,
                                 conversionSuggestions:
                                     state.conversionSuggestions,
@@ -123,6 +186,10 @@ class _SuggestionAreaShowcaseView extends StatelessWidget {
                                     'Show $count more suggestions',
                                 collapseToggleSemanticsLabel:
                                     'Show fewer suggestions',
+                                conversionsExpandToggleSemanticsLabelBuilder:
+                                    (count) => 'Show $count more conversions',
+                                conversionsCollapseToggleSemanticsLabel:
+                                    'Show fewer conversions',
                                 toggleSemanticsLabel: 'Toggle suggestion mode',
                               ),
                               Padding(

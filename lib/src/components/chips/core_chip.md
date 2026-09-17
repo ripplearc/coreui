@@ -24,7 +24,7 @@ CoreChip(
 | `value` | `String?` | No | `null` | Optional secondary text displayed after the label in bold. |
 | `unit` | `String?` | No | `null` | Optional unit displayed after the value in heavy weight. |
 | `selected` | `ValueNotifier<bool>` | Yes | — | Owns the selected state. The chip toggles `selected.value` on tap (unless `isSmartChip` is true). |
-| `size` | `CoreChipSize` | No | `CoreChipSize.medium` | Size variant: `small`, `medium`, `large`. |
+| `size` | `CoreChipSize` | No | `CoreChipSize.medium` | Size variant: `small`, `medium`, `large`, `mini`. |
 | `icon` | `CoreIconData?` | No | `null` | Optional leading icon shown before the label. |
 | `onTap` | `VoidCallback?` | No | `null` | Called after a tap. |
 | `withCloseIcon` | `bool` | No | `false` | Whether the close (×) icon can be shown. |
@@ -41,13 +41,14 @@ Notes:
 
 ## Sizes
 
-`CoreChipSize.small` and `CoreChipSize.medium` share the same overall visual style (grey surface, no shadow). `CoreChipSize.large` uses a page background surface with a drop shadow.
+`CoreChipSize.small` and `CoreChipSize.medium` share the same overall visual style (grey surface, no shadow). `CoreChipSize.large` uses a page background surface with a drop shadow. `CoreChipSize.mini` is the large chip's secondary form: the same page-background surface and `lineMid` outline at the medium padding, no shadow, and a semibold value in place of the heavy unit — the value-only chips on the conversions row of a two-row `CoreSuggestionArea` (calculator prototype `sc-mini`).
 
-| Size | Padding | Shadow |
-|---|---|---|
-| `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | None |
-| `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | None |
-| `large` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3)` | `CoreShadows.small` |
+| Size | Padding | Surface | Shadow |
+|---|---|---|---|
+| `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | `chipGrey` | None |
+| `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `chipGrey` | None |
+| `large` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3)` | `pageBackground`, `lineMid` outline | `CoreShadows.small` |
+| `mini` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `pageBackground`, `lineMid` outline | None |
 
 ## States
 
@@ -184,7 +185,7 @@ CoreChip(
 
 The component uses theme-aware tokens from `AppColorsExtension` and `AppTypographyExtension`:
 
-- **Text style**: `typography.bodyMediumRegular`
+- **Text style** (`CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle`): label `typography.bodyMediumMedium` in `colors.textBody`; value `bodyMediumMedium` and unit `bodyMediumSemiBold` at `CoreChipTheme.unitFontWeight` (w800) in `colors.textDark`. A `mini` chip reads its value and unit in plain `bodyMediumSemiBold` instead, so the whole value is one semibold run
 - **Corner radius**: `BorderRadius.circular(CoreSpacing.space6)`
 - **Animation**: `CoreChipTheme.animationDuration` (`120ms`)
 - **Icons**:
@@ -193,10 +194,10 @@ The component uses theme-aware tokens from `AppColorsExtension` and `AppTypograp
 
 ### Background resolution
 
-Priority: pressed → focused (small/medium only) → selected → default.
+Priority: pressed → focused (small/medium only) → selected → default. `CoreChipTheme.onPageSurface(size)` is true for `large` and `mini`.
 
 - Default background:
-  - `large`: `colors.pageBackground`
+  - `large`/`mini`: `colors.pageBackground`
   - `small`/`medium`: `colors.chipGrey`
 - Pressed: `colors.pageBackground`
 - Focused (small/medium): `colors.chipGrey`
@@ -210,7 +211,7 @@ Priority: selected → pressed → focused → default.
 - Pressed: `colors.lineDarkOutline`
 - Focused: `colors.lineHighlight`
 - Default:
-  - `large`: `colors.lineMid`
+  - `large`/`mini`: `colors.lineMid`
   - `small`/`medium`: `colors.chipGrey`
 
 ### Border width

@@ -14,7 +14,7 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
   @override
   void initState() {
     super.initState();
-    _selected = List.generate(8, (_) => ValueNotifier(false));
+    _selected = List.generate(10, (_) => ValueNotifier(false));
   }
 
   @override
@@ -94,6 +94,30 @@ class _ChipShowcaseScreenState extends State<ChipShowcaseScreen> {
                   selected: _selected[5],
                   size: CoreChipSize.large,
                   icon: CoreIcons.checkCircle,
+                ),
+              ],
+            ),
+            const SizedBox(height: CoreSpacing.space8),
+            Text('Mini Chips (value-only secondary row)',
+                style: typography.bodyMediumRegular),
+            const SizedBox(height: CoreSpacing.space3),
+            Wrap(
+              spacing: CoreSpacing.space3,
+              runSpacing: CoreSpacing.space3,
+              children: [
+                CoreChip(
+                  value: '264',
+                  unit: 'in',
+                  selected: _selected[8],
+                  isSmartChip: true,
+                  size: CoreChipSize.mini,
+                ),
+                CoreChip(
+                  value: '7.33',
+                  unit: 'yd',
+                  selected: _selected[9],
+                  isSmartChip: true,
+                  size: CoreChipSize.mini,
                 ),
               ],
             ),

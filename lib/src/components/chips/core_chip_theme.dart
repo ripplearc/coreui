@@ -8,13 +8,14 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 abstract final class CoreChipTheme {
   static const double _smallVerticalPadding = 2.0;
 
-  /// Returns the padding for a chip of a given [size].
+  /// Returns the padding for a chip of a given [size]. [CoreChipSize.mini]
+  /// shares the medium padding: it is the large surface at the medium height.
   static EdgeInsets padding(CoreChipSize size) => switch (size) {
         CoreChipSize.small => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space2,
             vertical: _smallVerticalPadding,
           ),
-        CoreChipSize.medium => const EdgeInsets.symmetric(
+        CoreChipSize.medium || CoreChipSize.mini => const EdgeInsets.symmetric(
             horizontal: CoreSpacing.space3,
             vertical: CoreSpacing.space2,
           ),
@@ -24,6 +25,12 @@ abstract final class CoreChipTheme {
           ),
       };
 
+  /// Whether a chip of [size] sits on the page background with a `lineMid`
+  /// outline ([CoreChipSize.large] and [CoreChipSize.mini]) rather than on
+  /// the grey chip surface ([CoreChipSize.small] and [CoreChipSize.medium]).
+  static bool onPageSurface(CoreChipSize size) =>
+      size == CoreChipSize.large || size == CoreChipSize.mini;
+
   /// Returns the background color for a chip given its [size], interaction
   /// states ([isSelected], [isPressed], [isFocused]), [outline], and the
   /// current [colors] theme.
@@ -32,11 +39,11 @@ abstract final class CoreChipTheme {
   /// pressed → dashed outline → focused → selected → default.
   ///
   /// Small and medium chips use a grey background by default, while the large
-  /// chip uses the page background. Focus, pressed, and selected states
-  /// elevate the chip to the page background. The outline style does not
-  /// change the fill: a [CoreChipOutline.dashed] or [CoreChipOutline.highlight]
-  /// chip takes the same background as a solid one of its size (Figma
-  /// Suggestion Strip Chip).
+  /// and mini chips use the page background ([onPageSurface]). Focus,
+  /// pressed, and selected states elevate the chip to the page background.
+  /// The outline style does not change the fill: a [CoreChipOutline.dashed]
+  /// or [CoreChipOutline.highlight] chip takes the same background as a solid
+  /// one of its size (Figma Suggestion Strip Chip).
   static Color background({
     required CoreChipSize size,
     required bool isSelected,
@@ -47,14 +54,13 @@ abstract final class CoreChipTheme {
   }) {
     if (isPressed) return colors.pageBackground;
 
-    if (isFocused &&
-        (size == CoreChipSize.small || size == CoreChipSize.medium)) {
+    if (isFocused && !onPageSurface(size)) {
       return colors.chipGrey;
     }
 
     if (isSelected) return colors.pageBackground;
 
-    return size == CoreChipSize.large ? colors.pageBackground : colors.chipGrey;
+    return onPageSurface(size) ? colors.pageBackground : colors.chipGrey;
   }
 
   /// Returns the border color for a chip given its [size] and interaction
@@ -68,7 +74,7 @@ abstract final class CoreChipTheme {
   /// - **Pressed**: uses [colors.lineDarkOutline].
   /// - **Focused** or [CoreChipOutline.highlight]: uses [colors.lineHighlight].
   /// - **Default**:
-  ///   - [CoreChipSize.large] uses [colors.lineMid].
+  ///   - [CoreChipSize.large] and [CoreChipSize.mini] use [colors.lineMid].
   ///   - [CoreChipSize.small] and [CoreChipSize.medium] use [colors.chipGrey].
   ///
   /// A [CoreChipOutline.dashed] chip resolves to `transparent` in every state:
@@ -88,8 +94,45 @@ abstract final class CoreChipTheme {
     if (isFocused || outline == CoreChipOutline.highlight) {
       return colors.lineHighlight;
     }
-    return size == CoreChipSize.large ? colors.lineMid : colors.chipGrey;
+    return onPageSurface(size) ? colors.lineMid : colors.chipGrey;
   }
+
+  /// The label's text style: `bodyMediumMedium` in [colors.textBody] for
+  /// every size.
+  static TextStyle labelStyle({
+    required AppTypographyExtension typography,
+    required AppColorsExtension colors,
+  }) =>
+      typography.bodyMediumMedium.copyWith(color: colors.textBody);
+
+  /// The value's text style in [colors.textDark]: `bodyMediumMedium`, or
+  /// `bodyMediumSemiBold` for [CoreChipSize.mini], whose whole value reads
+  /// semibold instead of ending in a heavy unit.
+  static TextStyle valueStyle({
+    required CoreChipSize size,
+    required AppTypographyExtension typography,
+    required AppColorsExtension colors,
+  }) =>
+      (size == CoreChipSize.mini
+              ? typography.bodyMediumSemiBold
+              : typography.bodyMediumMedium)
+          .copyWith(color: colors.textDark);
+
+  /// The unit's text style in [colors.textDark]: `bodyMediumSemiBold` at
+  /// [unitFontWeight], or plain `bodyMediumSemiBold` for [CoreChipSize.mini]
+  /// so the unit matches its value.
+  static TextStyle unitStyle({
+    required CoreChipSize size,
+    required AppTypographyExtension typography,
+    required AppColorsExtension colors,
+  }) =>
+      typography.bodyMediumSemiBold.copyWith(
+        fontWeight: size == CoreChipSize.mini ? null : unitFontWeight,
+        color: colors.textDark,
+      );
+
+  /// The heavy weight of a unit on every size but [CoreChipSize.mini].
+  static const FontWeight unitFontWeight = FontWeight.w800;
 
   /// The default border width for all chip sizes.
   static const double borderWidth = 1;

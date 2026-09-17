@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.18.0] - CoreSuggestionArea two-row layout
+
+### ✨ Features
+
+- **CoreSuggestionArea**: new `layout` parameter — `CoreSuggestionLayout { toggle, twoRows }`, default `toggle` so existing callers compile and render unchanged (CA-1035)
+  - `twoRows` shows both lists at once: `aiSuggestions` on row 1 (the rung that fired), `conversionSuggestions` on row 2, no AI / conversion toggle. Each row keeps its own `+N` overflow chip and expands on its own; a single non-empty list renders as a single row rather than an empty shelf. This is the calculator's default (prototype `strip: 'tworow'`); the toggle layout survives behind the app's "Strip layout" preference
+  - `secondRowHidden` (default `false`) folds the conversions row away so the display area's dependent-key band can take the space. The fold is an `AnimatedSize` over the new public `CoreSuggestionArea.animationDuration` (300 ms — the display area's stage timing, so the two surfaces move together); a hidden row is collapsed if it was expanded, and with only conversions present the placeholder shows. Ignored in `toggle`
+  - `onExpandedChanged` reports `true` while either row is expanded and `false` once both are collapsed; a suggestion or layout change collapses both rows, as before
+  - `conversionsExpandToggleSemanticsLabelBuilder` / `conversionsCollapseToggleSemanticsLabel` (optional) give the conversions row its own overflow semantics labels so a screen-reader user can tell the two rows' `+N` controls apart; they fall back to the shared labels
+  - the conversions row is visibly secondary, as in the calculator prototype's two-row strip: a leading tag (`CoreIcons.ruler` + `conversionsRowTagLabel`, default `'as'`, decorative) says "conversion" once, and every chip on the row is a value-only `CoreChipSize.mini` — `as  264in  7.33yd` under `Area: 410.67ft²  Cost: $84.25`. The row is a semantics container labelled `conversionsRowSemanticsLabel` (default `'Convert to other units'`); both strings are overridable per locale. The `toggle` layout keeps full-size labelled conversion chips
+- **CoreChip**: gains `CoreChipSize.mini` — the large chip's page-background surface and `lineMid` outline at the medium chip's padding, no shadow, value and unit in `bodyMediumSemiBold` instead of the heavy unit. `CoreChipTheme.onPageSurface(size)` names the large/mini surface rule, and the chip's text styles now resolve through `CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle` (`unitFontWeight` = w800) so a size can vary them
+- Suggestion area showcase gains a "Two rows" switch and a "Hide conversions row" switch above the strip; two rows is the showcase default. Chip showcase gains a mini chips row
+
+### 🧪 Tests
+
+- Widget tests: default layout is `toggle`; two rows render both lists with no toggle and the conversions row below the primary row; single-list two-row renders one row; `secondRowHidden` folds the row away and back, animates over the shared duration rather than snapping, shows the placeholder when only conversions exist, and is ignored in `toggle`; independent per-row overflow with `onExpandedChanged` aggregation; a suggestion change or a runtime layout change collapses both rows; hiding the conversions row while it is expanded reports collapsed and brings it back collapsed, and reports nothing while the primary row is still open; the conversions row falls back to the shared overflow labels
+- Widget tests: the conversions row renders one tag then value-only mini chips below the full-size row, `conversionsRowTagLabel` is configurable, and the toggle layout keeps full-size labelled conversion chips
+- A11y: both rows meet tap-target, label and contrast guidelines in light and dark; no toggle is announced in two-row mode; each row announces its own overflow controls; the conversions row announces its group label (configurable) and not the decorative tag, and a value-only chip still announces its value and unit
+- CoreChip: mini renders at the medium height; theme tests for the mini padding, surface, outline, focus fill and semibold value/unit against the heavy unit of the other sizes, in light and dark
+- Goldens: `suggestion_area_two_rows_{light,dark}.png` (deterministic + predictive over an `as` tag and three mini conversions), viewport scoped to the two rows; `core_chip_outline_{light,dark}.png` gains a solid mini chip; every other suggestion-area golden verified byte-identical
+
 ## [0.17.0] - CoreSuggestionArea suggestion kinds, bind styling, localisable toggle label
 
 ### ⚠️ Breaking changes

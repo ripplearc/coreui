@@ -3,20 +3,48 @@ import 'package:flutter/rendering.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 part 'parts/ai_toggle.dart';
+part 'parts/conversions_tag.dart';
 part 'parts/suggestion_list.dart';
 part 'parts/toggle_button.dart';
+
+/// How [CoreSuggestionArea] lays out [CoreSuggestionArea.aiSuggestions] and
+/// [CoreSuggestionArea.conversionSuggestions].
+enum CoreSuggestionLayout {
+  /// One row. When both lists are provided a leading AI / conversion toggle
+  /// switches between them. The original layout; the calculator keeps it
+  /// behind its "Strip layout" preference.
+  toggle,
+
+  /// Two rows, both visible at once with independent overflow: row 1 is the
+  /// rung that fired (Area / Sheets / Cost…) at full size, row 2 is unit
+  /// conversions of the value on screen as a visibly secondary row — one
+  /// leading [CoreSuggestionArea.conversionsRowTagLabel] tag, then value-only
+  /// [CoreChipSize.mini] chips. No toggle. The calculator's default (prototype
+  /// `strip: 'tworow'`).
+  twoRows,
+}
 
 /// A component that displays AI and unit conversion suggestions.
 ///
 /// This widget provides a dedicated area for presenting smart recommendations
 /// to the user, including AI-driven insights and contextual unit conversions.
+/// [layout] picks between the single-row toggle presentation and the
+/// calculator's two-row presentation, where the primary row and the
+/// conversions row are visible together and overflow independently;
+/// [secondRowHidden] lets the app fold the conversions row away when the
+/// dependent-key band under the value needs the space. In two rows the
+/// conversions row is the secondary one: a leading [conversionsRowTagLabel]
+/// tag says "conversion" once, so its chips carry only the re-expressed value
+/// at [CoreChipSize.mini], and the row announces [conversionsRowSemanticsLabel]
+/// as a group.
+///
 /// Each [SuggestionData] carries a [SuggestionKind]; a [SuggestionKind.bind]
 /// offer renders with the dashed [CoreChipOutline.dashed] look and a trailing
 /// [bindSuffix], because accepting it relabels an existing chip instead of
 /// adding a result.
 ///
-/// Displays [suggestionAreaPlaceholder] when both [aiSuggestions] and
-/// [conversionSuggestions] are null or empty.
+/// Displays [suggestionAreaPlaceholder] when nothing is visible: both lists
+/// are null or empty, or only conversions exist and [secondRowHidden] is set.
 class CoreSuggestionArea extends StatefulWidget {
   const CoreSuggestionArea({
     super.key,
@@ -29,11 +57,31 @@ class CoreSuggestionArea extends StatefulWidget {
     required this.collapseToggleSemanticsLabel,
     required this.toggleSemanticsLabel,
     this.bindSuffix = defaultBindSuffix,
+    this.layout = CoreSuggestionLayout.toggle,
+    this.secondRowHidden = false,
+    this.conversionsExpandToggleSemanticsLabelBuilder,
+    this.conversionsCollapseToggleSemanticsLabel,
+    this.conversionsRowTagLabel = defaultConversionsRowTagLabel,
+    this.conversionsRowSemanticsLabel = defaultConversionsRowSemanticsLabel,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
   static const String defaultSuggestionAreaPlaceholder =
       'Here you can see smart suggestions from us';
+
+  /// The default text of the tag that leads the conversions row in
+  /// [CoreSuggestionLayout.twoRows].
+  static const String defaultConversionsRowTagLabel = 'as';
+
+  /// The default group label the conversions row announces in
+  /// [CoreSuggestionLayout.twoRows].
+  static const String defaultConversionsRowSemanticsLabel =
+      'Convert to other units';
+
+  /// Duration of every size transition in the area — expanding a row, folding
+  /// the conversions row away, the container itself. Matches the display
+  /// area's stage animation so the two surfaces move together.
+  static const Duration animationDuration = Duration(milliseconds: 300);
 
   /// The default trailing marker of a [SuggestionKind.bind] chip.
   static const String defaultBindSuffix = '?';
@@ -51,6 +99,12 @@ class CoreSuggestionArea extends StatefulWidget {
   final List<SuggestionData>? aiSuggestions;
 
   /// The list of conversion metrics to display. Nullable.
+  ///
+  /// Expected to carry [SuggestionKind.conversion] data only. In
+  /// [CoreSuggestionLayout.twoRows] this list is the secondary row, and that
+  /// row drops every chip's label by position, not by kind — a `bind` or
+  /// `memory` suggestion routed here would render as a bare value behind the
+  /// [conversionsRowTagLabel] tag. Put such suggestions in [aiSuggestions].
   final List<SuggestionData>? conversionSuggestions;
 
   /// Called when the suggestion area expands or collapses.
@@ -82,6 +136,45 @@ class CoreSuggestionArea extends StatefulWidget {
   /// fact. Defaults to [defaultBindSuffix]; override it per locale.
   final String bindSuffix;
 
+  /// Which presentation to use. Defaults to [CoreSuggestionLayout.toggle], so
+  /// existing callers are unchanged.
+  final CoreSuggestionLayout layout;
+
+  /// In [CoreSuggestionLayout.twoRows], folds the conversions row away (an
+  /// [AnimatedSize] over [animationDuration]) so the display area's
+  /// dependent-key band can take the space. Ignored in
+  /// [CoreSuggestionLayout.toggle]. Defaults to `false`.
+  final bool secondRowHidden;
+
+  /// Semantics label for the conversions row's expand control in
+  /// [CoreSuggestionLayout.twoRows], so a screen reader can tell it apart from
+  /// the primary row's. Receives the hidden chip count. Falls back to
+  /// [expandToggleSemanticsLabelBuilder] when null; ignored in
+  /// [CoreSuggestionLayout.toggle].
+  final String Function(int hiddenCount)?
+      conversionsExpandToggleSemanticsLabelBuilder;
+
+  /// Semantics label for the conversions row's collapse control in
+  /// [CoreSuggestionLayout.twoRows]. Falls back to
+  /// [collapseToggleSemanticsLabel] when null; ignored in
+  /// [CoreSuggestionLayout.toggle].
+  final String? conversionsCollapseToggleSemanticsLabel;
+
+  /// Text of the tag that leads the conversions row in
+  /// [CoreSuggestionLayout.twoRows] — a small ruler icon and this word, so
+  /// "conversion" is said once for the row and its chips show only the
+  /// re-expressed value ("as 264in 7.33yd"). Decorative: excluded from
+  /// semantics, the row's [conversionsRowSemanticsLabel] speaks instead.
+  /// Defaults to [defaultConversionsRowTagLabel]; override it per locale.
+  /// Ignored in [CoreSuggestionLayout.toggle].
+  final String conversionsRowTagLabel;
+
+  /// Group label a screen reader announces on entering the conversions row
+  /// in [CoreSuggestionLayout.twoRows], giving its value-only chips their
+  /// context. Defaults to [defaultConversionsRowSemanticsLabel]; override it
+  /// per locale. Ignored in [CoreSuggestionLayout.toggle].
+  final String conversionsRowSemanticsLabel;
+
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
@@ -89,6 +182,27 @@ class CoreSuggestionArea extends StatefulWidget {
 class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
   SuggestionMode _mode = SuggestionMode.ai;
   bool _isExpanded = false;
+  bool _isSecondaryExpanded = false;
+
+  bool get _isAnyExpanded => _isExpanded || _isSecondaryExpanded;
+
+  void _setExpanded({bool? primary, bool? secondary}) {
+    final wasAnyExpanded = _isAnyExpanded;
+    setState(() {
+      if (primary != null) _isExpanded = primary;
+      if (secondary != null) _isSecondaryExpanded = secondary;
+    });
+    if (wasAnyExpanded != _isAnyExpanded) {
+      widget.onExpandedChanged?.call(_isAnyExpanded);
+    }
+  }
+
+  void _collapseAll() {
+    final wasAnyExpanded = _isAnyExpanded;
+    _isExpanded = false;
+    _isSecondaryExpanded = false;
+    if (wasAnyExpanded) widget.onExpandedChanged?.call(false);
+  }
 
   bool _areSuggestionsEqual(List<SuggestionData>? a, List<SuggestionData>? b) {
     if (identical(a, b)) return true;
@@ -111,12 +225,126 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     super.didUpdateWidget(oldWidget);
     if (!_areSuggestionsEqual(widget.aiSuggestions, oldWidget.aiSuggestions) ||
         !_areSuggestionsEqual(
-            widget.conversionSuggestions, oldWidget.conversionSuggestions)) {
-      if (_isExpanded) {
-        widget.onExpandedChanged?.call(false);
-      }
-      _isExpanded = false;
+            widget.conversionSuggestions, oldWidget.conversionSuggestions) ||
+        widget.layout != oldWidget.layout) {
+      _collapseAll();
+    } else if (widget.secondRowHidden &&
+        !oldWidget.secondRowHidden &&
+        _isSecondaryExpanded) {
+      _isSecondaryExpanded = false;
+      if (!_isExpanded) widget.onExpandedChanged?.call(false);
     }
+  }
+
+  Widget _buildRow({
+    required Key key,
+    required List<SuggestionData>? suggestions,
+    required bool isExpanded,
+    required ValueChanged<bool> onExpandedChanged,
+    Widget? leadingWidget,
+    String Function(int hiddenCount)? expandToggleSemanticsLabelBuilder,
+    String? collapseToggleSemanticsLabel,
+    bool isSecondary = false,
+  }) {
+    return _SuggestionList(
+      key: key,
+      suggestions: suggestions,
+      isExpanded: isExpanded,
+      onExpandedChanged: onExpandedChanged,
+      hiddenChipsTextBuilder: widget.hiddenChipsTextBuilder,
+      expandToggleSemanticsLabelBuilder: expandToggleSemanticsLabelBuilder ??
+          widget.expandToggleSemanticsLabelBuilder,
+      collapseToggleSemanticsLabel:
+          collapseToggleSemanticsLabel ?? widget.collapseToggleSemanticsLabel,
+      bindSuffix: widget.bindSuffix,
+      leadingWidget: leadingWidget,
+      isSecondary: isSecondary,
+    );
+  }
+
+  Widget _animatedSize({required Widget child}) {
+    return ClipRect(
+      child: AnimatedSize(
+        duration: CoreSuggestionArea.animationDuration,
+        alignment: AlignmentDirectional.topStart,
+        curve: Curves.easeInOut,
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildToggleLayout({required bool hasAi, required bool hasConv}) {
+    final bool hasBothLists = hasAi && hasConv;
+    final activeList = hasBothLists
+        ? (_mode == SuggestionMode.ai
+            ? widget.aiSuggestions
+            : widget.conversionSuggestions)
+        : (hasAi ? widget.aiSuggestions : widget.conversionSuggestions);
+
+    return _animatedSize(
+      child: _buildRow(
+        key: const ValueKey('suggestion_row_toggle'),
+        suggestions: activeList,
+        isExpanded: _isExpanded,
+        onExpandedChanged: (expanded) => _setExpanded(primary: expanded),
+        leadingWidget: hasBothLists
+            ? _AIToggle(
+                mode: _mode,
+                semanticsLabel: widget.toggleSemanticsLabel,
+                onChanged: (value) {
+                  setState(() {
+                    _mode = value;
+                  });
+                },
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTwoRowLayout({required bool hasAi, required bool hasConv}) {
+    final bool showSecondRow = hasConv && !widget.secondRowHidden;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _animatedSize(
+          child: hasAi
+              ? _buildRow(
+                  key: const ValueKey('suggestion_row_primary'),
+                  suggestions: widget.aiSuggestions,
+                  isExpanded: _isExpanded,
+                  onExpandedChanged: (expanded) =>
+                      _setExpanded(primary: expanded),
+                )
+              : const SizedBox.shrink(),
+        ),
+        _animatedSize(
+          child: showSecondRow
+              ? Semantics(
+                  container: true,
+                  explicitChildNodes: true,
+                  label: widget.conversionsRowSemanticsLabel,
+                  child: _buildRow(
+                    key: const ValueKey('suggestion_row_conversions'),
+                    suggestions: widget.conversionSuggestions,
+                    isExpanded: _isSecondaryExpanded,
+                    onExpandedChanged: (expanded) =>
+                        _setExpanded(secondary: expanded),
+                    leadingWidget:
+                        _ConversionsTag(label: widget.conversionsRowTagLabel),
+                    expandToggleSemanticsLabelBuilder:
+                        widget.conversionsExpandToggleSemanticsLabelBuilder,
+                    collapseToggleSemanticsLabel:
+                        widget.conversionsCollapseToggleSemanticsLabel,
+                    isSecondary: true,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
   }
 
   @override
@@ -125,64 +353,29 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     final typography = AppTypographyExtension.of(context);
     final bool hasAi = widget.aiSuggestions?.isNotEmpty ?? false;
     final bool hasConv = widget.conversionSuggestions?.isNotEmpty ?? false;
-    final bool hasBothLists = hasAi && hasConv;
-    final bool hasAny = hasAi || hasConv;
-
-    final activeList = hasBothLists
-        ? (_mode == SuggestionMode.ai
-            ? widget.aiSuggestions
-            : widget.conversionSuggestions)
-        : (hasAi ? widget.aiSuggestions : widget.conversionSuggestions);
+    final bool isTwoRows = widget.layout == CoreSuggestionLayout.twoRows;
+    final bool hasVisible = isTwoRows
+        ? hasAi || (hasConv && !widget.secondRowHidden)
+        : hasAi || hasConv;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: CoreSuggestionArea.animationDuration,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
       constraints: const BoxConstraints(minHeight: CoreSpacing.space16),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
         heightFactor: 1.0,
-        child: !hasAny
+        child: !hasVisible
             ? Text(
                 widget.suggestionAreaPlaceholder,
                 style: typography.bodyMediumRegular.copyWith(
                   color: colors.textDark,
                 ),
               )
-            : ClipRect(
-                child: AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  alignment: AlignmentDirectional.topStart,
-                  curve: Curves.easeInOut,
-                  child: _SuggestionList(
-                    suggestions: activeList,
-                    isExpanded: _isExpanded,
-                    onExpandedChanged: (expanded) {
-                      setState(() {
-                        _isExpanded = expanded;
-                      });
-                      widget.onExpandedChanged?.call(expanded);
-                    },
-                    hiddenChipsTextBuilder: widget.hiddenChipsTextBuilder,
-                    expandToggleSemanticsLabelBuilder:
-                        widget.expandToggleSemanticsLabelBuilder,
-                    collapseToggleSemanticsLabel:
-                        widget.collapseToggleSemanticsLabel,
-                    bindSuffix: widget.bindSuffix,
-                    leadingWidget: hasBothLists
-                        ? _AIToggle(
-                            mode: _mode,
-                            semanticsLabel: widget.toggleSemanticsLabel,
-                            onChanged: (value) {
-                              setState(() {
-                                _mode = value;
-                              });
-                            },
-                          )
-                        : null,
-                  ),
-                ),
-              ),
+            : isTwoRows
+                ? _buildTwoRowLayout(hasAi: hasAi, hasConv: hasConv)
+                : _buildToggleLayout(hasAi: hasAi, hasConv: hasConv),
       ),
     );
   }

@@ -219,6 +219,49 @@ void main() {
       expect(find.byType(CoreChip), findsOneWidget);
     });
 
+    testWidgets('renders mini size at the medium height',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Row(
+              children: [
+                CoreChip(
+                  value: '264',
+                  unit: 'in',
+                  selected: selected,
+                  size: CoreChipSize.mini,
+                ),
+                CoreChip(
+                  value: '264',
+                  unit: 'in',
+                  selected: selected,
+                  size: CoreChipSize.medium,
+                ),
+                CoreChip(
+                  value: '264',
+                  unit: 'in',
+                  selected: selected,
+                  size: CoreChipSize.large,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final heights = tester
+          .widgetList<CoreChip>(find.byType(CoreChip))
+          .map((chip) => tester.getSize(find.byWidget(chip)).height)
+          .toList();
+      expect(heights[0], heights[1]);
+      expect(heights[0], lessThan(heights[2]));
+      expect(find.text('264'), findsNWidgets(3));
+    });
+
     testWidgets('displays close icon', (WidgetTester tester) async {
       final selected = ValueNotifier<bool>(false);
 
@@ -621,6 +664,114 @@ void main() {
             colors: colors,
           ),
           isNull,
+        );
+      });
+    }
+  });
+
+  group('CoreChip mini size', () {
+    test('shares the medium padding and no shadow', () {
+      expect(
+        CoreChipTheme.padding(CoreChipSize.mini),
+        CoreChipTheme.padding(CoreChipSize.medium),
+      );
+      expect(CoreChipTheme.shadow(CoreChipSize.mini), isNull);
+      expect(CoreChipTheme.onPageSurface(CoreChipSize.mini), isTrue);
+      expect(CoreChipTheme.onPageSurface(CoreChipSize.medium), isFalse);
+    });
+
+    for (final entry in {
+      'light': AppColorsExtension.create(),
+      'dark': AppColorsExtension.createDark(),
+    }.entries) {
+      final colors = entry.value;
+      final typography = AppTypographyExtension.create();
+
+      test('${entry.key}: resting mini chip takes the large surface', () {
+        expect(
+          CoreChipTheme.background(
+            size: CoreChipSize.mini,
+            isSelected: false,
+            isPressed: false,
+            isFocused: false,
+            colors: colors,
+          ),
+          colors.pageBackground,
+        );
+        expect(
+          CoreChipTheme.borderColor(
+            size: CoreChipSize.mini,
+            isSelected: false,
+            isPressed: false,
+            isFocused: false,
+            colors: colors,
+          ),
+          colors.lineMid,
+        );
+      });
+
+      test('${entry.key}: focused mini chip stays on the page surface', () {
+        expect(
+          CoreChipTheme.background(
+            size: CoreChipSize.mini,
+            isSelected: false,
+            isPressed: false,
+            isFocused: true,
+            colors: colors,
+          ),
+          colors.pageBackground,
+        );
+        expect(
+          CoreChipTheme.background(
+            size: CoreChipSize.medium,
+            isSelected: false,
+            isPressed: false,
+            isFocused: true,
+            colors: colors,
+          ),
+          colors.chipGrey,
+        );
+      });
+
+      test(
+          '${entry.key}: mini value and unit read semibold, others keep the heavy unit',
+          () {
+        expect(
+          CoreChipTheme.valueStyle(
+            size: CoreChipSize.mini,
+            typography: typography,
+            colors: colors,
+          ).fontWeight,
+          typography.bodyMediumSemiBold.fontWeight,
+        );
+        expect(
+          CoreChipTheme.unitStyle(
+            size: CoreChipSize.mini,
+            typography: typography,
+            colors: colors,
+          ).fontWeight,
+          typography.bodyMediumSemiBold.fontWeight,
+        );
+        expect(
+          CoreChipTheme.valueStyle(
+            size: CoreChipSize.large,
+            typography: typography,
+            colors: colors,
+          ).fontWeight,
+          typography.bodyMediumMedium.fontWeight,
+        );
+        expect(
+          CoreChipTheme.unitStyle(
+            size: CoreChipSize.large,
+            typography: typography,
+            colors: colors,
+          ).fontWeight,
+          CoreChipTheme.unitFontWeight,
+        );
+        expect(
+          CoreChipTheme.labelStyle(typography: typography, colors: colors)
+              .color,
+          colors.textBody,
         );
       });
     }
