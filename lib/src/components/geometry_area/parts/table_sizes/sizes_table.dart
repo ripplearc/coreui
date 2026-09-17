@@ -6,6 +6,7 @@ class _TableLayout {
     required this.trailingSpace,
     required this.columnWidths,
     required this.endMargin,
+    required this.actionsWidth,
     required this.isScrollable,
   });
 
@@ -13,6 +14,12 @@ class _TableLayout {
   final double trailingSpace;
   final double endMargin;
   final List<double> columnWidths;
+
+  /// Width reserved for the row's trailing edit/delete buttons, zero when the
+  /// table renders neither. The header reserves the same width so its
+  /// fixed-width columns stay aligned with the row's flexible ones.
+  final double actionsWidth;
+
   final bool isScrollable;
 }
 
@@ -62,6 +69,9 @@ class _SizesTableState extends State<_SizesTable> {
   }
 
   static const _highlightDuration = 500;
+
+  /// Minimum tap-target edge for the row's action buttons.
+  static const double _actionSize = CoreSpacing.space12;
 
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
@@ -155,6 +165,16 @@ class _SizesTableState extends State<_SizesTable> {
               dragHandleLabel: table.dragHandleLabel,
               isReorderable: isReorderable,
               isHighlighted: index == _recentlyDroppedIndex,
+              editSemanticsLabel:
+                  table.editRowSemanticsLabelBuilder?.call(row),
+              deleteSemanticsLabel:
+                  table.deleteRowSemanticsLabelBuilder?.call(row),
+              onEdit: table.onSaved == null
+                  ? null
+                  : () => _openEntrySheet(row: row, index: index),
+              onDelete: table.onDeleted == null
+                  ? null
+                  : () => table.onDeleted?.call(row.id),
             ),
           ),
         ),
@@ -190,8 +210,14 @@ class _SizesTableState extends State<_SizesTable> {
         const columnWidth = CoreSpacing.space16;
         const endMargin = CoreSpacing.space1;
 
+        // Each button is a full 48 dp tap target, so the slot is sized by how
+        // many of them the table's callbacks actually render.
+        final actionsWidth = (table.onSaved == null ? 0.0 : _actionSize) +
+            (table.onDeleted == null ? 0.0 : _actionSize);
+
         final totalWidth = leadingSpace +
             trailingSpace +
+            actionsWidth +
             ((columnWidth + endMargin) * table.columns.length);
         final bool isScrollable = constraints.maxWidth < totalWidth;
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
@@ -204,6 +230,7 @@ class _SizesTableState extends State<_SizesTable> {
             table.columns.length,
             columnWidth,
           ),
+          actionsWidth: actionsWidth,
           isScrollable: isScrollable,
         );
 

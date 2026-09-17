@@ -28,6 +28,8 @@ CoreSizesTableData _a11yTable({
     addLabel: _addSizeLabel,
     editLabel: 'Edit size',
     dragHandleLabel: _dragHandleLabel,
+    editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+    deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
     columns: const [
       CoreSizesColumn(title: 'area'),
       CoreSizesColumn(title: 'volume'),
@@ -56,7 +58,6 @@ void main() {
           ],
         ),
         find.byType(CoreGeometryArea),
-        checkTapTargetSize: false,
         checkLabeledTapTarget: false,
         checkTextContrast: false,
       );
@@ -80,7 +81,6 @@ void main() {
           ])],
         ),
         find.byType(CoreGeometryArea),
-        checkTapTargetSize: false,
         checkLabeledTapTarget: false,
       );
     });
@@ -155,8 +155,9 @@ void main() {
       final addSizeSemantics = tester.getSemantics(addSizeText);
       expect(addSizeSemantics.label, _addSizeLabel);
 
+      // 8 chrome icons plus an edit and a delete button on each of the 2 rows.
       final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(8));
+      expect(allIconsFinder, findsNWidgets(12));
 
       final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
       expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);

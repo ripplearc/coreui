@@ -42,6 +42,19 @@
     the display strings: two tables can legitimately share column headers (a
     rates and a waste table both showing `Per unit`), and a title changes
     whenever the result it interpolates does
+- **Row actions**: a table with `onSaved` renders a pencil on every row and one
+  with `onDeleted` renders a trash button, matching the detail-panel design. The
+  pencil opens the same pre-filled entry sheet the row tap already opened; the
+  trash calls `onDeleted` directly, as the swipe does
+  - `editRowSemanticsLabelBuilder` / `deleteRowSemanticsLabelBuilder` build each
+    button's label from its row, so a screen reader hears which row it acts on
+    rather than ten identical `'Edit'`s. Required alongside their callbacks
+  - Each button is a 48 dp tap target around a 20 px icon, clearing
+    `androidTapTargetGuideline`, and claims horizontal drags that start on it so
+    a swipe beginning on a button cannot delete by gesture
+  - A table rendering both reserves 96 dp of row width, mirrored in the header.
+    Wide tables scroll horizontally sooner: the four-column fixture now exceeds a
+    412 dp surface where it previously fit
 - `CoreSizesColumn` — one column of a table; currently its header title
 - `CoreSizesTableData.onAdd` — when provided, the app owns the add flow and the
   built-in `SizeEntryBottomSheet` is not opened
