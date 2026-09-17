@@ -45,8 +45,15 @@ class Toast extends StatefulWidget {
   final String? closeLabel;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
   final Duration? duration;
   final _ToastType _type;
+
+  /// The secondary action is rendered at this fraction of the primary text
+  /// colour: the design gives the two actions different weights so the eye
+  /// lands on the primary one first (`Undo`) and reads `View` second.
+  static const double _secondaryActionOpacity = 0.75;
 
   /// Corner radius of the receipt surface. The other variants keep the
   /// tighter [_radius].
@@ -67,6 +74,8 @@ class Toast extends StatefulWidget {
     this.onClose,
     this.actionLabel,
     this.onAction,
+    this.secondaryLabel,
+    this.onSecondary,
     this.duration,
   }) : _type = type;
 
@@ -141,6 +150,10 @@ class Toast extends StatefulWidget {
   /// receipt never needs a close button. Pass `null` to keep it on screen
   /// until the caller removes it.
   ///
+  /// [secondaryLabel] adds the quieter second action (`View`). It travels with
+  /// [onSecondary]: an interactive control with no label is invisible to a
+  /// screen reader.
+  ///
   /// Every user-facing string comes from the consumer — localisation is the
   /// caller's responsibility:
   /// ```dart
@@ -156,15 +169,25 @@ class Toast extends StatefulWidget {
     required String actionLabel,
     required VoidCallback onAction,
     String? highlight,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
     VoidCallback? onClose,
     Duration? duration = const Duration(seconds: 5),
   }) {
+    assert(
+      (secondaryLabel == null) == (onSecondary == null),
+      'secondaryLabel and onSecondary travel together: an action with no '
+      'label is invisible to a screen reader, and a label with no action is '
+      'a dead control.',
+    );
     return Toast._(
       description: description,
       highlight: highlight,
       type: _ToastType.receipt,
       actionLabel: actionLabel,
       onAction: onAction,
+      secondaryLabel: secondaryLabel,
+      onSecondary: onSecondary,
       onClose: onClose,
       duration: duration,
     );
@@ -424,13 +447,52 @@ class _ToastState extends State<Toast> {
     AppTypographyExtension typography,
     AppColorsExtension colors,
   ) {
-    // Unreachable: Toast.receipt requires the label. Drop the action rather
+    final secondaryLabel = widget.secondaryLabel;
+    final onSecondary = widget.onSecondary;
+    // Unreachable: Toast.receipt requires the label. Drop the actions rather
     // than render a control a screen reader cannot announce.
     final actionLabel = widget.actionLabel;
     assert(actionLabel != null, 'A receipt toast always carries its action.');
     if (actionLabel == null) return const [];
 
     return [
+      // Both, not just the label: the factory asserts the two travel
+      // together, but an assert is gone in release, and a View that reports
+      // nothing still burns the user's one chance to undo.
+      if (secondaryLabel != null && onSecondary != null) ...[
+        Flexible(
+          child: GestureDetector(
+            key: const Key('toast_secondary_button'),
+            onTap: () => _answer(onSecondary),
+            child: Semantics(
+              button: true,
+              label: secondaryLabel,
+              child: ConstrainedBox(
+                // Pinned, not a minimum: a centred label under a bare minimum
+                // grows to whatever height the surrounding row offers.
+                constraints: const BoxConstraints(
+                  minWidth: CoreSpacing.space12,
+                  minHeight: CoreSpacing.space12,
+                  maxHeight: CoreSpacing.space12,
+                ),
+                child: Center(
+                  widthFactor: 1,
+                  child: Text(
+                    secondaryLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: typography.bodyLargeRegular.copyWith(
+                      color: colors.textLink
+                          .withValues(alpha: Toast._secondaryActionOpacity),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: CoreSpacing.space4),
+      ],
       Flexible(
         child: CoreButton(
           key: const Key('toast_action_button'),

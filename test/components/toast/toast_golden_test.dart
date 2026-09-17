@@ -72,12 +72,23 @@ void main() {
         highlight: 'Calc 60ft²',
         actionLabel: 'Undo',
         onAction: () {},
+        secondaryLabel: 'View',
+        onSecondary: () {},
+        duration: null,
+      ),
+      Toast.receipt(
+        description: 'Saved to history',
+        highlight: 'Calc 60ft²',
+        actionLabel: 'Undo',
+        onAction: () {},
         duration: null,
       ),
       Toast.receipt(
         description: 'Saved to history',
         actionLabel: 'Undo',
         onAction: () {},
+        secondaryLabel: 'View',
+        onSecondary: () {},
         duration: null,
       ),
     ];

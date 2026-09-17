@@ -102,6 +102,8 @@ class CoreToast {
     String actionLabel,
     VoidCallback onAction, {
     String? highlight,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
     Duration? duration = const Duration(seconds: 5),
   }) {
     showCustomToast(
@@ -115,6 +117,8 @@ class CoreToast {
           highlight: highlight,
           actionLabel: actionLabel,
           onAction: onAction,
+          secondaryLabel: secondaryLabel,
+          onSecondary: onSecondary,
           onClose: () => _removeEntry(entry),
           duration: _disableTimers ? null : duration,
         );
