@@ -1186,6 +1186,105 @@ void main() {
           findsNothing);
     });
   });
+
+  group('CoreSuggestionArea test keys', () {
+    List<SuggestionData> ai() => [
+          SuggestionData(
+              label: 'Area:', value: '220', unit: 'ft²', onTap: () {}),
+          SuggestionData(label: 'Cost:', value: '\$84.25', onTap: () {}),
+        ];
+    List<SuggestionData> conv() => [
+          SuggestionData(
+            label: 'Conv:',
+            value: '264',
+            unit: 'in',
+            kind: SuggestionKind.conversion,
+            onTap: () {},
+          ),
+        ];
+
+    testWidgets('chips carry calc_strip_chip_<index> by default',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester, testCoreSuggestionArea(aiSuggestions: ai()));
+
+      expect(find.byKey(CoreSuggestionArea.chipTestKey(0)), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_strip_chip_1')), findsOneWidget);
+      expect(
+        tester
+            .widget<CoreChip>(find.byKey(CoreSuggestionArea.chipTestKey(0)))
+            .value,
+        '220',
+      );
+    });
+
+    testWidgets('the two-row conversions row uses its own prefix',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: ai(),
+            conversionSuggestions: conv(),
+          ));
+
+      expect(find.byKey(CoreSuggestionArea.chipTestKey(0)), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_strip_conversion_0')),
+          findsOneWidget);
+      expect(
+        tester
+            .widget<CoreChip>(
+                find.byKey(CoreSuggestionArea.conversionChipTestKey(0)))
+            .value,
+        '264',
+      );
+    });
+
+    testWidgets('the toggle layout keys the conversions list as the single row',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester, testCoreSuggestionArea(conversionSuggestions: conv()));
+
+      expect(find.byKey(CoreSuggestionArea.chipTestKey(0)), findsOneWidget);
+      expect(find.byKey(CoreSuggestionArea.conversionChipTestKey(0)),
+          findsNothing);
+    });
+
+    testWidgets('SuggestionData.testKey overrides the default',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(aiSuggestions: [
+            SuggestionData(
+              label: 'Area:',
+              value: '220',
+              testKey: const ValueKey('calc_strip_chip_area'),
+              onTap: () {},
+            ),
+          ]));
+
+      expect(
+          find.byKey(const ValueKey('calc_strip_chip_area')), findsOneWidget);
+      expect(find.byKey(CoreSuggestionArea.chipTestKey(0)), findsNothing);
+    });
+
+    testWidgets('a tap through the key accepts the suggestion',
+        (WidgetTester tester) async {
+      var tapped = false;
+      await pumpSuggestionArea(
+          tester,
+          testCoreSuggestionArea(aiSuggestions: [
+            SuggestionData(
+                label: 'Area:', value: '220', onTap: () => tapped = true),
+          ]));
+
+      await tester.tap(find.byKey(CoreSuggestionArea.chipTestKey(0)));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tapped, isTrue);
+    });
+  });
 }
 
 class _TwoRowHost extends StatefulWidget {

@@ -18,8 +18,8 @@ void main() {
           home: Scaffold(
             body: Center(
               child: SizedBox(
-                width: 160,
-                height: 48,
+                width: CoreSpacing.space40,
+                height: CoreSpacing.space12,
                 child: FunctionKeyTile(
                   keyType: const KeyType(
                     groupName: 'test',
@@ -42,6 +42,36 @@ void main() {
       await tester.tap(find.byType(FunctionKeyTile));
       await tester.pumpAndSettle();
       expect(callCount, 2);
+    });
+  });
+
+  group('FunctionKeyTile test key', () {
+    Widget tile(KeyType keyType) => MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: CoreSpacing.space40,
+                height: CoreSpacing.space12,
+                child: FunctionKeyTile(keyType: keyType, onTap: () {}),
+              ),
+            ),
+          ),
+        );
+
+    testWidgets('carries calc_key_<id> unless testKey is set', (tester) async {
+      await tester.pumpWidget(tile(
+          const KeyType(groupName: 'basic', id: 'Length', label: 'Length')));
+      expect(find.byKey(const ValueKey('calc_key_Length')), findsOneWidget);
+
+      await tester.pumpWidget(tile(const KeyType(
+        groupName: 'basic',
+        id: 'Length',
+        label: 'Length',
+        testKey: ValueKey('calc_key_length'),
+      )));
+      expect(find.byKey(const ValueKey('calc_key_length')), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_key_Length')), findsNothing);
     });
   });
 }

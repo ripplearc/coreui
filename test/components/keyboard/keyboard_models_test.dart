@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -95,6 +96,33 @@ void main() {
 
       expect(key.id, equals('Rise'));
       expect(key.label, equals('Subida'));
+    });
+  });
+
+  group('Test keys', () {
+    test('enum keys derive from the enum name', () {
+      expect(DigitType.seven.testKey, const ValueKey('calc_key_seven'));
+      expect(DigitType.decimal.testKey, const ValueKey('calc_key_decimal'));
+      expect(OperatorType.add.testKey, const ValueKey('calc_key_add'));
+      expect(UnitType.feet.testKey, const ValueKey('calc_key_feet'));
+      expect(UnitType.divideSymbol.testKey,
+          const ValueKey('calc_key_divideSymbol'));
+      expect(
+          ControlAction.clearAll.testKey, const ValueKey('calc_key_clearAll'));
+      expect(CoreResultButton.testKey, const ValueKey('calc_key_result'));
+    });
+
+    test('KeyType resolves to calc_key_<id> unless testKey is set', () {
+      const length = KeyType(groupName: 'basic', id: 'Length', label: 'Länge');
+      expect(length.resolvedTestKey, const ValueKey('calc_key_Length'));
+
+      const custom = KeyType(
+        groupName: 'basic',
+        id: 'Length',
+        label: 'Länge',
+        testKey: ValueKey('calc_key_length'),
+      );
+      expect(custom.resolvedTestKey, const ValueKey('calc_key_length'));
     });
   });
 }
