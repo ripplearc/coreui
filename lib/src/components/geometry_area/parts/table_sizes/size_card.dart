@@ -46,13 +46,19 @@ class _SizeCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: semanticLabel,
+      // Without onTap here the node is a labelled button carrying no tap
+      // action, because excludeSemantics drops the GestureDetector's own node:
+      // a screen reader would announce the button but refuse to activate it.
+      onTap: onTap,
       excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        // Claims horizontal drags that start on the button so a sloppy swipe
-        // here cannot reach the row's Dismissible and delete by gesture.
-        onHorizontalDragStart: (_) {},
+        // Claims horizontal drags only when the row is dismissible, so a
+        // sloppy swipe here cannot delete by gesture. Claiming
+        // unconditionally would also swallow the table's own horizontal
+        // scroll, which is the wrong trade when there is no swipe to guard.
+        onHorizontalDragStart: onDelete == null ? null : (_) {},
         child: ConstrainedBox(
           constraints: const BoxConstraints(
             minWidth: CoreSpacing.space12,

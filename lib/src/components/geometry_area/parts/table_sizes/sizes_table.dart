@@ -40,13 +40,25 @@ class _SizesTableState extends State<_SizesTable> {
     final colors = AppColorsExtension.of(context);
     final row = widget.table.rows[index];
 
+    // The proxy must render the same action buttons as the static row. Without
+    // them the row keeps layout's reserved actionsWidth but has nothing to put
+    // in it, so the value columns stretch into the gap and the text visibly
+    // jumps the moment a drag starts.
+    final table = widget.table;
     final draggingCard = _SizeCard(
       index: index,
       layout: layout,
       values: row.values,
-      dragHandleLabel: widget.table.dragHandleLabel,
+      dragHandleLabel: table.dragHandleLabel,
       isReorderable: true,
       isHighlighted: true,
+      editSemanticsLabel: table.editRowSemanticsLabelBuilder?.call(row),
+      deleteSemanticsLabel: table.deleteRowSemanticsLabelBuilder?.call(row),
+      onEdit: table.onSaved == null
+          ? null
+          : () => _openEntrySheet(row: row, index: index),
+      onDelete:
+          table.onDeleted == null ? null : () => table.onDeleted?.call(row.id),
     );
 
     return AnimatedBuilder(

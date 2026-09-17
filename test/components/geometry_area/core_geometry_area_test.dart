@@ -631,6 +631,51 @@ void main() {
         expect(find.text('Val 1'), findsOneWidget);
       });
 
+      testWidgets('the drag proxy keeps its action buttons', (tester) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                columnTitles: const ['Col'],
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['1a']),
+                  CoreSizeCardData(id: '2', values: ['2a']),
+                ],
+                onDeleted: (_) {},
+                onReordered: (_, __) {},
+              ),
+            ],
+          )),
+        );
+
+        final staticWidth = tester.getSize(find.text('1a')).width;
+        final gesture =
+            await tester.startGesture(tester.getCenter(_dragHandles.first));
+        await tester.pump(const Duration(milliseconds: 200));
+        await gesture.moveBy(const Offset(0, 40));
+        await tester.pump();
+
+        // The floating proxy keeps layout's reserved actionsWidth either way.
+        // If it dropped the buttons, the value columns would stretch into the
+        // freed space and the text would visibly jump mid-drag.
+        // One remaining static row plus the floating proxy. Without the fix
+        // the proxy contributes none and this is 1.
+        expect(editButtons(), findsNWidgets(2));
+        // Within the 3 dp the drop-highlight border takes off the content box.
+        // Dropping the proxy's buttons would free the reserved actions width
+        // and stretch this cell by tens of pixels instead.
+        expect(
+          tester.getSize(find.text('1a').first).width,
+          closeTo(staticWidth, 4),
+        );
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 500));
+      });
+
       testWidgets('swiping the row body still deletes', (tester) async {
         final deleted = <String>[];
 
