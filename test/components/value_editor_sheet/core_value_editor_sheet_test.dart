@@ -50,6 +50,45 @@ Widget _buildShowTrigger({
   );
 }
 
+Widget _buildSingleValueTrigger({
+  String title = 'Rate (\$ per ft²)',
+  String label = 'Rate',
+  String resultLabel = 'Update',
+  String? initialValue,
+  List<String>? unitOptions,
+  String? unit,
+  String? unitGroupLabel,
+  String? Function(String value)? validator,
+  void Function(String value, String? unit)? onSaved,
+}) {
+  return MaterialApp(
+    theme: CoreTheme.light(),
+    home: Scaffold(
+      body: Builder(
+        builder: (context) {
+          return ElevatedButton(
+            onPressed: () {
+              CoreValueEditorSheet.showSingleValue(
+                context: context,
+                title: title,
+                label: label,
+                resultLabel: resultLabel,
+                initialValue: initialValue,
+                unitOptions: unitOptions,
+                unit: unit,
+                unitGroupLabel: unitGroupLabel,
+                validator: validator,
+                onSaved: onSaved,
+              );
+            },
+            child: const Text('Show'),
+          );
+        },
+      ),
+    ),
+  );
+}
+
 // Spelled out rather than using `?? 0`: optional operators are banned inside
 // test blocks, and a non-numeric value deserves its own message anyway.
 String? _positiveValidator(String value) {
@@ -126,6 +165,145 @@ void main() {
 
       expect(find.byType(CoreValueEditorSheet), findsOneWidget);
       expect(find.text('Required'), findsWidgets);
+    });
+  });
+
+  group('CoreValueEditorSheet single value', () {
+    testWidgets('renders one field under the caller-supplied title',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(initialValue: '12.3'));
+
+      expect(find.byType(CoreValueEditorSheet), findsOneWidget);
+      expect(find.text('Rate (\$ per ft²)'), findsOneWidget);
+      expect(find.text('Rate*'), findsOneWidget);
+      expect(find.byType(CoreTextField), findsOneWidget);
+      expect(find.text('12.3'), findsWidgets);
+    });
+
+    testWidgets('renders no unit row when the caller supplies none',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger());
+
+      expect(find.byType(FunctionKeyTile), findsNothing);
+    });
+
+    testWidgets('digits reach the single field', (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger());
+
+      await tester.tap(find.text('4'));
+      await tester.tap(find.text('2'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('42'), findsWidgets);
+    });
+
+    testWidgets('clear-all empties the single field', (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(initialValue: '99'));
+
+      await tester.tap(find.bySemanticsLabel('Clear all button'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('99'), findsNothing);
+    });
+
+    testWidgets('onSaved reports the value and the selected unit',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          unitOptions: const ['m', 'cm', 'mm'],
+          unitGroupLabel: 'Unit',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      await tester.tap(find.text('cm'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      // The unit is its own field, so it must not also be spelled into the
+      // value — a round-trip through initialValue would compound it.
+      expect(savedValue, '12.3');
+      expect(savedUnit, 'cm');
+    });
+
+    testWidgets('commits the same value shape whether or not a unit is tapped',
+        (tester) async {
+      _setTestViewport(tester);
+      final commits = <(String, String?)>[];
+
+      Widget trigger() => _buildSingleValueTrigger(
+            initialValue: '12.3',
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: 'Unit',
+            unit: 'cm',
+            onSaved: (value, unit) => commits.add((value, unit)),
+          );
+
+      await _open(tester, trigger());
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      await _open(tester, trigger());
+      await tester.tap(find.text('mm'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(commits, [('12.3', 'cm'), ('12.3', 'mm')]);
+    });
+
+    testWidgets('onSaved reports a null unit when there is no unit row',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedUnit = 'untouched';
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) => savedUnit = unit,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedUnit, isNull);
+    });
+
+    testWidgets('a failing validator blocks the commit', (tester) async {
+      _setTestViewport(tester);
+      var saved = false;
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '0',
+          validator: _positiveValidator,
+          onSaved: (_, __) => saved = true,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(saved, isFalse);
+      expect(find.byType(CoreValueEditorSheet), findsOneWidget);
+      expect(find.text('Must be positive'), findsWidgets);
     });
   });
 
@@ -222,12 +400,10 @@ void main() {
   });
 
   group('CoreValueEditorSheet validation', () {
-    testWidgets('editing a rejected field clears its message', (tester) async {
+    testWidgets('multi-column clears only the edited field\'s message',
+        (tester) async {
       _setTestViewport(tester);
-      await _open(
-        tester,
-        _buildShowTrigger(validator: _positiveValidator),
-      );
+      await _open(tester, _buildShowTrigger(validator: _positiveValidator));
 
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
@@ -239,6 +415,26 @@ void main() {
       // Only the edited field clears; the untouched one keeps its message.
       expect(find.text('Enter a number'), findsOneWidget);
     });
+
+    testWidgets('editing a rejected field clears its message', (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '0',
+          validator: _positiveValidator,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+      expect(find.text('Must be positive'), findsWidgets);
+
+      await tester.tap(find.text('5'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Must be positive'), findsNothing);
+    });
   });
 
   group('CoreValueEditorSheet result label', () {
@@ -248,6 +444,16 @@ void main() {
       await _open(tester, _buildShowTrigger(resultLabel: 'Commit'));
 
       expect(find.text('Commit'), findsOneWidget);
+      expect(find.text('Add'), findsNothing);
+      expect(find.text('Update'), findsNothing);
+    });
+
+    testWidgets('single-value mode wears the caller-supplied label',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(resultLabel: 'Apply'));
+
+      expect(find.text('Apply'), findsOneWidget);
       expect(find.text('Add'), findsNothing);
       expect(find.text('Update'), findsNothing);
     });

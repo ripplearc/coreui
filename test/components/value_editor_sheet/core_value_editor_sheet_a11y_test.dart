@@ -42,5 +42,28 @@ void main() {
         checkTapTargetSize: _skipKeyboardDragHandleTapTarget,
       );
     });
+
+    testWidgets('single-value mode meets basic accessibility guidelines',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreValueEditorSheet.singleValue(
+              title: 'Rate',
+              label: 'Rate',
+              resultLabel: 'Update',
+              initialValue: '12.3',
+            ),
+          ),
+        ),
+        find.byType(CoreValueEditorSheet),
+        checkTapTargetSize: _skipKeyboardDragHandleTapTarget,
+      );
+    });
   });
 }

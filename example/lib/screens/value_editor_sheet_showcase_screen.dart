@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-/// Demonstrates [CoreValueEditorSheet] editing a row of sizes, the flow
-/// [CoreGeometryArea] opens from a table's add action or a row's pencil.
+/// Demonstrates both modes of [CoreValueEditorSheet]: the multi-column size
+/// editor the geometry area opens, and the single-value editor a dependent-key
+/// pill opens on the calculator page.
 class ValueEditorSheetShowcaseScreen extends StatefulWidget {
   const ValueEditorSheetShowcaseScreen({super.key});
 
@@ -26,22 +27,55 @@ class _ValueEditorSheetShowcaseScreenState
     });
   }
 
-  Future<void> _openSizeSheet({CoreSizeCardData? row}) async {
+  Future<void> _openSizeSheet() async {
     final result = await CoreValueEditorSheet.show(
       context: context,
       titles: const ['Length', 'Width'],
       addSizeTitle: 'Add size',
       editSizeTitle: 'Edit size',
-      resultLabel: row == null ? 'Add' : 'Update',
+      resultLabel: 'Update',
       unitOptions: _unitOptions,
       unitGroupLabel: _unitGroupLabel,
-      initialData: row,
-      initialIndex: row == null ? null : 0,
+      initialData: const CoreSizeCardData(
+        id: '1',
+        values: ['47.24in', '94.49in'],
+      ),
+      initialIndex: 0,
+    );
+    if (result == null) return;
+    _report('Size committed: ${result.values.join(' x ')}');
+  }
+
+  Future<void> _openRateSheet() async {
+    final result = await CoreValueEditorSheet.showSingleValue(
+      context: context,
+      title: 'Rate (\$ per ft²)',
+      label: 'Rate',
+      resultLabel: 'Update',
+      initialValue: '12.3',
+      // A rate carries its own unit in the title, so it needs no unit row.
+      validator: (value) => (double.tryParse(value) ?? 0) > 0
+          ? null
+          : 'Enter a rate greater than zero',
+    );
+    if (result == null) return;
+    _report('Rate committed: ${result.value}');
+  }
+
+  Future<void> _openSheetSizeSheet() async {
+    final result = await CoreValueEditorSheet.showSingleValue(
+      context: context,
+      title: 'Sheet size',
+      label: 'Size',
+      resultLabel: 'Add',
+      unitOptions: _unitOptions,
+      unitGroupLabel: _unitGroupLabel,
+      unit: 'cm',
       validator: (value) =>
           value.trim().isEmpty ? 'Enter a size' : null,
     );
     if (result == null) return;
-    _report('Committed: ${result.values.join(' x ')} (${result.intent.name})');
+    _report('Sheet size committed: ${result.value} (unit: ${result.unit})');
   }
 
   @override
@@ -57,18 +91,18 @@ class _ValueEditorSheetShowcaseScreenState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CoreButton(
-              label: 'Add a size',
+              label: 'Multi-column size sheet',
               onPressed: _openSizeSheet,
             ),
             const SizedBox(height: CoreSpacing.space4),
             CoreButton(
-              label: 'Edit an existing size',
-              onPressed: () => _openSizeSheet(
-                row: const CoreSizeCardData(
-                  id: '1',
-                  values: ['47.24in', '94.49in'],
-                ),
-              ),
+              label: 'Single value — rate, no unit row',
+              onPressed: _openRateSheet,
+            ),
+            const SizedBox(height: CoreSpacing.space4),
+            CoreButton(
+              label: 'Single value — sheet size, with unit row',
+              onPressed: _openSheetSizeSheet,
             ),
             const SizedBox(height: CoreSpacing.space8),
             Text(

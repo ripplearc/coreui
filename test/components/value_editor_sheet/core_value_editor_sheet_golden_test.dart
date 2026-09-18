@@ -65,5 +65,53 @@ void main() {
     );
   });
 
-}
+  testWidgets('CoreValueEditorSheet single value renders one labelled field',
+      (WidgetTester tester) async {
+    await _expectGolden(
+      tester,
+      CoreValueEditorSheet.singleValue(
+        title: 'Sheet size',
+        label: 'Size',
+        resultLabel: 'Add',
+        initialValue: '48',
+        unitOptions: const ['m', 'cm', 'mm'],
+        unitGroupLabel: 'Unit',
+        unit: 'cm',
+      ),
+      'core_value_editor_sheet_single_value.png',
+    );
+  });
 
+  testWidgets('CoreValueEditorSheet single value renders in dark mode',
+      (WidgetTester tester) async {
+    await _expectGolden(
+      tester,
+      CoreValueEditorSheet.singleValue(
+        title: 'Sheet size',
+        label: 'Size',
+        resultLabel: 'Add',
+        initialValue: '48',
+        unitOptions: const ['m', 'cm', 'mm'],
+        unitGroupLabel: 'Unit',
+        unit: 'cm',
+      ),
+      'core_value_editor_sheet_single_value_dark.png',
+      dark: true,
+    );
+  });
+
+  // The rate sheet in the design carries no unit row at all.
+  testWidgets('CoreValueEditorSheet single value renders without a unit row',
+      (WidgetTester tester) async {
+    await _expectGolden(
+      tester,
+      CoreValueEditorSheet.singleValue(
+        title: 'Rate (\$ per ft²)',
+        label: 'Rate',
+        resultLabel: 'Update',
+        initialValue: '12.3',
+      ),
+      'core_value_editor_sheet_no_unit_row.png',
+    );
+  });
+}
