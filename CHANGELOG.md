@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.24.0] - CoreValueEditorSheet: the size entry sheet becomes public
+
+### ⚠️ Breaking changes
+
+- **CoreGeometryArea**: `CoreSizesTableData` gains required-with-`onSaved`
+  `addResultLabel` and `editResultLabel`, which name the entry sheet's commit
+  key (CA-1040). They are separate from `addLabel` / `editLabel`, which title
+  the sheet: the design's sheet reads "Edit size" while its key reads "Update".
+  - Migration: add both to every `CoreSizesTableData` that sets `onSaved`. A
+    debug assert names the omission.
+- **CoreValueEditorSheet**: `resultLabel` is required, replacing the widget's
+  hard-coded `'Add'` / `'Update'`. Reachable through the deprecated
+  `SizeEntryBottomSheet` typedef, so existing callers must supply it.
+  `unitGroupLabel` is likewise required whenever `unitOptions` is set — this
+  package ships no user-facing English.
+- **CoreGeometryArea**: `CoreSizesTableData.unitOptions` and `unitGroupLabel`
+  replace the entry sheet's hard-coded `m` / `cm` / `mm` row. They are
+  user-facing strings, so the package no longer ships a default: a table that
+  does not supply `unitOptions` renders no unit row.
+  - Migration: pass `unitOptions` and a localized `unitGroupLabel` on any
+    table whose entry sheet should keep its unit row; a debug assert names the
+    omission.
+- **CoreKeyboard / CoreResultButton**: `customLabel` was declared and
+  documented but never read, so `customResultLabel` had no effect and the
+  result key always rendered its `resultType` — the commit key showed "=" where
+  the design asks for "Update". It is now honoured and rendered verbatim,
+  preserving sentence case ("Update", not "UPDATE"). This changes what every
+  existing `customResultLabel` caller displays, with no code change on their
+  side, so audit those call sites on upgrade. An empty `customLabel` still
+  falls back to `resultType`. Its screen-reader hint no longer claims the key
+  calculates a result when the caller named it something else.
+
+### ✨ New
+
+- **CoreValueEditorSheet**: `SizeEntryBottomSheet` is promoted out of
+  `CoreGeometryArea`'s private parts and exported from the barrel (CA-1040).
+  `SizeEntryBottomSheet` remains as a deprecated typedef for one release.
+  - New `validator` rejects a value, showing the message beneath the offending
+    field and keeping the sheet open; editing that field clears it.
+  - The sheet now survives being rebuilt with a different number of `titles`,
+    which it could not do while it was private and only ever opened as a modal.
+
 ## [0.23.0] - CoreGeometryArea renders several independently-configured tables
 
 ### ⚠️ Breaking changes

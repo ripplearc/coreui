@@ -106,9 +106,9 @@ CoreGeometryArea(
 - **Collapsing**: `isCollapsed` affects the dimensions section only. When true, the dimensions grid is truncated to its first two cards behind a fade; the tables and the attachments section always render. A visual indicator (arrow icon) animates to reflect the state.
 - **Drag Reordering**: Powered by `ReorderableListView`, and only when a table supplies `onReordered`. When a card is dragged, it elevates visually (shadow & border); `onReordered` provides standard `oldIndex` and `newIndex` integers to sync backend state. A table without `onReordered` renders a plain column with no drag handles.
 - **Swipe Deletion**: Utilizing `Dismissible`, cards can be swiped horizontally when a table supplies `onDeleted`. Triggering a full swipe fires `onDeleted` passing the unique string ID.
-- **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `SizeEntryBottomSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
+- **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `CoreValueEditorSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
 - **Row actions**: The pencil and trash are 48 dp tap targets around 20 px icons, so they clear `androidTapTargetGuideline`. Each claims horizontal drags that begin on it, so a swipe starting on a button cannot reach the row's `Dismissible`. A table that renders both reserves 96 dp of row width, which the header mirrors — wide tables therefore scroll horizontally sooner than before.
-- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` and `editRowSemanticsLabelBuilder` with `onSaved`, `deleteRowSemanticsLabelBuilder` with `onDeleted`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
+- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel`, `addResultLabel`, `editResultLabel` and `editRowSemanticsLabelBuilder` with `onSaved`, `unitGroupLabel` with `unitOptions`, `deleteRowSemanticsLabelBuilder` with `onDeleted`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
 
 ---
 
@@ -148,6 +148,10 @@ CoreGeometryArea(
 | `rows` | `List<CoreSizeCardData>` | required | Ordered rows, each supplying exactly one value per column. Identifiers must be unique within the table to support reliable reordering. |
 | `addLabel` | `String?` | `null` | Text for the add action, which renders only when this is set. Requires `onAdd` or `onSaved` to act on. |
 | `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. Required with `onSaved`. |
+| `unitOptions` | `List<String>?` | `null` | Units offered on the entry sheet's unit row. Null or empty renders no unit row — the package ships no default, since these are user-facing strings. |
+| `unitGroupLabel` | `String?` | `null` | Names the unit row in the entry sheet's group header. Required with `unitOptions`. |
+| `addResultLabel` | `String?` | `null` | Label of the entry sheet's commit key when adding — "Add" in the design. Distinct from `addLabel`, which titles the sheet. Required with `onSaved`. |
+| `editResultLabel` | `String?` | `null` | Label of the entry sheet's commit key when editing — "Update" in the design. Required with `onSaved`. |
 | `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |
 | `editRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each edit button's semantic label from its row, so the label can name what it edits. Required with `onSaved`. |
 | `deleteRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each delete button's semantic label from its row. Required with `onDeleted`. |

@@ -12,7 +12,6 @@ part 'parts/attachments_section.dart';
 part 'parts/dimension_card.dart';
 part 'parts/dimensions_section.dart';
 part 'parts/table_sizes/size_card.dart';
-part 'parts/table_sizes/size_entry_bottom_sheet.dart';
 part 'parts/table_sizes/sizes_header.dart';
 part 'parts/table_sizes/sizes_table.dart';
 part 'parts/table_sizes/sizes_table_header.dart';
@@ -74,6 +73,10 @@ class CoreSizesTableData {
     required this.rows,
     this.addLabel,
     this.editLabel,
+    this.addResultLabel,
+    this.editResultLabel,
+    this.unitOptions,
+    this.unitGroupLabel,
     this.dragHandleLabel,
     this.editRowSemanticsLabelBuilder,
     this.deleteRowSemanticsLabelBuilder,
@@ -96,6 +99,19 @@ class CoreSizesTableData {
           onSaved == null || editLabel != null,
           'CoreSizesTableData: a table with onSaved must supply editLabel, '
           'otherwise tapping a row opens the entry sheet with no title.',
+        ),
+        assert(
+          onSaved == null ||
+              (addResultLabel != null && editResultLabel != null),
+          'CoreSizesTableData: a table with onSaved must supply '
+          'addResultLabel and editResultLabel — they name the entry sheet\'s '
+          'commit key, which the sheet never names for itself.',
+        ),
+        assert(
+          unitOptions == null || unitGroupLabel != null,
+          'CoreSizesTableData: a table with unitOptions must supply '
+          'unitGroupLabel — otherwise the entry sheet\'s unit row names '
+          'itself in English. Pass null rather than an empty list for none.',
         ),
         assert(
           onSaved == null || editRowSemanticsLabelBuilder != null,
@@ -160,6 +176,27 @@ class CoreSizesTableData {
   ///
   /// Pass a localised string from the app layer.
   final String? editLabel;
+
+  /// The commit key's label on the entry sheet when adding a row — "Add" in
+  /// the design.
+  ///
+  /// Kept separate from [addLabel]: that titles the sheet ("Add size") and
+  /// labels the add action, while this names the keyboard's equals key.
+  final String? addResultLabel;
+
+  /// The commit key's label on the entry sheet when editing a row — "Update"
+  /// in the design. The counterpart of [addResultLabel] for [editLabel].
+  final String? editResultLabel;
+
+  /// Units offered on the entry sheet's unit row, such as `['m', 'cm', 'mm']`.
+  ///
+  /// Null or empty renders no unit row. These are user-facing strings, so they
+  /// are the app's to supply and translate — the package holds no default.
+  final List<String>? unitOptions;
+
+  /// Names the unit row in the entry sheet's group header. Localize alongside
+  /// [unitOptions].
+  final String? unitGroupLabel;
 
   /// The semantic label announced for this table's drag handles.
   ///
