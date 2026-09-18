@@ -10,6 +10,78 @@ ThemeData _withRoboto(ThemeData base) {
   );
 }
 
+void _noopDelete(String id) {}
+void _noopReorder(int oldIndex, int newIndex) {}
+
+/// A fixed table: no callbacks and no add label, so it renders without drag
+/// handles, an add action or swipe-to-delete.
+const CoreSizesTableData _readOnlyTable = CoreSizesTableData(
+  id: 'read-only',
+  title: 'Rates & waste for 1,750.7yd³',
+  columns: [
+    CoreSizesColumn(title: 'Per unit'),
+    CoreSizesColumn(title: 'Rate'),
+    CoreSizesColumn(title: 'Waste'),
+    CoreSizesColumn(title: 'Cost'),
+  ],
+  rows: [
+    CoreSizeCardData(id: 'ft3', values: ['ft³', r'$6.5', '0%', r'$307,247.85']),
+    CoreSizeCardData(id: 'yd3', values: ['yd³', r'$150', '7%', r'$280,987.35']),
+  ],
+);
+
+/// The standard four-column fixture shared by most goldens.
+CoreSizesTableData _fourColumnTable({
+  void Function(String id)? onDeleted = _noopDelete,
+  void Function(int oldIndex, int newIndex)? onReordered = _noopReorder,
+}) {
+  return CoreSizesTableData(
+    id: 'four-column',
+    title: 'Concrete volumes for 70ft',
+    addLabel: 'Add size',
+    editLabel: 'Edit size',
+    dragHandleLabel: 'Reorder',
+    columns: const [
+      CoreSizesColumn(title: 'Rails /section'),
+      CoreSizesColumn(title: 'O.C.'),
+      CoreSizesColumn(title: 'No. of posts'),
+      CoreSizesColumn(title: 'No. of rails'),
+    ],
+    rows: const [
+      CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
+      CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
+    ],
+    onSaved: (_) {},
+    onDeleted: onDeleted,
+    onReordered: onReordered,
+  );
+}
+
+/// The narrower fixture used by the drag golden.
+CoreSizesTableData _twoColumnTable({
+  void Function(String id)? onDeleted = _noopDelete,
+  void Function(int oldIndex, int newIndex)? onReordered = _noopReorder,
+}) {
+  return CoreSizesTableData(
+    id: 'two-column',
+    title: 'Concrete volumes for 70ft',
+    addLabel: 'Add size',
+    editLabel: 'Edit size',
+    dragHandleLabel: 'Reorder',
+    columns: const [
+      CoreSizesColumn(title: 'Rails /section'),
+      CoreSizesColumn(title: 'O.C.'),
+    ],
+    rows: const [
+      CoreSizeCardData(id: '1', values: ['2', '6']),
+      CoreSizeCardData(id: '2', values: ['3', '6']),
+    ],
+    onSaved: (_) {},
+    onDeleted: onDeleted,
+    onReordered: onReordered,
+  );
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,17 +111,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: true,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -94,17 +156,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: false,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -150,15 +202,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: true,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6']),
-                CoreSizeCardData(id: '2', values: ['3', '6']),
-              ],
+              tables: [_twoColumnTable()],
             ),
           ],
         ),
@@ -209,17 +253,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: false,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -269,17 +303,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: true,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -331,17 +355,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: true,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -392,17 +406,7 @@ void main() {
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
               isCollapsed: false,
-              sizesTitleLabel: 'Concrete volumes for 70ft',
-              sizesTableTitles: const [
-                'Rails /section',
-                'O.C.',
-                'No. of posts',
-                'No. of rails',
-              ],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['2', '6', '14', '26']),
-                CoreSizeCardData(id: '2', values: ['3', '6', '14', '39']),
-              ],
+              tables: [_fourColumnTable()],
               dimensions: const [
                 CoreDimensionData(label: 'Area', value: '50.27ft²'),
                 CoreDimensionData(label: 'Diameter', value: '8ft'),
@@ -422,6 +426,52 @@ void main() {
       find.byType(MaterialApp),
       matchesGoldenFile(
           'goldens/core_geometry_area_component_expanded_dark.png'),
+    );
+  });
+
+  testWidgets(
+      'CoreGeometryArea Component Visual Regression Test (Multiple Tables)',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoreTheme.light().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Geometry Area — multiple tables'),
+            const SizedBox(height: CoreSpacing.space8),
+            CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              isCollapsed: false,
+              tables: [
+                // Reorderable and deletable, with an add action.
+                _twoColumnTable(),
+                // Read-only: no callbacks and no addLabel, so no drag handles
+                // and no add action render.
+                _readOnlyTable,
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_geometry_area_component_tables.png'),
     );
   });
 }
