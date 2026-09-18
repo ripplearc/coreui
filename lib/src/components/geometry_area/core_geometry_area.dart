@@ -236,6 +236,18 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the collapse button.
   static const String defaultCollapseLabel = 'Collapse';
 
+  /// Key for a row's edit button, so tests and consuming apps can address it
+  /// by table and row rather than by position.
+  ///
+  /// Row ids are unique within a table but not across tables, so the table's
+  /// own id is part of the key.
+  static ValueKey<String> editRowKey(String tableId, String rowId) =>
+      ValueKey('core_geometry_area_edit_${tableId}_$rowId');
+
+  /// Key for a row's delete button. See [editRowKey].
+  static ValueKey<String> deleteRowKey(String tableId, String rowId) =>
+      ValueKey('core_geometry_area_delete_${tableId}_$rowId');
+
   /// The default text shown for the attachments section title.
   static const String defaultAttachmentsTitleLabel = 'Attachments';
 

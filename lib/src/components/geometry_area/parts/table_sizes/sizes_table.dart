@@ -35,23 +35,23 @@ class _SizesTable extends StatefulWidget {
 class _SizesTableState extends State<_SizesTable> {
   int? _recentlyDroppedIndex;
 
-  Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
-      BuildContext context, _TableLayout layout) {
-    final colors = AppColorsExtension.of(context);
-    final row = widget.table.rows[index];
-
-    // The proxy must render the same action buttons as the static row. Without
-    // them the row keeps layout's reserved actionsWidth but has nothing to put
-    // in it, so the value columns stretch into the gap and the text visibly
-    // jumps the moment a drag starts.
+  _SizeCard _card({
+    required CoreSizeCardData row,
+    required int index,
+    required _TableLayout layout,
+    required bool isReorderable,
+    required bool isHighlighted,
+  }) {
     final table = widget.table;
-    final draggingCard = _SizeCard(
+    return _SizeCard(
       index: index,
       layout: layout,
       values: row.values,
       dragHandleLabel: table.dragHandleLabel,
-      isReorderable: true,
-      isHighlighted: true,
+      isReorderable: isReorderable,
+      isHighlighted: isHighlighted,
+      editButtonKey: CoreGeometryArea.editRowKey(table.id, row.id),
+      deleteButtonKey: CoreGeometryArea.deleteRowKey(table.id, row.id),
       editSemanticsLabel: table.editRowSemanticsLabelBuilder?.call(row),
       deleteSemanticsLabel: table.deleteRowSemanticsLabelBuilder?.call(row),
       onEdit: table.onSaved == null
@@ -59,6 +59,24 @@ class _SizesTableState extends State<_SizesTable> {
           : () => _openEntrySheet(row: row, index: index),
       onDelete:
           table.onDeleted == null ? null : () => table.onDeleted?.call(row.id),
+    );
+  }
+
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
+      BuildContext context, _TableLayout layout) {
+    final colors = AppColorsExtension.of(context);
+    final row = widget.table.rows[index];
+
+    // The proxy renders the same card as the static row. Were it to drop the
+    // action buttons it would keep layout's reserved actionsWidth with nothing
+    // to put in it, and the value columns would stretch into the gap the moment
+    // a drag starts.
+    final draggingCard = _card(
+      row: row,
+      index: index,
+      layout: layout,
+      isReorderable: true,
+      isHighlighted: true,
     );
 
     return AnimatedBuilder(
@@ -82,8 +100,6 @@ class _SizesTableState extends State<_SizesTable> {
 
   static const _highlightDuration = 500;
 
-  /// Minimum tap-target edge for the row's action buttons.
-  static const double _actionSize = CoreSpacing.space12;
 
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
@@ -170,23 +186,12 @@ class _SizesTableState extends State<_SizesTable> {
             onTap: table.onSaved == null
                 ? null
                 : () => _openEntrySheet(row: row, index: index),
-            child: _SizeCard(
+            child: _card(
+              row: row,
               index: index,
               layout: layout,
-              values: row.values,
-              dragHandleLabel: table.dragHandleLabel,
               isReorderable: isReorderable,
               isHighlighted: index == _recentlyDroppedIndex,
-              editSemanticsLabel:
-                  table.editRowSemanticsLabelBuilder?.call(row),
-              deleteSemanticsLabel:
-                  table.deleteRowSemanticsLabelBuilder?.call(row),
-              onEdit: table.onSaved == null
-                  ? null
-                  : () => _openEntrySheet(row: row, index: index),
-              onDelete: table.onDeleted == null
-                  ? null
-                  : () => table.onDeleted?.call(row.id),
             ),
           ),
         ),
@@ -224,8 +229,9 @@ class _SizesTableState extends State<_SizesTable> {
 
         // Each button is a full 48 dp tap target, so the slot is sized by how
         // many of them the table's callbacks actually render.
-        final actionsWidth = (table.onSaved == null ? 0.0 : _actionSize) +
-            (table.onDeleted == null ? 0.0 : _actionSize);
+        final actionsWidth =
+            (table.onSaved == null ? 0.0 : _SizeCard.actionSize) +
+            (table.onDeleted == null ? 0.0 : _SizeCard.actionSize);
 
         final totalWidth = leadingSpace +
             trailingSpace +
