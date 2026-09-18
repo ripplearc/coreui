@@ -10,6 +10,7 @@ import 'package:example/screens/date_range_sheet_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/divider_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
+import 'package:example/screens/value_editor_sheet_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/multi_select_sheet_showcase_screen.dart';
@@ -113,6 +114,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Geometry Area Component',
                 const GeometryAreaShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Value Editor Sheet Component',
+                const ValueEditorSheetShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(
