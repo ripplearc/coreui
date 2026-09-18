@@ -257,7 +257,7 @@ class CoreControlButton extends StatelessWidget {
 ///
 /// [resultType] is the type of result to display (equals, area, volume, density, or custom).
 /// [onTap] is called when the button is pressed.
-/// [customLabel] is an optional custom label used when [resultType] is [ResultType.custom].
+/// [customLabel] overrides [resultType]'s label and is rendered verbatim.
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 53% of width or 56px.
 class CoreResultButton extends StatelessWidget {
@@ -283,15 +283,27 @@ class CoreResultButton extends StatelessWidget {
     final effectiveHeight = height;
     final backgroundColor = colors.keyboardMain;
     final textColor = colors.textInverse;
-    final label = resultType.label.toUpperCase();
+    // A caller-supplied label is shown as written — "Update" and "Add" are
+    // sentence case in the design, unlike the upper-cased default. An empty
+    // one counts as absent: a caller that forgot to supply a label should get
+    // the default, not a commit key with nothing written on it.
+    final custom = customLabel;
+    final label = (custom != null && custom.isNotEmpty)
+        ? custom
+        : resultType.label.toUpperCase();
 
     final h = effectiveHeight;
     final fontSize = h != null ? h * _KeyboardButton._largeFontSizeRatio : null;
 
+    final isCustom = custom != null && custom.isNotEmpty;
+
     return Semantics(
       label: '$label button',
       button: true,
-      hint: 'Calculates and displays the result',
+      // A commit key reading "Update" does not calculate anything, so the
+      // default hint would announce something untrue. Its label already says
+      // what it does.
+      hint: isCustom ? null : 'Calculates and displays the result',
       child: _KeyboardButton(
         label: label,
         isLabel: true,

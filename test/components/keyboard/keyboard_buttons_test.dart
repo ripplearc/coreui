@@ -368,14 +368,80 @@ void main() {
       expect(find.text('AREA'), findsOneWidget);
     });
 
-    testWidgets('renders custom result type with custom label', (tester) async {
+    testWidgets('customLabel wins over resultType and is rendered verbatim',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreResultButton(
               resultType: const ResultType(label: 'Calculate'),
-              customLabel: 'Calculate',
+              customLabel: 'Update',
+              onTap: () {},
+              height: 40.0,
+              width: 40.0,
+            ),
+          ),
+        ),
+      );
+
+      // Sentence case survives: the design's key reads "Update", not "UPDATE".
+      expect(find.text('Update'), findsOneWidget);
+      expect(find.text('CALCULATE'), findsNothing);
+    });
+
+    testWidgets('a custom label drops the calculate hint', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreResultButton(
+              resultType: const ResultType(label: '='),
+              customLabel: 'Update',
+              onTap: () {},
+              height: 40.0,
+              width: 40.0,
+            ),
+          ),
+        ),
+      );
+
+      // "Update" commits a value; announcing that it calculates a result would
+      // be untrue.
+      final semantics = tester.getSemantics(find.byType(CoreResultButton));
+      expect(semantics.label, contains('Update button'));
+      expect(semantics.hint, isEmpty);
+    });
+
+    testWidgets('the default result key keeps its calculate hint',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreResultButton(
+              resultType: const ResultType(label: '='),
+              onTap: () {},
+              height: 40.0,
+              width: 40.0,
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreResultButton));
+      expect(semantics.hint, 'Calculates and displays the result');
+    });
+
+    testWidgets('an empty customLabel falls back rather than blanking the key',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreResultButton(
+              resultType: const ResultType(label: 'Calculate'),
+              customLabel: '',
               onTap: () {},
               height: 40.0,
               width: 40.0,

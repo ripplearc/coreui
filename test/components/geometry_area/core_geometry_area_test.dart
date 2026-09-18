@@ -23,6 +23,10 @@ CoreSizesTableData _table({
     title: title,
     columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
     rows: rows,
+    addResultLabel: 'Add',
+    editResultLabel: 'Update',
+    unitOptions: const ['m', 'cm', 'mm'],
+    unitGroupLabel: 'Unit',
     dragHandleLabel: dragHandleLabel,
     editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
     deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
@@ -700,10 +704,47 @@ void main() {
             columns: const [CoreSizesColumn(title: 'Col')],
             rows: const [],
             editLabel: null,
+            addResultLabel: 'Add',
+            editResultLabel: 'Update',
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: 'Unit',
             onSaved: (_) {},
           ),
           throwsAssertionError,
           reason: 'the entry sheet would open with no title',
+        );
+      });
+
+      test('a table with onSaved requires the commit-key labels', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'editable',
+            title: 'Editable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            editLabel: 'Edit',
+            editRowSemanticsLabelBuilder: (row) => 'Edit',
+            addResultLabel: null,
+            editResultLabel: 'Update',
+            onSaved: (_) {},
+          ),
+          throwsAssertionError,
+          reason: 'the sheet never names its own commit key',
+        );
+      });
+
+      test('a table with unitOptions requires unitGroupLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'united',
+            title: 'United',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: null,
+          ),
+          throwsAssertionError,
+          reason: 'the unit row would name itself in English',
         );
       });
 

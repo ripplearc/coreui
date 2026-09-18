@@ -17,7 +17,7 @@ Future<void> setTestViewport(WidgetTester tester) async {
 const _skipKeyboardDragHandleTapTarget = false;
 
 void main() {
-  group('SizeEntryBottomSheet a11y', () {
+  group('CoreValueEditorSheet a11y', () {
     testWidgets('meets basic accessibility guidelines',
         (WidgetTester tester) async {
       await setTestViewport(tester);
@@ -28,14 +28,17 @@ void main() {
         (theme) => MaterialApp(
           theme: theme,
           home: const Scaffold(
-            body: SizeEntryBottomSheet(
+            body: CoreValueEditorSheet(
               titles: ['Title 1', 'Title 2'],
               addSizeTitle: 'Add size',
               editSizeTitle: 'Edit size',
+              resultLabel: 'Add',
+              unitOptions: ['m', 'cm', 'mm'],
+              unitGroupLabel: 'Unit',
             ),
           ),
         ),
-        find.byType(SizeEntryBottomSheet),
+        find.byType(CoreValueEditorSheet),
         checkTapTargetSize: _skipKeyboardDragHandleTapTarget,
       );
     });

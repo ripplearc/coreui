@@ -106,13 +106,18 @@ class _SizesTableState extends State<_SizesTable> {
 
   Future<void> _openEntrySheet({CoreSizeCardData? row, int? index}) async {
     final table = widget.table;
-    final result = await SizeEntryBottomSheet.show(
+    final result = await CoreValueEditorSheet.show(
       context: context,
       addSizeTitle: table.addLabel ?? '',
       editSizeTitle: table.editLabel ?? '',
       initialData: row,
       initialIndex: index,
       titles: _titles,
+      resultLabel: row == null
+          ? (table.addResultLabel ?? '')
+          : (table.editResultLabel ?? ''),
+      unitOptions: table.unitOptions,
+      unitGroupLabel: table.unitGroupLabel,
     );
     if (result != null) {
       table.onSaved?.call(result);
