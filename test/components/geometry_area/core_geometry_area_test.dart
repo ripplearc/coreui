@@ -16,17 +16,21 @@ CoreSizesTableData _table({
   void Function(SizeEntryResult result)? onSaved,
   void Function(String id)? onDeleted,
   void Function(int oldIndex, int newIndex)? onReordered,
+  bool editable = true,
 }) {
   return CoreSizesTableData(
     id: id,
     title: title,
     columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
     rows: rows,
-    addLabel: addLabel,
-    editLabel: editLabel,
     dragHandleLabel: dragHandleLabel,
     onAdd: onAdd,
-    onSaved: onSaved ?? (_) {},
+    // A table is editable unless a test asks otherwise. Defaulting onSaved to a
+    // no-op unconditionally would leave a save path on every table a test
+    // describes as read-only.
+    onSaved: editable ? (onSaved ?? (_) {}) : null,
+    editLabel: editable ? editLabel : null,
+    addLabel: editable ? addLabel : null,
     onDeleted: onDeleted,
     onReordered: onReordered,
   );
@@ -254,7 +258,7 @@ void main() {
               rows: const [
                 CoreSizeCardData(id: 'rate-1', values: [r'$6.5']),
               ],
-              addLabel: null,
+              editable: false,
             ),
             _table(
               id: 'densities',
@@ -263,7 +267,7 @@ void main() {
               rows: const [
                 CoreSizeCardData(id: 'density-1', values: ['concrete']),
               ],
-              addLabel: null,
+              editable: false,
             ),
           ],
         )),
@@ -367,6 +371,23 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Rates'), findsOneWidget);
       expect(find.text('Waste'), findsOneWidget);
+    });
+
+    testWidgets('sibling tables must have unique ids', (tester) async {
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(id: 'same', title: 'First'),
+            _table(id: 'same', title: 'Second'),
+          ],
+        )),
+      );
+
+      // Without the assert this is a framework "Duplicate keys found" error
+      // that never names CoreSizesTableData.id.
+      expect(tester.takeException(), isAssertionError);
     });
 
     group('label and callback pairing', () {

@@ -32,11 +32,11 @@ class _SizesHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (onAddTap != null && addSizeLabel != null) ...[
+          if (addSizeLabel case final addLabel? when onAddTap != null) ...[
             const SizedBox(width: CoreSpacing.space1),
             Semantics(
               button: true,
-              label: addSizeLabel,
+              label: addLabel,
               excludeSemantics: true,
               child: GestureDetector(
                 onTap: onAddTap,
@@ -52,7 +52,7 @@ class _SizesHeader extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      addSizeLabel ?? '',
+                      addLabel,
                       style: typography.bodyMediumSemiBold.copyWith(
                         color: colors.textLink,
                       ),

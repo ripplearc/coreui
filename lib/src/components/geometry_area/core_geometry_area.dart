@@ -313,6 +313,15 @@ class CoreGeometryArea extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
 
+    // Each table is keyed on its id, so a duplicate otherwise surfaces as a
+    // framework "Duplicate keys found" error that never mentions
+    // CoreSizesTableData.id.
+    assert(
+      tables.map((table) => table.id).toSet().length == tables.length,
+      'CoreGeometryArea: table ids must be unique among siblings, but tables '
+      'declares ${tables.map((table) => table.id).toList()}.',
+    );
+
     return Container(
       color: colors.pageBackground,
       child: Column(
