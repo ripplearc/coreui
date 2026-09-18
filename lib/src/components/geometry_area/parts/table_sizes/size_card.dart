@@ -10,6 +10,8 @@ class _SizeCard extends StatelessWidget {
     required this.values,
     required this.dragHandleLabel,
     required this.isReorderable,
+    required this.editButtonKey,
+    required this.deleteButtonKey,
     this.editSemanticsLabel,
     this.deleteSemanticsLabel,
     this.onEdit,
@@ -26,6 +28,8 @@ class _SizeCard extends StatelessWidget {
   final List<String> values;
   final String? dragHandleLabel;
   final bool isReorderable;
+  final Key editButtonKey;
+  final Key deleteButtonKey;
   final String? editSemanticsLabel;
   final String? deleteSemanticsLabel;
   final VoidCallback? onEdit;
@@ -34,16 +38,23 @@ class _SizeCard extends StatelessWidget {
 
   static const _borderWidth = 1.5;
 
+  /// Minimum tap-target edge for the row's action buttons. The table reserves
+  /// this per button in its layout, so both must read the same value.
+  static const double actionSize = CoreSpacing.space12;
+
+
   // A 48 dp box around a 20 px icon: the box is invisible and only sets the tap
   // target, which CoreIconWidget(onTap:) cannot do — it builds an IconButton
   // with zero padding and empty constraints.
   Widget _actionButton({
+    required Key? key,
     required CoreIconData icon,
     required Color color,
     required String? semanticLabel,
     required VoidCallback onTap,
   }) {
     return Semantics(
+      key: key,
       button: true,
       label: semanticLabel,
       // Without onTap here the node is a labelled button carrying no tap
@@ -55,9 +66,11 @@ class _SizeCard extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         // Claims horizontal drags only when the row is dismissible, so a
-        // sloppy swipe here cannot delete by gesture. Claiming
-        // unconditionally would also swallow the table's own horizontal
-        // scroll, which is the wrong trade when there is no swipe to guard.
+        // sloppy swipe here cannot delete by gesture. This costs no scrolling:
+        // on a dismissible row the Dismissible already consumes horizontal
+        // drags along the row's whole width, so the table does not scroll from
+        // the row body either — measured, not assumed. On a non-dismissible
+        // row nothing is claimed and the table scrolls normally.
         onHorizontalDragStart: onDelete == null ? null : (_) {},
         child: ConstrainedBox(
           constraints: const BoxConstraints(
@@ -143,6 +156,7 @@ class _SizeCard extends StatelessWidget {
               ),
           if (onEdit case final onEdit?)
             _actionButton(
+              key: editButtonKey,
               icon: CoreIcons.edit,
               color: colors.textLink,
               semanticLabel: editSemanticsLabel,
@@ -150,6 +164,7 @@ class _SizeCard extends StatelessWidget {
             ),
           if (onDelete case final onDelete?)
             _actionButton(
+              key: deleteButtonKey,
               icon: CoreIcons.delete,
               color: colors.iconRed,
               semanticLabel: deleteSemanticsLabel,

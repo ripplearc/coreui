@@ -155,12 +155,17 @@ void main() {
       final addSizeSemantics = tester.getSemantics(addSizeText);
       expect(addSizeSemantics.label, _addSizeLabel);
 
-      // 8 chrome icons plus an edit and a delete button on each of the 2 rows.
-      final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(12));
-
-      final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
-      expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
+      // Assert the icons that matter are present and labelled, rather than a
+      // total that any unrelated icon change would break.
+      for (final label in [
+        CoreGeometryArea.defaultExpandLabel,
+        'Edit 10',
+        'Delete 10',
+        'Edit 30',
+        'Delete 30',
+      ]) {
+        expect(find.bySemanticsLabel(label), findsOneWidget, reason: label);
+      }
 
       final areaLabelFinder = find.text('Area');
       final areaValueFinder = find.text('50.27ft²');

@@ -80,7 +80,7 @@ Finder _inSheet(Finder matching) => find.descendant(
 /// Measured at runtime and stepped rather than one jump: a single large
 /// `tester.drag` against `ReorderableListView` lands non-monotonically, and
 /// hard-coded pixel offsets break whenever the row height changes.
-Future<void> dragFirstRowDown(WidgetTester tester, double rows) async {
+Future<void> _dragFirstRowDown(WidgetTester tester, double rows) async {
   final rowHeight = tester
       .getSize(find.byWidgetPredicate((w) => w is Dismissible).first)
       .height;
@@ -567,7 +567,7 @@ void main() {
           )),
         );
 
-        await tester.tap(deleteButtons().at(1));
+        await tester.tap(find.byKey(CoreGeometryArea.deleteRowKey('table', 'second')));
         await tester.pumpAndSettle();
 
         expect(deleted, ['second']);
@@ -595,7 +595,7 @@ void main() {
           )),
         );
 
-        await tester.tap(editButtons().first);
+        await tester.tap(find.byKey(CoreGeometryArea.editRowKey('table', '1')));
         await tester.pumpAndSettle();
 
         expect(find.text('Edit size'), findsOneWidget);
@@ -674,6 +674,59 @@ void main() {
         await gesture.up();
         await tester.pumpAndSettle();
         await tester.pump(const Duration(milliseconds: 500));
+      });
+
+      testWidgets('a button is no more of a scroll dead zone than the row body',
+          (tester) async {
+        // A phone-width surface, so eight columns genuinely overflow.
+        await tester.binding.setSurfaceSize(const Size(412, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        Future<double> dragAndMeasure({
+          required bool deletable,
+          required bool fromButton,
+        }) async {
+          await tester.pumpWidget(
+            _app(CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              tables: [
+                _table(
+                  columnTitles: const ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+                  rows: const [
+                    CoreSizeCardData(
+                      id: '1',
+                      values: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                    ),
+                  ],
+                  onDeleted: deletable ? (_) {} : null,
+                ),
+              ],
+            )),
+          );
+          final before = tester.getTopLeft(find.text('1')).dx;
+          await tester.drag(
+            fromButton
+                ? find.byKey(CoreGeometryArea.deleteRowKey('table', '1'))
+                : find.text('3'),
+            const Offset(-120, 0),
+          );
+          await tester.pumpAndSettle();
+          return before - tester.getTopLeft(find.text('1')).dx;
+        }
+
+        // On a dismissible row the Dismissible consumes horizontal drags along
+        // the whole row, so neither the body nor the button scrolls the table:
+        // the button costs no scrolling that the row body still had.
+        expect(await dragAndMeasure(deletable: true, fromButton: false), 0);
+        expect(await dragAndMeasure(deletable: true, fromButton: true), 0);
+
+        // With nothing to guard, the button claims nothing and the table
+        // scrolls from the row body as usual.
+        expect(
+          await dragAndMeasure(deletable: false, fromButton: false),
+          greaterThan(0),
+        );
       });
 
       testWidgets('swiping the row body still deletes', (tester) async {
@@ -1021,7 +1074,7 @@ void main() {
       final dragHandles = _dragHandles;
       expect(dragHandles, findsNWidgets(3));
 
-      await dragFirstRowDown(tester, 1);
+      await _dragFirstRowDown(tester, 1);
 
       expect(reorderCalls.length, 1);
       expect(reorderCalls.first, (0, 1));
@@ -1072,7 +1125,7 @@ void main() {
       expect(dragHandles, findsNWidgets(4));
 
       // Past two rows, so it lands at index 2 rather than the adjacent slot.
-      await dragFirstRowDown(tester, 1.5);
+      await _dragFirstRowDown(tester, 1.5);
 
       expect(reorderCalls.length, 1);
       expect(reorderCalls.first, (0, 2));
@@ -1115,7 +1168,7 @@ void main() {
         ),
       );
 
-      await dragFirstRowDown(tester, 1);
+      await _dragFirstRowDown(tester, 1);
 
       final highlightedCardFinder = find.byWidgetPredicate((w) {
         return w is DecoratedBox &&
