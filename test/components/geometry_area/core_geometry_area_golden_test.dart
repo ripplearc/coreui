@@ -41,6 +41,8 @@ CoreSizesTableData _fourColumnTable({
     addLabel: 'Add size',
     editLabel: 'Edit size',
     dragHandleLabel: 'Reorder',
+    editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+    deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
     columns: const [
       CoreSizesColumn(title: 'Rails /section'),
       CoreSizesColumn(title: 'O.C.'),
@@ -68,6 +70,8 @@ CoreSizesTableData _twoColumnTable({
     addLabel: 'Add size',
     editLabel: 'Edit size',
     dragHandleLabel: 'Reorder',
+    editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+    deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
     columns: const [
       CoreSizesColumn(title: 'Rails /section'),
       CoreSizesColumn(title: 'O.C.'),

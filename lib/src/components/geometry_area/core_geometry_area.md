@@ -10,7 +10,8 @@ A robust, multi-faceted component used to display geometry properties, configura
 - **Expandable Dimensions**: The top section displays high-level calculated metrics (e.g., Area, Diameter, Radius) passing through `CoreDimensionData`. An expand/collapse toggle controls how many dimension cards are shown.
 - **Multiple Interactive Tables**: Renders one table per `CoreSizesTableData` entry in `tables`, each with its own title, columns, rows and callbacks. Every callback is optional, and a null callback hides the affordance it drives:
   - **Drag-and-Drop Reordering**: Available only when `onReordered` is provided; otherwise no drag handles render.
-  - **Swipe-to-Delete**: Available only when `onDeleted` is provided.
+  - **Swipe-to-Delete**: Available only when `onDeleted` is provided, which also renders a trash button on each row.
+  - **Row editing**: A pencil on each row opens the entry sheet pre-filled. Rendered whenever `onSaved` is provided; tapping the row body does the same thing.
   - **Add**: The add action renders when `addLabel` is set, and needs `onAdd` or `onSaved` to act on.
 
   That lets the same widget express a reorderable, extendable sizes table and a fixed, read-only rates table side by side.
@@ -48,6 +49,8 @@ CoreGeometryArea(
       addLabel: 'Add size',
       editLabel: 'Edit size',
       dragHandleLabel: 'Reorder',
+      editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+      deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
       columns: const [
         CoreSizesColumn(title: 'Size'),
         CoreSizesColumn(title: 'No. of sheet'),
@@ -104,7 +107,8 @@ CoreGeometryArea(
 - **Drag Reordering**: Powered by `ReorderableListView`, and only when a table supplies `onReordered`. When a card is dragged, it elevates visually (shadow & border); `onReordered` provides standard `oldIndex` and `newIndex` integers to sync backend state. A table without `onReordered` renders a plain column with no drag handles.
 - **Swipe Deletion**: Utilizing `Dismissible`, cards can be swiped horizontally when a table supplies `onDeleted`. Triggering a full swipe fires `onDeleted` passing the unique string ID.
 - **Adding and editing**: The add action renders when `addLabel` is set. Tapping it calls `onAdd` if provided — the app then owns the flow — and otherwise opens the built-in `SizeEntryBottomSheet`, reporting through `onSaved`. Tapping a row opens the same sheet pre-filled.
-- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` with `onSaved`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
+- **Row actions**: The pencil and trash are 48 dp tap targets around 20 px icons, so they clear `androidTapTargetGuideline`. Each claims horizontal drags that begin on it, so a swipe starting on a button cannot reach the row's `Dismissible`. A table that renders both reserves 96 dp of row width, which the header mirrors — wide tables therefore scroll horizontally sooner than before.
+- **Label/callback pairing**: Each user-facing string is asserted alongside the callback that makes it reachable — `dragHandleLabel` with `onReordered`, `editLabel` and `editRowSemanticsLabelBuilder` with `onSaved`, `deleteRowSemanticsLabelBuilder` with `onDeleted`, and `addLabel` with `onAdd` or `onSaved`. This fails loudly in debug rather than shipping an unlabelled drag handle, a titleless entry sheet, or an add label with nothing behind it.
 
 ---
 
@@ -145,6 +149,8 @@ CoreGeometryArea(
 | `addLabel` | `String?` | `null` | Text for the add action, which renders only when this is set. Requires `onAdd` or `onSaved` to act on. |
 | `editLabel` | `String?` | `null` | Title shown by the entry sheet when editing an existing row. Required with `onSaved`. |
 | `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |
+| `editRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each edit button's semantic label from its row, so the label can name what it edits. Required with `onSaved`. |
+| `deleteRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each delete button's semantic label from its row. Required with `onDeleted`. |
 | `onAdd` | `VoidCallback?` | `null` | If provided, the app owns the add flow and the built-in entry sheet is not opened. |
 | `onSaved` | `void Function(SizeEntryResult)?` | `null` | Fired when a row is saved from the built-in entry sheet. |
 | `onDeleted` | `void Function(String)?` | `null` | Fired when a row is deleted, passing its `id`. When null the row cannot be swiped away. |

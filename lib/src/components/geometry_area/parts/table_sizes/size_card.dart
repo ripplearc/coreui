@@ -10,6 +10,12 @@ class _SizeCard extends StatelessWidget {
     required this.values,
     required this.dragHandleLabel,
     required this.isReorderable,
+    required this.editButtonKey,
+    required this.deleteButtonKey,
+    this.editSemanticsLabel,
+    this.deleteSemanticsLabel,
+    this.onEdit,
+    this.onDelete,
     this.isHighlighted = false,
   }) : assert(
           values.length == layout.columnWidths.length,
@@ -22,9 +28,66 @@ class _SizeCard extends StatelessWidget {
   final List<String> values;
   final String? dragHandleLabel;
   final bool isReorderable;
+  final Key editButtonKey;
+  final Key deleteButtonKey;
+  final String? editSemanticsLabel;
+  final String? deleteSemanticsLabel;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   final bool isHighlighted;
 
   static const _borderWidth = 1.5;
+
+  /// Minimum tap-target edge for the row's action buttons. The table reserves
+  /// this per button in its layout, so both must read the same value.
+  static const double actionSize = CoreSpacing.space12;
+
+
+  // A 48 dp box around a 20 px icon: the box is invisible and only sets the tap
+  // target, which CoreIconWidget(onTap:) cannot do — it builds an IconButton
+  // with zero padding and empty constraints.
+  Widget _actionButton({
+    required Key? key,
+    required CoreIconData icon,
+    required Color color,
+    required String? semanticLabel,
+    required VoidCallback onTap,
+  }) {
+    return Semantics(
+      key: key,
+      button: true,
+      label: semanticLabel,
+      // Without onTap here the node is a labelled button carrying no tap
+      // action, because excludeSemantics drops the GestureDetector's own node:
+      // a screen reader would announce the button but refuse to activate it.
+      onTap: onTap,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        // Claims horizontal drags only when the row is dismissible, so a
+        // sloppy swipe here cannot delete by gesture. This costs no scrolling:
+        // on a dismissible row the Dismissible already consumes horizontal
+        // drags along the row's whole width, so the table does not scroll from
+        // the row body either — measured, not assumed. On a non-dismissible
+        // row nothing is claimed and the table scrolls normally.
+        onHorizontalDragStart: onDelete == null ? null : (_) {},
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: CoreSpacing.space12,
+            minHeight: CoreSpacing.space12,
+          ),
+          child: Center(
+            child: CoreIconWidget(
+              icon: icon,
+              size: CoreIconSize.size20,
+              color: color,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +154,22 @@ class _SizeCard extends StatelessWidget {
                   ),
                 ),
               ),
+          if (onEdit case final onEdit?)
+            _actionButton(
+              key: editButtonKey,
+              icon: CoreIcons.edit,
+              color: colors.textLink,
+              semanticLabel: editSemanticsLabel,
+              onTap: onEdit,
+            ),
+          if (onDelete case final onDelete?)
+            _actionButton(
+              key: deleteButtonKey,
+              icon: CoreIcons.delete,
+              color: colors.iconRed,
+              semanticLabel: deleteSemanticsLabel,
+              onTap: onDelete,
+            ),
           SizedBox(width: layout.isScrollable ? 0 : CoreSpacing.space3),
         ],
       ),

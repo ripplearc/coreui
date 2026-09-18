@@ -28,6 +28,8 @@ CoreSizesTableData _a11yTable({
     addLabel: _addSizeLabel,
     editLabel: 'Edit size',
     dragHandleLabel: _dragHandleLabel,
+    editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+    deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
     columns: const [
       CoreSizesColumn(title: 'area'),
       CoreSizesColumn(title: 'volume'),
@@ -56,7 +58,6 @@ void main() {
           ],
         ),
         find.byType(CoreGeometryArea),
-        checkTapTargetSize: false,
         checkLabeledTapTarget: false,
         checkTextContrast: false,
       );
@@ -80,7 +81,6 @@ void main() {
           ])],
         ),
         find.byType(CoreGeometryArea),
-        checkTapTargetSize: false,
         checkLabeledTapTarget: false,
       );
     });
@@ -155,11 +155,17 @@ void main() {
       final addSizeSemantics = tester.getSemantics(addSizeText);
       expect(addSizeSemantics.label, _addSizeLabel);
 
-      final allIconsFinder = find.byType(CoreIconWidget);
-      expect(allIconsFinder, findsNWidgets(8));
-
-      final firstIconSemantics = tester.getSemantics(allIconsFinder.first);
-      expect(firstIconSemantics.label, CoreGeometryArea.defaultExpandLabel);
+      // Assert the icons that matter are present and labelled, rather than a
+      // total that any unrelated icon change would break.
+      for (final label in [
+        CoreGeometryArea.defaultExpandLabel,
+        'Edit 10',
+        'Delete 10',
+        'Edit 30',
+        'Delete 30',
+      ]) {
+        expect(find.bySemanticsLabel(label), findsOneWidget, reason: label);
+      }
 
       final areaLabelFinder = find.text('Area');
       final areaValueFinder = find.text('50.27ft²');
@@ -210,6 +216,44 @@ void main() {
       );
       expect(tester.getSemantics(dragHandleFinder.first).label,
           startsWith(_dragHandleLabel));
+    });
+
+    testWidgets('the row action buttons are activatable, not just labelled',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              tables: [
+                _a11yTable(
+                  rows: const [
+                    CoreSizeCardData(id: '1', values: ['10', '20']),
+                  ],
+                  onDeleted: (_) {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // excludeSemantics drops the GestureDetector's own node, so without an
+      // onTap on the Semantics itself these would announce as buttons that
+      // refuse to activate — and the tap-target guideline, which only inspects
+      // nodes carrying a tap action, would pass vacuously.
+      for (final label in ['Edit 10', 'Delete 10']) {
+        final data =
+            tester.getSemantics(find.bySemanticsLabel(label)).getSemanticsData();
+        expect(data.flagsCollection.isButton, isTrue, reason: label);
+        expect(data.hasAction(SemanticsAction.tap), isTrue, reason: label);
+      }
+
+      handle.dispose();
     });
 
     testWidgets('a read-only row advertises no custom semantics actions',
