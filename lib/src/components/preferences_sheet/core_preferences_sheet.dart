@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
-import 'preference_row_tile.dart';
+import 'preference_anchors.dart';
+import 'preference_section_view.dart';
+import 'preference_sheet_title.dart';
 
 /// A modal bottom sheet body listing settings grouped into sections, each row
 /// showing what it currently reads and opening a single-choice sub-sheet.
@@ -73,7 +75,7 @@ class CorePreferencesSheet extends StatefulWidget {
 }
 
 class _CorePreferencesSheetState extends State<CorePreferencesSheet> {
-  final Map<String, GlobalKey> _rowAnchors = {};
+  final PreferenceAnchors _rowAnchors = PreferenceAnchors();
   String? _emphasisKey;
   Timer? _emphasisTimer;
 
@@ -98,7 +100,7 @@ class _CorePreferencesSheetState extends State<CorePreferencesSheet> {
   // Brings the deep-linked row into view and lets its mark fade once the
   // user has had a moment to see where they landed.
   Future<void> _revealDeepLink(String key) async {
-    final anchor = _rowAnchors[key]?.currentContext;
+    final anchor = _rowAnchors.contextOf(key);
     if (anchor != null) {
       await Scrollable.ensureVisible(
         anchor,
@@ -116,17 +118,17 @@ class _CorePreferencesSheetState extends State<CorePreferencesSheet> {
     });
   }
 
+  Set<String> get _rowKeys => {
+        for (final section in widget.sections)
+          for (final row in section.rows) row.key,
+      };
+
   // Each row owns a GlobalKey so the deep link can scroll to it, and a
   // GlobalKey cannot be shared. A duplicate key otherwise fails deep in the
   // framework rather than where the mistake was made.
   bool _debugKeysAreUnique() {
-    final seen = <String>{};
-    for (final section in widget.sections) {
-      for (final row in section.rows) {
-        if (!seen.add(row.key)) return false;
-      }
-    }
-    return true;
+    final rows = widget.sections.fold(0, (n, s) => n + s.rows.length);
+    return rows == _rowKeys.length;
   }
 
   Future<void> _openOptions(CorePreferenceRow row) async {
@@ -149,94 +151,48 @@ class _CorePreferencesSheetState extends State<CorePreferencesSheet> {
   @override
   Widget build(BuildContext context) {
     assert(_debugKeysAreUnique(), 'preference keys must be unique');
+    _rowAnchors.prune(_rowKeys);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildTitle(context),
+        PreferenceSheetTitle(title: widget.title),
         Flexible(
           child: Material(
             // See CoreMultiSelectSheet: inside CoreQuickSheet's decorated
             // container the nearest Material is behind the sheet background,
             // so row splashes need a transparent Material of their own.
             type: MaterialType.transparency,
-            child: ListView.builder(
-              shrinkWrap: true,
+            // Every section is built, rather than only the ones on screen.
+            // A deep link scrolls to a row's anchor, and an anchor exists
+            // only once its row has been built — a lazy list would silently
+            // do nothing for a target below the viewport. A preferences list
+            // is short enough that building it whole costs nothing.
+            child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
                 CoreSpacing.space4,
                 0,
                 CoreSpacing.space4,
                 CoreSpacing.space4,
               ),
-              itemCount: widget.sections.length,
-              itemBuilder: (_, index) =>
-                  _buildSection(context, widget.sections[index]),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTitle(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CoreSpacing.space4,
-        0,
-        CoreSpacing.space4,
-        CoreSpacing.space3,
-      ),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          widget.title,
-          style: typography.bodyLargeSemiBold.copyWith(
-            color: colors.textHeadline,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSection(BuildContext context, CorePreferenceSection section) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-    final title = section.title;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (title != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              0,
-              CoreSpacing.space4,
-              0,
-              CoreSpacing.space2,
-            ),
-            child: Text(
-              title,
-              style: typography.bodyMediumSemiBold.copyWith(
-                color: colors.textBody,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final section in widget.sections)
+                    PreferenceSectionView(
+                      section: section,
+                      emphasisKey: _emphasisKey,
+                      emphasisDuration:
+                          CorePreferencesSheet.emphasisDuration ~/ 4,
+                      rowKeyOf: widget.rowKeyOf,
+                      anchorOf: (key) => _rowAnchors[key],
+                      onRowTap: _openOptions,
+                    ),
+                ],
               ),
             ),
           ),
-        for (final row in section.rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: CoreSpacing.space1),
-            child: PreferenceRowTile(
-              key: widget.rowKeyOf?.call(row.key),
-              row: row,
-              isEmphasised: row.key == _emphasisKey,
-              emphasisDuration: CorePreferencesSheet.emphasisDuration ~/ 4,
-              anchorKey: _rowAnchors.putIfAbsent(row.key, GlobalKey.new),
-              onTap: row.isSelectable ? () => _openOptions(row) : null,
-            ),
-          ),
-        const SizedBox(height: CoreSpacing.space2),
+        ),
       ],
     );
   }
