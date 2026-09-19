@@ -85,12 +85,53 @@ class CoreToast {
     );
   }
 
+  /// Shows the receipt toast that confirms something was banked and offers
+  /// the action that takes it back.
+  ///
+  /// The toast owns its own dismissal, so [duration] is handed to the widget
+  /// rather than to the overlay: a second timer here could only disagree with
+  /// it. Answering the toast dismisses it through the same path the timer
+  /// takes, so it is removed exactly once either way.
+  ///
+  /// A `null` [duration] leaves the receipt up until the caller removes it,
+  /// and [disableTimers] holds it up the same way it holds up every other
+  /// toast.
+  static void showReceipt(
+    BuildContext context,
+    String message,
+    String actionLabel,
+    VoidCallback onAction, {
+    String? highlight,
+    Duration? duration = const Duration(seconds: 5),
+  }) {
+    showCustomToast(
+      context,
+      (overlayContext) {
+        // This toast's own entry: once superseded, removing it is not its
+        // business any more.
+        final entry = _entry;
+        return Toast.receipt(
+          description: message,
+          highlight: highlight,
+          actionLabel: actionLabel,
+          onAction: onAction,
+          onClose: () => _removeEntry(entry),
+          duration: _disableTimers ? null : duration,
+        );
+      },
+      duration: null,
+    );
+  }
+
   /// Shows a custom toast.
   /// Accepts a [context], a [toastBuilder], and an optional [duration] as parameters.
+  /// A `null` [duration] leaves the entry on screen: the toast itself owns the
+  /// dismissal, as [Toast.receipt] does, and a second timer here could only
+  /// disagree with it.
   static void showCustomToast(
     BuildContext context,
     Widget Function(BuildContext context) toastBuilder, {
-    Duration duration = const Duration(seconds: 3),
+    Duration? duration = const Duration(seconds: 3),
   }) {
     // hides keyboard if visible
     FocusScope.of(context).unfocus();
@@ -118,7 +159,7 @@ class CoreToast {
     }
 
     // Only create timer if timers are not disabled
-    if (!_disableTimers) {
+    if (!_disableTimers && duration != null) {
       final entry = _entry;
       _timer = Timer(duration, () => _removeEntry(entry));
     }
