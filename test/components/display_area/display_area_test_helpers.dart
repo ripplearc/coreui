@@ -12,3 +12,4 @@ library;
 
 const String testCloseSemanticLabel = 'Close';
 const String testHistoryPlaceholder = 'Here will show what you type';
+const String testRestoreSemanticsLabel = 'Restore this calculation';

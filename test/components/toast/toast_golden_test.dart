@@ -12,7 +12,7 @@ void main() {
   final colors = AppColorsExtension.create();
   testWidgets('Toast Component Visual Regression Test',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(1050, 550));
+    await tester.binding.setSurfaceSize(const Size(1050, 600));
 
     final toasts = <Widget>[
       Toast.error(
@@ -66,6 +66,30 @@ void main() {
             'This is an equally long description that demonstrates how the toast handles extended content without breaking the layout',
         closeLabel: 'Close',
         onClose: () {},
+      ),
+      Toast.receipt(
+        description: 'Saved to history',
+        highlight: 'Calc 60ft²',
+        actionLabel: 'Undo',
+        onAction: () {},
+        secondaryLabel: 'View',
+        onSecondary: () {},
+        duration: null,
+      ),
+      Toast.receipt(
+        description: 'Saved to history',
+        highlight: 'Calc 60ft²',
+        actionLabel: 'Undo',
+        onAction: () {},
+        duration: null,
+      ),
+      Toast.receipt(
+        description: 'Saved to history',
+        actionLabel: 'Undo',
+        onAction: () {},
+        secondaryLabel: 'View',
+        onSecondary: () {},
+        duration: null,
       ),
     ];
 

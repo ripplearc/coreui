@@ -5,6 +5,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import '../utils/a11y_guidelines.dart';
 import '../utils/test_harness.dart';
 
+void _noop() {}
+
 void main() {
   group('CoreToast', () {
     setUp(() {
@@ -415,6 +417,196 @@ void main() {
           CoreToast.cleanup();
           await tester.pumpAndSettle();
         }
+      });
+    });
+
+    group('showReceipt', () {
+      Widget buildHost({
+        VoidCallback onAction = _noop,
+        VoidCallback? onSecondary,
+        Duration? duration = const Duration(seconds: 5),
+      }) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreToast.showReceipt(
+                  context,
+                  'Saved to history',
+                  'Undo',
+                  onAction,
+                  highlight: 'Calc 60ft²',
+                  secondaryLabel: onSecondary == null ? null : 'View',
+                  onSecondary: onSecondary,
+                  duration: duration,
+                ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        );
+      }
+
+      testWidgets('displays the receipt with its action', (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+        expect(find.text('Undo'), findsOneWidget);
+      });
+
+      testWidgets('honours disableTimers like every other toast',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 10));
+
+        expect(find.byType(Toast), findsOneWidget);
+      });
+
+      testWidgets('cleanup after the receipt is shown leaves no pending '
+          'removal', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        CoreToast.cleanup();
+
+        // No frame between the two: the entry is removed but the overlay has
+        // not rebuilt, so its `mounted` still reads true. The widget's own
+        // timer outlives cleanup(), and removing an entry twice throws.
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsNothing);
+      });
+
+      testWidgets('dismisses itself once the duration elapses',
+          (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsNothing);
+      });
+
+      testWidgets('taking the action removes the toast and reports once',
+          (tester) async {
+        CoreToast.enableTimers();
+        var undone = 0;
+        await tester.pumpWidget(buildHost(onAction: () => undone++));
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('toast_action_button')));
+        await tester.pumpAndSettle();
+
+        expect(undone, 1);
+        expect(find.byType(Toast), findsNothing);
+
+        // The cancelled timer must not remove the entry a second time.
+        await tester.pump(const Duration(seconds: 6));
+      });
+
+      testWidgets('taking the secondary action removes the toast once',
+          (tester) async {
+        CoreToast.enableTimers();
+        var viewed = 0;
+        var undone = 0;
+        await tester.pumpWidget(
+          buildHost(onAction: () => undone++, onSecondary: () => viewed++),
+        );
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('toast_secondary_button')), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('toast_secondary_button')));
+        await tester.pumpAndSettle();
+
+        expect(viewed, 1);
+        expect(find.byType(Toast), findsNothing);
+
+        // The receipt is answered and gone: the cancelled timer must not
+        // remove the entry a second time, and Undo is no longer reachable.
+        await tester.pump(const Duration(seconds: 6));
+        expect(undone, 0);
+      });
+
+      testWidgets('a second receipt replaces the first', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(buildHost());
+
+        // Both shown in one frame: the first entry is inserted but not yet
+        // built, so it would be orphaned in the overlay if it were skipped.
+        await tester.tap(find.text('Show Toast'));
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsNothing);
+      });
+    });
+
+    group('overlay entry lifecycle', () {
+      Widget buildHost() {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () =>
+                    CoreToast.showError(context, 'Something went wrong', 'Close'),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        );
+      }
+
+      testWidgets('a second toast shown in the same frame replaces the first',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        // Both in one frame: the first entry is inserted but has not built,
+        // so skipping it for being unmounted orphans it in the overlay.
+        await tester.tap(find.text('Show Toast'));
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+      });
+
+      testWidgets('cleanup leaves no entry for the next toast to remove twice',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsOneWidget);
+
+        // Deliberately no pump in between: an entry stays mounted until the
+        // overlay rebuilds without it, so a stale reference still looks
+        // removable, and an OverlayEntry may only be removed once.
+        CoreToast.cleanup();
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
       });
     });
   });

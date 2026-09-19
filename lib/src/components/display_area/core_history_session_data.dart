@@ -6,7 +6,13 @@ class CoreHistorySessionData {
     required this.dateLabel,
     required this.chipsList,
     required this.value,
+    this.id,
   });
+
+  /// Identifies this session to the consumer, so tapping its card can restore
+  /// the tape it came from. Optional: a session with no [id] renders as a
+  /// plain card that reports nothing when tapped.
+  final String? id;
 
   /// The label describing when this session occurred (e.g., "Today", "May 27, 2025").
   final String dateLabel;

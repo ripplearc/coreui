@@ -530,5 +530,49 @@ void main() {
       final valueSemantics = tester.getSemantics(find.text('42.0'));
       expect(valueSemantics.label, '42.0');
     });
+
+    testWidgets('a restorable session card meets tap target and label '
+        'guidelines', (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      for (final theme in kA11yTestThemes) {
+        // A fresh tree per theme: re-pumping keeps the same state, so the
+        // second fling would carry on from expandedPrevious into fullScreen
+        // and check a different stage than the first.
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              body: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
+                restoreSemanticsLabel: testRestoreSemanticsLabel,
+                onPreviousSessionTapped: (_) {},
+                previousSessions: const [
+                  CoreHistorySessionData(
+                    id: 'session-1',
+                    dateLabel: 'Previous',
+                    chipsList: [],
+                    value: '100',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.fling(
+            find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+        await tester.pumpAndSettle();
+
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byKey(const Key('display_area_previous_session_session-1')),
+        );
+      }
+    });
   });
 }

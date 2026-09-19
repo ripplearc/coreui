@@ -12,6 +12,8 @@ class _HistoryPanel extends StatelessWidget {
     required this.errorMessage,
     required this.stage,
     this.showCurrentChips = true,
+    this.onPreviousSessionTapped,
+    this.restoreSemanticsLabel,
   });
 
   final VoidCallback? onClose;
@@ -23,6 +25,8 @@ class _HistoryPanel extends StatelessWidget {
   final String errorMessage;
   final DisplayAreaStage stage;
   final bool showCurrentChips;
+  final ValueChanged<String>? onPreviousSessionTapped;
+  final String? restoreSemanticsLabel;
 
   static const double _closeBorderWidth = 1.5;
 
@@ -82,6 +86,8 @@ class _HistoryPanel extends StatelessWidget {
               key: const Key('display_area_previous_section'),
               sessions: previousSessions,
               limitToLast: stage == DisplayAreaStage.expandedPrevious,
+              onSessionTapped: onPreviousSessionTapped,
+              restoreSemanticsLabel: restoreSemanticsLabel,
             ),
           )
         : const SizedBox.shrink();
@@ -180,14 +186,29 @@ class _PreviousChipsSection extends StatelessWidget {
     super.key,
     required this.sessions,
     this.limitToLast = false,
+    this.onSessionTapped,
+    this.restoreSemanticsLabel,
   });
 
   final List<CoreHistorySessionData> sessions;
   final bool limitToLast;
+  final ValueChanged<String>? onSessionTapped;
+  final String? restoreSemanticsLabel;
   static const double _kDividerThickness = 1;
 
   @override
   Widget build(BuildContext context) {
+    // Only when something reads the ids: without a callback they are inert
+    // data and a repeat costs nothing.
+    assert(() {
+      if (onSessionTapped == null) return true;
+      final ids = sessions.map((session) => session.id).whereType<String>();
+      return ids.toSet().length == ids.length;
+    }(),
+        'previousSessions must carry unique ids: onPreviousSessionTapped '
+        'reports an id, and a repeated one cannot say which session the user '
+        'tapped.');
+
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
@@ -206,39 +227,76 @@ class _PreviousChipsSection extends StatelessWidget {
               thickness: _kDividerThickness,
               color: colors.lineDarkOutline,
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: CoreSpacing.space4),
-                Text(
-                  sessions[i].dateLabel,
-                  style: typography.titleMediumSemiBold.copyWith(
-                    color: colors.textDark,
-                  ),
-                ),
-                const SizedBox(height: CoreSpacing.space5),
-                Wrap(
-                  spacing: CoreSpacing.space2,
-                  runSpacing: CoreSpacing.space2,
-                  children: sessions[i].chipsList,
-                ),
-                const SizedBox(height: CoreSpacing.space5),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    sessions[i].value,
-                    style: typography.headlineLargeSemiBold
-                        .copyWith(color: colors.textDark),
-                  ),
-                ),
-                const SizedBox(height: CoreSpacing.space1),
-              ],
-            ),
-          ),
+          _buildSessionCard(sessions[i], colors, typography),
         ],
       ],
+    );
+  }
+
+  // Tappable only when the consumer can act on it — a callback and an id to
+  // report. Without both it stays the plain card older callers already pass.
+  Widget _buildSessionCard(
+    CoreHistorySessionData session,
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
+    final card = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: CoreSpacing.space4),
+          Text(
+            session.dateLabel,
+            style: typography.titleMediumSemiBold.copyWith(
+              color: colors.textDark,
+            ),
+          ),
+          const SizedBox(height: CoreSpacing.space5),
+          Wrap(
+            spacing: CoreSpacing.space2,
+            runSpacing: CoreSpacing.space2,
+            children: session.chipsList,
+          ),
+          const SizedBox(height: CoreSpacing.space5),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              session.value,
+              style: typography.headlineLargeSemiBold
+                  .copyWith(color: colors.textDark),
+            ),
+          ),
+          const SizedBox(height: CoreSpacing.space1),
+        ],
+      ),
+    );
+
+    final id = session.id;
+    final onTap = onSessionTapped;
+    if (id == null || onTap == null) return card;
+
+    return Semantics(
+      button: true,
+      label: restoreSemanticsLabel,
+      // The library's other InkWells carry their own ink surface. Without one
+      // this throws "No Material widget found" for any host that embeds the
+      // display area outside a Scaffold, which it did not before.
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          key: Key('display_area_previous_session_$id'),
+          onTap: () => onTap(id),
+          // Ink suppressed, not the InkWell dropped: a GestureDetector would
+          // announce a button keyboard and switch access cannot reach.
+          splashColor: colors.transparent,
+          highlightColor: colors.transparent,
+          hoverColor: colors.transparent,
+          // One control: a chip with its own onTap would otherwise win the
+          // gesture arena and leave most of the card dead for restore.
+          child: IgnorePointer(child: card),
+        ),
+      ),
     );
   }
 }

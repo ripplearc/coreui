@@ -31,14 +31,15 @@ class CoreToast {
   }) {
     showCustomToast(
       context,
-      (overlayContext) => Toast.error(
-        description: message,
-        closeLabel: closeLabel,
-        title: title,
-        onClose: () {
-          _entry?.remove();
-        },
-      ),
+      (overlayContext) {
+        final entry = _entry;
+        return Toast.error(
+          description: message,
+          closeLabel: closeLabel,
+          title: title,
+          onClose: () => _removeEntry(entry),
+        );
+      },
     );
   }
 
@@ -51,14 +52,15 @@ class CoreToast {
   }) {
     showCustomToast(
       context,
-      (overlayContext) => Toast.success(
-        description: message,
-        closeLabel: closeLabel,
-        title: title,
-        onClose: () {
-          _entry?.remove();
-        },
-      ),
+      (overlayContext) {
+        final entry = _entry;
+        return Toast.success(
+          description: message,
+          closeLabel: closeLabel,
+          title: title,
+          onClose: () => _removeEntry(entry),
+        );
+      },
     );
   }
 
@@ -71,31 +73,76 @@ class CoreToast {
   }) {
     showCustomToast(
       context,
-      (overlayContext) => Toast.warning(
-        description: message,
-        closeLabel: closeLabel,
-        title: title,
-        onClose: () {
-          _entry?.remove();
-        },
-      ),
+      (overlayContext) {
+        final entry = _entry;
+        return Toast.warning(
+          description: message,
+          closeLabel: closeLabel,
+          title: title,
+          onClose: () => _removeEntry(entry),
+        );
+      },
+    );
+  }
+
+  /// Shows the receipt toast that confirms something was banked and offers
+  /// the action that takes it back.
+  ///
+  /// The toast owns its own dismissal, so [duration] is handed to the widget
+  /// rather than to the overlay: a second timer here could only disagree with
+  /// it. Answering the toast dismisses it through the same path the timer
+  /// takes, so it is removed exactly once either way.
+  ///
+  /// A `null` [duration] leaves the receipt up until the caller removes it,
+  /// and [disableTimers] holds it up the same way it holds up every other
+  /// toast.
+  static void showReceipt(
+    BuildContext context,
+    String message,
+    String actionLabel,
+    VoidCallback onAction, {
+    String? highlight,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
+    Duration? duration = const Duration(seconds: 5),
+  }) {
+    showCustomToast(
+      context,
+      (overlayContext) {
+        // This toast's own entry: once superseded, removing it is not its
+        // business any more.
+        final entry = _entry;
+        return Toast.receipt(
+          description: message,
+          highlight: highlight,
+          actionLabel: actionLabel,
+          onAction: onAction,
+          secondaryLabel: secondaryLabel,
+          onSecondary: onSecondary,
+          onClose: () => _removeEntry(entry),
+          duration: _disableTimers ? null : duration,
+        );
+      },
+      duration: null,
     );
   }
 
   /// Shows a custom toast.
   /// Accepts a [context], a [toastBuilder], and an optional [duration] as parameters.
+  /// A `null` [duration] leaves the entry on screen: the toast itself owns the
+  /// dismissal, as [Toast.receipt] does, and a second timer here could only
+  /// disagree with it.
   static void showCustomToast(
     BuildContext context,
     Widget Function(BuildContext context) toastBuilder, {
-    Duration duration = const Duration(seconds: 3),
+    Duration? duration = const Duration(seconds: 3),
   }) {
     // hides keyboard if visible
     FocusScope.of(context).unfocus();
     final overlay = Overlay.of(context);
-    // removes previous entry
-    if (_entry?.mounted ?? false) {
-      _entry?.remove();
-    }
+    // an entry inserted in this same frame has not mounted yet, and skipping
+    // it would orphan it in the overlay
+    _removeEntry(_entry);
     // cancels previous timer
     if (_timer != null) {
       _timer?.cancel();
@@ -116,12 +163,9 @@ class CoreToast {
     }
 
     // Only create timer if timers are not disabled
-    if (!_disableTimers) {
-      _timer = Timer(duration, () {
-        if (_entry?.mounted ?? false) {
-          _entry?.remove();
-        }
-      });
+    if (!_disableTimers && duration != null) {
+      final entry = _entry;
+      _timer = Timer(duration, () => _removeEntry(entry));
     }
   }
 
@@ -129,10 +173,15 @@ class CoreToast {
   /// This method should be called when the app is being disposed.
   static void cleanup() {
     _timer?.cancel();
-    final entry = _entry;
-    if (entry != null && entry.mounted) {
-      entry.remove();
-    }
+    _removeEntry(_entry);
+  }
+
+  // Nulling _entry first makes removal idempotent: an OverlayEntry may only
+  // be removed once, and several callers race for the same one.
+  static void _removeEntry(OverlayEntry? entry) {
+    if (entry == null || !identical(entry, _entry)) return;
+    _entry = null;
+    entry.remove();
   }
 
   /// Disables timers for testing purposes.
