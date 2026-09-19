@@ -38,6 +38,8 @@ Toast.receipt(
   highlight: 'Calc 60ft²',
   actionLabel: 'Undo',
   onAction: () {},
+  secondaryLabel: 'View', // Optional, travels with onSecondary
+  onSecondary: () {},
 );
 ```
 
@@ -62,6 +64,8 @@ Toast.receipt(
 | `actionLabel`    | `String`        | Yes      | The primary action's label — "Undo"                                                  |
 | `onAction`       | `VoidCallback`  | Yes      | Fires at most once. Answering the toast cancels the auto-dismiss and dismisses it through `onClose` |
 | `highlight`      | `String?`       | No       | The tail after a middot, naming what was saved — "Calc 60ft²"                        |
+| `secondaryLabel` | `String?`       | No       | The quieter second action — "View". Travels with `onSecondary` |
+| `onSecondary`    | `VoidCallback?` | No       | Fires when the second action is tapped. Answers the toast the same way `onAction` does — whichever is tapped first wins, and the other is locked out |
 | `onClose`        | `VoidCallback?` | No       | The single dismissal path: fires once, either when `duration` elapses or when an action answers the toast, so the caller can remove it |
 | `duration`       | `Duration?`     | No       | Auto-dismiss delay, 5 s by default. `null` keeps the toast until the caller removes it |
 
@@ -86,7 +90,7 @@ Creates a toast with success styling (green background and icon).
 ### Toast.receipt
 
 Creates the self-dismissing confirmation the calculator shows when a session is
-banked: "**Saved to history** · Calc 60ft²" with `Undo`.
+banked: "**Saved to history** · Calc 60ft²" with `Undo`, and optionally `View`.
 It differs from the other four variants in shape as well as content — one line
 of text rather than a stacked title and description, an outlined surface rather
 than a flat tinted one, actions instead of a close button.
@@ -132,9 +136,11 @@ The Toast component includes semantic labels for accessibility:
 - The description is used as a hint when a title is present
 - The close button has its own semantic label
 - A receipt's lead and highlight are read as one label ("Saved to history · Calc 60ft²")
-- The action stands 48 dp tall, the Android tap-target minimum. The design draws
+- Both actions stand 48 dp tall, the Android tap-target minimum. The design draws
   the `Undo` pill at ~29 dp; it is rendered at 48 dp instead, because a tap target
   under 48 dp is an accessibility defect. Worth confirming with design.
+- `secondaryLabel` and `onSecondary` are asserted to travel together: an
+  interactive control with no label is invisible to a screen reader
   `androidTapTargetGuideline` does not fire on `CoreButton`'s semantics node at
   all, so the height is asserted directly rather than assumed covered by it
 
@@ -151,6 +157,7 @@ The Toast component includes semantic labels for accessibility:
     - Close Label: `CoreTypography.bodyMediumSemiBold` 
     - Receipt lead: `CoreTypography.bodyLargeSemiBold` in `textLink`
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
+    - Receipt secondary label: `CoreTypography.bodyLargeRegular` in `textLink` at 75 % opacity
 - Receipt action: `CoreButton`, `primary`, `CoreButtonSize.large` (48 dp), not full width
 
 ## Showing a receipt through CoreToast
@@ -164,6 +171,8 @@ CoreToast.showReceipt(
   'Undo',
   controller.undoBanking,
   highlight: 'Calc 60ft²',
+  secondaryLabel: 'View',
+  onSecondary: controller.openHistory,
 );
 ```
 

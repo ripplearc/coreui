@@ -423,6 +423,7 @@ void main() {
     group('showReceipt', () {
       Widget buildHost({
         VoidCallback onAction = _noop,
+        VoidCallback? onSecondary,
         Duration? duration = const Duration(seconds: 5),
       }) {
         return MaterialApp(
@@ -435,6 +436,8 @@ void main() {
                   'Undo',
                   onAction,
                   highlight: 'Calc 60ft²',
+                  secondaryLabel: onSecondary == null ? null : 'View',
+                  onSecondary: onSecondary,
                   duration: duration,
                 ),
                 child: const Text('Show Toast'),
@@ -514,6 +517,31 @@ void main() {
 
         // The cancelled timer must not remove the entry a second time.
         await tester.pump(const Duration(seconds: 6));
+      });
+
+      testWidgets('taking the secondary action removes the toast once',
+          (tester) async {
+        CoreToast.enableTimers();
+        var viewed = 0;
+        var undone = 0;
+        await tester.pumpWidget(
+          buildHost(onAction: () => undone++, onSecondary: () => viewed++),
+        );
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('toast_secondary_button')), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('toast_secondary_button')));
+        await tester.pumpAndSettle();
+
+        expect(viewed, 1);
+        expect(find.byType(Toast), findsNothing);
+
+        // The receipt is answered and gone: the cancelled timer must not
+        // remove the entry a second time, and Undo is no longer reachable.
+        await tester.pump(const Duration(seconds: 6));
+        expect(undone, 0);
       });
 
       testWidgets('a second receipt replaces the first', (tester) async {
