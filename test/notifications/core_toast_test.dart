@@ -417,5 +417,52 @@ void main() {
         }
       });
     });
+
+    group('overlay entry lifecycle', () {
+      Widget buildHost() {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () =>
+                    CoreToast.showError(context, 'Something went wrong', 'Close'),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        );
+      }
+
+      testWidgets('a second toast shown in the same frame replaces the first',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        // Both in one frame: the first entry is inserted but has not built,
+        // so skipping it for being unmounted orphans it in the overlay.
+        await tester.tap(find.text('Show Toast'));
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+      });
+
+      testWidgets('cleanup leaves no entry for the next toast to remove twice',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsOneWidget);
+
+        // Deliberately no pump in between: an entry stays mounted until the
+        // overlay rebuilds without it, so a stale reference still looks
+        // removable, and an OverlayEntry may only be removed once.
+        CoreToast.cleanup();
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+      });
+    });
   });
 }
