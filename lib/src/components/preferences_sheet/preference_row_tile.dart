@@ -6,8 +6,10 @@ import 'preference_value_view.dart';
 /// One settings row: label at the start, current value at the end, tappable
 /// when the preference offers a choice.
 ///
-/// A deep-linked row is marked by [isEmphasised], which animates over
-/// [emphasisDuration] so the mark fades in and out rather than blinking.
+/// A deep-linked row is marked by [isEmphasised]. The mark fades out over
+/// [emphasisDuration] rather than blinking off; it does not fade in, because
+/// a deep-linked row is already marked on its first build and an
+/// [AnimatedContainer] has nothing to animate from.
 ///
 /// Internal to the preferences sheet — not exported from the package barrel.
 class PreferenceRowTile extends StatelessWidget {
@@ -17,7 +19,7 @@ class PreferenceRowTile extends StatelessWidget {
   /// Whether this row is the deep-link target and should be marked.
   final bool isEmphasised;
 
-  /// How long the mark takes to fade in or out.
+  /// How long the mark takes to fade out.
   final Duration emphasisDuration;
 
   /// Anchor used by the sheet to scroll this row into view.

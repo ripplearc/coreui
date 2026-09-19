@@ -7,10 +7,11 @@ import '../../../ripplearc_coreui.dart';
 ///
 /// Internal to the preferences sheet — not exported from the package barrel.
 class PreferenceValueView extends StatelessWidget {
+  /// The value to render.
+  final CorePreferenceValue value;
+
   /// Creates a value view.
   const PreferenceValueView({super.key, required this.value});
-
-  final CorePreferenceValue value;
 
   static const double _dotSize = CoreSpacing.space2;
 
