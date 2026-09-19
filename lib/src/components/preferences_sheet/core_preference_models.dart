@@ -82,8 +82,8 @@ class CorePreferenceOption {
 /// One settings row: what it is called, what it currently reads, and the
 /// choices its sub-sheet offers.
 class CorePreferenceRow {
-  /// Stable identifier, used both as the deep-link target
-  /// ([CorePreferencesSheet.initialKey]) and as the key reported on change.
+  /// Stable identifier, used both as the target a deep link asks for and as
+  /// the key reported on change.
   final String key;
 
   /// User-facing label at the start of the row.
