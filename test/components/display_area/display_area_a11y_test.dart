@@ -537,6 +537,10 @@ void main() {
       await setupA11yTest(tester);
 
       for (final theme in kA11yTestThemes) {
+        // A fresh tree per theme: re-pumping keeps the same state, so the
+        // second fling would carry on from expandedPrevious into fullScreen
+        // and check a different stage than the first.
+        await tester.pumpWidget(const SizedBox.shrink());
         await tester.pumpWidget(
           MaterialApp(
             theme: theme,
