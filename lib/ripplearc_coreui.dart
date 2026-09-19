@@ -30,6 +30,7 @@ export 'src/components/multi_select_sheet/core_multi_select_sheet.dart';
 export 'src/components/navigation/core_app_bar.dart';
 export 'src/components/navigation/core_bottom_nav_bar.dart';
 export 'src/components/preferences_sheet/core_preference_models.dart';
+export 'src/components/preferences_sheet/core_preference_option_sheet.dart';
 export 'src/components/search/core_search_box.dart';
 export 'src/components/search/core_search_row_item.dart';
 export 'src/components/select_button/core_select_button.dart';
