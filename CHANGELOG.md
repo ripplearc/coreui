@@ -11,7 +11,7 @@
 - **CorePreferenceOptionSheet**: the single-choice sub-sheet. Selection is local until the user taps Update, at which point `onUpdate` receives the chosen id and the sheet pops itself, so backing out of a setting leaves it unchanged. Update is disabled while nothing is selected
   - **`CorePreferenceInfo { title, description, semanticsLabel, closeLabel }`** on a row adds an info button to the sub-sheet's header; opening it replaces the Update button with a `Toast.info`, so the sheet keeps its height. The four fields travel as one object rather than loose optional parameters, so the button cannot be configured without its labels — an interactive control with no semantics label is invisible to a screen reader (RULE 14)
 - **CorePreferencesSheet** forwards `optionKeyOf` and `optionUpdateButtonKey` to the sub-sheet, so a consumer can drive open-row → pick → commit entirely by key rather than by matching option labels as text (RULE 8)
-- Showcase: the calculator's fourteen preferences (UX design doc, Appendix C) with deep-link buttons to Fractional resolution and to the last row
+- Showcase: the calculator's display preferences (UX design doc, Appendix C) with deep-link buttons to Fractional resolution and to the last row
 
 ### 📐 Design notes
 

@@ -11,6 +11,11 @@ class _Recorder {
 void main() {
   /// A list long enough that its last rows start below the viewport, so the
   /// deep-link test has somewhere to scroll to.
+  ///
+  /// Each preference gets a section of its own on purpose. Grouping them
+  /// under one heading renders the whole run as a single eager column, which
+  /// hides whether the sheet can reach a row it has not built yet — the
+  /// deep link's actual failure mode.
   List<CorePreferenceSection> buildSections({int rowCount = 20}) {
     return [
       const CorePreferenceSection(
@@ -27,10 +32,10 @@ void main() {
           ),
         ],
       ),
-      CorePreferenceSection(
-        title: 'Display',
-        rows: [
-          for (var i = 0; i < rowCount; i++)
+      for (var i = 0; i < rowCount; i++)
+        CorePreferenceSection(
+          title: 'Group $i',
+          rows: [
             CorePreferenceRow(
               key: 'pref_$i',
               label: 'Preference $i',
@@ -41,8 +46,8 @@ void main() {
                 CorePreferenceOption(id: 'b', label: 'Option B'),
               ],
             ),
-        ],
-      ),
+          ],
+        ),
     ];
   }
 
@@ -173,6 +178,87 @@ void main() {
 
     expect(find.text('Update'), findsNothing);
     expect(recorder.changes, isEmpty);
+  });
+
+  testWidgets('rows the caller drops stop being tracked', (tester) async {
+    final recorder = _Recorder();
+    var sections = buildSections();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light(),
+        home: StatefulBuilder(
+          builder: (_, setState) => Scaffold(
+            body: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () =>
+                      setState(() => sections = buildSections(rowCount: 3)),
+                  child: const Text('shorten'),
+                ),
+                Expanded(
+                  child: CorePreferencesSheet(
+                    title: 'Preferences',
+                    sections: sections,
+                    optionUpdateLabel: 'Update',
+                    optionBackSemanticsLabel: 'Back to preferences',
+                    onChanged: (key, optionId) =>
+                        recorder.changes.add((key, optionId)),
+                    rowKeyOf: (key) => Key('row_$key'),
+                    optionKeyOf: (id) => Key('option_$id'),
+                    optionUpdateButtonKey: const Key('update_button'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('row_pref_19')), findsOneWidget);
+
+    await tester.tap(find.text('shorten'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('row_pref_19')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('row_pref_0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('option_b')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('update_button')));
+    await tester.pumpAndSettle();
+
+    expect(
+      recorder.changes,
+      [('pref_0', 'b')],
+      reason: 'the anchors follow the rows the caller supplies, so a shorter '
+          'list keeps working rather than dragging the dropped rows along',
+    );
+  });
+
+  testWidgets('duplicate preference keys are caught here, not in the framework',
+      (tester) async {
+    const duplicated = CorePreferenceRow(
+      key: 'length_format',
+      label: 'Length display format',
+      value: CorePreferenceTextValue('in'),
+    );
+
+    await pumpSheet(
+      tester,
+      sections: const [
+        CorePreferenceSection(rows: [duplicated]),
+        CorePreferenceSection(title: 'Display', rows: [duplicated]),
+      ],
+    );
+
+    expect(
+      tester.takeException(),
+      isAssertionError,
+      reason: 'each row owns a GlobalKey and a GlobalKey cannot be shared, '
+          'so the duplicate has to surface where the mistake was made',
+    );
   });
 
   testWidgets('a pill value renders its label', (tester) async {

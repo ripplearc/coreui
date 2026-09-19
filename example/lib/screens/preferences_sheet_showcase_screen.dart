@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// Showcase for [CorePreferencesSheet] and [CorePreferenceOptionSheet],
-/// seeded with the calculator's fourteen preferences (UX design doc,
+/// seeded with the calculator's display preferences (UX design doc,
 /// Appendix C).
 ///
 /// The second button deep-links straight to Fractional resolution, the path a
