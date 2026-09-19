@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
+import 'preference_option_sheet_header.dart';
+import 'preference_option_tile.dart';
 
 /// A modal bottom sheet body offering the choices of one preference.
 ///
@@ -11,8 +13,8 @@ import '../../../ripplearc_coreui.dart';
 /// changes nothing the caller can see, which is what lets a user browse the
 /// choices and back out unchanged.
 ///
-/// When [infoTitle] and [infoDescription] are both set the header carries an
-/// info button; opening it replaces the Update button with the explanation,
+/// When [info] is set the header carries an info button; opening it
+/// replaces the Update button with the explanation,
 /// so the sheet keeps its height (Figma `62481:80137` and `62481:80158`).
 ///
 /// Present it with `CoreQuickSheet.show(context: context, child: ...)`.
@@ -80,6 +82,18 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
     _selectedId = widget.selectedOptionId;
   }
 
+  @override
+  void didUpdateWidget(CorePreferenceOptionSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The caller is the source of truth for what is stored. If it hands the
+    // sheet a different option while the sheet is open, an untouched pick
+    // must follow it rather than keep showing the value it opened with.
+    if (widget.selectedOptionId != oldWidget.selectedOptionId &&
+        _selectedId == oldWidget.selectedOptionId) {
+      _selectedId = widget.selectedOptionId;
+    }
+  }
+
   void _commit() {
     final selectedId = _selectedId;
     if (selectedId != null) {
@@ -93,61 +107,21 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildHeader(context),
+        PreferenceOptionSheetHeader(
+          title: widget.title,
+          backSemanticsLabel: widget.backSemanticsLabel,
+          onBack: () => Navigator.of(context).pop(),
+          info: widget.info,
+          onInfoTap: () => setState(() => _infoOpen = !_infoOpen),
+          infoButtonKey: widget.infoButtonKey,
+        ),
         Flexible(child: _buildOptionList(context)),
         _buildFooter(context),
       ],
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-    final info = widget.info;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CoreSpacing.space2,
-        0,
-        CoreSpacing.space4,
-        CoreSpacing.space3,
-      ),
-      child: Row(
-        children: [
-          CoreIconWidget(
-            icon: CoreIcons.arrowLeft,
-            size: CoreIconSize.size24,
-            color: colors.iconDark,
-            semanticLabel: widget.backSemanticsLabel,
-            onTap: () => Navigator.of(context).pop(),
-          ),
-          const SizedBox(width: CoreSpacing.space2),
-          Expanded(
-            child: Text(
-              widget.title,
-              style: typography.bodyLargeSemiBold.copyWith(
-                color: colors.textHeadline,
-              ),
-            ),
-          ),
-          if (info != null)
-            CoreIconWidget(
-              key: widget.infoButtonKey,
-              icon: CoreIcons.info,
-              size: CoreIconSize.size24,
-              color: colors.iconGrayMid,
-              semanticLabel: info.semanticsLabel,
-              onTap: () => setState(() => _infoOpen = !_infoOpen),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildOptionList(BuildContext context) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-
     // The nearest Material inside CoreQuickSheet sits behind the sheet's
     // decorated container, so without a transparent Material of our own the
     // row splashes are invisible and Flutter asserts in debug builds — the
@@ -160,50 +134,12 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
         itemCount: widget.options.length,
         itemBuilder: (_, index) {
           final option = widget.options[index];
-          final isSelected = option.id == _selectedId;
 
-          return InkWell(
+          return PreferenceOptionTile(
             key: widget.optionKeyOf?.call(option.id),
+            option: option,
+            isSelected: option.id == _selectedId,
             onTap: () => setState(() => _selectedId = option.id),
-            borderRadius: BorderRadius.circular(CoreSpacing.space2),
-            child: Semantics(
-              selected: isSelected,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? colors.backgroundBlueLight
-                      : colors.transparent,
-                  borderRadius: BorderRadius.circular(CoreSpacing.space2),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoreSpacing.space3,
-                  vertical: CoreSpacing.space3,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        option.label,
-                        style: typography.bodyLargeRegular.copyWith(
-                          color: colors.textHeadline,
-                        ),
-                      ),
-                    ),
-                    if (isSelected)
-                      // Decorative: the selected state is already announced by
-                      // the Semantics(selected:) wrapper above, so announcing
-                      // the tick too would say it twice.
-                      ExcludeSemantics(
-                        child: CoreIconWidget(
-                          icon: CoreIcons.checkMark,
-                          size: CoreIconSize.size24,
-                          color: colors.textSuccess,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
           );
         },
       ),
