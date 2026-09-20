@@ -347,9 +347,28 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
   @override
   void didUpdateWidget(CoreValueEditorSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!listEquals(widget.unitOptions, oldWidget.unitOptions) ||
+    final unitOptionsChanged =
+        !listEquals(widget.unitOptions, oldWidget.unitOptions);
+    if (unitOptionsChanged ||
         widget.unitGroupLabel != oldWidget.unitGroupLabel) {
       _rebuildUnitGroups();
+    }
+
+    if (widget.unit != oldWidget.unit) {
+      // A new seed replaces whatever the old one left behind.
+      _selectedUnit = _unitOptions.contains(widget.unit) ? widget.unit : null;
+    } else if (unitOptionsChanged) {
+      // A unit the row no longer offers must not still be committed — a unit
+      // system toggled from ['m','cm'] to ['ft','in'] would otherwise report
+      // 'cm'. Only what the old row offered is dropped: a selection made on
+      // the keyboard's own unit column was never in this list and is still
+      // the user's answer.
+      final selected = _selectedUnit;
+      if (selected != null &&
+          (oldWidget.unitOptions?.contains(selected) ?? false) &&
+          !_unitOptions.contains(selected)) {
+        _selectedUnit = null;
+      }
     }
 
     final length = widget.titles.length;
@@ -583,12 +602,34 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
   // spelled the unit inline ('47.24in'), so it keeps inserting.
   void _onUnitKeyTapped(KeyType key) {
     if (widget.isSingleValue) {
-      setState(() {
-        _selectedUnit = key.id;
-      });
+      _selectUnit(key.id);
       return;
     }
     _insertText(key.label);
+  }
+
+  // CoreKeyboard renders its own unit column (Yards/Feet/Inch, or the metric
+  // set) below the function strip, and it cannot be hidden. It has to obey the
+  // same rule: typing 'Inch' into the value is exactly the corruption
+  // single-value mode exists to avoid — a commit of '12.3Inch' that compounds
+  // on the next round-trip through initialValue.
+  //
+  // The divide symbol is the one key that never becomes a unit: it composes
+  // compound units inside the text ('ft/in'), which is a multi-column idea.
+  // Single-value mode drops it rather than reporting '/' as the unit.
+  void _onUnitSelected(UnitType unit) {
+    if (!widget.isSingleValue) {
+      _insertText(unit.label);
+      return;
+    }
+    if (unit == UnitType.divideSymbol) return;
+    _selectUnit(unit.label);
+  }
+
+  void _selectUnit(String unit) {
+    setState(() {
+      _selectedUnit = unit;
+    });
   }
 
   @override
@@ -654,7 +695,7 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
               currentGroup: _unitGroupName,
               allGroups: _unitGroups,
               onDigitPressed: _onDigitPressed,
-              onUnitSelected: (unit) => _insertText(unit.label),
+              onUnitSelected: _onUnitSelected,
               onOperatorPressed: (op) => _insertText(op.symbol),
               onControlAction: _onControlAction,
               onResultTapped: _submit,

@@ -447,6 +447,140 @@ void main() {
       expect(result, isNotNull);
       expect(result!.values.first, '4cm');
     });
+
+    // CoreKeyboard's own unit column cannot be hidden, so it has to obey the
+    // same rule as the function strip. Typing its label in would commit
+    // '12.3Inch', which compounds on the next round-trip through initialValue
+    // — the exact corruption single-value mode exists to prevent.
+    testWidgets('single-value records the keyboard unit column, not types it',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      await tester.tap(find.text('Inch'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('12.3Inch'), findsNothing);
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedValue, '12.3');
+      expect(savedUnit, 'Inch');
+    });
+
+    testWidgets('single-value ignores the unit column divide key',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      // '/' composes compound units inside the text ('ft/in'), which is a
+      // multi-column idea. Reporting it as the unit would be nonsense.
+      // It renders as an icon, so it is found by its semantics label.
+      await tester.tap(find.bySemanticsLabel('/ unit button'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedValue, '12.3');
+      expect(savedUnit, isNull);
+    });
+  });
+
+  group('CoreValueEditorSheet unit selection across rebuilds', () {
+    // Embedded rather than pushed: a routed sheet keeps the widget the route
+    // was generated with, so pumping a new tree would never reach
+    // didUpdateWidget — which is the whole subject here. onSaved fires before
+    // _submit pops, so the committed unit is captured either way.
+    late String? savedUnit;
+
+    Widget sheet({List<String>? unitOptions, String? unit}) {
+      savedUnit = null;
+      return MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: CoreValueEditorSheet.singleValue(
+            title: 'Rate',
+            label: 'Rate',
+            resultLabel: 'Update',
+            initialValue: '12.3',
+            unitOptions: unitOptions,
+            unit: unit,
+            unitGroupLabel: 'Unit',
+            onSaved: (_, u) => savedUnit = u,
+          ),
+        ),
+      );
+    }
+
+    Future<String?> commit(WidgetTester tester) async {
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+      return savedUnit;
+    }
+
+    testWidgets('a unit the row no longer offers is dropped', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
+      await tester.tap(find.text('cm'));
+      await tester.pumpAndSettle();
+
+      // A unit-system toggle. Committing 'cm' from a row that now offers only
+      // feet and inches would report a unit the sheet no longer shows.
+      await tester.pumpWidget(sheet(unitOptions: const ['ft', 'in']));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), isNull);
+    });
+
+    testWidgets('a keyboard-column unit survives a row change',
+        (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
+      await tester.tap(find.text('Inch'));
+      await tester.pumpAndSettle();
+
+      // It was never one of the row's options, so the row changing underneath
+      // it says nothing about whether it is still the user's answer.
+      await tester.pumpWidget(sheet(unitOptions: const ['ft', 'in']));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'Inch');
+    });
+
+    testWidgets('a new seed replaces the old selection', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(
+        sheet(unitOptions: const ['m', 'cm'], unit: 'cm'),
+      );
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm'], unit: 'm'));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'm');
+    });
   });
 
   group('SizeEntryBottomSheet deprecated alias', () {
@@ -556,12 +690,12 @@ void main() {
 
     test('multi-column mode is fine without one', () {
       expect(
-        () => CoreValueEditorSheet(
-          titles: const ['Length', 'Width'],
+        () => const CoreValueEditorSheet(
+          titles: ['Length', 'Width'],
           addSizeTitle: 'Add size',
           editSizeTitle: 'Edit size',
           resultLabel: 'Update',
-          unitOptions: const ['m', 'cm'],
+          unitOptions: ['m', 'cm'],
           unitGroupLabel: 'Unit',
         ),
         returnsNormally,

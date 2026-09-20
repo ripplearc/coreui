@@ -64,7 +64,12 @@ final result = await CoreValueEditorSheet.showSingleValue(
   `CoreValueEditorResult.unit` and never also written into the value; in
   multi-column mode — where `SizeEntryResult` carries no unit — it types its
   label into the active field, spelling the unit inline as `47.24in` does.
-  The keyboard's own unit column (Yards/Feet/Inch) is unaffected either way.
+  The keyboard's own unit column (Yards/Feet/Inch) follows the same rule, since
+  it cannot be hidden: in single-value mode it records the selection rather
+  than typing it, and its `/` key — which exists to compose compound units
+  inside the text — is ignored there. Note the two controls speak different
+  vocabularies: the row reports one of your `unitOptions`, the column reports
+  its own label (`Inch`, `CM`).
 - **Validation blocks the commit.** `validator` runs against every field on
   submit. A non-null return is shown beneath the offending field and the sheet
   stays open. Editing that field clears its message.
@@ -80,7 +85,7 @@ final result = await CoreValueEditorSheet.showSingleValue(
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `titles` | `List<String>` | — | One field label per column. Each renders with a trailing `*`. In single-value mode this holds the one label. |
-| `title` | `String?` | `null` | Header for single-value mode, where there is no add/edit pair. Non-null is what marks the sheet as single-value. |
+| `title` | `String?` | `null` | Header for single-value mode, where there is no add/edit pair. Required by `.singleValue`, and absent from the default constructor. The mode is set by which constructor you call, **not** inferred from this being non-null. |
 | `addSizeTitle` | `String` | — | Header shown by the multi-column mode when adding. |
 | `editSizeTitle` | `String` | — | Header shown by the multi-column mode when editing. |
 | `initialData` | `CoreSizeCardData?` | `null` | Pre-fills the multi-column fields. Null means "adding". |
@@ -88,7 +93,7 @@ final result = await CoreValueEditorSheet.showSingleValue(
 | `initialValue` | `String?` | `null` | Pre-fills the single field. |
 | `resultLabel` | `String` | — | **Required.** The commit key's label, e.g. "Add" or "Update". |
 | `unitOptions` | `List<String>?` | `null` | Unit row labels. Null or empty renders no unit row. |
-| `unit` | `String?` | `null` | Single-value mode only. Seeds the unit a commit reports when the user never taps the unit row. Not rendered as a highlighted key — the strip has no selected state. Ignored unless it appears in `unitOptions`. |
+| `unit` | `String?` | `null` | Single-value mode only — a debug assert rejects it on the default constructor, where nothing reads it. Seeds the unit a commit reports when the user never taps the unit row. Not rendered as a highlighted key — the strip has no selected state. Ignored unless it appears in `unitOptions`. |
 | `unitGroupLabel` | `String?` | `null` | Names the unit row in the keyboard's group header. **Required whenever `unitOptions` is set** (debug assert) — this package ships no user-facing English. |
 | `validator` | `String? Function(String)?` | `null` | Returns a message to reject a value and keep the sheet open. |
 | `onSaved` | `void Function(String, String?)?` | `null` | Single-value mode only: the committed value and selected unit. |

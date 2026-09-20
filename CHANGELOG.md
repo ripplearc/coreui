@@ -16,7 +16,12 @@
     multi-column constructor, where nothing would read it.
   - A unit key differs by mode: single-value records the selection and reports
     it separately, while multi-column keeps spelling it into the value the way
-    `47.24in` does, since `SizeEntryResult` carries no unit.
+    `47.24in` does, since `SizeEntryResult` carries no unit. This covers the
+    keyboard's own unit column (Yards/Feet/Inch) as well as the `unitOptions`
+    row — it cannot be hidden, so it follows the same rule. Its `/` key, which
+    exists to compose compound units inside the text, is ignored in
+    single-value mode. The two controls report different vocabularies: the row
+    gives back one of your `unitOptions`, the column its own label.
 
 ## [0.24.0] - CoreValueEditorSheet: the size entry sheet becomes public
 
