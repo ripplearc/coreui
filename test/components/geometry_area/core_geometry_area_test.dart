@@ -548,6 +548,90 @@ void main() {
         expect(deleteButtons(), findsNothing);
       });
 
+      // The reserved action slot is two independent terms, one per callback.
+      // "Both buttons" and "neither button" above agree on a flat 96 dp and a
+      // flat 0, so neither can tell a per-callback reservation from a
+      // table-wide one: reserving two buttons whenever either callback is set
+      // passes both of them.
+      //
+      // Icon count cannot pin it either. The row builds its buttons straight
+      // from the callbacks, so the icons stay right even when the reservation
+      // is wrong. `actionsWidth` is read by the header, which mirrors the
+      // row's action slot so the column titles stay over their columns — and
+      // by the scroll threshold. Measuring that header box is what catches the
+      // math.
+      const trailingSpace = CoreSpacing.space4;
+
+      Future<double> headerActionsSlot(
+        WidgetTester tester, {
+        required bool editable,
+        required bool deletable,
+      }) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                columnTitles: const ['Col'],
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['1a']),
+                ],
+                editable: editable,
+                onDeleted: deletable ? (_) {} : null,
+              ),
+            ],
+          )),
+        );
+        // The header row is the only Row above the column title; its one
+        // SizedBox is the reserved slot.
+        final headerRow = find
+            .ancestor(of: find.text('Col'), matching: find.byType(Row))
+            .first;
+        final slot = find.descendant(
+          of: headerRow,
+          matching: find.byType(SizedBox),
+        );
+        expect(slot, findsOneWidget);
+        return tester.getSize(slot).width;
+      }
+
+      testWidgets('an edit-only table reserves one button of width, not two',
+          (tester) async {
+        final width =
+            await headerActionsSlot(tester, editable: true, deletable: false);
+
+        expect(editButtons(), findsOneWidget);
+        expect(deleteButtons(), findsNothing);
+        // Reserving a flat two-button slot whenever either callback is set
+        // would leave 48 dp of empty header over the row's single button.
+        expect(width, CoreSpacing.space12 + trailingSpace);
+      });
+
+      testWidgets('a delete-only table reserves one button of width, not two',
+          (tester) async {
+        final width =
+            await headerActionsSlot(tester, editable: false, deletable: true);
+
+        expect(editButtons(), findsNothing);
+        // Only the row's button: Dismissible builds its swipe background
+        // lazily, once a drag starts.
+        expect(deleteButtons(), findsOneWidget);
+        expect(width, CoreSpacing.space12 + trailingSpace);
+      });
+
+      testWidgets('the two-button and no-button slots bracket them',
+          (tester) async {
+        expect(
+          await headerActionsSlot(tester, editable: true, deletable: true),
+          CoreSpacing.space12 * 2 + trailingSpace,
+        );
+        expect(
+          await headerActionsSlot(tester, editable: false, deletable: false),
+          trailingSpace,
+        );
+      });
+
       testWidgets('the delete button reports its row id', (tester) async {
         final deleted = <String>[];
 
