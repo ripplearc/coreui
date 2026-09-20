@@ -533,6 +533,82 @@ void main() {
 
         expect(find.byType(Toast), findsNothing);
       });
+
+      testWidgets('reads disableTimers when it is called, not when it builds',
+          (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        // setUp disabled timers. The builder runs on the next frame, so a
+        // flag read there would see this enable rather than the state that
+        // was in force when the caller asked for the toast.
+        await tester.tap(find.text('Show Toast'));
+        CoreToast.enableTimers();
+        await tester.pumpAndSettle();
+
+        await tester.pump(const Duration(seconds: 10));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsOneWidget);
+      });
+
+      testWidgets('the overlay starts no timer of its own', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(
+          buildHost(duration: const Duration(seconds: 10)),
+        );
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        // Past the 3 s default showCustomToast would otherwise apply. Two
+        // timers cannot be told apart once both have fired, so the gap
+        // between them is where the claim is provable at all.
+        await tester.pump(const Duration(seconds: 4));
+        expect(find.byType(Toast), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 7));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsNothing);
+      });
+
+      testWidgets('answering a replaced receipt leaves the new one on screen',
+          (tester) async {
+        CoreToast.enableTimers();
+        var shown = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => CoreToast.showReceipt(
+                    context,
+                    'Receipt ${++shown}',
+                    'Undo',
+                    _noop,
+                  ),
+                  child: const Text('Show Toast'),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        // Replace it, then answer the old one in the frame before the overlay
+        // rebuilds without it. Its Undo carries the entry it was built with.
+        await tester.tap(find.text('Show Toast'));
+        await tester.tap(
+          find.byKey(const Key('toast_action_button')),
+          warnIfMissed: false,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Receipt 2'), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+      });
     });
 
     group('overlay entry lifecycle', () {

@@ -89,12 +89,13 @@ class ToastShowcaseScreen extends StatelessWidget {
             _buildToastSection(
               context,
               title: 'Receipt Toast',
+              // Static preview: the live one is behind the button below.
               toast: Toast.receipt(
                 description: 'Saved to history',
                 highlight: 'Calc 60ft²',
                 actionLabel: 'Undo',
                 onAction: () {},
-                // Static preview: the live one is behind the button below.
+                onClose: () {},
                 duration: null,
               ),
             ),
@@ -136,8 +137,6 @@ class ToastShowcaseScreen extends StatelessWidget {
     );
   }
 
-  // The live receipt: it banks itself after five seconds unless an action
-  // answers it first.
   void _showReceiptToast(BuildContext context) {
     CoreToast.showReceipt(
       context,

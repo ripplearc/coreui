@@ -176,10 +176,28 @@ CoreToast.showReceipt(
 );
 ```
 
-The widget owns the timer, so `CoreToast` starts none of its own — a second
-timer could only disagree with it. `CoreToast.disableTimers()` still holds a
-receipt on screen, and `cleanup()` is safe to call at any point: the entry is
-removed exactly once whichever path gets there first.
+For a receipt the widget owns the timer, so `CoreToast` starts none of its own —
+a second timer could only disagree with it. `showError`, `showSuccess` and
+`showWarning` are unchanged: each still gets a 3 s timer from `CoreToast`.
+`CoreToast.disableTimers()` still holds a receipt on screen, and `cleanup()` is
+safe to call at any point: the entry is removed exactly once whichever path gets
+there first.
+
+A new toast of any kind replaces the one on screen — `CoreToast` holds a single
+overlay entry — so a receipt can leave before its own window is up.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `context` | `BuildContext` | Yes | Must be mounted and sit under an `Overlay`. Otherwise this throws a `FlutterError` before anything changes, so a toast already on screen is undisturbed |
+| `message` | `String` | Yes | The lead — "Saved to history" |
+| `actionLabel` | `String` | Yes | The action's label — "Undo" |
+| `onAction` | `VoidCallback` | Yes | Fires at most once, before the toast is removed |
+| `highlight` | `String?` | No | The tail after a middot — "Calc 60ft²" |
+| `duration` | `Duration?` | No | 5 s by default, handed to the widget rather than the overlay. `null` leaves the receipt with no timer at all; so does an active screen reader, and so does `disableTimers()` |
+
+With no timer, three things remove a receipt: the user takes the action,
+another toast replaces it, or `cleanup()` runs. The caller holds no handle of
+its own.
 
 ## Design source
 
