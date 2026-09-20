@@ -16,13 +16,14 @@ void main() {
     CorePreferenceInfo? withInfo,
     VoidCallback? onBack,
     VoidCallback? onInfoTap,
+    String title = 'Meter length display',
   }) {
     return tester.pumpWidget(
       MaterialApp(
         theme: CoreTheme.light(),
         home: Scaffold(
           body: PreferenceOptionSheetHeader(
-            title: 'Meter length display',
+            title: title,
             backSemanticsLabel: 'Back to preferences',
             onBack: onBack ?? () {},
             info: withInfo,
@@ -38,6 +39,23 @@ void main() {
     await pumpHeader(tester);
 
     expect(find.text('Meter length display'), findsOneWidget);
+  });
+
+  testWidgets('a long preference name is cut short, not wrapped',
+      (tester) async {
+    await pumpHeader(
+      tester,
+      title: 'Fractional resolution used when rounding imperial lengths',
+    );
+
+    final title = tester.widget<Text>(find.textContaining('Fractional'));
+    expect(title.maxLines, 1);
+    expect(title.overflow, TextOverflow.ellipsis);
+    expect(
+      tester.takeException(),
+      isNull,
+      reason: 'the name must not wrap and push the header taller',
+    );
   });
 
   testWidgets('the info button appears only with an explanation to show',

@@ -62,6 +62,20 @@ void main() {
     semanticsHandle.dispose();
   });
 
+  testWidgets('the tile announces itself as a button', (tester) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await pumpTile(tester, isSelected: false);
+    expect(
+      tester.getSemantics(find.byType(PreferenceOptionTile)),
+      isSemantics(isButton: true),
+      reason: 'a screen reader should announce the row as something to '
+          'activate, the way the sibling CoreCheckRowItem does',
+    );
+
+    semanticsHandle.dispose();
+  });
+
   testWidgets('tapping the tile reports the pick', (tester) async {
     var taps = 0;
     await pumpTile(tester, isSelected: false, onTap: () => taps++);

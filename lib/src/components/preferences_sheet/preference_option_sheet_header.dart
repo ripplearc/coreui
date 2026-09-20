@@ -10,6 +10,13 @@ import '../../../ripplearc_coreui.dart';
 /// them — an interactive element with no semantics label is invisible to a
 /// screen reader.
 ///
+/// Built by hand rather than with [CoreAppBar], which covers the same
+/// back-title-action shape. [CoreAppBar] wraps a Material `AppBar`, whose
+/// elevation and shadow model is built for the top of a `Scaffold`; this
+/// header sits at the top of a bottom sheet, which draws its own surface and
+/// wants no second shadow over it. The row is small enough that borrowing the
+/// app bar's surface behaviour costs more than it saves.
+///
 /// Internal to the preferences sheet — not exported from the package barrel.
 class PreferenceOptionSheetHeader extends StatelessWidget {
   /// The preference's name.
@@ -68,6 +75,8 @@ class PreferenceOptionSheetHeader extends StatelessWidget {
           Expanded(
             child: Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: typography.bodyLargeSemiBold.copyWith(
                 color: colors.textHeadline,
               ),

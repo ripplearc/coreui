@@ -37,6 +37,7 @@ class PreferenceOptionTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(CoreSpacing.space2),
       child: Semantics(
+        button: true,
         selected: isSelected,
         child: Container(
           decoration: BoxDecoration(
