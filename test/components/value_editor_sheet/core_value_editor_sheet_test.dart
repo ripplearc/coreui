@@ -571,6 +571,18 @@ void main() {
       expect(await commit(tester), 'Inch');
     });
 
+    testWidgets('a seed survives a sheet with no unit row', (tester) async {
+      _setTestViewport(tester);
+      // The rate variant has no unit row at all, yet the keyboard's own unit
+      // column can still commit one. Gating the seed on unitOptions dropped it
+      // every time here, so reopening a saved rate and committing again
+      // silently returned unit: null.
+      await tester.pumpWidget(sheet(unit: 'Inch'));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'Inch');
+    });
+
     testWidgets('a new seed replaces the old selection', (tester) async {
       _setTestViewport(tester);
       await tester.pumpWidget(

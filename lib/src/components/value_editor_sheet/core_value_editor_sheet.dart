@@ -41,8 +41,13 @@ class CoreValueEditorResult {
   /// The text the user entered.
   final String value;
 
-  /// The unit selected on the unit row, or `null` when the sheet was built
-  /// without one.
+  /// The unit the user selected, or `null` if they selected none.
+  ///
+  /// Usually one of the sheet's `unitOptions`. It can also be a label from the
+  /// keyboard's own unit column ('Inch', 'CM'), which renders in every sheet
+  /// and cannot be suppressed — so this is not guaranteed to appear in
+  /// `unitOptions`, and is non-null even for a sheet built without a unit row.
+  /// Match on it rather than indexing into `unitOptions`.
   final String? unit;
 }
 
@@ -61,15 +66,23 @@ typedef SizeEntryBottomSheet = CoreValueEditorSheet;
 ///   entry in [titles], laid out two to a line, committing a [SizeEntryResult].
 /// * [CoreValueEditorSheet.singleValue] edits one labelled value — a sheet
 ///   size, rate, waste or density behind a dependent-key pill — committing a
-///   [CoreValueEditorResult] through [onSaved].
+///   [CoreValueEditorResult] through the future returned by
+///   [showSingleValue]. [onSaved] is an additional notification on the way
+///   past, for a sheet embedded outside a modal route.
 ///
 /// The equals key never names itself: [resultLabel] is required and reaches
 /// [CoreKeyboard.customResultLabel] unchanged, so "Add" and "Update" are the
 /// caller's words and can be localized.
 ///
-/// [unitOptions] renders the unit row above the keyboard. Leave it null or
-/// empty and no row is built, which is what the single-value design asks for.
-/// The keyboard's own unit column is unaffected either way.
+/// [unitOptions] renders the unit row above the keyboard. Leave it null and no
+/// row is built, which is what the rate variant of the design asks for — pass
+/// null rather than an empty list, which a debug assert rejects unless
+/// [unitGroupLabel] comes with it.
+///
+/// The keyboard's own unit column cannot be hidden, so single-value mode makes
+/// it follow the same rule as the row: it records the unit instead of typing
+/// it into the value. It reports its own labels ('Inch', 'CM'), which are not
+/// drawn from [unitOptions] — see [CoreValueEditorResult.unit].
 ///
 /// ```dart
 /// final result = await CoreValueEditorSheet.showSingleValue(
@@ -200,14 +213,21 @@ class CoreValueEditorSheet extends StatefulWidget {
   /// Runs against every field in multi-column mode.
   final String? Function(String value)? validator;
 
-  /// Called with the committed value in single-value mode.
+  /// Called with the committed value and unit in single-value mode, just
+  /// before the sheet pops.
+  ///
+  /// The commit itself comes back through the future from [showSingleValue];
+  /// this is the way to hear about it when the sheet was built directly rather
+  /// than opened by that helper.
   final void Function(String value, String? unit)? onSaved;
 
   /// Opens the sheet as a modal bottom sheet and returns what the user
   /// submitted, or null if they dismissed it.
   ///
-  /// This is the entry point callers should use; constructing the widget
-  /// directly is only for embedding it somewhere other than a modal route.
+  /// This is the entry point callers should use. Constructing the widget
+  /// directly is supported — [didUpdateWidget] keeps it safe across rebuilds —
+  /// but note that committing always pops the enclosing route, so a sheet
+  /// embedded in a page body pops that page. Give it a route of its own.
   ///
   /// Pass [initialData] to edit an existing row — the sheet then titles itself
   /// [editSizeTitle] and pre-fills each field from the row's values. Leave it
@@ -298,8 +318,12 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
   @override
   void initState() {
     super.initState();
-    final unitOptions = _unitOptions;
-    _selectedUnit = unitOptions.contains(widget.unit) ? widget.unit : null;
+    // Taken as given, not filtered through unitOptions: the keyboard's own
+    // unit column commits labels that are never in that list, so gating on it
+    // discarded the seed for exactly the sheet the seed exists for — a rate
+    // sheet has no unit row at all, so every seed was dropped and the unit
+    // vanished on the second save of a round-trip.
+    _selectedUnit = widget.unit;
     _errors = List.filled(widget.titles.length, null);
     _controllers = List.generate(
       widget.titles.length,
@@ -356,7 +380,7 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
 
     if (widget.unit != oldWidget.unit) {
       // A new seed replaces whatever the old one left behind.
-      _selectedUnit = _unitOptions.contains(widget.unit) ? widget.unit : null;
+      _selectedUnit = widget.unit;
     } else if (unitOptionsChanged) {
       // A unit the row no longer offers must not still be committed — a unit
       // system toggled from ['m','cm'] to ['ft','in'] would otherwise report

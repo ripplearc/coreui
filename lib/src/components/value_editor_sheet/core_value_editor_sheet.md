@@ -93,7 +93,7 @@ final result = await CoreValueEditorSheet.showSingleValue(
 | `initialValue` | `String?` | `null` | Pre-fills the single field. |
 | `resultLabel` | `String` | — | **Required.** The commit key's label, e.g. "Add" or "Update". |
 | `unitOptions` | `List<String>?` | `null` | Unit row labels. Null or empty renders no unit row. |
-| `unit` | `String?` | `null` | Single-value mode only — a debug assert rejects it on the default constructor, where nothing reads it. Seeds the unit a commit reports when the user never taps the unit row. Not rendered as a highlighted key — the strip has no selected state. Ignored unless it appears in `unitOptions`. |
+| `unit` | `String?` | `null` | Single-value mode only — a debug assert rejects it on the default constructor, where nothing reads it. Seeds the unit a commit reports when the user never taps a unit key. Taken as given, **not** filtered through `unitOptions`: the keyboard's unit column commits labels that are never in that list, and a rate sheet has no unit row at all. Not rendered as a highlighted key — neither control has a selected state. |
 | `unitGroupLabel` | `String?` | `null` | Names the unit row in the keyboard's group header. **Required whenever `unitOptions` is set** (debug assert) — this package ships no user-facing English. |
 | `validator` | `String? Function(String)?` | `null` | Returns a message to reject a value and keep the sheet open. |
 | `onSaved` | `void Function(String, String?)?` | `null` | Single-value mode only: the committed value and selected unit. |
@@ -103,7 +103,7 @@ final result = await CoreValueEditorSheet.showSingleValue(
 | Property | Type | Description |
 | :--- | :--- | :--- |
 | `value` | `String` | The text the user committed. |
-| `unit` | `String?` | The selected unit, or null when the sheet had no unit row. |
+| `unit` | `String?` | The unit the user selected, or null if they selected none. Usually one of `unitOptions`, but it can be a keyboard-column label (`Inch`, `CM`) — including on a sheet with no unit row. Match on it rather than indexing into `unitOptions`. |
 
 ### `SizeEntryResult`
 
