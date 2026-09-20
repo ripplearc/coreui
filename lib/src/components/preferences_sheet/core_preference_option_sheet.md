@@ -29,8 +29,9 @@ and the sheet pops itself. That is what lets a user open a setting, look
 through the choices and back out unchanged — the back button and a swipe-away
 both leave the preference alone.
 
-Update is disabled while nothing is selected, so a sheet opened with a
-`selectedOptionId` that matches no option cannot commit an empty choice.
+Update stays disabled until the pick matches one of `options`. A sheet opened
+with a `selectedOptionId` that matches nothing — a value left over after the
+option set changed — shows no ticked row and cannot commit that id.
 
 ## The explanation
 

@@ -59,6 +59,40 @@ void main() {
     return recorder;
   }
 
+  /// Pumps the sheet under a caller that can change the stored preference
+  /// while the sheet is still open — the `didUpdateWidget` path. Tapping
+  /// "store elsewhere" moves the caller's value to `0.000`.
+  Future<_Recorder> pumpSheetOverStore(WidgetTester tester) async {
+    final recorder = _Recorder();
+    var selected = '0.00';
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light(),
+        home: StatefulBuilder(
+          builder: (_, setState) => Scaffold(
+            body: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => selected = '0.000'),
+                  child: const Text('store elsewhere'),
+                ),
+                Expanded(
+                  child: buildSheet(recorder, selectedOptionId: selected),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    return recorder;
+  }
+
+  /// The tick a row shows once it is the pick in force.
+  final tick = find.byWidgetPredicate(
+    (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.checkMark,
+  );
+
   testWidgets('picking an option reports nothing until Update commits it',
       (tester) async {
     final recorder = await pumpSheet(tester);
@@ -118,26 +152,7 @@ void main() {
 
   testWidgets('a preference changed elsewhere moves an untouched pick',
       (tester) async {
-    final recorder = _Recorder();
-    var selected = '0.00';
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoreTheme.light(),
-        home: StatefulBuilder(
-          builder: (_, setState) => Scaffold(
-            body: Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() => selected = '0.000'),
-                  child: const Text('store elsewhere'),
-                ),
-                Expanded(child: buildSheet(recorder, selectedOptionId: selected)),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    final recorder = await pumpSheetOverStore(tester);
 
     await tester.tap(find.text('store elsewhere'));
     await tester.pump();
@@ -149,6 +164,51 @@ void main() {
       '0.000',
       reason: 'the caller owns what is stored, so an untouched pick has to '
           'follow it rather than commit the value the sheet opened with',
+    );
+  });
+
+  testWidgets("a preference changed elsewhere leaves the user's own pick alone",
+      (tester) async {
+    final recorder = await pumpSheetOverStore(tester);
+
+    await tester.tap(find.byKey(const Key('option_0.0')));
+    await tester.pump();
+    await tester.tap(find.text('store elsewhere'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('update_button')));
+    await tester.pump();
+
+    expect(
+      recorder.updatedId,
+      '0.0',
+      reason: 'once the user has picked for themselves, a change made '
+          'elsewhere must not silently replace what Update will store',
+    );
+  });
+
+  testWidgets('a pick that lands back on the opening value still counts',
+      (tester) async {
+    final recorder = await pumpSheetOverStore(tester);
+
+    // The sheet opened on 0.00; the user changes their mind and lands back on
+    // it. Comparing the pick against the opening value cannot tell this apart
+    // from never having touched a row — hence the explicit touched flag.
+    await tester.tap(find.byKey(const Key('option_0.000')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('option_0.00')));
+    await tester.pump();
+
+    await tester.tap(find.text('store elsewhere'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('update_button')));
+    await tester.pump();
+
+    expect(
+      recorder.updatedId,
+      '0.00',
+      reason: 'the user settled on 0.00 deliberately, so a change made '
+          'elsewhere must not overwrite it just because it happens to equal '
+          'the value the sheet opened with',
     );
   });
 
@@ -194,5 +254,34 @@ void main() {
       find.byKey(const Key('update_button')),
     );
     expect(button.onPressed, isNull);
+  });
+
+  testWidgets('a selectedOptionId matching no option cannot be committed',
+      (tester) async {
+    await pumpSheet(tester, selectedOptionId: '0.00');
+    expect(
+      tick,
+      findsOneWidget,
+      reason: 'a matched id ticks its row — without this the findsNothing '
+          'below would also pass if the tile stopped drawing a tick at all',
+    );
+
+    await pumpSheet(tester, selectedOptionId: 'gone');
+
+    expect(
+      tick,
+      findsNothing,
+      reason: 'no row can show a pick the option list no longer offers',
+    );
+
+    final button = tester.widget<CoreButton>(
+      find.byKey(const Key('update_button')),
+    );
+    expect(
+      button.onPressed,
+      isNull,
+      reason: 'a stale id left over after the options changed must not be '
+          'handed back to the caller as a choice the user never saw made',
+    );
   });
 }

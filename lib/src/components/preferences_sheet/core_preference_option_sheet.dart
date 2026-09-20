@@ -25,7 +25,9 @@ class CorePreferenceOptionSheet extends StatefulWidget {
   /// The choices offered, in display order.
   final List<CorePreferenceOption> options;
 
-  /// Identifier of the option in force when the sheet opens.
+  /// Identifier of the option in force when the sheet opens. An id matching
+  /// no entry in [options] leaves the sheet with nothing picked: no row ticks
+  /// and Update stays disabled until the user chooses for themselves.
   final String? selectedOptionId;
 
   /// Label of the commit button.
@@ -76,6 +78,12 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
   String? _selectedId;
   bool _infoOpen = false;
 
+  /// Whether the user has picked a row for themselves. This cannot be
+  /// inferred by comparing [_selectedId] against what the sheet opened with:
+  /// a user who taps away and taps back lands on that same value, and their
+  /// deliberate re-pick would then be treated as untouched.
+  bool _userPicked = false;
+
   @override
   void initState() {
     super.initState();
@@ -88,15 +96,25 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
     // The caller is the source of truth for what is stored. If it hands the
     // sheet a different option while the sheet is open, an untouched pick
     // must follow it rather than keep showing the value it opened with.
-    if (widget.selectedOptionId != oldWidget.selectedOptionId &&
-        _selectedId == oldWidget.selectedOptionId) {
+    if (!_userPicked &&
+        widget.selectedOptionId != oldWidget.selectedOptionId) {
       _selectedId = widget.selectedOptionId;
     }
   }
 
+  /// Whether Update has something real to commit. A caller can hand the sheet
+  /// an id that matches no option — a value left over after the option set
+  /// changed — and no row would tick; committing it would hand that ghost id
+  /// straight back to the caller as a fresh choice.
+  bool get _hasValidSelection =>
+      widget.options.any((option) => option.id == _selectedId);
+
   void _commit() {
     final selectedId = _selectedId;
-    if (selectedId != null) {
+    // Update is the only way in and it is disabled without a valid pick, but
+    // the guard belongs with the callback too: a commit path added later must
+    // not be able to hand back an id that matches no option.
+    if (selectedId != null && _hasValidSelection) {
       widget.onUpdate(selectedId);
     }
     Navigator.of(context).pop();
@@ -139,7 +157,10 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
             key: widget.optionKeyOf?.call(option.id),
             option: option,
             isSelected: option.id == _selectedId,
-            onTap: () => setState(() => _selectedId = option.id),
+            onTap: () => setState(() {
+              _userPicked = true;
+              _selectedId = option.id;
+            }),
           );
         },
       ),
@@ -164,7 +185,7 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
               size: CoreButtonSize.large,
               variant: CoreButtonVariant.primary,
               fullWidth: true,
-              onPressed: _selectedId == null ? null : _commit,
+              onPressed: _hasValidSelection ? _commit : null,
             ),
     );
   }
