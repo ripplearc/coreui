@@ -53,11 +53,21 @@ class Toast extends StatefulWidget {
   /// Fires once when the receipt's action is taken, before [onClose].
   final VoidCallback? onAction;
 
+  /// Label of the receipt's quieter second action — `View`. Travels with
+  /// [onSecondary]; omit both to render the receipt with `Undo` alone.
+  final String? secondaryLabel;
+
+  /// Fires once when the receipt's second action is taken, before [onClose].
+  /// Taking it locks out [onAction], as taking [onAction] locks out this one.
+  final VoidCallback? onSecondary;
+
   /// How long the receipt stays before it dismisses itself through [onClose].
   /// `null` keeps it until something else removes it, and so does a screen
   /// reader: a timed window a user cannot reach is worse than none.
   final Duration? duration;
   final _ToastType _type;
+
+  static const double _secondaryActionOpacity = 0.85;
 
   static const double _receiptRadius = CoreSpacing.space3;
 
@@ -82,6 +92,8 @@ class Toast extends StatefulWidget {
     this.onClose,
     this.actionLabel,
     this.onAction,
+    this.secondaryLabel,
+    this.onSecondary,
     this.duration,
   }) : _type = type;
 
@@ -158,6 +170,10 @@ class Toast extends StatefulWidget {
   /// it there until something else removes it, and so does a screen reader —
   /// see [duration].
   ///
+  /// [secondaryLabel] adds the quieter second action (`View`). It travels with
+  /// [onSecondary]: an interactive control with no label is invisible to a
+  /// screen reader.
+  ///
   /// Every user-facing string comes from the consumer — localisation is the
   /// caller's responsibility:
   /// ```dart
@@ -174,14 +190,24 @@ class Toast extends StatefulWidget {
     required VoidCallback onAction,
     required VoidCallback onClose,
     String? highlight,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
     Duration? duration = const Duration(seconds: 5),
   }) {
+    assert(
+      (secondaryLabel == null) == (onSecondary == null),
+      'secondaryLabel and onSecondary travel together: an action with no '
+      'label is invisible to a screen reader, and a label with no action is '
+      'a dead control.',
+    );
     return Toast._(
       description: description,
       highlight: highlight,
       type: _ToastType.receipt,
       actionLabel: actionLabel,
       onAction: onAction,
+      secondaryLabel: secondaryLabel,
+      onSecondary: onSecondary,
       onClose: onClose,
       duration: duration,
     );
@@ -346,6 +372,8 @@ class _ToastState extends State<Toast> {
                     colors,
                     text: _buildReceiptText(typography, colors),
                     trailing: _buildActionCluster(
+                      typography,
+                      colors,
                       actionLabel,
                       constraints.maxWidth,
                     ),
@@ -413,18 +441,28 @@ class _ToastState extends State<Toast> {
     );
   }
 
-  Widget _buildActionCluster(String actionLabel, double rowWidth) {
-    final action = _buildReceiptAction(actionLabel);
-    if (!rowWidth.isFinite) return action;
+  Widget _buildActionCluster(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+    String actionLabel,
+    double rowWidth,
+  ) {
+    final actions = _buildReceiptActions(typography, colors, actionLabel);
+    if (!rowWidth.isFinite) return actions;
 
     final widthTheMessageShares = rowWidth - Toast._receiptRowLeadingWidth;
-    if (widthTheMessageShares <= 0) return action;
+    if (widthTheMessageShares <= 0) return actions;
+
+    final secondActionTarget = widget.secondaryLabel == null
+        ? 0.0
+        : CoreSpacing.space12 + CoreSpacing.space4;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth:
-            widthTheMessageShares * Toast._receiptActionMaxWidthFraction,
+            widthTheMessageShares * Toast._receiptActionMaxWidthFraction +
+                secondActionTarget,
       ),
-      child: action,
+      child: actions,
     );
   }
 
@@ -455,6 +493,78 @@ class _ToastState extends State<Toast> {
       ),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildReceiptActions(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+    String actionLabel,
+  ) {
+    final secondaryLabel = widget.secondaryLabel;
+    final onSecondary = widget.onSecondary;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Both halves, not just the label: the factory asserts the two travel
+        // together, but an assert is gone in release, and a View that reports
+        // nothing still burns the user's one chance to undo.
+        if (secondaryLabel != null && onSecondary != null) ...[
+          _buildSecondaryAction(
+            typography,
+            colors,
+            secondaryLabel,
+            onSecondary,
+          ),
+          const SizedBox(width: CoreSpacing.space4),
+        ],
+        Flexible(child: _buildReceiptAction(actionLabel)),
+      ],
+    );
+  }
+
+  Widget _buildSecondaryAction(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+    String secondaryLabel,
+    VoidCallback onSecondary,
+  ) {
+    // An InkWell, not a GestureDetector: a GestureDetector defers hit testing
+    // to its child, so only the text band inside the 48 dp box answered a
+    // tap, and it takes no keyboard or D-pad focus at all.
+    return InkWell(
+      key: const Key('toast_secondary_button'),
+      onTap: () => _answer(onSecondary),
+      splashFactory: NoSplash.splashFactory,
+      highlightColor: colors.transparent,
+      hoverColor: colors.transparent,
+      child: Semantics(
+        button: true,
+        label: secondaryLabel,
+        excludeSemantics: true,
+        child: ConstrainedBox(
+          // Pinned, not a minimum: a centred label under a bare minimum grows
+          // to whatever height the surrounding row offers.
+          constraints: const BoxConstraints(
+            minWidth: CoreSpacing.space12,
+            minHeight: CoreSpacing.space12,
+            maxHeight: CoreSpacing.space12,
+          ),
+          child: Center(
+            widthFactor: 1,
+            child: Text(
+              secondaryLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: typography.bodyLargeSemiBold.copyWith(
+                color: colors.textLink
+                    .withValues(alpha: Toast._secondaryActionOpacity),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

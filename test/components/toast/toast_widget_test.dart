@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -237,9 +238,11 @@ void main() {
       const highlight = 'Calc 60ft²';
       final actionFinder = find.byKey(const Key('toast_action_button'));
       final messageFinder = find.byKey(const Key('toast_receipt_message'));
+      final secondaryFinder = find.byKey(const Key('toast_secondary_button'));
 
       Widget buildReceipt({
         required VoidCallback onAction,
+        VoidCallback? onSecondary,
         VoidCallback onClose = _noop,
         Duration? duration,
       }) {
@@ -250,6 +253,8 @@ void main() {
               highlight: highlight,
               actionLabel: 'Undo',
               onAction: onAction,
+              secondaryLabel: onSecondary == null ? null : 'View',
+              onSecondary: onSecondary,
               onClose: onClose,
               duration: duration,
             ),
@@ -257,21 +262,32 @@ void main() {
         );
       }
 
-      testWidgets('renders the lead, the highlight and the action',
+      testWidgets('renders the lead, the highlight and both actions',
           (WidgetTester tester) async {
-        await tester.pumpWidget(buildReceipt(onAction: () {}));
+        await tester.pumpWidget(
+          buildReceipt(onAction: () {}, onSecondary: () {}),
+        );
 
         expect(find.textContaining(description, findRichText: true),
             findsOneWidget);
         expect(
             find.textContaining(highlight, findRichText: true), findsOneWidget);
         expect(actionFinder, findsOneWidget);
+        expect(secondaryFinder, findsOneWidget);
       });
 
       testWidgets('carries no close button', (WidgetTester tester) async {
         await tester.pumpWidget(buildReceipt(onAction: () {}));
 
         expect(find.byKey(const Key('toast_close_button')), findsNothing);
+      });
+
+      testWidgets('omits the secondary action when it is not given',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildReceipt(onAction: () {}));
+
+        expect(secondaryFinder, findsNothing);
+        expect(actionFinder, findsOneWidget);
       });
 
       testWidgets('fires the action at most once',
@@ -323,6 +339,48 @@ void main() {
         // The cancelled timer must not ask for a second dismissal.
         await tester.pump(const Duration(seconds: 6));
         expect(closeCount, 1);
+      });
+
+      testWidgets('the secondary action reports and dismisses the toast',
+          (WidgetTester tester) async {
+        var closeCount = 0;
+        var viewed = false;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () {},
+            onSecondary: () => viewed = true,
+            onClose: () => closeCount++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.tap(secondaryFinder);
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 6));
+
+        expect(viewed, isTrue);
+        expect(closeCount, 1);
+      });
+
+      testWidgets('answering with one action locks out the other',
+          (WidgetTester tester) async {
+        var undone = 0;
+        var viewed = 0;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () => undone++,
+            onSecondary: () => viewed++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.tap(actionFinder);
+        await tester.pump();
+        await tester.tap(secondaryFinder);
+        await tester.pump();
+
+        expect(undone, 1);
+        expect(viewed, 0);
       });
 
       testWidgets('an auto-dismissed receipt stays answered',
@@ -426,6 +484,65 @@ void main() {
         expect(tester.getSize(actionFinder).width, lessThan(120));
       });
 
+      testWidgets('fits a narrow screen at a large text scale with both '
+          'actions', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    width: 375,
+                    child: Toast.receipt(
+                      description: description,
+                      highlight: highlight,
+                      actionLabel: 'Undo',
+                      onAction: () {},
+                      secondaryLabel: 'View',
+                      onSecondary: _noop,
+                      onClose: _noop,
+                      duration: null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Two actions are what pushes the short English labels past the
+        // width; one on its own still fits at this scale.
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('fits a narrow screen with both labels translated',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 360,
+                  child: Toast.receipt(
+                    description: 'Im Verlauf gespeichert',
+                    highlight: 'Berechnung 60ft²',
+                    actionLabel: 'Rückgängig machen',
+                    onAction: () {},
+                    secondaryLabel: 'Anzeigen',
+                    onSecondary: _noop,
+                    onClose: _noop,
+                    duration: null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+      });
+
       testWidgets('announces itself as a live region',
           (WidgetTester tester) async {
         final handle = tester.ensureSemantics();
@@ -505,6 +622,131 @@ void main() {
                   ? 'the top edge of the tap target is dead'
                   : 'the bottom edge of the tap target is dead');
         }
+      });
+
+      testWidgets('the secondary action stands a full tap target tall',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildReceipt(onAction: () {}, onSecondary: () {}),
+        );
+
+        expect(tester.getSize(secondaryFinder).height, CoreSpacing.space12);
+      });
+
+      testWidgets('the secondary action answers a tap at either edge',
+          (WidgetTester tester) async {
+        var viewed = 0;
+        await tester.pumpWidget(
+          buildReceipt(onAction: _noop, onSecondary: () => viewed++),
+        );
+
+        // The 48 dp box is the whole target, not just the text band inside
+        // it: a thumb that lands a little high or low still counts.
+        final box = tester.getRect(secondaryFinder);
+        await tester.tapAt(Offset(box.center.dx, box.top + 4));
+        await tester.pump();
+
+        expect(viewed, 1);
+      });
+
+      testWidgets('a tap at the bottom edge answers it too',
+          (WidgetTester tester) async {
+        var viewed = 0;
+        await tester.pumpWidget(
+          buildReceipt(onAction: _noop, onSecondary: () => viewed++),
+        );
+
+        final box = tester.getRect(secondaryFinder);
+        await tester.tapAt(Offset(box.center.dx, box.bottom - 4));
+        await tester.pump();
+
+        expect(viewed, 1);
+      });
+
+      testWidgets('the secondary action takes keyboard focus',
+          (WidgetTester tester) async {
+        var viewed = 0;
+        await tester.pumpWidget(
+          buildReceipt(onAction: _noop, onSecondary: () => viewed++),
+        );
+
+        // A GestureDetector cannot be reached by keyboard, D-pad or switch
+        // at all, which is why this control is an InkWell.
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(viewed, 1);
+      });
+
+      testWidgets('a label with no action is rejected',
+          (WidgetTester tester) async {
+        expect(
+          () => Toast.receipt(
+            description: description,
+            actionLabel: 'Undo',
+            onAction: _noop,
+            onClose: _noop,
+            secondaryLabel: 'View',
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      testWidgets('an action with no label is rejected',
+          (WidgetTester tester) async {
+        expect(
+          () => Toast.receipt(
+            description: description,
+            actionLabel: 'Undo',
+            onAction: _noop,
+            onClose: _noop,
+            onSecondary: _noop,
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      testWidgets('View first locks out Undo as well',
+          (WidgetTester tester) async {
+        var undone = 0;
+        var viewed = 0;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () => undone++,
+            onSecondary: () => viewed++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.tap(secondaryFinder);
+        await tester.pump();
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(viewed, 1);
+        expect(undone, 0);
+      });
+
+      testWidgets('the secondary action meets accessibility guidelines',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Toast.receipt(
+            description: description,
+            highlight: highlight,
+            actionLabel: 'Undo',
+            onAction: () {},
+            secondaryLabel: 'View',
+            onSecondary: _noop,
+            onClose: _noop,
+            duration: null,
+          ),
+          secondaryFinder,
+        );
       });
 
       testWidgets('reads the lead and the highlight as one label',

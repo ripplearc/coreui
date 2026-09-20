@@ -95,6 +95,8 @@ class ToastShowcaseScreen extends StatelessWidget {
                 highlight: 'Calc 60ft²',
                 actionLabel: 'Undo',
                 onAction: () {},
+                secondaryLabel: 'View',
+                onSecondary: () {},
                 onClose: () {},
                 duration: null,
               ),
@@ -144,6 +146,8 @@ class ToastShowcaseScreen extends StatelessWidget {
       'Undo',
       () => _report(context, 'Undo tapped — the session comes back'),
       highlight: 'Calc 60ft²',
+      secondaryLabel: 'View',
+      onSecondary: () => _report(context, 'View tapped — history opens'),
     );
   }
 

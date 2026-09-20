@@ -99,6 +99,8 @@ class CoreToast {
     String actionLabel,
     VoidCallback onAction, {
     String? highlight,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
     Duration? duration = const Duration(seconds: 5),
   }) {
     final widgetDuration = _disableTimers ? null : duration;
@@ -109,6 +111,8 @@ class CoreToast {
         highlight: highlight,
         actionLabel: actionLabel,
         onAction: onAction,
+        secondaryLabel: secondaryLabel,
+        onSecondary: onSecondary,
         onClose: dismiss,
         duration: widgetDuration,
       ),
