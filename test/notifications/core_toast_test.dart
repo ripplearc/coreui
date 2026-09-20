@@ -463,6 +463,99 @@ void main() {
 
         expect(find.byType(Toast), findsOneWidget);
       });
+
+      testWidgets('the timer takes the toast off the screen', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsOneWidget);
+
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsNothing);
+      });
+
+      testWidgets('closing a replaced toast leaves the new one on screen',
+          (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () =>
+                          CoreToast.showError(context, 'First toast', 'Close'),
+                      child: const Text('Show First'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () =>
+                          CoreToast.showError(context, 'Second toast', 'Close'),
+                      child: const Text('Show Second'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Show First'));
+        await tester.pumpAndSettle();
+        expect(find.text('First toast'), findsOneWidget);
+
+        // One frame, two events: the second toast takes the overlay, and the
+        // first — still on screen until the overlay rebuilds — has its Close
+        // tapped. That tap carries the entry it was built with, not whichever
+        // entry is current.
+        await tester.tap(find.text('Show Second'));
+        await tester.tap(find.text('Close'), warnIfMissed: false);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Second toast'), findsOneWidget);
+      });
+
+      testWidgets('the error toast closes from its own button', (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.text('Something went wrong'), findsOneWidget);
+
+        await tester.tap(find.text('Close'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Something went wrong'), findsNothing);
+      });
+
+      testWidgets('the warning toast closes from its own button',
+          (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () =>
+                      CoreToast.showWarning(context, 'Check the input', 'Close'),
+                  child: const Text('Show Toast'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        expect(find.text('Check the input'), findsOneWidget);
+
+        await tester.tap(find.text('Close'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Check the input'), findsNothing);
+      });
     });
   });
 }

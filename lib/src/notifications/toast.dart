@@ -29,17 +29,14 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) {
-        final entry = _entry;
-        return Toast.error(
-          description: message,
-          closeLabel: closeLabel,
-          title: title,
-          onClose: () => _removeEntry(entry),
-        );
-      },
+      (dismiss) => Toast.error(
+        description: message,
+        closeLabel: closeLabel,
+        title: title,
+        onClose: dismiss,
+      ),
     );
   }
 
@@ -50,17 +47,14 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) {
-        final entry = _entry;
-        return Toast.success(
-          description: message,
-          closeLabel: closeLabel,
-          title: title,
-          onClose: () => _removeEntry(entry),
-        );
-      },
+      (dismiss) => Toast.success(
+        description: message,
+        closeLabel: closeLabel,
+        title: title,
+        onClose: dismiss,
+      ),
     );
   }
 
@@ -71,17 +65,14 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) {
-        final entry = _entry;
-        return Toast.warning(
-          description: message,
-          closeLabel: closeLabel,
-          title: title,
-          onClose: () => _removeEntry(entry),
-        );
-      },
+      (dismiss) => Toast.warning(
+        description: message,
+        closeLabel: closeLabel,
+        title: title,
+        onClose: dismiss,
+      ),
     );
   }
 
@@ -95,14 +86,12 @@ class CoreToast {
     // hides keyboard if visible
     FocusScope.of(context).unfocus();
     final overlay = Overlay.of(context);
-    // an entry inserted in this same frame has not mounted yet, and skipping
-    // it would orphan it in the overlay
-    _removeEntry(_entry);
+    _removeEntryOnce(_entry);
     // cancels previous timer
     if (_timer != null) {
       _timer?.cancel();
     }
-    _entry = OverlayEntry(
+    final ownEntry = OverlayEntry(
       builder: (context) => Positioned(
         bottom: 100,
         width: MediaQuery.of(context).size.width,
@@ -112,15 +101,12 @@ class CoreToast {
         ),
       ),
     );
-    final entryToAdd = _entry;
-    if (entryToAdd != null) {
-      overlay.insert(entryToAdd);
-    }
+    _entry = ownEntry;
+    overlay.insert(ownEntry);
 
     // Only create timer if timers are not disabled
     if (!_disableTimers) {
-      final entry = _entry;
-      _timer = Timer(duration, () => _removeEntry(entry));
+      _timer = Timer(duration, () => _removeEntryOnce(ownEntry));
     }
   }
 
@@ -128,15 +114,24 @@ class CoreToast {
   /// This method should be called when the app is being disposed.
   static void cleanup() {
     _timer?.cancel();
-    _removeEntry(_entry);
+    _removeEntryOnce(_entry);
   }
 
-  // Nulling _entry first makes removal idempotent: an OverlayEntry may only
-  // be removed once, and several callers race for the same one.
-  static void _removeEntry(OverlayEntry? entry) {
+  static void _showWithDismiss(
+    BuildContext context,
+    Widget Function(VoidCallback dismiss) build,
+  ) {
+    showCustomToast(context, (overlayContext) {
+      final ownEntry = _entry;
+      return build(() => _removeEntryOnce(ownEntry));
+    });
+  }
+
+  static void _removeEntryOnce(OverlayEntry? entry) {
     if (entry == null || !identical(entry, _entry)) return;
     _entry = null;
     entry.remove();
+    entry.dispose();
   }
 
   /// Disables timers for testing purposes.
