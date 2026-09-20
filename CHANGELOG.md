@@ -12,7 +12,8 @@
   - Both modes share one widget and one keyboard wiring: internally the sheet
     is a list of fields, and single-value is a one-element list.
   - New `unit` seeds the unit a commit reports when the user never taps the
-    unit row.
+    unit row. Single-value only — a debug assert rejects it on the
+    multi-column constructor, where nothing would read it.
   - A unit key differs by mode: single-value records the selection and reports
     it separately, while multi-column keeps spelling it into the value the way
     `47.24in` does, since `SizeEntryResult` carries no unit.

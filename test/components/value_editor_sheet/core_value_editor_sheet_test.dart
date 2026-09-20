@@ -533,4 +533,53 @@ void main() {
       expect(find.text('Update'), findsNothing);
     });
   });
+
+  group('CoreValueEditorSheet asserts', () {
+    test('multi-column mode rejects a unit', () {
+      // Nothing in multi-column mode reads it: SizeEntryResult has no unit
+      // field, and a unit key types its label into the value instead. Without
+      // the assert the sheet seeds a selection, reports none, and the caller
+      // gets no signal that the argument did nothing.
+      expect(
+        () => CoreValueEditorSheet(
+          titles: const ['Length', 'Width'],
+          addSizeTitle: 'Add size',
+          editSizeTitle: 'Edit size',
+          resultLabel: 'Update',
+          unitOptions: const ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+          unit: 'cm',
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('multi-column mode is fine without one', () {
+      expect(
+        () => CoreValueEditorSheet(
+          titles: const ['Length', 'Width'],
+          addSizeTitle: 'Add size',
+          editSizeTitle: 'Edit size',
+          resultLabel: 'Update',
+          unitOptions: const ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('single-value mode takes the unit the assert refuses', () {
+      expect(
+        () => CoreValueEditorSheet.singleValue(
+          title: 'Rate',
+          label: 'Rate',
+          resultLabel: 'Update',
+          unitOptions: const ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+          unit: 'cm',
+        ),
+        returnsNormally,
+      );
+    });
+  });
 }

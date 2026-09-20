@@ -105,6 +105,14 @@ class CoreValueEditorSheet extends StatefulWidget {
           unitOptions == null || unitGroupLabel != null,
           _unitLabelRequired,
         ),
+        assert(
+          unit == null,
+          'CoreValueEditorSheet: unit is single-value only. Multi-column mode '
+          'has no unit field to report it through — SizeEntryResult carries '
+          'no unit, and a unit key types its label into the value instead — '
+          'so a unit passed here would be read by nothing. Use '
+          'CoreValueEditorSheet.singleValue to commit a unit of its own.',
+        ),
         title = null,
         initialValue = null,
         onSaved = null,
