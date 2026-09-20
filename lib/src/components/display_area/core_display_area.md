@@ -154,7 +154,7 @@ TweenAnimationBuilder<double>(
 | `dateLabel` | `String` | When the session happened — "Today", "May 27, 2025". |
 | `chipsList` | `List<CoreCalculatorChip>` | The tokens that produced the calculation. |
 | `value` | `String` | The evaluated result. |
-| `id` | `String?` | Identifies the session to the consumer. Optional: a session with no `id` renders as a plain card that reports nothing when tapped, so callers written before the field keep compiling. Ids must be unique across `previousSessions` — a repeated one cannot say which session was tapped, and is asserted against. |
+| `id` | `String?` | Identifies the session to the consumer. Optional: a session with no `id` — or with an empty one, which the consumer could not look up either — renders as a plain card that reports nothing when tapped, so callers written before the field keep compiling. Ids must be unique across `previousSessions` — a repeated one cannot say which session was tapped, and is asserted against. |
 
 ### Callbacks & Actions
 | Property | Type | Default | Description |
@@ -205,7 +205,7 @@ Every pill carries a stable `Key`, so a Patrol journey or a widget test taps it 
 | `closeSemanticLabel` | `String` | **required** | The semantic label announced by screen readers for the close icon. Has no default — pass a localized string so screen readers announce it in the user's language. |
 | `restoreSemanticsLabel` | `String?` | `null` | The label announced for a tappable session card. Asserted non-null whenever `onPreviousSessionTapped` is given: a control a screen reader cannot announce is invisible to it. |
 
-A tappable session card is marked `button: true` and carries `restoreSemanticsLabel`. It is an `InkWell` with its splash, highlight and hover colours suppressed: the design gives a card no pressed or hover state, so the ink is hidden rather than the `InkWell` dropped — a bare `GestureDetector` would announce a button that keyboard, D-pad and switch-access users cannot reach. The history goldens are untouched by the change.
+A tappable session card is marked `button: true` and carries `restoreSemanticsLabel`. It is an `InkWell` whose splash is `NoSplash.splashFactory` and whose highlight and hover colours are cleared, as `CoreCalculatorChip`, `CoreSearchRowItem` and `CoreCheckRowItem` do: the design gives a card no pressed or hover state, so the ink is hidden rather than the `InkWell` dropped — a bare `GestureDetector` would announce a button that keyboard, D-pad and switch-access users cannot reach. The keyboard focus highlight is deliberately left in place, because it is what those users navigate by. The history goldens are untouched by the change.
 
 A tappable card is one control: its contents are wrapped in an `IgnorePointer`, so a chip carrying its own `onTap` cannot win the gesture arena and turn most of the card into a dead zone for restore. Chips in a past session are not interactive.
 

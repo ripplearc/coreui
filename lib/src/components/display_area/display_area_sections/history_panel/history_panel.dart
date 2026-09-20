@@ -233,8 +233,6 @@ class _PreviousChipsSection extends StatelessWidget {
     );
   }
 
-  // Tappable only when the consumer can act on it — a callback and an id to
-  // report. Without both it stays the plain card older callers already pass.
   Widget _buildSessionCard(
     CoreHistorySessionData session,
     AppColorsExtension colors,
@@ -274,7 +272,7 @@ class _PreviousChipsSection extends StatelessWidget {
 
     final id = session.id;
     final onTap = onSessionTapped;
-    if (id == null || onTap == null) return card;
+    if (id == null || id.isEmpty || onTap == null) return card;
 
     return Semantics(
       button: true,
@@ -288,8 +286,9 @@ class _PreviousChipsSection extends StatelessWidget {
           key: Key('display_area_previous_session_$id'),
           onTap: () => onTap(id),
           // Ink suppressed, not the InkWell dropped: a GestureDetector would
-          // announce a button keyboard and switch access cannot reach.
-          splashColor: colors.transparent,
+          // announce a button keyboard and switch access cannot reach. The
+          // focus highlight stays — that is the one users navigate by.
+          splashFactory: NoSplash.splashFactory,
           highlightColor: colors.transparent,
           hoverColor: colors.transparent,
           // One control: a chip with its own onTap would otherwise win the

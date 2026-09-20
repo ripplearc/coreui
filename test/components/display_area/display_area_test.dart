@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -1270,6 +1271,41 @@ void main() {
       // asserted on the semantics rather than on the widget type.
       final semantics = tester.getSemantics(find.text('2700ft³'));
       expect(semantics.flagsCollection.isButton, isFalse);
+    });
+
+    testWidgets('an empty id counts as no id',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(sessions: [session(id: '')], onTapped: tapped.add),
+      );
+      await revealPreviousSessions(tester);
+
+      await tester.tap(find.text('2700ft³'));
+      await tester.pumpAndSettle();
+
+      // Reporting '' hands the consumer a value it cannot look up.
+      expect(tapped, isEmpty);
+      final semantics = tester.getSemantics(find.text('2700ft³'));
+      expect(semantics.flagsCollection.isButton, isFalse);
+    });
+
+    testWidgets('a card can be restored from the keyboard',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(sessions: [session(id: 'session-1')], onTapped: tapped.add),
+      );
+      await revealPreviousSessions(tester);
+
+      // The card is an InkWell so that keyboard, D-pad and switch users can
+      // reach it. An opaque GestureDetector passes every other test here.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(tapped, ['session-1']);
     });
 
     testWidgets('a card is inert when no callback is given',
