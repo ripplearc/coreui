@@ -46,6 +46,33 @@ Finder get _dragHandles => find.byWidgetPredicate(
           widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
     );
 
+/// The entry sheet mounts a full [CoreKeyboard] over the geometry area, which
+/// does not fit the default 800x600 surface. Tests that open the sheet need a
+/// phone-sized viewport or the keyboard overflows before it can be tapped.
+void _setTestViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3.0;
+  addTearDown(() {
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+}
+
+/// The sheet commits through the keyboard's result button. Anchored on the type
+/// rather than its text because the rendered label is currently '=': the sheet
+/// passes `customResultLabel: 'Add'`/`'Update'` but [CoreResultButton] renders
+/// [ResultType.label] and ignores it — a follow-up noted on PR #169. The type
+/// finder keeps these tests honest either way.
+Finder get _sheetSubmit => find.byType(CoreResultButton);
+
+/// Scopes a finder to the open entry sheet. The table underneath keeps its own
+/// add label and row values in the tree, so an unscoped [find.text] cannot say
+/// whether the sheet or the table behind it carries the match.
+Finder _inSheet(Finder matching) => find.descendant(
+      of: find.byType(SizeEntryBottomSheet),
+      matching: matching,
+    );
+
 void main() {
   group('CoreGeometryArea', () {
     testWidgets('renders geometry area with default labels', (tester) async {
@@ -433,6 +460,206 @@ void main() {
           ),
           throwsAssertionError,
           reason: 'addLabel is what renders the add action',
+        );
+      });
+    });
+
+    // The add action picks between three outcomes: an app-owned flow, the
+    // built-in entry sheet, or nothing at all. Before several tables there was
+    // only ever the sheet, so the fork is new and each arm needs pinning.
+    group('add and edit entry points', () {
+      testWidgets('onAdd takes over the add action from the built-in sheet',
+          (tester) async {
+        _setTestViewport(tester);
+        var addTaps = 0;
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(onAdd: () => addTaps++)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(addTaps, 1);
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'onAdd means the app owns the flow; the sheet must stay shut',
+        );
+      });
+
+      testWidgets('the add action falls back to the sheet, which reports '
+          'through onSaved', (tester) async {
+        _setTestViewport(tester);
+        final saved = <SizeEntryResult>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(onSaved: saved.add)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SizeEntryBottomSheet), findsOneWidget);
+        expect(
+          _inSheet(find.text('Add size')),
+          findsOneWidget,
+          reason: "the sheet's title comes from addLabel",
+        );
+        expect(_inSheet(find.text('Col A*')), findsOneWidget);
+        expect(_inSheet(find.text('Col B*')), findsOneWidget);
+
+        // Typed through the keyboard rather than submitted empty: without a
+        // value to carry, the assertions below could not tell a correct commit
+        // from one that reports back nothing the user entered. The first field
+        // takes focus when the sheet opens, so the digit lands in Col A.
+        await tester.tap(_inSheet(find.text('7')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(_sheetSubmit);
+        await tester.pumpAndSettle();
+
+        expect(saved, hasLength(1));
+        expect(saved.single.intent, SizeOperationIntent.add);
+        expect(saved.single.values, ['7', '']);
+        expect(
+          saved.single.index,
+          isNull,
+          reason: 'an addition has no row to index',
+        );
+      });
+
+      testWidgets('tapping a row opens the sheet in edit mode',
+          (tester) async {
+        _setTestViewport(tester);
+        final saved = <SizeEntryResult>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: 'first', values: ['A1', 'A2']),
+                  CoreSizeCardData(id: 'second', values: ['B1', 'B2']),
+                ],
+                onSaved: saved.add,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text('B1'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SizeEntryBottomSheet), findsOneWidget);
+        expect(
+          _inSheet(find.text('Edit size')),
+          findsOneWidget,
+          reason: 'editing shows editLabel, not addLabel',
+        );
+        expect(
+          _inSheet(find.text('B1')),
+          findsOneWidget,
+          reason: "the tapped row's values pre-fill the fields",
+        );
+        expect(
+          _inSheet(find.text('B2')),
+          findsOneWidget,
+          reason: 'every column of the tapped row pre-fills, not just the first',
+        );
+
+        await tester.tap(_sheetSubmit);
+        await tester.pumpAndSettle();
+
+        expect(saved, hasLength(1));
+        expect(saved.single.intent, SizeOperationIntent.edit);
+        expect(
+          saved.single.index,
+          1,
+          reason: 'the sheet reports back the row the user tapped',
+        );
+        expect(saved.single.values, ['B1', 'B2']);
+      });
+
+      testWidgets('a read-only row has nothing to tap', (tester) async {
+        _setTestViewport(tester);
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: 'rate', values: [r'$6.5', '10%']),
+                ],
+                editable: false,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text(r'$6.5'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'a table with no edit affordance opens nothing',
+        );
+      });
+
+      testWidgets('it is onSaved, not the labels, that makes a row tappable',
+          (tester) async {
+        _setTestViewport(tester);
+
+        // Built inline because the _table helper drops onSaved, editLabel and
+        // addLabel together, which cannot say which of the three gates the tap.
+        // Only editLabel is kept here: the constructor allows it without
+        // onSaved, so a caller can reach this combination, whereas addLabel
+        // without either callback is asserted against. Gating the tap on the
+        // label instead would open a sheet whose submit silently discards the
+        // edit, since there is no onSaved to receive it.
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              const CoreSizesTableData(
+                id: 'labelled-but-read-only',
+                title: 'Table title',
+                columns: [
+                  CoreSizesColumn(title: 'Col A'),
+                  CoreSizesColumn(title: 'Col B'),
+                ],
+                rows: [
+                  CoreSizeCardData(id: 'only', values: ['A1', 'A2']),
+                ],
+                editLabel: 'Edit size',
+                onSaved: null,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text('A1'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'onSaved is the callback that receives the edit, so it is '
+              'what decides whether a row can be tapped at all',
         );
       });
     });
