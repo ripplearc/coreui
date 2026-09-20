@@ -788,27 +788,63 @@ void main() {
               ],
             )),
           );
-          final before = tester.getTopLeft(find.text('1')).dx;
-          await tester.drag(
-            fromButton
-                ? find.byKey(CoreGeometryArea.deleteRowKey('table', '1'))
-                : find.text('3'),
-            const Offset(-120, 0),
+
+          // The row's buttons sit at its right edge, well past a 412 dp
+          // viewport at the initial offset. An earlier version of this test
+          // dragged from there: the gesture landed in empty space, scrolled
+          // nothing, and the assertion passed without a button involved.
+          //
+          // Scrolling one into view puts the table at its end, and both cases
+          // are measured from there — so the button and the row body differ
+          // only in where the drag starts, not in how far the table can move.
+          await tester.ensureVisible(
+            find.byKey(CoreGeometryArea.editRowKey('table', '1')),
           );
           await tester.pumpAndSettle();
-          return before - tester.getTopLeft(find.text('1')).dx;
+
+          final target = fromButton
+              ? find.byKey(deletable
+                  ? CoreGeometryArea.deleteRowKey('table', '1')
+                  // A row without onDeleted renders no trash, so the control
+                  // is the pencil — guarded by the same onHorizontalDragStart.
+                  : CoreGeometryArea.editRowKey('table', '1'))
+              // Column F: cells A-C sit off the left edge once the table is
+              // scrolled to its end.
+              : find.text('6');
+
+          // Checked, not assumed — if a change puts the target back off screen
+          // this must fail rather than quietly go vacuous again.
+          final rect = tester.getRect(target);
+          expect(
+            rect.left >= 0 && rect.right <= 412.0,
+            isTrue,
+            reason: 'the drag must land on $rect, not on empty space',
+          );
+
+          final before = tester.getTopLeft(find.text('1')).dx;
+          // Towards the start, not the end. Revealing the button means
+          // scrolling to the far end, where a further end-ward drag has
+          // nowhere left to go and would read as "did not scroll" for every
+          // case — vacuous in the other direction.
+          await tester.drag(target, const Offset(120, 0));
+          await tester.pumpAndSettle();
+          return tester.getTopLeft(find.text('1')).dx - before;
         }
 
-        // On a dismissible row the Dismissible consumes horizontal drags along
-        // the whole row, so neither the body nor the button scrolls the table:
-        // the button costs no scrolling that the row body still had.
+        // A deletable row claims horizontal drags across its whole width — the
+        // Dismissible over the body, the button's own guard over the button —
+        // so neither scrolls the table.
         expect(await dragAndMeasure(deletable: true, fromButton: false), 0);
         expect(await dragAndMeasure(deletable: true, fromButton: true), 0);
 
-        // With nothing to guard, the button claims nothing and the table
-        // scrolls from the row body as usual.
+        // With nothing to guard, both scroll. The pair is the actual claim:
+        // the button is no deader to a scroll than the row body beside it.
         expect(
           await dragAndMeasure(deletable: false, fromButton: false),
+          greaterThan(0),
+        );
+        expect(
+          await dragAndMeasure(deletable: false, fromButton: true),
           greaterThan(0),
         );
       });
