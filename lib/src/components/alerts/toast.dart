@@ -169,22 +169,34 @@ class _ToastState extends State<Toast> {
           borderRadius: BorderRadius.circular(Toast._radius),
           boxShadow: CoreShadows.medium,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CoreIconWidget(
-              icon: _icon,
-              size: CoreIconSize.size24,
-              color: _getIconColor(colors),
-            ),
-            const SizedBox(width: CoreSpacing.space3),
-            Expanded(child: _buildStackedText(typography, colors)),
-            const SizedBox(width: CoreSpacing.space3),
-            _buildCloseButton(typography, colors),
-          ],
+        child: _buildRow(
+          colors,
+          text: _buildStackedText(typography, colors),
+          trailing: _buildCloseButton(typography, colors),
         ),
       ),
+    );
+  }
+
+  Widget _buildRow(
+    AppColorsExtension colors, {
+    required Widget text,
+    required Widget trailing,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CoreIconWidget(
+          icon: _icon,
+          size: CoreIconSize.size24,
+          color: _getIconColor(colors),
+        ),
+        const SizedBox(width: CoreSpacing.space3),
+        Expanded(child: text),
+        const SizedBox(width: CoreSpacing.space3),
+        trailing,
+      ],
     );
   }
 
