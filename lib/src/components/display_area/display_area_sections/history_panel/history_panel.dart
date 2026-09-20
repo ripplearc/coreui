@@ -277,22 +277,14 @@ class _PreviousChipsSection extends StatelessWidget {
     return Semantics(
       button: true,
       label: restoreSemanticsLabel,
-      // The library's other InkWells carry their own ink surface. Without one
-      // this throws "No Material widget found" for any host that embeds the
-      // display area outside a Scaffold, which it did not before.
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
           key: Key('display_area_previous_session_$id'),
           onTap: () => onTap(id),
-          // Ink suppressed, not the InkWell dropped: a GestureDetector would
-          // announce a button keyboard and switch access cannot reach. The
-          // focus highlight stays — that is the one users navigate by.
           splashFactory: NoSplash.splashFactory,
           highlightColor: colors.transparent,
           hoverColor: colors.transparent,
-          // One control: a chip with its own onTap would otherwise win the
-          // gesture arena and leave most of the card dead for restore.
           child: IgnorePointer(child: card),
         ),
       ),

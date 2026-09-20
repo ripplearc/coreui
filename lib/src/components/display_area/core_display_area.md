@@ -207,6 +207,8 @@ Every pill carries a stable `Key`, so a Patrol journey or a widget test taps it 
 
 A tappable session card is marked `button: true` and carries `restoreSemanticsLabel`. It is an `InkWell` whose splash is `NoSplash.splashFactory` and whose highlight and hover colours are cleared, as `CoreCalculatorChip`, `CoreSearchRowItem` and `CoreCheckRowItem` do: the design gives a card no pressed or hover state, so the ink is hidden rather than the `InkWell` dropped — a bare `GestureDetector` would announce a button that keyboard, D-pad and switch-access users cannot reach. The keyboard focus highlight is deliberately left in place, because it is what those users navigate by. The history goldens are untouched by the change.
 
+The `InkWell` sits on a `Material(type: MaterialType.transparency)` of its own, as the library's other `InkWell`s do. Without one, a host that embeds the display area outside a `Scaffold` throws "No Material widget found" — which it did not before the card became tappable.
+
 A tappable card is one control: its contents are wrapped in an `IgnorePointer`, so a chip carrying its own `onTap` cannot win the gesture arena and turn most of the card into a dead zone for restore. Chips in a past session are not interactive.
 
 The value text is a **live region**: a screen reader announces the new value (or `errorTitle`) whenever it changes, so a result computed from the keyboard is heard without moving focus. Each dependent-key pill announces its label (or `CoreDependentKeyData.semanticsLabel`) followed by `CoreDependentKeyData.semanticsHint`.
