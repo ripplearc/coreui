@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
@@ -25,7 +27,7 @@ enum _ToastType {
   success,
 
   /// Receipt toast confirming something was saved, with an action that undoes
-  /// it. Carries no close button — it leaves through [Toast.onClose].
+  /// it. Dismisses itself after [Toast.duration]; carries no close button.
   receipt,
 }
 
@@ -33,8 +35,8 @@ enum _ToastType {
 ///
 /// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
 /// factory constructors to create a toast with the appropriate visual style.
-/// Use [Toast.receipt] for the confirmation that offers an action to undo
-/// what it reports; it leaves through [Toast.onClose].
+/// Use [Toast.receipt] for the self-dismissing confirmation that offers an
+/// action to undo what it reports.
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
@@ -51,6 +53,10 @@ class Toast extends StatefulWidget {
   /// Fires once when the receipt's action is taken, before [onClose].
   final VoidCallback? onAction;
 
+  /// How long the receipt stays before it dismisses itself through [onClose].
+  /// `null` keeps it until something else removes it, and so does a screen
+  /// reader: a timed window a user cannot reach is worse than none.
+  final Duration? duration;
   final _ToastType _type;
 
   static const double _receiptRadius = CoreSpacing.space3;
@@ -76,6 +82,7 @@ class Toast extends StatefulWidget {
     this.onClose,
     this.actionLabel,
     this.onAction,
+    this.duration,
   }) : _type = type;
 
   factory Toast.error({
@@ -143,11 +150,13 @@ class Toast extends StatefulWidget {
   ///
   /// [description] is the lead, set in the heavier weight; [highlight] is the
   /// tail after a middot, naming what was saved. [onAction] fires at most
-  /// once.
+  /// once, and taking the action cancels the auto-dismiss.
   ///
-  /// Answering the receipt calls [onClose], so it never needs a close button.
-  /// [onClose] is required because it is the only way a receipt leaves the
-  /// screen.
+  /// The toast dismisses itself after [duration] by calling [onClose], so a
+  /// receipt never needs a close button. [onClose] is required because it is
+  /// the only way a receipt can leave the screen. A `null` [duration] keeps
+  /// it there until something else removes it, and so does a screen reader —
+  /// see [duration].
   ///
   /// Every user-facing string comes from the consumer — localisation is the
   /// caller's responsibility:
@@ -165,6 +174,7 @@ class Toast extends StatefulWidget {
     required VoidCallback onAction,
     required VoidCallback onClose,
     String? highlight,
+    Duration? duration = const Duration(seconds: 5),
   }) {
     return Toast._(
       description: description,
@@ -173,6 +183,7 @@ class Toast extends StatefulWidget {
       actionLabel: actionLabel,
       onAction: onAction,
       onClose: onClose,
+      duration: duration,
     );
   }
 
@@ -181,17 +192,63 @@ class Toast extends StatefulWidget {
 }
 
 class _ToastState extends State<Toast> {
+  Timer? _dismissTimer;
   bool _answered = false;
+  bool? _assistiveTechHoldsTheToast;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final holds = MediaQuery.maybeAccessibleNavigationOf(context) ?? false;
+    if (holds == _assistiveTechHoldsTheToast) return;
+    _assistiveTechHoldsTheToast = holds;
+    _restartDismissTimer();
+  }
+
+  @override
+  void didUpdateWidget(covariant Toast oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_reportsTheSameAs(oldWidget)) {
+      if (_answered || oldWidget.duration == widget.duration) return;
+    } else {
+      _answered = false;
+    }
+    _restartDismissTimer();
+  }
+
+  @override
+  void dispose() {
+    _dismissTimer?.cancel();
+    super.dispose();
+  }
+
+  bool _reportsTheSameAs(Toast other) =>
+      other.description == widget.description &&
+      other.highlight == widget.highlight &&
+      other.actionLabel == widget.actionLabel &&
+      other.onAction == widget.onAction;
+
+  void _restartDismissTimer() {
+    _dismissTimer?.cancel();
+    _dismissTimer = null;
+    final duration = widget.duration;
+    final theUserNeedsTheWindowOpen = _assistiveTechHoldsTheToast ?? false;
+    if (_answered || duration == null || theUserNeedsTheWindowOpen) return;
+    _dismissTimer = Timer(duration, _dismissWithoutAnAction);
+  }
 
   void _answer(VoidCallback? callback) {
     if (_answered) return;
     _answered = true;
+    _dismissTimer?.cancel();
     try {
       callback?.call();
     } finally {
       widget.onClose?.call();
     }
   }
+
+  void _dismissWithoutAnAction() => _answer(null);
 
   CoreIconData get _icon {
     switch (widget._type) {
@@ -248,9 +305,9 @@ class _ToastState extends State<Toast> {
     return Semantics(
       container: true,
       button: !isReceipt && widget.onClose != null,
-      // The receipt is the one toast that offers an action rather than a
-      // close button: a screen reader has to be told it arrived, or its user
-      // never learns there is an Undo to take.
+      // The receipt is the one toast that is both timed and actionable: a
+      // screen reader has to be told it arrived, or the Undo window closes
+      // before its user knows there was one.
       liveRegion: isReceipt,
       label: widget.title,
       hint: widget.title != null ? widget.description : null,

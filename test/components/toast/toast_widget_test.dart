@@ -241,6 +241,7 @@ void main() {
       Widget buildReceipt({
         required VoidCallback onAction,
         VoidCallback onClose = _noop,
+        Duration? duration,
       }) {
         return MaterialApp(
           home: Scaffold(
@@ -250,6 +251,7 @@ void main() {
               actionLabel: 'Undo',
               onAction: onAction,
               onClose: onClose,
+              duration: duration,
             ),
           ),
         );
@@ -285,6 +287,69 @@ void main() {
         expect(actionCount, 1);
       });
 
+      testWidgets('dismisses itself once the duration elapses',
+          (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () {},
+            onClose: () => closed = true,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.pump(const Duration(seconds: 4));
+        expect(closed, isFalse);
+
+        await tester.pump(const Duration(seconds: 1));
+        expect(closed, isTrue);
+      });
+
+      testWidgets('taking the action dismisses the toast exactly once',
+          (WidgetTester tester) async {
+        var closeCount = 0;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () {},
+            onClose: () => closeCount++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.tap(actionFinder);
+        await tester.pump();
+        expect(closeCount, 1);
+
+        // The cancelled timer must not ask for a second dismissal.
+        await tester.pump(const Duration(seconds: 6));
+        expect(closeCount, 1);
+      });
+
+      testWidgets('an auto-dismissed receipt stays answered',
+          (WidgetTester tester) async {
+        var actionCount = 0;
+        var closeCount = 0;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: () => actionCount++,
+            onClose: () => closeCount++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        await tester.pump(const Duration(seconds: 6));
+        expect(closeCount, 1);
+
+        // The host keeps the widget up after onClose in this fixture, so the
+        // button is still tappable. A receipt that already answered itself
+        // must not undo a session the user never asked to undo.
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(actionCount, 0);
+        expect(closeCount, 1);
+      });
+
       testWidgets('fits a narrow screen with a long translated label',
           (WidgetTester tester) async {
         await tester.pumpWidget(
@@ -299,6 +364,7 @@ void main() {
                     actionLabel: 'Rückgängig machen',
                     onAction: () {},
                     onClose: _noop,
+                    duration: null,
                   ),
                 ),
               ),
@@ -365,11 +431,23 @@ void main() {
         final handle = tester.ensureSemantics();
         await tester.pumpWidget(buildReceipt(onAction: () {}));
 
-        // An actionable toast that is never announced offers an Undo its
-        // screen-reader user never learns about.
+        // A timed, actionable toast that is never announced closes its own
+        // Undo window before a screen-reader user knows it opened.
         final semantics = tester.getSemantics(find.byType(Toast));
         expect(semantics.flagsCollection.isLiveRegion, isTrue);
         handle.dispose();
+      });
+
+      testWidgets('stays on screen when no duration is given',
+          (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(
+          buildReceipt(onAction: () {}, onClose: () => closed = true),
+        );
+
+        await tester.pump(const Duration(minutes: 1));
+
+        expect(closed, isFalse);
       });
 
       testWidgets('the action meets accessibility guidelines',
@@ -384,6 +462,7 @@ void main() {
             actionLabel: 'Undo',
             onAction: _noop,
             onClose: _noop,
+            duration: null,
           ),
           actionFinder,
         );
@@ -463,6 +542,7 @@ void main() {
           buildReceipt(
             onAction: () => calls.add('action'),
             onClose: () => calls.add('close'),
+            duration: const Duration(seconds: 5),
           ),
         );
 
@@ -481,6 +561,7 @@ void main() {
           buildReceipt(
             onAction: () => throw StateError('the undo failed'),
             onClose: () => closeCount++,
+            duration: const Duration(seconds: 5),
           ),
         );
 
@@ -490,6 +571,115 @@ void main() {
         // Otherwise the receipt stays up with an Undo that is already spent.
         expect(tester.takeException(), isA<StateError>());
         expect(closeCount, 1);
+      });
+
+      testWidgets('a receipt taken off the tree never dismisses late',
+          (WidgetTester tester) async {
+        var closeCount = 0;
+        await tester.pumpWidget(
+          buildReceipt(
+            onAction: _noop,
+            onClose: () => closeCount++,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+
+        // CoreToast replaces a toast by removing its entry, which disposes
+        // this state. A timer that outlives it removes the replacement.
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: SizedBox.shrink())),
+        );
+        await tester.pump(const Duration(seconds: 10));
+
+        expect(closeCount, 0);
+      });
+
+      testWidgets('a new receipt in the same slot re-arms its action',
+          (WidgetTester tester) async {
+        var secondActions = 0;
+        var closeCount = 0;
+
+        Widget host(String message, VoidCallback onAction) => MaterialApp(
+              home: Scaffold(
+                body: Toast.receipt(
+                  description: message,
+                  actionLabel: 'Undo',
+                  onAction: onAction,
+                  onClose: () => closeCount++,
+                  duration: const Duration(seconds: 5),
+                ),
+              ),
+            );
+
+        await tester.pumpWidget(host('First', _noop));
+        await tester.pump(const Duration(seconds: 6));
+        expect(closeCount, 1);
+
+        await tester.pumpWidget(host('Second', () => secondActions++));
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(secondActions, 1);
+        expect(closeCount, 2);
+      });
+
+      testWidgets('a new receipt in the same slot starts its own window',
+          (WidgetTester tester) async {
+        var closeCount = 0;
+
+        Widget host(String message) => MaterialApp(
+              home: Scaffold(
+                body: Toast.receipt(
+                  description: message,
+                  actionLabel: 'Undo',
+                  onAction: _noop,
+                  onClose: () => closeCount++,
+                  duration: const Duration(seconds: 5),
+                ),
+              ),
+            );
+
+        await tester.pumpWidget(host('First'));
+        await tester.pump(const Duration(seconds: 3));
+
+        await tester.pumpWidget(host('Second'));
+        // The first receipt's timer had 2 s left. The second one must not
+        // inherit it.
+        await tester.pump(const Duration(seconds: 3));
+        expect(closeCount, 0);
+
+        await tester.pump(const Duration(seconds: 3));
+        expect(closeCount, 1);
+      });
+
+      testWidgets('a screen reader keeps the window open',
+          (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context)
+                    .copyWith(accessibleNavigation: true),
+                child: Scaffold(
+                  body: Toast.receipt(
+                    description: description,
+                    actionLabel: 'Undo',
+                    onAction: _noop,
+                    onClose: () => closed = true,
+                    duration: const Duration(seconds: 5),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // The receipt carries no close button, so the timer is its only exit.
+        // A user still hunting for Undo must not lose it mid-search.
+        await tester.pump(const Duration(minutes: 1));
+
+        expect(closed, isFalse);
       });
 
       testWidgets('an older variant still measures inside IntrinsicWidth',
