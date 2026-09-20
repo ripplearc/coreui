@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// How a [CorePreferenceRow] renders the value it currently holds.
 ///
 /// The calculator's preference rows do not all read the same way: most show
@@ -23,6 +25,15 @@ class CorePreferenceTextValue extends CorePreferenceValue {
 
   /// Creates a text value.
   const CorePreferenceTextValue(this.label, {this.isMuted = false});
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferenceTextValue &&
+      other.label == label &&
+      other.isMuted == isMuted;
+
+  @override
+  int get hashCode => Object.hash(label, isMuted);
 }
 
 /// A value rendered as an outlined pill with a leading state dot, such as
@@ -37,6 +48,15 @@ class CorePreferencePillValue extends CorePreferenceValue {
 
   /// Creates a pill value.
   const CorePreferencePillValue(this.label, {required this.isOn});
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferencePillValue &&
+      other.label == label &&
+      other.isOn == isOn;
+
+  @override
+  int get hashCode => Object.hash(label, isOn);
 }
 
 /// The explanation behind a preference's info button.
@@ -65,6 +85,18 @@ class CorePreferenceInfo {
     required this.semanticsLabel,
     required this.closeLabel,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferenceInfo &&
+      other.title == title &&
+      other.description == description &&
+      other.semanticsLabel == semanticsLabel &&
+      other.closeLabel == closeLabel;
+
+  @override
+  int get hashCode =>
+      Object.hash(title, description, semanticsLabel, closeLabel);
 }
 
 /// One choice offered by a [CorePreferenceRow].
@@ -77,6 +109,13 @@ class CorePreferenceOption {
 
   /// Creates a preference option.
   const CorePreferenceOption({required this.id, required this.label});
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferenceOption && other.id == id && other.label == label;
+
+  @override
+  int get hashCode => Object.hash(id, label);
 }
 
 /// One settings row: what it is called, what it currently reads, and the
@@ -116,6 +155,26 @@ class CorePreferenceRow {
 
   /// Whether tapping this row opens an option sub-sheet.
   bool get isSelectable => options.length > 1;
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferenceRow &&
+      other.key == key &&
+      other.label == label &&
+      other.value == value &&
+      listEquals(other.options, options) &&
+      other.selectedOptionId == selectedOptionId &&
+      other.info == info;
+
+  @override
+  int get hashCode => Object.hash(
+        key,
+        label,
+        value,
+        Object.hashAll(options),
+        selectedOptionId,
+        info,
+      );
 }
 
 /// A titled group of rows. A section with a null [title] renders its rows
@@ -129,4 +188,13 @@ class CorePreferenceSection {
 
   /// Creates a preference section.
   const CorePreferenceSection({required this.rows, this.title});
+
+  @override
+  bool operator ==(Object other) =>
+      other is CorePreferenceSection &&
+      other.title == title &&
+      listEquals(other.rows, rows);
+
+  @override
+  int get hashCode => Object.hash(title, Object.hashAll(rows));
 }
