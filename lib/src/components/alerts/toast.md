@@ -151,7 +151,14 @@ The Toast component includes semantic labels for accessibility:
   hit testing to its child and leave the top and bottom 12 dp dead — and which
   takes no keyboard or D-pad focus at all
 - `secondaryLabel` and `onSecondary` are asserted to travel together: an
-  interactive control with no label is invisible to a screen reader
+  interactive control with no label is invisible to a screen reader. The pair is
+  resolved once, so the width the row holds back for the second action and the
+  decision to draw it cannot disagree — an assert is gone in release
+- `View` carries no `Semantics` label of its own. Its `InkWell` node merges with
+  the label below it, so setting both announces the label twice
+- Guideline checks live in `test/components/toast/toast_a11y_test.dart`, beside
+  the component's other tests and matching `display_area_a11y_test.dart`.
+  Semantics-tree assertions stay in `toast_widget_test.dart`
 - A receipt carries no close button, so its timer is the only way it leaves. When
   `MediaQuery.accessibleNavigationOf` is true the timer does not start at all, the
   way `SnackBar` persists an action for assistive tech: a window a screen-reader

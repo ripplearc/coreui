@@ -447,20 +447,30 @@ class _ToastState extends State<Toast> {
     String actionLabel,
     double rowWidth,
   ) {
-    final actions = _buildReceiptActions(typography, colors, actionLabel);
+    final secondAction = _buildSecondAction(typography, colors);
+    final actions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (secondAction != null) ...[
+          secondAction,
+          const SizedBox(width: CoreSpacing.space4),
+        ],
+        Flexible(child: _buildReceiptAction(actionLabel)),
+      ],
+    );
     if (!rowWidth.isFinite) return actions;
 
     final widthTheMessageShares = rowWidth - Toast._receiptRowLeadingWidth;
     if (widthTheMessageShares <= 0) return actions;
 
-    final secondActionTarget = widget.secondaryLabel == null
+    final widthHeldForSecondAction = secondAction == null
         ? 0.0
         : CoreSpacing.space12 + CoreSpacing.space4;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth:
             widthTheMessageShares * Toast._receiptActionMaxWidthFraction +
-                secondActionTarget,
+                widthHeldForSecondAction,
       ),
       child: actions,
     );
@@ -496,43 +506,14 @@ class _ToastState extends State<Toast> {
     );
   }
 
-  Widget _buildReceiptActions(
+  Widget? _buildSecondAction(
     AppTypographyExtension typography,
     AppColorsExtension colors,
-    String actionLabel,
   ) {
     final secondaryLabel = widget.secondaryLabel;
     final onSecondary = widget.onSecondary;
+    if (secondaryLabel == null || onSecondary == null) return null;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Both halves, not just the label: the factory asserts the two travel
-        // together, but an assert is gone in release, and a View that reports
-        // nothing still burns the user's one chance to undo.
-        if (secondaryLabel != null && onSecondary != null) ...[
-          _buildSecondaryAction(
-            typography,
-            colors,
-            secondaryLabel,
-            onSecondary,
-          ),
-          const SizedBox(width: CoreSpacing.space4),
-        ],
-        Flexible(child: _buildReceiptAction(actionLabel)),
-      ],
-    );
-  }
-
-  Widget _buildSecondaryAction(
-    AppTypographyExtension typography,
-    AppColorsExtension colors,
-    String secondaryLabel,
-    VoidCallback onSecondary,
-  ) {
-    // An InkWell, not a GestureDetector: a GestureDetector defers hit testing
-    // to its child, so only the text band inside the 48 dp box answered a
-    // tap, and it takes no keyboard or D-pad focus at all.
     return InkWell(
       key: const Key('toast_secondary_button'),
       onTap: () => _answer(onSecondary),
@@ -541,11 +522,7 @@ class _ToastState extends State<Toast> {
       hoverColor: colors.transparent,
       child: Semantics(
         button: true,
-        label: secondaryLabel,
-        excludeSemantics: true,
         child: ConstrainedBox(
-          // Pinned, not a minimum: a centred label under a bare minimum grows
-          // to whatever height the surrounding row offers.
           constraints: const BoxConstraints(
             minWidth: CoreSpacing.space12,
             minHeight: CoreSpacing.space12,

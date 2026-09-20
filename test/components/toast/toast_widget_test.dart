@@ -130,61 +130,7 @@ void main() {
       expect(wasClosed, isTrue);
     });
 
-    group('accessibility guidelines', () {
-      testWidgets('error toast meets accessibility guidelines',
-          (WidgetTester tester) async {
-        await setupA11yTest(tester);
-
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (theme) => Toast.error(
-            description: 'Something went wrong',
-            closeLabel: 'Close',
-          ),
-          find.byKey(const Key('toast_close_button')),
-        );
-
-        await tester.pumpAndSettle();
-        final semantics = tester.getSemantics(find.byType(Toast));
-        expect(semantics.label, contains('Something went wrong'));
-      });
-
-      testWidgets('warning toast meets accessibility guidelines',
-          (WidgetTester tester) async {
-        await setupA11yTest(tester);
-
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (theme) => Toast.warning(
-            description: 'Please review your settings',
-            closeLabel: 'Close',
-          ),
-          find.byKey(const Key('toast_close_button')),
-        );
-
-        await tester.pumpAndSettle();
-        final semantics = tester.getSemantics(find.byType(Toast));
-        expect(semantics.label, contains('Please review your settings'));
-      });
-
-      testWidgets('info toast meets accessibility guidelines',
-          (WidgetTester tester) async {
-        await setupA11yTest(tester);
-
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (theme) => Toast.info(
-            description: 'New updates are available',
-            closeLabel: 'Dismiss',
-          ),
-          find.byKey(const Key('toast_close_button')),
-        );
-
-        await tester.pumpAndSettle();
-        final semantics = tester.getSemantics(find.byType(Toast));
-        expect(semantics.label, contains('New updates are available'));
-      });
-
+    group('semantics', () {
       testWidgets('toast with title exposes title as label and description as hint',
           (WidgetTester tester) async {
         await setupA11yTest(tester);
@@ -567,24 +513,6 @@ void main() {
         expect(closed, isFalse);
       });
 
-      testWidgets('the action meets accessibility guidelines',
-          (WidgetTester tester) async {
-        await setupA11yTest(tester);
-
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (theme) => Toast.receipt(
-            description: description,
-            highlight: highlight,
-            actionLabel: 'Undo',
-            onAction: _noop,
-            onClose: _noop,
-            duration: null,
-          ),
-          actionFinder,
-        );
-      });
-
       // androidTapTargetGuideline does not fire on CoreButton's semantics
       // node, so the height is asserted directly rather than assumed covered.
       testWidgets('the action stands a full tap target tall',
@@ -631,6 +559,21 @@ void main() {
         );
 
         expect(tester.getSize(secondaryFinder).height, CoreSpacing.space12);
+      });
+
+      testWidgets('the secondary action is announced once',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          buildReceipt(onAction: _noop, onSecondary: _noop),
+        );
+
+        // The InkWell's own node merges with the label below it, so a label
+        // set here as well as on the Text announces "View View".
+        final semantics = tester.getSemantics(secondaryFinder);
+        expect(semantics.label, 'View');
+        expect(semantics.flagsCollection.isButton, isTrue);
+        handle.dispose();
       });
 
       testWidgets('the secondary action answers a tap at either edge',
@@ -727,26 +670,6 @@ void main() {
 
         expect(viewed, 1);
         expect(undone, 0);
-      });
-
-      testWidgets('the secondary action meets accessibility guidelines',
-          (WidgetTester tester) async {
-        await setupA11yTest(tester);
-
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (theme) => Toast.receipt(
-            description: description,
-            highlight: highlight,
-            actionLabel: 'Undo',
-            onAction: () {},
-            secondaryLabel: 'View',
-            onSecondary: _noop,
-            onClose: _noop,
-            duration: null,
-          ),
-          secondaryFinder,
-        );
       });
 
       testWidgets('reads the lead and the highlight as one label',
