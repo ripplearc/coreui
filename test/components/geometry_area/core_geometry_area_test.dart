@@ -65,10 +65,10 @@ void _setTestViewport(WidgetTester tester) {
 }
 
 /// The sheet commits through the keyboard's result button. Anchored on the type
-/// rather than its text because the rendered label is currently '=': the sheet
-/// passes `customResultLabel: 'Add'`/`'Update'` but [CoreResultButton] renders
-/// [ResultType.label] and ignores it — a follow-up noted on PR #169. The type
-/// finder keeps these tests honest either way.
+/// rather than its text: the key now renders the sheet's `customResultLabel`
+/// ('Add'/'Update'), but these tests are about which sheet opens and what it
+/// reports, not what the key says. The type finder holds either way, and
+/// `core_value_editor_sheet_test.dart` covers the label itself.
 Finder get _sheetSubmit => find.byType(CoreResultButton);
 
 /// Scopes a finder to the open entry sheet. The table underneath keeps its own

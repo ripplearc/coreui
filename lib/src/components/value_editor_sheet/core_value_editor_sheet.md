@@ -17,6 +17,7 @@ final result = await CoreValueEditorSheet.show(
   editSizeTitle: l10n.editSize,
   resultLabel: l10n.update,
   unitOptions: const ['m', 'cm', 'mm'],
+  unitGroupLabel: l10n.unit,
   initialData: row,
   initialIndex: index,
 );

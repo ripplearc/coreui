@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -168,6 +169,8 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
   late List<FocusNode> _focusNodes;
   late List<String?> _errors;
   int _activeIndex = 0;
+  late GroupNameType _unitGroupName;
+  late List<FunctionGroup> _unitGroups;
   List<String> get _unitOptions => widget.unitOptions ?? const [];
 
   @override
@@ -176,22 +179,28 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
     _errors = List.filled(widget.titles.length, null);
     _controllers = List.generate(
       widget.titles.length,
-      (index) {
-        final data = widget.initialData;
-        return TextEditingController(
-          text: data != null && index < data.values.length
-              ? data.values[index]
-              : '',
-        );
-      },
+      (index) => TextEditingController(text: _initialTextAt(index)),
     );
     _focusNodes = List.generate(widget.titles.length, _createFocusNode);
+    _rebuildUnitGroups();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // The sheet can be gone before this runs — a route popped in the same
+      // frame, or a parent rebuild that drops it. dispose() has disposed the
+      // nodes by then, and requesting focus on a disposed one throws.
+      if (!mounted) return;
       if (_focusNodes.isNotEmpty) {
         _focusNodes.first.requestFocus();
       }
     });
+  }
+
+  // The text a field starts with: the edited row's value for that column, or
+  // empty when adding. Shared with the grow path in didUpdateWidget, which
+  // would otherwise hand back blanks for columns the row already filled.
+  String _initialTextAt(int index) {
+    final data = widget.initialData;
+    return data != null && index < data.values.length ? data.values[index] : '';
   }
 
   FocusNode _createFocusNode(int index) {
@@ -213,6 +222,11 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
   @override
   void didUpdateWidget(CoreValueEditorSheet oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!listEquals(widget.unitOptions, oldWidget.unitOptions) ||
+        widget.unitGroupLabel != oldWidget.unitGroupLabel) {
+      _rebuildUnitGroups();
+    }
+
     final length = widget.titles.length;
     if (length == oldWidget.titles.length) return;
 
@@ -225,7 +239,10 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
       _focusNodes.removeRange(length, _focusNodes.length);
     } else {
       for (var i = _controllers.length; i < length; i++) {
-        _controllers.add(TextEditingController());
+        // Seeded exactly as initState does. Bare controllers here render the
+        // new fields blank even when initialData carries their values, and
+        // _submit then writes '' over data the row already had.
+        _controllers.add(TextEditingController(text: _initialTextAt(i)));
         _focusNodes.add(_createFocusNode(i));
       }
     }
@@ -394,29 +411,32 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
 
   // The unit row is the keyboard's own function strip: one key per entry in
   // unitOptions, or no strip at all when the caller supplied none.
-  List<FunctionGroup> get _unitGroups {
+  // Held rather than rebuilt per frame. CoreKeyboard compares allGroups by
+  // identity, so a fresh list on every build reports a change on every
+  // keystroke and posts a refresh of its open function sheet for nothing.
+  void _rebuildUnitGroups() {
+    _unitGroupName = GroupNameType(
+      id: 'Unit',
+      label: widget.unitGroupLabel ?? '',
+    );
     final unitOptions = _unitOptions;
-    if (unitOptions.isEmpty) return const [];
-    return [
-      FunctionGroup(
-        name: _unitGroupName,
-        keys: [
-          for (final unit in unitOptions)
-            KeyType(
-              groupName: _unitGroupName.id,
-              id: unit,
-              label: unit,
-              action: () {},
+    _unitGroups = unitOptions.isEmpty
+        ? const []
+        : [
+            FunctionGroup(
+              name: _unitGroupName,
+              keys: [
+                for (final unit in unitOptions)
+                  KeyType(
+                    groupName: _unitGroupName.id,
+                    id: unit,
+                    label: unit,
+                    action: () {},
+                  ),
+              ],
             ),
-        ],
-      ),
-    ];
+          ];
   }
-
-  GroupNameType get _unitGroupName => GroupNameType(
-        id: 'Unit',
-        label: widget.unitGroupLabel ?? '',
-      );
 
   // SizeEntryResult carries no unit of its own, so a unit key spells itself
   // into the value the way the design's `47.24in` does.

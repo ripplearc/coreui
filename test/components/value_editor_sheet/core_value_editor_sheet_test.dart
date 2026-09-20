@@ -130,7 +130,13 @@ void main() {
   });
 
   group('CoreValueEditorSheet rebuilds', () {
-    Widget sheet(List<String> titles) => MaterialApp(
+    Widget sheet(
+      List<String> titles, {
+      CoreSizeCardData? initialData,
+      List<String>? unitOptions,
+      String? unitGroupLabel,
+    }) =>
+        MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
             body: CoreValueEditorSheet(
@@ -138,6 +144,9 @@ void main() {
               addSizeTitle: 'Add size',
               editSizeTitle: 'Edit size',
               resultLabel: 'Add',
+              initialData: initialData,
+              unitOptions: unitOptions,
+              unitGroupLabel: unitGroupLabel,
             ),
           ),
         );
@@ -164,6 +173,72 @@ void main() {
 
       expect(find.byType(CoreTextField), findsOneWidget);
       expect(find.text('D*'), findsNothing);
+    });
+
+    testWidgets('growing fills the new fields from initialData',
+        (tester) async {
+      _setTestViewport(tester);
+      // Two digits so the finders cannot also match a keypad key.
+      const row = CoreSizeCardData(id: 'r', values: ['11', '22', '33', '44']);
+
+      await tester.pumpWidget(sheet(const ['A', 'B'], initialData: row));
+      await tester.pumpWidget(
+        sheet(const ['A', 'B', 'C', 'D'], initialData: row),
+      );
+      await tester.pumpAndSettle();
+
+      // initState seeds every controller from initialData; the grow path has
+      // to agree. Bare controllers here render C and D empty and _submit then
+      // writes '' over the values the row already carried.
+      expect(find.text('33'), findsOneWidget);
+      expect(find.text('44'), findsOneWidget);
+    });
+
+    testWidgets('the unit groups keep their identity across rebuilds',
+        (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(
+        const ['A'],
+        unitOptions: const ['m', 'cm'],
+        unitGroupLabel: 'Unit',
+      ));
+
+      List<FunctionGroup> groups() =>
+          tester.widget<CoreKeyboard>(find.byType(CoreKeyboard)).allGroups;
+      final first = groups();
+
+      await tester.tap(find.text('4'));
+      await tester.pumpAndSettle();
+
+      // CoreKeyboard tests allGroups with identical(), so a list rebuilt per
+      // frame reports a change on every keystroke and posts a refresh of its
+      // open function sheet for nothing.
+      expect(identical(groups(), first), isTrue);
+    });
+
+    testWidgets('changing the unit options does rebuild the groups',
+        (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(
+        const ['A'],
+        unitOptions: const ['m', 'cm'],
+        unitGroupLabel: 'Unit',
+      ));
+      List<FunctionGroup> groups() =>
+          tester.widget<CoreKeyboard>(find.byType(CoreKeyboard)).allGroups;
+      final first = groups();
+
+      await tester.pumpWidget(sheet(
+        const ['A'],
+        unitOptions: const ['ft', 'in'],
+        unitGroupLabel: 'Unit',
+      ));
+      await tester.pumpAndSettle();
+
+      // Caching must not outlive what it was built from.
+      expect(identical(groups(), first), isFalse);
+      expect(find.text('ft'), findsOneWidget);
+      expect(find.text('cm'), findsNothing);
     });
   });
 
