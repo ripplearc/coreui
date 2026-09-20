@@ -119,6 +119,17 @@ class CoreValueEditorSheet extends StatefulWidget {
   /// Runs against every field in multi-column mode.
   final String? Function(String value)? validator;
 
+  /// Opens the sheet as a modal bottom sheet and returns what the user
+  /// submitted, or null if they dismissed it.
+  ///
+  /// This is the entry point callers should use; constructing the widget
+  /// directly is only for embedding it somewhere other than a modal route.
+  ///
+  /// Pass [initialData] to edit an existing row — the sheet then titles itself
+  /// [editSizeTitle] and pre-fills each field from the row's values. Leave it
+  /// null to add, which titles the sheet [addSizeTitle] and starts empty.
+  /// [initialIndex] is carried through untouched, so the caller can tell which
+  /// row came back.
   static Future<SizeEntryResult?> show({
     required BuildContext context,
     CoreSizeCardData? initialData,

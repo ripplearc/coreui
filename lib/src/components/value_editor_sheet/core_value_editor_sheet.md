@@ -30,8 +30,7 @@ final result = await CoreValueEditorSheet.show(
   verbatim — sentence case survives, unlike the upper-cased default.
 - **The unit row is optional.** `unitOptions` becomes the keyboard's function
   strip, one key per entry, and requires a localized `unitGroupLabel` beside it.
-  Pass none and no strip renders, which is what the
-  design asks for, and needs a localized `unitGroupLabel` beside it. A unit key
+  Pass none and no strip renders, which is what the design asks for. A unit key
   types its label into the active field: `SizeEntryResult` carries no unit, so
   the value spells it inline as `47.24in` does. The keyboard's own unit column
   (Yards/Feet/Inch) is unaffected either way.
