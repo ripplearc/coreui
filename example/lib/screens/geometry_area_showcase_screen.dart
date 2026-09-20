@@ -49,6 +49,22 @@ class _GeometryAreaShowcaseScreenState
     ],
   );
 
+  /// A second read-only table, so the showcase renders all three tables the
+  /// detail panel shows: trade sizes, rates & waste, and densities.
+  static const CoreSizesTableData _densitiesTable = CoreSizesTableData(
+    id: 'densities',
+    title: 'Densities',
+    columns: [
+      CoreSizesColumn(title: 'Material'),
+      CoreSizesColumn(title: 'Density'),
+    ],
+    rows: [
+      CoreSizeCardData(id: 'concrete', values: ['Concrete', '4,050lbs/yd³']),
+      CoreSizeCardData(id: 'gravel', values: ['Gravel', '2,835lbs/yd³']),
+      CoreSizeCardData(id: 'sand', values: ['Sand', '2,700lbs/yd³']),
+    ],
+  );
+
   static const GroupNameType _basicGeometryGroup = GroupNameType(
     id: 'Basic Geometry',
     label: 'Basic Geometry',
@@ -185,10 +201,11 @@ class _GeometryAreaShowcaseScreenState
                                         onSaved: (result) =>
                                             bloc.add(SizeSaved(result)),
                                       ),
-                                      // A fixed table: no add, delete or
+                                      // Fixed tables: no add, delete or
                                       // reorder callbacks, so none of those
                                       // affordances render.
                                       _ratesAndWasteTable,
+                                      _densitiesTable,
                                     ],
                                     dimensions: state.dimensions,
                                     onViewAllAttachmentsPressed: () {},

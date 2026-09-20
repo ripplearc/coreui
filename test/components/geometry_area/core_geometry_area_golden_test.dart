@@ -474,4 +474,59 @@ void main() {
       matchesGoldenFile('goldens/core_geometry_area_component_tables.png'),
     );
   });
+
+  // The dark sibling of the test above. The other dark goldens each render a
+  // single table, so without this one nothing covers the suppressed handles and
+  // absent add action of a read-only table against the dark tokens.
+  testWidgets(
+      'CoreGeometryArea Component Visual Regression Test (Multiple Tables) — Dark',
+      (WidgetTester tester) async {
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() => tester.view.resetDevicePixelRatio());
+    await tester.binding.setSurfaceSize(const Size(412, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: _withRoboto(CoreTheme.dark()),
+      home: Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Builder(
+              builder: (context) => Text(
+                'Geometry Area — multiple tables (Dark)',
+                style:
+                    Theme.of(context).coreTypography.bodyLargeRegular.copyWith(
+                          color: Theme.of(context).coreColors.textInverse,
+                        ),
+              ),
+            ),
+            const SizedBox(height: CoreSpacing.space8),
+            CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              isCollapsed: false,
+              tables: [
+                // Reorderable and deletable, with an add action.
+                _twoColumnTable(),
+                // Read-only: no callbacks and no addLabel, so no drag handles
+                // and no add action render.
+                _readOnlyTable,
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_geometry_area_component_tables_dark.png'),
+    );
+  });
 }
