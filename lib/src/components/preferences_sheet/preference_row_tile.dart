@@ -23,7 +23,12 @@ class PreferenceRowTile extends StatelessWidget {
   final Duration emphasisDuration;
 
   /// Anchor used by the sheet to scroll this row into view.
-  final Key anchorKey;
+  ///
+  /// Typed `GlobalKey` rather than `Key` because the sheet reaches the row
+  /// through `anchorKey.currentContext`, which only a `GlobalKey` carries. A
+  /// plain `ValueKey` would compile and render, then leave the deep-link
+  /// scroll silently doing nothing.
+  final GlobalKey anchorKey;
 
   /// Called when the row is tapped; null makes the row inert.
   final VoidCallback? onTap;

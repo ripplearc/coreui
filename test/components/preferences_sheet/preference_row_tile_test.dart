@@ -14,7 +14,10 @@ void main() {
     ],
   );
 
+  late GlobalKey anchor;
   late AppColorsExtension colors;
+
+  setUp(() => anchor = GlobalKey());
 
   Future<void> pumpTile(
     WidgetTester tester, {
@@ -32,7 +35,7 @@ void main() {
                 row: row,
                 isEmphasised: isEmphasised,
                 emphasisDuration: const Duration(milliseconds: 400),
-                anchorKey: const Key('anchor'),
+                anchorKey: anchor,
                 onTap: onTap,
               ),
             );
@@ -95,6 +98,13 @@ void main() {
       (tester) async {
     await pumpTile(tester);
 
-    expect(find.byKey(const Key('anchor')), findsOneWidget);
+    expect(find.byKey(anchor), findsOneWidget);
+    expect(
+      anchor.currentContext,
+      isNotNull,
+      reason: 'the sheet scrolls by reading the anchor\'s context, so an '
+          'anchor that resolves to nothing would leave the deep link '
+          'silently doing nothing',
+    );
   });
 }
