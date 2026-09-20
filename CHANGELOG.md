@@ -2,6 +2,13 @@
 
 ## [0.27.0] - Receipt toast and display-area session restore
 
+### ✨ Features
+
+- **Toast.receipt**: the confirmation the calculator shows when a session is banked — "**Saved to history** · Calc 60ft²" with `Undo`. One line of text rather than a stacked title and description, an outlined `backgroundBlueLight` surface with a `space3` radius and no shadow, and an action instead of a close button. `description` is the lead and `highlight` the tail after a middot; `onAction` fires at most once, and answering the receipt dismisses it through `onClose`, which is required because it is the only way a receipt leaves the screen (CA-1042)
+  - The action is a 48 dp `CoreButtonSize.large` pill rather than the ~29 dp the design draws, because a tap target under 48 dp is an accessibility defect; the frame is open with design
+  - The receipt announces itself as a live region, so a screen reader is told it arrived
+  - A long translated action label ellipsises itself instead of squeezing the message: the action may take 60% of the width it shares with the message, which leaves the message the other 40%
+
 ### ⚠️ Behaviour change
 
 - **CoreToast**: every overlay removal now goes through one idempotent path, and each `onClose` and timer carries the entry it was built with rather than reading whichever entry is current. Two defects go with it. Two toasts shown in the same frame left the first orphaned in the overlay, because an entry inserted in that same frame has not mounted yet and the old `mounted` check skipped it. And `cleanup()` followed by a new toast threw "An OverlayEntry should be removed only once" in debug builds, because `cleanup()` removed the entry but left it in `_entry` for the next call to remove again. A close tapped on a toast that has already been replaced is now ignored instead of taking the replacement off the screen (CA-1042)

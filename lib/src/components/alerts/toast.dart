@@ -7,6 +7,7 @@ import '../../theme/icons/icon_data.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
+import '../buttons/core_button.dart';
 import '../core_icon.dart';
 
 /// Defines the type of toast notification and its visual styling.
@@ -22,27 +23,54 @@ enum _ToastType {
 
   /// Success toast with green background and icon for positive confirmations.
   success,
+
+  /// Receipt toast confirming something was saved, with an action that undoes
+  /// it. Auto-dismisses; carries no close button.
+  receipt,
 }
 
 /// A notification widget that displays temporary messages to users.
 ///
 /// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
 /// factory constructors to create a toast with the appropriate visual style.
+/// Use [Toast.receipt] for the self-dismissing confirmation that offers an
+/// action to undo what it reports.
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
+
+  /// The receipt's tail, set after a middot in the lighter weight: what was
+  /// saved, where [description] is that it was saved.
+  final String? highlight;
   final VoidCallback? onClose;
-  final String closeLabel;
+  final String? closeLabel;
+
+  /// Label of the receipt's action — `Undo`. Localised by the caller.
+  final String? actionLabel;
+
+  /// Fires once when the receipt's action is taken, before [onClose].
+  final VoidCallback? onAction;
+
   final _ToastType _type;
+
+  static const double _receiptRadius = CoreSpacing.space3;
+
+  static const double _receiptActionMaxWidthFraction = 0.6;
+
+  static const double _receiptRowLeadingWidth =
+      CoreIconSize.size24 + CoreSpacing.space3 * 2;
 
   static const double _radius = CoreSpacing.space2;
 
   const Toast._({
     required this.description,
-    required this.closeLabel,
     required _ToastType type,
+    this.closeLabel,
     this.title,
+    this.highlight,
     this.onClose,
+    this.actionLabel,
+    this.onAction,
   }) : _type = type;
 
   factory Toast.error({
@@ -105,11 +133,61 @@ class Toast extends StatefulWidget {
     );
   }
 
+  /// Confirms that something was banked and offers the action that takes it
+  /// back — "**Saved to history** · Calc 60ft²" with `Undo`.
+  ///
+  /// [description] is the lead, set in the heavier weight; [highlight] is the
+  /// tail after a middot, naming what was saved. [onAction] fires at most
+  /// once.
+  ///
+  /// Answering the receipt calls [onClose], so it never needs a close button.
+  /// [onClose] is required because it is the only way a receipt leaves the
+  /// screen.
+  ///
+  /// Every user-facing string comes from the consumer — localisation is the
+  /// caller's responsibility:
+  /// ```dart
+  /// Toast.receipt(
+  ///   description: AppLocalizations.of(context).savedToHistory,
+  ///   highlight: 'Calc 60ft²',
+  ///   actionLabel: AppLocalizations.of(context).undo,
+  ///   onAction: controller.undoBanking,
+  /// );
+  /// ```
+  factory Toast.receipt({
+    required String description,
+    required String actionLabel,
+    required VoidCallback onAction,
+    required VoidCallback onClose,
+    String? highlight,
+  }) {
+    return Toast._(
+      description: description,
+      highlight: highlight,
+      type: _ToastType.receipt,
+      actionLabel: actionLabel,
+      onAction: onAction,
+      onClose: onClose,
+    );
+  }
+
   @override
   State<Toast> createState() => _ToastState();
 }
 
 class _ToastState extends State<Toast> {
+  bool _answered = false;
+
+  void _answer(VoidCallback? callback) {
+    if (_answered) return;
+    _answered = true;
+    try {
+      callback?.call();
+    } finally {
+      widget.onClose?.call();
+    }
+  }
+
   CoreIconData get _icon {
     switch (widget._type) {
       case _ToastType.error:
@@ -119,6 +197,7 @@ class _ToastState extends State<Toast> {
       case _ToastType.info:
         return CoreIcons.info;
       case _ToastType.success:
+      case _ToastType.receipt:
         return CoreIcons.success;
     }
   }
@@ -133,6 +212,8 @@ class _ToastState extends State<Toast> {
         return colors.alertBlue;
       case _ToastType.success:
         return colors.alertGreen;
+      case _ToastType.receipt:
+        return colors.backgroundBlueLight;
     }
   }
 
@@ -146,6 +227,8 @@ class _ToastState extends State<Toast> {
         return colors.iconBlue;
       case _ToastType.success:
         return colors.iconGreen;
+      case _ToastType.receipt:
+        return colors.iconDark;
     }
   }
 
@@ -153,26 +236,66 @@ class _ToastState extends State<Toast> {
   Widget build(BuildContext context) {
     final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
+    final isReceipt = widget._type == _ToastType.receipt;
+    final closeLabel = widget.closeLabel;
+    final actionLabel = widget.actionLabel;
 
     return Semantics(
       container: true,
-      button: widget.onClose != null,
-      label: widget.title ?? widget.description,
+      button: !isReceipt && widget.onClose != null,
+      // The receipt is the one toast that is both timed and actionable: a
+      // screen reader has to be told it arrived, or the Undo window closes
+      // before its user knows there was one.
+      liveRegion: isReceipt,
+      label: widget.title,
       hint: widget.title != null ? widget.description : null,
       child: Container(
-        padding: const EdgeInsets.symmetric(
+        padding: EdgeInsets.symmetric(
           horizontal: CoreSpacing.space4,
-          vertical: CoreSpacing.space3,
+          // Tighter, because the row below is already pinned to the tap-target
+          // height — which also keeps both receipt shapes the same height.
+          vertical: isReceipt ? CoreSpacing.space1 : CoreSpacing.space3,
         ),
         decoration: BoxDecoration(
           color: _getBackgroundColor(colors),
-          borderRadius: BorderRadius.circular(Toast._radius),
-          boxShadow: CoreShadows.medium,
+          borderRadius: BorderRadius.circular(
+            isReceipt ? Toast._receiptRadius : Toast._radius,
+          ),
+          border: isReceipt
+              ? Border.all(
+                  color: colors.lineHighlight,
+                  width: CoreButton.hairlineBorderWidth,
+                )
+              : null,
+          boxShadow: isReceipt ? null : CoreShadows.medium,
         ),
-        child: _buildRow(
-          colors,
-          text: _buildStackedText(typography, colors),
-          trailing: _buildCloseButton(typography, colors),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: isReceipt ? CoreSpacing.space12 : 0,
+          ),
+          // A Row hands a non-flex child unbounded width, so the width the
+          // receipt's action has to fit into is measured above it. Only the
+          // receipt needs that: a LayoutBuilder cannot report an intrinsic
+          // width, which is what an IntrinsicWidth host asks the other
+          // variants for.
+          child: isReceipt && actionLabel != null
+              ? LayoutBuilder(
+                  builder: (context, constraints) => _buildRow(
+                    colors,
+                    text: _buildReceiptText(typography, colors),
+                    trailing: _buildActionCluster(
+                      actionLabel,
+                      constraints.maxWidth,
+                    ),
+                  ),
+                )
+              : _buildRow(
+                  colors,
+                  text: _buildStackedText(typography, colors),
+                  trailing: closeLabel == null
+                      ? null
+                      : _buildCloseButton(typography, colors, closeLabel),
+                ),
         ),
       ),
     );
@@ -181,7 +304,7 @@ class _ToastState extends State<Toast> {
   Widget _buildRow(
     AppColorsExtension colors, {
     required Widget text,
-    required Widget trailing,
+    required Widget? trailing,
   }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -195,7 +318,7 @@ class _ToastState extends State<Toast> {
         const SizedBox(width: CoreSpacing.space3),
         Expanded(child: text),
         const SizedBox(width: CoreSpacing.space3),
-        trailing,
+        if (trailing != null) trailing,
       ],
     );
   }
@@ -228,16 +351,72 @@ class _ToastState extends State<Toast> {
     );
   }
 
+  Widget _buildActionCluster(String actionLabel, double rowWidth) {
+    final action = _buildReceiptAction(actionLabel);
+    if (!rowWidth.isFinite) return action;
+
+    final widthTheMessageShares = rowWidth - Toast._receiptRowLeadingWidth;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth:
+            widthTheMessageShares * Toast._receiptActionMaxWidthFraction,
+      ),
+      child: action,
+    );
+  }
+
+  Widget _buildReceiptText(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+  ) {
+    final highlight = widget.highlight;
+
+    return Text.rich(
+      key: const Key('toast_receipt_message'),
+      TextSpan(
+        children: [
+          TextSpan(
+            text: widget.description,
+            style: typography.bodyLargeSemiBold.copyWith(
+              color: colors.textLink,
+            ),
+          ),
+          if (highlight != null)
+            TextSpan(
+              text: ' · $highlight',
+              style: typography.bodyLargeRegular.copyWith(
+                color: colors.textLink,
+              ),
+            ),
+        ],
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildReceiptAction(String actionLabel) {
+    return CoreButton(
+      key: const Key('toast_action_button'),
+      label: actionLabel,
+      semanticsLabel: actionLabel,
+      onPressed: () => _answer(widget.onAction),
+      size: CoreButtonSize.large,
+      fullWidth: false,
+    );
+  }
+
   Widget _buildCloseButton(
     AppTypographyExtension typography,
     AppColorsExtension colors,
+    String closeLabel,
   ) {
     return GestureDetector(
       key: const Key('toast_close_button'),
       onTap: widget.onClose ?? () => Navigator.of(context).pop(),
       child: Semantics(
         button: true,
-        label: widget.closeLabel,
+        label: closeLabel,
         child: ConstrainedBox(
           constraints: const BoxConstraints(
             minWidth: CoreSpacing.space12,
@@ -248,7 +427,7 @@ class _ToastState extends State<Toast> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.closeLabel,
+                  closeLabel,
                   style: typography.bodyMediumSemiBold.copyWith(
                     color: colors.textLink,
                   ),
