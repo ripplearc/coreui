@@ -53,6 +53,7 @@ CoreSuggestionArea(
 | `conversionsCollapseToggleSemanticsLabel` | `String?` | No | `null` | In `twoRows`, semantics label for the conversions row's collapse control. Falls back to `collapseToggleSemanticsLabel`. Ignored in `toggle`. |
 | `conversionsRowTagLabel` | `String` | No | `'as'` | In `twoRows`, the word of the tag (ruler icon + text) that leads the conversions row, so "conversion" is said once and the chips show only their value. Decorative — excluded from semantics. Override per locale. Ignored in `toggle`. |
 | `conversionsRowSemanticsLabel` | `String` | No | `'Convert to other units'` | In `twoRows`, the group label a screen reader announces on entering the conversions row, giving its value-only chips their context. Override per locale. Ignored in `toggle`. |
+| `suggestionsSemanticsLabelBuilder` | `String Function(List<SuggestionData>)?` | No | `null` | Builds the live-region text announced when the visible suggestions change (the active list in `toggle`; both rows in `twoRows`, minus the conversions row while `secondRowHidden`). `null` uses `CoreSuggestionArea.defaultSuggestionsSemanticsLabel`, which joins each suggestion's `semanticsLabel` — or label, value and unit — with commas. Override per locale. |
 
 ### SuggestionData
 
@@ -87,6 +88,10 @@ The looks follow the Figma **Suggestion Strip Chip** component set (Design Syste
 In `twoRows` a single non-empty list renders as a single row (no empty shelf), and `onExpandedChanged` reports `true` while **either** row is expanded and `false` once both are collapsed. `secondRowHidden` animates row 2 out over `CoreSuggestionArea.animationDuration` — the same 300 ms as the display area's stage transitions, so the two surfaces move together — and collapses it if it was expanded; with only conversions present and the row hidden, the placeholder shows. Pass `conversionsExpandToggleSemanticsLabelBuilder` and `conversionsCollapseToggleSemanticsLabel` so a screen-reader user hears which row a `+N` control belongs to; without them the conversions row reuses the primary row's labels.
 
 Row 2 follows the calculator prototype's two-row strip (design decision, 2026-09-15): a leading tag — `CoreIcons.ruler` at `space4` in `iconGrayMid` plus `conversionsRowTagLabel` in `bodySmallRegular` — says "conversion" once for the row, and every chip on it is a value-only `CoreChipSize.mini` (the large chip's surface and outline at the medium height, semibold value, no shadow), so the row reads as a quieter echo of the full-size row above. The tag is excluded from semantics; the row is a semantics container labelled `conversionsRowSemanticsLabel`, and each chip still announces its value and unit (or its `semanticsLabel`). Figma differs here: its Suggestion Strip Chip `Conversion` variant (`66225:151222`) is a full 48 px chip labelled `as`, and the older calculator frames (`61933:62752`, `61665:80039`) show 48 px `Conv:` chips built from the generic Smart Chip; the prototype's secondary treatment is what the product owner chose. The `toggle` layout keeps full-size labelled conversion chips behind the ruler side of the switch, as the prototype does.
+
+## Accessibility
+
+The area is a **live region**: its semantics node is labelled with the suggestions on screen (`suggestionsSemanticsLabelBuilder`, default `Area: 220 ft², Cost: $84.25`), so a screen reader announces a new rung or a fresh set of conversions without moving focus. Each chip keeps its own node inside the region, the conversions row keeps its `conversionsRowSemanticsLabel` group, and the placeholder is a live region of its own, so an emptied strip is heard too. Expanding or collapsing a row does not change the text, so the `+N` control is silent beyond its own label.
 
 ## Features
 

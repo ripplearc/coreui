@@ -530,5 +530,111 @@ void main() {
       final valueSemantics = tester.getSemantics(find.text('42.0'));
       expect(valueSemantics.label, '42.0');
     });
+
+    testWidgets('the value is a live region that announces each new value',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      Widget area(String value) => MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
+                value: value,
+              ),
+            ),
+          );
+
+      await tester.pumpWidget(area('410.67'));
+      final before = tester.getSemantics(find.text('410.67'));
+      expect(before.label, '410.67');
+      expect(before.flagsCollection.isLiveRegion, isTrue);
+
+      await tester.pumpWidget(area('84.25'));
+      final after = tester.getSemantics(find.text('84.25'));
+      expect(after.label, '84.25');
+      expect(after.flagsCollection.isLiveRegion, isTrue);
+      expect(after.id, before.id,
+          reason: 'the same node changes its label, which is what the '
+              'platform announces');
+    });
+
+    testWidgets('the error title is announced through the value live region',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              hasError: true,
+              errorTitle: 'Error',
+              value: '123.45',
+            ),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.text('Error'));
+      expect(semantics.label, 'Error');
+      expect(semantics.flagsCollection.isLiveRegion, isTrue);
+      expect(find.text('123.45'), findsNothing);
+    });
+
+    testWidgets('dependent key pills announce their hint after the label',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              value: '\$84.25',
+              dependentKeys: [
+                CoreDependentKeyData(
+                  label: 'Rate',
+                  value: '\$14.5/sheet',
+                  kind: CoreDependentKeyKind.editable,
+                  semanticsHint: 'Edits the rate',
+                  onPressed: () {},
+                ),
+                CoreDependentKeyData(
+                  label: 'Shown as',
+                  value: 'in/12in',
+                  kind: CoreDependentKeyKind.toggle,
+                  semanticsHint: 'Changes how the pitch is shown',
+                  onPressed: () {},
+                ),
+                CoreDependentKeyData(
+                  label: 'Re-input 38.30° as',
+                  value: '38°30′',
+                  kind: CoreDependentKeyKind.offer,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final pills = find.byType(CoreButton);
+      expect(pills, findsNWidgets(3));
+      expect(tester.getSemantics(pills.at(0)).label, 'Rate: \$14.5/sheet');
+      expect(tester.getSemantics(pills.at(0)).hint, 'Edits the rate');
+      expect(tester.getSemantics(pills.at(1)).hint,
+          'Changes how the pitch is shown');
+      expect(tester.getSemantics(pills.at(2)).hint, isEmpty,
+          reason: 'a pill without a hint announces its label alone');
+    });
   });
 }

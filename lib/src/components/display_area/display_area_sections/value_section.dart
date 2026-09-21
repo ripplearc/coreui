@@ -23,10 +23,14 @@ class _ValueSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            hasError && errorTitle.isNotEmpty ? errorTitle : (value ?? ''),
-            style: typography.headlineLargeSemiBold
-                .copyWith(color: colors.textDark),
+          Semantics(
+            container: true,
+            liveRegion: true,
+            child: Text(
+              hasError && errorTitle.isNotEmpty ? errorTitle : (value ?? ''),
+              style: typography.headlineLargeSemiBold
+                  .copyWith(color: colors.textDark),
+            ),
           ),
           if (dependentKeys.isNotEmpty)
             _DependentKeyRow(dependentKeys: dependentKeys),
@@ -87,6 +91,7 @@ class _DependentKeyPill extends StatelessWidget {
     return CoreButton(
       onPressed: data.onPressed,
       semanticsLabel: data.semanticsLabel ?? '$formattedLabel${data.value}',
+      semanticsHint: data.semanticsHint,
       size: CoreButtonSize.medium,
       shadows: CoreShadows.small,
       variant: CoreButtonVariant.secondary,

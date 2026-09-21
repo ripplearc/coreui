@@ -25,6 +25,15 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// (`Re-input 38.30° as 38°30′`). The row is end-aligned and scrolls
 /// horizontally when the pills outgrow the width.
 ///
+/// ## Accessibility
+///
+/// The value text is a live region: a screen reader announces the new value
+/// (or [errorTitle]) whenever it changes, so a result computed from the
+/// keyboard is heard without moving focus. Each dependent-key pill announces
+/// its label — or [CoreDependentKeyData.semanticsLabel] — followed by
+/// [CoreDependentKeyData.semanticsHint], the spoken counterpart of the
+/// trailing icon that says what a tap does.
+///
 /// ## Swipe interaction
 ///
 /// **When chips fit in two rows or fewer** (`chipsList.length ≤ 5`):
