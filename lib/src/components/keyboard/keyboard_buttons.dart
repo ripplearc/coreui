@@ -8,6 +8,9 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [onDigitPressed] is called when the button is pressed.
 /// [isEmphasized] determines if the button uses emphasized styling.
 /// [size] is the width and height of the button (defaults to 64px).
+///
+/// The rendered button carries [DigitTypeX.testKey] (`calc_key_seven`) for
+/// Patrol and widget tests.
 class CoreDigitInput extends StatelessWidget {
   final DigitType digit;
   final ValueChanged<DigitType> onDigitPressed;
@@ -41,6 +44,7 @@ class CoreDigitInput extends StatelessWidget {
       label: '${digit.label} button',
       button: true,
       child: _KeyboardButton(
+        key: digit.testKey,
         isLabel: true,
         label: digit.label,
         backgroundColor: backgroundColor,
@@ -64,6 +68,9 @@ class CoreDigitInput extends StatelessWidget {
 /// [operatorType] is the type of operator to display (+, −, ×, ÷, %).
 /// [onOperatorPressed] is called when the button is pressed.
 /// [size] is the width and height of the button (defaults to 64px).
+///
+/// The rendered button carries [OperatorTypeX.testKey] (`calc_key_add`) for
+/// Patrol and widget tests.
 class CoreOperatorButton extends StatelessWidget {
   final OperatorType operatorType;
   final ValueChanged<OperatorType> onOperatorPressed;
@@ -91,6 +98,7 @@ class CoreOperatorButton extends StatelessWidget {
       label: '${operatorType.symbol} operator button',
       button: true,
       child: _KeyboardButton(
+        key: operatorType.testKey,
         isLabel: false,
         icon: operatorType.icon,
         backgroundColor: backgroundColor,
@@ -111,6 +119,9 @@ class CoreOperatorButton extends StatelessWidget {
 /// [onUnitSelected] is called when the button is pressed.
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 78% of width or 60px.
+///
+/// The rendered button carries [UnitTypeX.testKey] (`calc_key_feet`) for
+/// Patrol and widget tests.
 class CoreUnitButton extends StatelessWidget {
   final UnitType unit;
   final ValueChanged<UnitType> onUnitSelected;
@@ -143,6 +154,7 @@ class CoreUnitButton extends StatelessWidget {
       label: '${unit.label} unit button',
       button: true,
       child: _KeyboardButton(
+        key: unit.testKey,
         label: unit == UnitType.divideSymbol ? null : unit.label,
         icon: unit == UnitType.divideSymbol ? CoreIcons.slash : null,
         isLabel: unit != UnitType.divideSymbol,
@@ -175,6 +187,9 @@ class CoreUnitButton extends StatelessWidget {
 /// [onControlAction] is called when the button is pressed.
 /// [width] is the width of the button.
 /// [height] is the height of the button.
+///
+/// The rendered button carries [ControlActionX.testKey] (`calc_key_clearAll`)
+/// for Patrol and widget tests.
 class CoreControlButton extends StatelessWidget {
   final ControlAction action;
   final ValueChanged<ControlAction> onControlAction;
@@ -214,6 +229,7 @@ class CoreControlButton extends StatelessWidget {
       button: true,
       hint: _getSemanticHint(action),
       child: _KeyboardButton(
+        key: action.testKey,
         isLabel: false,
         icon: action.icon,
         borderColor: borderColor,
@@ -260,7 +276,12 @@ class CoreControlButton extends StatelessWidget {
 /// [customLabel] is an optional custom label used when [resultType] is [ResultType.custom].
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 53% of width or 56px.
+///
+/// The rendered button carries [testKey] for Patrol and widget tests.
 class CoreResultButton extends StatelessWidget {
+  /// The [Key] the rendered result button carries: `calc_key_result`.
+  static const Key testKey = ValueKey('calc_key_result');
+
   final ResultType resultType;
   final VoidCallback onTap;
   final String? customLabel;
@@ -293,6 +314,7 @@ class CoreResultButton extends StatelessWidget {
       button: true,
       hint: 'Calculates and displays the result',
       child: _KeyboardButton(
+        key: testKey,
         label: label,
         isLabel: true,
         backgroundColor: backgroundColor,
@@ -340,6 +362,7 @@ class _KeyboardButton extends StatefulWidget {
   static const double _flashOverlayMaxOpacity = 0.4;
 
   const _KeyboardButton({
+    super.key,
     this.label,
     this.icon,
     this.borderColor,

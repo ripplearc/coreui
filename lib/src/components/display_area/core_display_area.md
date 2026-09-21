@@ -168,6 +168,7 @@ An answer keeps its assumption on screen. `dependentKeys` renders an end-aligned
 | `onPressed` | `VoidCallback?` | No | Tap handler. `null` renders the pill disabled. |
 | `semanticsLabel` | `String?` | No | Overrides the announced label; defaults to the visible label and value. |
 | `semanticsHint` | `String?` | No | Screen-reader hint announced after the label — what a tap does (`Edits the rate`, `Changes how the pitch is shown`), the spoken counterpart of the trailing icon. Pass a localised string; no default. |
+| `testKey` | `Key?` | No | The key the pill carries for Patrol and widget tests (`ValueKey('calc_dep_pill_sheet_size')`). `null` takes `CoreDisplayArea.dependentKeyTestKey(index)` — `calc_dep_pill_<index>` by position in the rendered row. |
 
 #### Kinds
 | Kind | Meaning | Trailing icon | Example |
@@ -182,6 +183,9 @@ The pill follows the Figma **Dependent Key Chip** component set (Design System p
 
 #### Deprecated single-pill adapter
 `dependentKeyLabel`, `dependentKeyValue` and `onPressedDependentKey` still render, as one `editable` pill appended after `dependentKeys`, but are deprecated and will be removed in the next minor release. `resolvedDependentKeys` (`@visibleForTesting`) exposes the merged list `build` renders.
+
+#### Test keys
+Every pill carries a stable `Key`, so a Patrol journey or a widget test taps it with `find.byKey`: `CoreDependentKeyData.testKey`, or `CoreDisplayArea.dependentKeyTestKey(index)` (`calc_dep_pill_0`) by position in the rendered row (the deprecated single pill is the last one). The keyboard's keys (`calc_key_<enum name>` / `calc_key_<id>`) and the suggestion strip's chips (`calc_strip_chip_<index>`) follow the same scheme.
 
 ### Accessibility
 | Property | Type | Default | Description |

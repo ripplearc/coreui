@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.22.0] - Stable test keys on calculator keys, strip chips and dependent-key pills
+
+### ✨ Features
+
+- **CoreKeyboard**: every key carries a stable `Key` for Patrol and widget tests. Digits, operators, units and controls take `calc_key_<enum name>` (`calc_key_seven`, `calc_key_add`, `calc_key_feet`, `calc_key_clearAll`) from the new `DigitTypeX.testKey`, `OperatorTypeX.testKey`, `UnitTypeX.testKey` and `ControlActionX.testKey`; the result button carries `CoreResultButton.testKey` (`calc_key_result`). The key sits on the rendered button inside each `Core*Button`, so a button built on its own carries it too (CA-1044)
+- **KeyType.testKey** (optional) and `KeyType.resolvedTestKey`: a function-key tile carries `testKey`, or `calc_key_<id>` (`calc_key_Length`) — on the strip and in the "View all" sheet alike
+- **SuggestionData.testKey** (optional): a strip chip carries it, or the row's default — `CoreSuggestionArea.chipTestKey(index)` (`calc_strip_chip_0`) on the primary row and the toggle layout's single row, `CoreSuggestionArea.conversionChipTestKey(index)` (`calc_strip_conversion_0`) on the two-row layout's conversions row, so the rows never share a key. Element identity is unchanged: the label / value / unit / kind / index key that keeps a chip's tap highlight bound to its data now sits on a `KeyedSubtree` around the chip
+- **CoreDependentKeyData.testKey** (optional): a pill carries it, or `CoreDisplayArea.dependentKeyTestKey(index)` (`calc_dep_pill_0`)
+- Display area showcase: the Rate, Waste, O.C and Shown-as pills carry `calc_dep_pill_rate` / `_waste` / `_oc` / `_shown_as`
+
+No behaviour or layout change: keys only.
+
+### 🧪 Tests
+
+- Keyboard: every digit, operator, control, unit (imperial and metric) and the result button is found by its key, a function key by `resolvedTestKey` with `testKey` winning over the id default, and a tap through the key fires the callback; a tile on its own and the "View all" sheet's tiles carry the same keys; the enum keys and `resolvedTestKey` are unit-tested
+- Suggestion area: chips take the index default per row, the two-row conversions row its own prefix and the toggle layout's conversions list the single-row prefix; `testKey` overrides; a tap through the key accepts the suggestion; duplicates still get distinct keys
+- Display area: pills take the index default; `testKey` overrides and a tap through it fires `onPressed`
+- Goldens unchanged
+
 ## [0.21.0] - Calculator a11y: live regions and dependent-key pill hints
 
 ### ✨ Features

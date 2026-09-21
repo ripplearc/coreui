@@ -742,4 +742,112 @@ void main() {
       expect(callCount, equals(2));
     });
   });
+
+  group('CoreKeyboard test keys', () {
+    const basic = GroupNameType(id: 'basic', label: 'Basic Geometry');
+    final groups = [
+      const FunctionGroup(
+        name: basic,
+        keys: [
+          KeyType(groupName: 'basic', id: 'Area', label: 'Area'),
+          KeyType(
+            groupName: 'basic',
+            id: 'Length',
+            label: 'Length',
+            testKey: ValueKey('calc_key_length'),
+          ),
+        ],
+      ),
+    ];
+
+    Future<void> pumpKeyboard(
+      WidgetTester tester, {
+      UnitSystem unitSystem = UnitSystem.imperial,
+      ValueChanged<DigitType> onDigitPressed = _ignoreDigit,
+      ValueChanged<KeyType> onKeyTapped = _ignoreKey,
+    }) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: basic,
+              allGroups: groups,
+              onDigitPressed: onDigitPressed,
+              onUnitSelected: _ignoreUnit,
+              onOperatorPressed: _ignoreOperator,
+              onControlAction: _ignoreControl,
+              onResultTapped: _ignoreResult,
+              onGroupSelected: (_) {},
+              onKeyTapped: onKeyTapped,
+              onUnitSystemChanged: _ignoreUnitSystem,
+              currentUnitSystem: unitSystem,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('every key is found by its stable key', (tester) async {
+      await pumpKeyboard(tester);
+
+      for (final digit in DigitType.values) {
+        expect(find.byKey(digit.testKey), findsOneWidget, reason: digit.name);
+      }
+      for (final operator in OperatorType.values) {
+        expect(find.byKey(operator.testKey), findsOneWidget,
+            reason: operator.name);
+      }
+      for (final action in ControlAction.values) {
+        expect(find.byKey(action.testKey), findsOneWidget, reason: action.name);
+      }
+      for (final unit in [
+        UnitType.yards,
+        UnitType.feet,
+        UnitType.inch,
+        UnitType.divideSymbol,
+      ]) {
+        expect(find.byKey(unit.testKey), findsOneWidget, reason: unit.name);
+      }
+      expect(find.byKey(CoreResultButton.testKey), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_key_Area')), findsOneWidget);
+      expect(find.byKey(const ValueKey('calc_key_length')), findsOneWidget,
+          reason: 'KeyType.testKey wins over the id default');
+      expect(find.byKey(const ValueKey('calc_key_Length')), findsNothing);
+    });
+
+    testWidgets('the metric system keys its units the same way',
+        (tester) async {
+      await pumpKeyboard(tester, unitSystem: UnitSystem.metric);
+
+      for (final unit in [
+        UnitType.meter,
+        UnitType.centimeter,
+        UnitType.millimeter,
+      ]) {
+        expect(find.byKey(unit.testKey), findsOneWidget, reason: unit.name);
+      }
+      expect(find.byKey(UnitType.feet.testKey), findsNothing);
+    });
+
+    testWidgets('a tap through the key fires the callback', (tester) async {
+      final digits = <DigitType>[];
+      final keys = <String>[];
+      await pumpKeyboard(
+        tester,
+        onDigitPressed: digits.add,
+        onKeyTapped: (key) => keys.add(key.id),
+      );
+
+      await tester.tap(find.byKey(DigitType.seven.testKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('calc_key_Area')));
+      await tester.pumpAndSettle();
+
+      expect(digits, [DigitType.seven]);
+      expect(keys, ['Area']);
+    });
+  });
 }
