@@ -198,11 +198,12 @@ class _PreviousChipsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Only when something reads the ids: without a callback they are inert
-    // data and a repeat costs nothing.
     assert(() {
       if (onSessionTapped == null) return true;
-      final ids = sessions.map((session) => session.id).whereType<String>();
+      final ids = sessions
+          .map((session) => session.id)
+          .whereType<String>()
+          .where((id) => id.isNotEmpty);
       return ids.toSet().length == ids.length;
     }(),
         'previousSessions must carry unique ids: onPreviousSessionTapped '
@@ -272,20 +273,31 @@ class _PreviousChipsSection extends StatelessWidget {
 
     final id = session.id;
     final onTap = onSessionTapped;
-    if (id == null || id.isEmpty || onTap == null) return card;
+    final label = restoreSemanticsLabel;
+    if (id == null ||
+        id.isEmpty ||
+        onTap == null ||
+        label == null ||
+        label.isEmpty) {
+      return card;
+    }
 
-    return Semantics(
-      button: true,
-      label: restoreSemanticsLabel,
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          key: Key('display_area_previous_session_$id'),
-          onTap: () => onTap(id),
-          splashFactory: NoSplash.splashFactory,
-          highlightColor: colors.transparent,
-          hoverColor: colors.transparent,
-          child: IgnorePointer(child: card),
+    return MergeSemantics(
+      child: Semantics(
+        button: true,
+        label: label,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            key: Key('display_area_previous_session_$id'),
+            onTap: () => onTap(id),
+            splashFactory: NoSplash.splashFactory,
+            highlightColor: colors.transparent,
+            hoverColor: colors.transparent,
+            child: ExcludeFocus(
+              child: IgnorePointer(child: card),
+            ),
+          ),
         ),
       ),
     );

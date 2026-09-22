@@ -207,9 +207,17 @@ Every pill carries a stable `Key`, so a Patrol journey or a widget test taps it 
 
 A tappable session card is marked `button: true` and carries `restoreSemanticsLabel`. It is an `InkWell` whose splash is `NoSplash.splashFactory` and whose highlight and hover colours are cleared, as `CoreCalculatorChip`, `CoreSearchRowItem` and `CoreCheckRowItem` do: the design gives a card no pressed or hover state, so the ink is hidden rather than the `InkWell` dropped — a bare `GestureDetector` would announce a button that keyboard, D-pad and switch-access users cannot reach. The keyboard focus highlight is deliberately left in place, because it is what those users navigate by. The history goldens are untouched by the change.
 
+`restoreSemanticsLabel` is asserted at the constructor, and an assert is gone in release. A card whose label is missing or empty therefore stays a plain card rather than becoming a button announced only by the date and value it already reads out — the same call `Toast.receipt` makes for its second action.
+
 The `InkWell` sits on a `Material(type: MaterialType.transparency)` of its own, as the library's other `InkWell`s do. Without one, a host that embeds the display area outside a `Scaffold` throws "No Material widget found" — which it did not before the card became tappable.
 
-A tappable card is one control: its contents are wrapped in an `IgnorePointer`, so a chip carrying its own `onTap` cannot win the gesture arena and turn most of the card into a dead zone for restore. Chips in a past session are not interactive.
+A tappable card is one control, and it takes three widgets to hold that true for the three ways a user reaches it. A chip carrying its own `onTap` is otherwise live in all three.
+
+- `IgnorePointer` — touch. Without it the chip wins the gesture arena and most of the card is a dead zone for restore.
+- `ExcludeFocus` — keyboard. `IgnorePointer` stops the pointer, not the focus, so the chip stays a tab stop inside the card and Enter runs a past session's chip action.
+- `MergeSemantics` — screen readers. Neither of the other two changes the semantics tree: the chip stays a node flagged `isButton` and `isEnabled` that carries no `tap` action, so a swipe lands on a button that answers nothing. Merging folds it into the card, which keeps its text in the announcement instead of dropping it the way `ExcludeSemantics` would.
+
+Chips in a past session are not interactive by touch, by keyboard or to a screen reader.
 
 The value text is a **live region**: a screen reader announces the new value (or `errorTitle`) whenever it changes, so a result computed from the keyboard is heard without moving focus. Each dependent-key pill announces its label (or `CoreDependentKeyData.semanticsLabel`) followed by `CoreDependentKeyData.semanticsHint`.
 

@@ -1308,6 +1308,75 @@ void main() {
       expect(tapped, ['session-1']);
     });
 
+    testWidgets('a chip inside a restorable card is not a keyboard stop',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      var chipTaps = 0;
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1', onChipTap: () => chipTaps++)],
+          onTapped: tapped.add,
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // IgnorePointer stops the touch but not the focus: a chip carrying its
+      // own onTap stays a focus stop unless ExcludeFocus removes it, and a
+      // keyboard user tabbing through the cards would run a past session's
+      // chip action.
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+      }
+
+      expect(tapped, ['session-1', 'session-1', 'session-1']);
+      expect(chipTaps, 0);
+    });
+
+    testWidgets('a chip inside a restorable card is not its own semantics node',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1', onChipTap: () {})],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // ExcludeFocus takes the chip off the tab order but leaves its
+      // semantics alone: without MergeSemantics a screen reader still lands
+      // on a nested node flagged as an enabled button that answers nothing.
+      final card = tester.getSemantics(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      expect(card.mergeAllDescendantsIntoThisNode, isTrue);
+      // Merged, not dropped: the chip's text is still announced with the
+      // card. The merged text lives in the node's data, not in its own label.
+      expect(card.getSemanticsData().label, contains('Length, 16ft 14in'));
+      handle.dispose();
+    });
+
+    testWidgets('sessions sharing an empty id are tolerated',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: '', value: '100'),
+            session(id: '', value: '200'),
+          ],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // An empty id is no id, so two of them are two plain cards. Asserting
+      // on them would reject a caller whose backend spells "no id" as ''.
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('a card is inert when no callback is given',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildArea(sessions: [session(id: 'session-1')]));
@@ -1406,6 +1475,39 @@ void main() {
         ),
         throwsAssertionError,
       );
+    });
+
+    testWidgets('a card with an empty label stays a plain card',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              label: 'Length',
+              value: '16ft 14in',
+              // The constructor assert passes an empty string, and asserts are
+              // gone in release. A button announced only by the date and value
+              // it already reads out is worse than the plain card.
+              restoreSemanticsLabel: '',
+              onPreviousSessionTapped: tapped.add,
+              previousSessions: [session(id: 'session-1')],
+            ),
+          ),
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      expect(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+        findsNothing,
+      );
+      await tester.tap(find.text('2700ft³'));
+      await tester.pumpAndSettle();
+      expect(tapped, isEmpty);
     });
   });
 }
