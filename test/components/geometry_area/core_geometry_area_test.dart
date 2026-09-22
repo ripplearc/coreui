@@ -258,6 +258,44 @@ void main() {
       expect(find.text('Val 4'), findsOneWidget);
     });
 
+    testWidgets('a row must supply one value per column', (tester) async {
+      // The failed build substitutes an ErrorWidget tall enough to overflow the
+      // column around it, so a second, incidental exception follows the one
+      // under test. Collecting them all keeps the assertion on the first.
+      final List<FlutterErrorDetails> errors = [];
+      final originalOnError = FlutterError.onError;
+
+      FlutterError.onError = (details) => errors.add(details);
+      addTearDown(() => FlutterError.onError = originalOnError);
+
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              columnTitles: const ['Col A', 'Col B'],
+              rows: const [CoreSizeCardData(id: '1', values: ['Val 1'])],
+            ),
+          ],
+        )),
+      );
+
+      // Checked in _buildRows rather than the const constructor, which cannot
+      // inspect the rows and stay const. Without the assert the mismatch
+      // surfaces deeper, in a message naming _SizeCard's columnWidths — an
+      // internal the consumer has no name for, so the message is the point.
+      expect(
+        errors.map((e) => e.exception).whereType<AssertionError>().any(
+              (e) => e.message.toString().contains(
+                    'row "1" has 1 values but the table declares 2 columns',
+                  ),
+            ),
+        isTrue,
+        reason: 'the mismatch must be named in terms the caller passed in',
+      );
+    });
+
     testWidgets('renders each table with independent callbacks',
         (tester) async {
       final deletedIds = <String>[];
@@ -400,6 +438,19 @@ void main() {
       expect(find.text('Waste'), findsOneWidget);
     });
 
+    test('a table id must not be empty', () {
+      expect(
+        () => CoreSizesTableData(
+          id: '',
+          title: 'Unidentified',
+          columns: const [CoreSizesColumn(title: 'Col')],
+          rows: const [],
+        ),
+        throwsAssertionError,
+        reason: 'the id keys the table across rebuilds, so it must name one',
+      );
+    });
+
     testWidgets('sibling tables must have unique ids', (tester) async {
       await tester.pumpWidget(
         _app(CoreGeometryArea(
@@ -460,6 +511,21 @@ void main() {
           ),
           throwsAssertionError,
           reason: 'addLabel is what renders the add action',
+        );
+      });
+
+      test('addLabel requires onAdd or onSaved', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'labelled',
+            title: 'Labelled',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            addLabel: 'Add size',
+          ),
+          throwsAssertionError,
+          reason: 'with neither callback the add action has nothing to do, so '
+              'the label silently goes missing',
         );
       });
     });
