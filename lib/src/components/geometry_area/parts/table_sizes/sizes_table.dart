@@ -77,7 +77,7 @@ class _SizesTableState extends State<_SizesTable> {
       titles: _titles,
     );
     if (result != null) {
-      table.onSaved?.call(result);
+      widget.table.onSaved?.call(result);
     }
   }
 
