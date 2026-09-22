@@ -42,9 +42,8 @@ class CoreSizeCardData {
 
 /// Describes a single column of a [CoreSizesTableData].
 ///
-/// A column is a header title plus, in a later release, whether its cells are
-/// individually editable. Columns whose values are computed from the row carry
-/// no edit affordance.
+/// A column is a header title. Every row supplies one value per column, and
+/// the column itself carries no per-cell behaviour.
 class CoreSizesColumn {
   const CoreSizesColumn({
     required this.title,

@@ -81,8 +81,6 @@ class _SizesTableState extends State<_SizesTable> {
     }
   }
 
-  // Rows keep their Dismissible and semantics wrappers whether or not the
-  // table is reorderable, so swipe-to-delete works on static tables too.
   List<Widget> _buildRows(
     BuildContext context,
     _TableLayout layout,
