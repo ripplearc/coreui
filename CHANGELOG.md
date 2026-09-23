@@ -9,6 +9,7 @@
   - The receipt announces itself as a live region, and it does **not** start its timer while `MediaQuery.accessibleNavigationOf` is true — it carries no close button, so a timed window a screen-reader user cannot reach in time is worse than no window
   - A long translated action label ellipsises itself instead of squeezing the message: the action may take 60% of the width it shares with the message, which leaves the message the other 40%
 - **CoreToast.showReceipt**: puts a receipt in the overlay and wires its dismissal to that entry. The widget owns the timer and `CoreToast` starts none of its own, so the 5 s window is never cut short by the 3 s default the other toasts use; `disableTimers()` and `cleanup()` behave as they do for every other toast. `showError`, `showSuccess` and `showWarning` keep their 3 s `CoreToast` timer (CA-1042)
+  - `CoreToast.showCustomToast` takes a nullable `duration`: a `null` leaves the entry up until something else removes it, for a toast that owns its own dismissal. The 3 s default is unchanged, so every existing call behaves as before
 
 ### ⚠️ Behaviour change
 
