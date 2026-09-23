@@ -221,9 +221,6 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
     );
   }
 
-  /// Confirms the restore with the receipt CA-1042 ships for exactly this
-  /// moment, naming the session that came back so the user can tell which
-  /// card answered.
   void _restoreSession(BuildContext context, String id) {
     final session = _previousSessions.firstWhere((session) => session.id == id);
     CoreToast.showReceipt(
