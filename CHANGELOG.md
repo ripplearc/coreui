@@ -4,9 +4,9 @@
 
 ### ✨ Features
 
-- **Toast.receipt**: the confirmation the calculator shows when a session is banked — "**Saved to history** · Calc 60ft²" with `Undo`. One line of text rather than a stacked title and description, an outlined `backgroundBlueLight` surface with a `space3` radius and no shadow, and an action instead of a close button. `description` is the lead and `highlight` the tail after a middot; `onAction` fires at most once, and answering the receipt dismisses it through `onClose`, which is required because it is the only way a receipt leaves the screen (CA-1042)
+- **Toast.receipt**: the self-dismissing confirmation the calculator shows when a session is banked — "**Saved to history** · Calc 60ft²" with `Undo`. One line of text rather than a stacked title and description, an outlined `backgroundBlueLight` surface with a `space3` radius and no shadow, and an action instead of a close button. `description` is the lead and `highlight` the tail after a middot; `onAction` fires at most once and cancels the auto-dismiss; `onClose` is required, because it is the only way a receipt leaves the screen. `duration` defaults to 5 s and `null` holds the toast until something else removes it (CA-1042)
   - The action is a 48 dp `CoreButtonSize.large` pill rather than the ~29 dp the design draws, because a tap target under 48 dp is an accessibility defect; the frame is open with design
-  - The receipt announces itself as a live region, so a screen reader is told it arrived
+  - The receipt announces itself as a live region, and it does **not** start its timer while `MediaQuery.accessibleNavigationOf` is true — it carries no close button, so a timed window a screen-reader user cannot reach in time is worse than no window
   - A long translated action label ellipsises itself instead of squeezing the message: the action may take 60% of the width it shares with the message, which leaves the message the other 40%
 
 ### ⚠️ Behaviour change

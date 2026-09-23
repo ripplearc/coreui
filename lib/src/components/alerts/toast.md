@@ -55,15 +55,16 @@ Toast.receipt(
 
 ### Toast.receipt Properties
 
-`Toast.receipt` takes no `closeLabel`: answering it dismisses it, so it carries no close button.
+`Toast.receipt` takes no `closeLabel`: it dismisses itself, so it carries no close button.
 
 | Property         | Type            | Required | Description                                                                         |
 |------------------|-----------------|----------|-------------------------------------------------------------------------------------|
 | `description`    | `String`        | Yes      | The lead, set in the heavier weight — "Saved to history"                            |
 | `actionLabel`    | `String`        | Yes      | The primary action's label — "Undo"                                                  |
-| `onAction`       | `VoidCallback`  | Yes      | Fires at most once. Answering the toast dismisses it through `onClose` |
+| `onAction`       | `VoidCallback`  | Yes      | Fires at most once. Answering the toast cancels the auto-dismiss and dismisses it through `onClose` |
 | `highlight`      | `String?`       | No       | The tail after a middot, naming what was saved — "Calc 60ft²"                        |
-| `onClose`        | `VoidCallback`  | Yes      | The single dismissal path: fires once, when an action answers the toast. Required, because it is the only way a receipt leaves the screen |
+| `onClose`        | `VoidCallback`  | Yes      | The single dismissal path: fires once, either when `duration` elapses or when an action answers the toast. Required, because it is the only way a receipt leaves the screen |
+| `duration`       | `Duration?`     | No       | Auto-dismiss delay, 5 s by default. `null` keeps the toast until something else removes it, and so does an active screen reader |
 
 ## Factory Constructors
 
@@ -85,7 +86,7 @@ Creates a toast with success styling (green background and icon).
 
 ### Toast.receipt
 
-Creates the confirmation the calculator shows when a session is
+Creates the self-dismissing confirmation the calculator shows when a session is
 banked: "**Saved to history** · Calc 60ft²" with `Undo`.
 It differs from the other four variants in shape as well as content — one line
 of text rather than a stacked title and description, an outlined surface rather
@@ -141,6 +142,10 @@ The Toast component includes semantic labels for accessibility:
   frame — see **Open with design** below.
   `androidTapTargetGuideline` does not fire on `CoreButton`'s semantics node at
   all, so the height is asserted directly rather than assumed covered by it
+- A receipt carries no close button, so its timer is the only way it leaves. When
+  `MediaQuery.accessibleNavigationOf` is true the timer does not start at all, the
+  way `SnackBar` persists an action for assistive tech: a window a screen-reader
+  user cannot reach in time is worse than no window
 
 ## Styling
 

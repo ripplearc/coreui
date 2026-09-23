@@ -73,12 +73,14 @@ void main() {
         actionLabel: 'Undo',
         onAction: () {},
         onClose: () {},
+        duration: null,
       ),
       Toast.receipt(
         description: 'Saved to history',
         actionLabel: 'Undo',
         onAction: () {},
         onClose: () {},
+        duration: null,
       ),
     ];
 
