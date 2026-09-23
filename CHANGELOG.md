@@ -1,5 +1,64 @@
 # Changelog
 
+## [0.23.0] - CoreGeometryArea renders several independently-configured tables
+
+### ⚠️ Breaking changes
+
+- **CoreGeometryArea**: the single-table parameters are replaced by
+  `tables: List<CoreSizesTableData>`, so the calculator's detail panel can render
+  the sizes, rates-and-waste and density tables together, each with its own
+  callbacks (CA-1039)
+  - Removed: `sizesTableTitles`, `sizesTableData`, `sizesTitleLabel`,
+    `addSizeLabel`, `editSizeLabel`, `dragHandleLabel`, `onSizesReordered`,
+    `onSizeDeleted`, `onSizeSaved`, and the `defaultSizesTitleLabel` /
+    `defaultAddSizeLabel` / `defaultEditSizeLabel` / `defaultDragHandleLabel`
+    constants
+  - Migration: wrap the former arguments in a single `CoreSizesTableData`. Column
+    titles become `CoreSizesColumn`s, `sizesTableData` becomes `rows`, and the
+    `onSize*` callbacks lose their prefix — `onSaved`, `onDeleted`, `onReordered`.
+    Also supply the new required `id`: unlike the rest it has no predecessor to
+    map from, so it cannot be inferred from the old call — see ✨ New below
+  - `CoreSizesTableData.title` is required and has no English default. Titles
+    interpolate the result they describe (`'Sheet quantities for 180ft²'`), so
+    they cannot be a package-level constant. This continues the 0.15.0 move of
+    localization ownership to the consuming app
+- **Affordances are now driven by their callbacks.** A table renders drag handles
+  only when `onReordered` is given, allows swipe-to-delete only when `onDeleted`
+  is given, and shows the add action only when `addLabel` is set, which in turn
+  needs `onAdd` or `onSaved` to act on. Previously drag handles and the add
+  action rendered unconditionally and a swipe was always armed, even with no
+  callback to receive it
+  - Migration: a table that should stay reorderable or deletable must pass those
+    callbacks explicitly
+
+### ✨ New
+
+- `CoreSizesTableData` — one titled table: `id`, `title`, `columns`, `rows`,
+  optional `addLabel` / `editLabel` / `dragHandleLabel`, and optional `onAdd`,
+  `onSaved`, `onDeleted`, `onReordered`
+  - `id` is a stable, locale-independent identity that must be unique among
+    sibling tables. It keys the table's widget so state follows the table rather
+    than its position when the list changes, and is deliberately separate from
+    the display strings: two tables can legitimately share column headers (a
+    rates and a waste table both showing `Per unit`), and a title changes
+    whenever the result it interpolates does
+- `CoreSizesColumn` — one column of a table; currently its header title
+- `CoreSizesTableData.onAdd` — when provided, the app owns the add flow and the
+  built-in `SizeEntryBottomSheet` is not opened
+
+### 🧪 Tests
+
+- Widget coverage for independent per-table callbacks: swiping a row in a table
+  without `onDeleted` deletes nothing, while the deletable table still reports
+  its id
+- Coverage for each affordance disappearing with its callback — hidden drag
+  handles, hidden add action
+- Each user-facing label is asserted alongside the callback that makes it
+  reachable, so a nullable label cannot silently ship an unlabelled drag handle
+  or a titleless entry sheet
+- Golden and a11y fixtures moved onto shared table builders; the drag and delete
+  goldens now pass the callbacks their affordances require
+
 ## [0.22.0] - Stable test keys on calculator keys, strip chips and dependent-key pills
 
 ### ✨ Features

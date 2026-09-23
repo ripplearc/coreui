@@ -22,6 +22,49 @@ class _GeometryAreaShowcaseScreenState
   /// Extra scroll space reserved so content isn't hidden behind [CoreKeyboard].
   static const double _keyboardScrollBuffer = 350;
 
+  /// A read-only table: with no add, delete or reorder callbacks it renders
+  /// without an add action, drag handles or swipe-to-delete.
+  static const CoreSizesTableData _ratesAndWasteTable = CoreSizesTableData(
+    id: 'rates-and-waste',
+    title: 'Rates & waste for 1,750.7yd³',
+    columns: [
+      CoreSizesColumn(title: 'Per unit'),
+      CoreSizesColumn(title: 'Rate'),
+      CoreSizesColumn(title: 'Waste'),
+      CoreSizesColumn(title: 'Cost'),
+    ],
+    rows: [
+      CoreSizeCardData(
+        id: 'ft3',
+        values: ['ft³', r'$6.5', '0%', r'$307,247.85'],
+      ),
+      CoreSizeCardData(
+        id: 'yd3',
+        values: ['yd³', r'$150', '7%', r'$280,987.35'],
+      ),
+      CoreSizeCardData(
+        id: 'm3',
+        values: ['m³', r'$196', '0%', r'$262,346.78'],
+      ),
+    ],
+  );
+
+  /// A second read-only table, so the showcase renders all three tables the
+  /// detail panel shows: trade sizes, rates & waste, and densities.
+  static const CoreSizesTableData _densitiesTable = CoreSizesTableData(
+    id: 'densities',
+    title: 'Densities',
+    columns: [
+      CoreSizesColumn(title: 'Material'),
+      CoreSizesColumn(title: 'Density'),
+    ],
+    rows: [
+      CoreSizeCardData(id: 'concrete', values: ['Concrete', '4,050lbs/yd³']),
+      CoreSizeCardData(id: 'gravel', values: ['Gravel', '2,835lbs/yd³']),
+      CoreSizeCardData(id: 'sand', values: ['Sand', '2,700lbs/yd³']),
+    ],
+  );
+
   static const GroupNameType _basicGeometryGroup = GroupNameType(
     id: 'Basic Geometry',
     label: 'Basic Geometry',
@@ -137,19 +180,33 @@ class _GeometryAreaShowcaseScreenState
                                   ),
                                   CoreGeometryArea(
                                     isCollapsed: false,
-                                    sizesTitleLabel: 'Circle measurements',
-                                    addSizeLabel: 'Add size',
-                                    editSizeLabel: 'Edit size',
-                                    sizesTableTitles: const ['Length', 'Width'],
-                                    sizesTableData: state.sizesTableData,
-                                    onSizeDeleted: (id) =>
-                                        bloc.add(SizeDeleted(id)),
-                                    onSizesReordered: (oldIndex, newIndex) =>
-                                        bloc.add(
-                                      SizesReordered(oldIndex, newIndex),
-                                    ),
-                                    onSizeSaved: (result) =>
-                                        bloc.add(SizeSaved(result)),
+                                    tables: [
+                                      CoreSizesTableData(
+                                        id: 'circle-measurements',
+                                        title: 'Circle measurements',
+                                        addLabel: 'Add size',
+                                        editLabel: 'Edit size',
+                                        dragHandleLabel: 'Reorder',
+                                        columns: const [
+                                          CoreSizesColumn(title: 'Length'),
+                                          CoreSizesColumn(title: 'Width'),
+                                        ],
+                                        rows: state.sizesTableData,
+                                        onDeleted: (id) =>
+                                            bloc.add(SizeDeleted(id)),
+                                        onReordered: (oldIndex, newIndex) =>
+                                            bloc.add(
+                                          SizesReordered(oldIndex, newIndex),
+                                        ),
+                                        onSaved: (result) =>
+                                            bloc.add(SizeSaved(result)),
+                                      ),
+                                      // Fixed tables: no add, delete or
+                                      // reorder callbacks, so none of those
+                                      // affordances render.
+                                      _ratesAndWasteTable,
+                                      _densitiesTable,
+                                    ],
                                     dimensions: state.dimensions,
                                     onViewAllAttachmentsPressed: () {},
                                     onMediaButtonPressed: () {},

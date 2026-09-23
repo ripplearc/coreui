@@ -2,63 +2,119 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+/// Builds a table whose affordances are all enabled unless overridden, so each
+/// test can turn a single callback off and assert what disappears.
+CoreSizesTableData _table({
+  String id = 'table',
+  String title = 'Table title',
+  List<String> columnTitles = const ['Col A', 'Col B'],
+  List<CoreSizeCardData> rows = const [],
+  String? addLabel = 'Add size',
+  String? editLabel = 'Edit size',
+  String? dragHandleLabel = 'Reorder',
+  VoidCallback? onAdd,
+  void Function(SizeEntryResult result)? onSaved,
+  void Function(String id)? onDeleted,
+  void Function(int oldIndex, int newIndex)? onReordered,
+  bool editable = true,
+}) {
+  return CoreSizesTableData(
+    id: id,
+    title: title,
+    columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
+    rows: rows,
+    dragHandleLabel: dragHandleLabel,
+    onAdd: onAdd,
+    // A table is editable unless a test asks otherwise. Defaulting onSaved to a
+    // no-op unconditionally would leave a save path on every table a test
+    // describes as read-only.
+    onSaved: editable ? (onSaved ?? (_) {}) : null,
+    editLabel: editable ? editLabel : null,
+    addLabel: editable ? addLabel : null,
+    onDeleted: onDeleted,
+    onReordered: onReordered,
+  );
+}
+
+Widget _app(Widget child) => MaterialApp(
+      theme: CoreTheme.light(),
+      home: Scaffold(body: child),
+    );
+
+Finder get _dragHandles => find.byWidgetPredicate(
+      (widget) =>
+          widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
+    );
+
+/// The entry sheet mounts a full [CoreKeyboard] over the geometry area, which
+/// does not fit the default 800x600 surface. Tests that open the sheet need a
+/// phone-sized viewport or the keyboard overflows before it can be tapped.
+void _setTestViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3.0;
+  addTearDown(() {
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+}
+
+/// The sheet commits through the keyboard's result button. Anchored on the type
+/// rather than its text because the rendered label is currently '=': the sheet
+/// passes `customResultLabel: 'Add'`/`'Update'` but [CoreResultButton] renders
+/// [ResultType.label] and ignores it — a follow-up noted on PR #169. The type
+/// finder keeps these tests honest either way.
+Finder get _sheetSubmit => find.byType(CoreResultButton);
+
+/// Scopes a finder to the open entry sheet. The table underneath keeps its own
+/// add label and row values in the tree, so an unscoped [find.text] cannot say
+/// whether the sheet or the table behind it carries the match.
+Finder _inSheet(Finder matching) => find.descendant(
+      of: find.byType(SizeEntryBottomSheet),
+      matching: matching,
+    );
+
 void main() {
   group('CoreGeometryArea', () {
     testWidgets('renders geometry area with default labels', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              sizesTableTitles: ['dummy'],
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [_table()],
+        )),
       );
 
       expect(find.byType(CoreGeometryArea), findsOneWidget);
       expect(
           find.text(CoreGeometryArea.defaultDimensionsLabel), findsOneWidget);
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsOneWidget);
-      expect(
-          find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
-      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsOneWidget);
+      expect(find.text('Table title'), findsOneWidget);
+      expect(find.text('Add size'), findsOneWidget);
     });
 
     testWidgets('renders geometry area with custom labels', (tester) async {
       const customDimensions = 'Custom Dimensions';
       const customExpand = 'Custom Expand';
-      const customSizesTitle = 'Custom Sizes';
-      const customAddSize = 'Custom Add Size';
 
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              dimensionsLabel: customDimensions,
-              expandLabel: customExpand,
-              sizesTitleLabel: customSizesTitle,
-              addSizeLabel: customAddSize,
-              sizesTableTitles: const ['dummy'],
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          dimensionsLabel: customDimensions,
+          expandLabel: customExpand,
+          tables: [
+            _table(title: 'Custom Sizes', addLabel: 'Custom Add Size'),
+          ],
+        )),
       );
 
       expect(find.byType(CoreGeometryArea), findsOneWidget);
       expect(find.text(customDimensions), findsOneWidget);
       expect(find.text(customExpand), findsOneWidget);
-      expect(find.text(customSizesTitle), findsOneWidget);
-      expect(find.text(customAddSize), findsOneWidget);
+      expect(find.text('Custom Sizes'), findsOneWidget);
+      expect(find.text('Custom Add Size'), findsOneWidget);
       expect(find.text(CoreGeometryArea.defaultDimensionsLabel), findsNothing);
       expect(find.text(CoreGeometryArea.defaultExpandLabel), findsNothing);
-      expect(find.text(CoreGeometryArea.defaultSizesTitleLabel), findsNothing);
-      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
     });
 
     testWidgets('renders dimensions when provided', (tester) async {
@@ -141,90 +197,554 @@ void main() {
       expect(find.text(CoreGeometryArea.defaultCollapseLabel), findsOneWidget);
     });
 
-    testWidgets('renders sizesTableTitles when provided', (tester) async {
-      const titles = ['Area Header', 'Volume Header'];
-
+    testWidgets('renders column titles when provided', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              sizesTableTitles: titles,
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(columnTitles: const ['Area Header', 'Volume Header']),
+          ],
+        )),
       );
 
       expect(find.text('Area Header'), findsOneWidget);
       expect(find.text('Volume Header'), findsOneWidget);
     });
 
-    testWidgets('does not render header row when sizesTableTitles is empty',
+    testWidgets('does not render a table whose columns are empty',
         (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              sizesTableTitles: const [],
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [_table(columnTitles: const [])],
+        )),
       );
 
-      expect(find.text(CoreGeometryArea.defaultSizesTitleLabel), findsNothing);
-      expect(find.text(CoreGeometryArea.defaultAddSizeLabel), findsNothing);
+      expect(find.text('Table title'), findsNothing);
+      expect(find.text('Add size'), findsNothing);
     });
 
-    testWidgets('renders sizesTableData correctly and handles edge cases',
+    testWidgets('renders rows correctly and handles edge cases',
         (tester) async {
-      const titles = ['Col A', 'Col B'];
-
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              sizesTableTitles: titles,
-              sizesTableData: const [],
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [_table()],
+        )),
       );
 
       expect(find.text('Val 1'), findsNothing);
-      expect(
-          find.text(CoreGeometryArea.defaultSizesTitleLabel), findsOneWidget);
-
-      const data = [
-        CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
-        CoreSizeCardData(id: '2', values: ['Val 3', 'Val 4']),
-      ];
+      expect(find.text('Table title'), findsOneWidget);
 
       await tester.pumpWidget(
-        MaterialApp(
-          theme: CoreTheme.light(),
-          home: Scaffold(
-            body: CoreGeometryArea(
-              onMediaButtonPressed: () {},
-              onDocumentButtonPressed: () {},
-              sizesTableTitles: titles,
-              sizesTableData: data,
-            ),
-          ),
-        ),
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(rows: const [
+              CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+              CoreSizeCardData(id: '2', values: ['Val 3', 'Val 4']),
+            ]),
+          ],
+        )),
       );
 
       expect(find.text('Val 1'), findsOneWidget);
       expect(find.text('Val 2'), findsOneWidget);
       expect(find.text('Val 3'), findsOneWidget);
       expect(find.text('Val 4'), findsOneWidget);
+    });
+
+    testWidgets('a row must supply one value per column', (tester) async {
+      // The failed build substitutes an ErrorWidget tall enough to overflow the
+      // column around it, so a second, incidental exception follows the one
+      // under test. Collecting them all keeps the assertion on the first.
+      final List<FlutterErrorDetails> errors = [];
+      final originalOnError = FlutterError.onError;
+
+      FlutterError.onError = (details) => errors.add(details);
+      addTearDown(() => FlutterError.onError = originalOnError);
+
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              columnTitles: const ['Col A', 'Col B'],
+              rows: const [CoreSizeCardData(id: '1', values: ['Val 1'])],
+            ),
+          ],
+        )),
+      );
+
+      // Checked in _buildRows rather than the const constructor, which cannot
+      // inspect the rows and stay const. Without the assert the mismatch
+      // surfaces deeper, in a message naming _SizeCard's columnWidths — an
+      // internal the consumer has no name for, so the message is the point.
+      expect(
+        errors.map((e) => e.exception).whereType<AssertionError>().any(
+              (e) => e.message.toString().contains(
+                    'row "1" has 1 values but the table declares 2 columns',
+                  ),
+            ),
+        isTrue,
+        reason: 'the mismatch must be named in terms the caller passed in',
+      );
+    });
+
+    testWidgets('renders each table with independent callbacks',
+        (tester) async {
+      final deletedIds = <String>[];
+      final reorderCalls = <(int, int)>[];
+
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              id: 'sheets',
+              title: 'Sheet quantities',
+              columnTitles: const ['Size'],
+              rows: const [
+                CoreSizeCardData(id: 'sheet-1', values: ['47.24in']),
+              ],
+              onDeleted: deletedIds.add,
+              onReordered: (o, n) => reorderCalls.add((o, n)),
+            ),
+            _table(
+              id: 'rates',
+              title: 'Rates & waste',
+              columnTitles: const ['Per unit'],
+              rows: const [
+                CoreSizeCardData(id: 'rate-1', values: [r'$6.5']),
+              ],
+              editable: false,
+            ),
+            _table(
+              id: 'densities',
+              title: 'Densities',
+              columnTitles: const ['Material'],
+              rows: const [
+                CoreSizeCardData(id: 'density-1', values: ['concrete']),
+              ],
+              editable: false,
+            ),
+          ],
+        )),
+      );
+
+      expect(find.text('Sheet quantities'), findsOneWidget);
+      expect(find.text('Rates & waste'), findsOneWidget);
+      expect(find.text('Densities'), findsOneWidget);
+
+      // Only the first table is reorderable and deletable, so only its rows
+      // carry a drag handle and respond to a swipe.
+      expect(_dragHandles, findsOneWidget);
+
+      await tester.drag(find.text(r'$6.5'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      expect(deletedIds, isEmpty,
+          reason: 'swiping a table without onDeleted must not delete');
+
+      await tester.drag(find.text('47.24in'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      expect(deletedIds, ['sheet-1']);
+    });
+
+    testWidgets('hides the add action when addLabel is null', (tester) async {
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [_table(addLabel: null)],
+        )),
+      );
+
+      expect(find.text('Table title'), findsOneWidget);
+      expect(find.text('Add size'), findsNothing);
+    });
+
+    testWidgets('a non-reorderable table still supports swipe-to-delete',
+        (tester) async {
+      final deleted = <String>[];
+      final rows = <CoreSizeCardData>[
+        const CoreSizeCardData(id: 'a', values: ['A1', 'A2']),
+        const CoreSizeCardData(id: 'b', values: ['B1', 'B2']),
+      ];
+
+      await tester.pumpWidget(
+        _app(StatefulBuilder(
+          builder: (context, setState) => CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: rows,
+                onDeleted: (id) {
+                  deleted.add(id);
+                  setState(() => rows.removeWhere((r) => r.id == id));
+                },
+              ),
+            ],
+          ),
+        )),
+      );
+
+      expect(_dragHandles, findsNothing);
+
+      await tester.drag(find.text('A1'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+
+      expect(deleted, ['a']);
+      expect(find.text('A1'), findsNothing);
+    });
+
+    testWidgets('two tables may share column titles', (tester) async {
+      // Keying the tables on their display strings made this throw
+      // "Duplicate keys found" — a rates and a waste table legitimately share
+      // headers, so identity has to come from the caller's id.
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(
+              id: 'rates',
+              title: 'Rates',
+              columnTitles: const ['Per unit', 'Value'],
+              rows: const [
+                CoreSizeCardData(id: 'r1', values: ['ft3', r'$6.5']),
+              ],
+            ),
+            _table(
+              id: 'waste',
+              title: 'Waste',
+              columnTitles: const ['Per unit', 'Value'],
+              rows: const [
+                CoreSizeCardData(id: 'w1', values: ['ft3', '0%']),
+              ],
+            ),
+          ],
+        )),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Rates'), findsOneWidget);
+      expect(find.text('Waste'), findsOneWidget);
+    });
+
+    test('a table id must not be empty', () {
+      expect(
+        () => CoreSizesTableData(
+          id: '',
+          title: 'Unidentified',
+          columns: const [CoreSizesColumn(title: 'Col')],
+          rows: const [],
+        ),
+        throwsAssertionError,
+        reason: 'the id keys the table across rebuilds, so it must name one',
+      );
+    });
+
+    testWidgets('sibling tables must have unique ids', (tester) async {
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(id: 'same', title: 'First'),
+            _table(id: 'same', title: 'Second'),
+          ],
+        )),
+      );
+
+      // Without the assert this is a framework "Duplicate keys found" error
+      // that never names CoreSizesTableData.id.
+      expect(tester.takeException(), isAssertionError);
+    });
+
+    group('label and callback pairing', () {
+      test('a reorderable table requires dragHandleLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'reorderable',
+            title: 'Reorderable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            dragHandleLabel: null,
+            onReordered: (_, __) {},
+          ),
+          throwsAssertionError,
+          reason: 'an unlabelled drag handle announces the row text instead',
+        );
+      });
+
+      test('a table with onSaved requires editLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'editable',
+            title: 'Editable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            editLabel: null,
+            onSaved: (_) {},
+          ),
+          throwsAssertionError,
+          reason: 'the entry sheet would open with no title',
+        );
+      });
+
+      test('onAdd requires addLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'addable',
+            title: 'Addable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            addLabel: null,
+            onAdd: () {},
+          ),
+          throwsAssertionError,
+          reason: 'addLabel is what renders the add action',
+        );
+      });
+
+      test('addLabel requires onAdd or onSaved', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'labelled',
+            title: 'Labelled',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            addLabel: 'Add size',
+          ),
+          throwsAssertionError,
+          reason: 'with neither callback the add action has nothing to do, so '
+              'the label silently goes missing',
+        );
+      });
+    });
+
+    // The add action picks between three outcomes: an app-owned flow, the
+    // built-in entry sheet, or nothing at all. Before several tables there was
+    // only ever the sheet, so the fork is new and each arm needs pinning.
+    group('add and edit entry points', () {
+      testWidgets('onAdd takes over the add action from the built-in sheet',
+          (tester) async {
+        _setTestViewport(tester);
+        var addTaps = 0;
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(onAdd: () => addTaps++)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(addTaps, 1);
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'onAdd means the app owns the flow; the sheet must stay shut',
+        );
+      });
+
+      testWidgets('the add action falls back to the sheet, which reports '
+          'through onSaved', (tester) async {
+        _setTestViewport(tester);
+        final saved = <SizeEntryResult>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(onSaved: saved.add)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SizeEntryBottomSheet), findsOneWidget);
+        expect(
+          _inSheet(find.text('Add size')),
+          findsOneWidget,
+          reason: "the sheet's title comes from addLabel",
+        );
+        expect(_inSheet(find.text('Col A*')), findsOneWidget);
+        expect(_inSheet(find.text('Col B*')), findsOneWidget);
+
+        // Typed through the keyboard rather than submitted empty: without a
+        // value to carry, the assertions below could not tell a correct commit
+        // from one that reports back nothing the user entered. The first field
+        // takes focus when the sheet opens, so the digit lands in Col A.
+        await tester.tap(_inSheet(find.text('7')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(_sheetSubmit);
+        await tester.pumpAndSettle();
+
+        expect(saved, hasLength(1));
+        expect(saved.single.intent, SizeOperationIntent.add);
+        expect(saved.single.values, ['7', '']);
+        expect(
+          saved.single.index,
+          isNull,
+          reason: 'an addition has no row to index',
+        );
+      });
+
+      testWidgets('tapping a row opens the sheet in edit mode',
+          (tester) async {
+        _setTestViewport(tester);
+        final saved = <SizeEntryResult>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: 'first', values: ['A1', 'A2']),
+                  CoreSizeCardData(id: 'second', values: ['B1', 'B2']),
+                ],
+                onSaved: saved.add,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text('B1'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SizeEntryBottomSheet), findsOneWidget);
+        expect(
+          _inSheet(find.text('Edit size')),
+          findsOneWidget,
+          reason: 'editing shows editLabel, not addLabel',
+        );
+        expect(
+          _inSheet(find.text('B1')),
+          findsOneWidget,
+          reason: "the tapped row's values pre-fill the fields",
+        );
+        expect(
+          _inSheet(find.text('B2')),
+          findsOneWidget,
+          reason: 'every column of the tapped row pre-fills, not just the first',
+        );
+
+        await tester.tap(_sheetSubmit);
+        await tester.pumpAndSettle();
+
+        expect(saved, hasLength(1));
+        expect(saved.single.intent, SizeOperationIntent.edit);
+        expect(
+          saved.single.index,
+          1,
+          reason: 'the sheet reports back the row the user tapped',
+        );
+        expect(saved.single.values, ['B1', 'B2']);
+      });
+
+      testWidgets('a read-only row has nothing to tap', (tester) async {
+        _setTestViewport(tester);
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: 'rate', values: [r'$6.5', '10%']),
+                ],
+                editable: false,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text(r'$6.5'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'a table with no edit affordance opens nothing',
+        );
+      });
+
+      testWidgets('it is onSaved, not the labels, that makes a row tappable',
+          (tester) async {
+        _setTestViewport(tester);
+
+        // Built inline because the _table helper drops onSaved, editLabel and
+        // addLabel together, which cannot say which of the three gates the tap.
+        // Only editLabel is kept here: the constructor allows it without
+        // onSaved, so a caller can reach this combination, whereas addLabel
+        // without either callback is asserted against. Gating the tap on the
+        // label instead would open a sheet whose submit silently discards the
+        // edit, since there is no onSaved to receive it.
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              const CoreSizesTableData(
+                id: 'labelled-but-read-only',
+                title: 'Table title',
+                columns: [
+                  CoreSizesColumn(title: 'Col A'),
+                  CoreSizesColumn(title: 'Col B'),
+                ],
+                rows: [
+                  CoreSizeCardData(id: 'only', values: ['A1', 'A2']),
+                ],
+                editLabel: 'Edit size',
+                onSaved: null,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.text('A1'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byType(SizeEntryBottomSheet),
+          findsNothing,
+          reason: 'onSaved is the callback that receives the edit, so it is '
+              'what decides whether a row can be tapped at all',
+        );
+      });
+    });
+
+    testWidgets('hides drag handles when onReordered is null', (tester) async {
+      await tester.pumpWidget(
+        _app(CoreGeometryArea(
+          onMediaButtonPressed: () {},
+          onDocumentButtonPressed: () {},
+          tables: [
+            _table(rows: const [
+              CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+            ]),
+          ],
+        )),
+      );
+
+      expect(find.text('Val 1'), findsOneWidget);
+      expect(_dragHandles, findsNothing);
     });
 
     testWidgets('onReorder fires with adjusted index when dragging downward',
@@ -245,15 +765,19 @@ void main() {
                 return CoreGeometryArea(
                   onMediaButtonPressed: () {},
                   onDocumentButtonPressed: () {},
-                  sizesTableTitles: const ['Col'],
-                  sizesTableData: data,
-                  onSizesReordered: (oldIndex, newIndex) {
-                    reorderCalls.add((oldIndex, newIndex));
-                    setState(() {
-                      final item = data.removeAt(oldIndex);
-                      data.insert(newIndex, item);
-                    });
-                  },
+                  tables: [
+                    _table(
+                      columnTitles: const ['Col'],
+                      rows: data,
+                      onReordered: (oldIndex, newIndex) {
+                        reorderCalls.add((oldIndex, newIndex));
+                        setState(() {
+                          final item = data.removeAt(oldIndex);
+                          data.insert(newIndex, item);
+                        });
+                      },
+                    ),
+                  ],
                 );
               },
             ),
@@ -261,10 +785,7 @@ void main() {
         ),
       );
 
-      final dragHandles = find.byWidgetPredicate(
-        (widget) =>
-            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
-      );
+      final dragHandles = _dragHandles;
       expect(dragHandles, findsNWidgets(3));
 
       await tester.drag(dragHandles.first, const Offset(0, 100));
@@ -295,15 +816,19 @@ void main() {
                 return CoreGeometryArea(
                   onMediaButtonPressed: () {},
                   onDocumentButtonPressed: () {},
-                  sizesTableTitles: const ['Col'],
-                  sizesTableData: data,
-                  onSizesReordered: (oldIndex, newIndex) {
-                    reorderCalls.add((oldIndex, newIndex));
-                    setState(() {
-                      final item = data.removeAt(oldIndex);
-                      data.insert(newIndex, item);
-                    });
-                  },
+                  tables: [
+                    _table(
+                      columnTitles: const ['Col'],
+                      rows: data,
+                      onReordered: (oldIndex, newIndex) {
+                        reorderCalls.add((oldIndex, newIndex));
+                        setState(() {
+                          final item = data.removeAt(oldIndex);
+                          data.insert(newIndex, item);
+                        });
+                      },
+                    ),
+                  ],
                 );
               },
             ),
@@ -311,10 +836,7 @@ void main() {
         ),
       );
 
-      final dragHandles = find.byWidgetPredicate(
-        (widget) =>
-            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
-      );
+      final dragHandles = _dragHandles;
       expect(dragHandles, findsNWidgets(4));
 
       // Drag the first card past two other rows so it lands at index 2,
@@ -344,14 +866,18 @@ void main() {
                 return CoreGeometryArea(
                   onMediaButtonPressed: () {},
                   onDocumentButtonPressed: () {},
-                  sizesTableTitles: const ['Col'],
-                  sizesTableData: data,
-                  onSizesReordered: (oldIndex, newIndex) {
-                    setState(() {
-                      final item = data.removeAt(oldIndex);
-                      data.insert(newIndex, item);
-                    });
-                  },
+                  tables: [
+                    _table(
+                      columnTitles: const ['Col'],
+                      rows: data,
+                      onReordered: (oldIndex, newIndex) {
+                        setState(() {
+                          final item = data.removeAt(oldIndex);
+                          data.insert(newIndex, item);
+                        });
+                      },
+                    ),
+                  ],
                 );
               },
             ),
@@ -359,10 +885,7 @@ void main() {
         ),
       );
 
-      final dragHandles = find.byWidgetPredicate(
-        (widget) =>
-            widget is CoreIconWidget && widget.icon == CoreIcons.dragIndicator,
-      );
+      final dragHandles = _dragHandles;
 
       await tester.drag(dragHandles.first, const Offset(0, 100));
       await tester.pumpAndSettle();
@@ -385,7 +908,7 @@ void main() {
           reason: 'Highlight should be cleared after 500ms');
     });
 
-    testWidgets('swiping a size card triggers onSizeDeleted', (tester) async {
+    testWidgets('swiping a size card triggers onDeleted', (tester) async {
       String? deletedId;
 
       await tester.pumpWidget(
@@ -395,14 +918,18 @@ void main() {
             body: CoreGeometryArea(
               onMediaButtonPressed: () {},
               onDocumentButtonPressed: () {},
-              sizesTableTitles: const ['Col A'],
-              sizesTableData: const [
-                CoreSizeCardData(id: '1', values: ['Val 1']),
-                CoreSizeCardData(id: '2', values: ['Val 2']),
+              tables: [
+                _table(
+                  columnTitles: const ['Col A'],
+                  rows: const [
+                    CoreSizeCardData(id: '1', values: ['Val 1']),
+                    CoreSizeCardData(id: '2', values: ['Val 2']),
+                  ],
+                  onDeleted: (id) {
+                    deletedId = id;
+                  },
+                ),
               ],
-              onSizeDeleted: (id) {
-                deletedId = id;
-              },
             ),
           ),
         ),
