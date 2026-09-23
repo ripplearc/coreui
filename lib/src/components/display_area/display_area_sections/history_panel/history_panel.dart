@@ -12,6 +12,8 @@ class _HistoryPanel extends StatelessWidget {
     required this.errorMessage,
     required this.stage,
     this.showCurrentChips = true,
+    this.onPreviousSessionTapped,
+    this.restoreSemanticsLabel,
   });
 
   final VoidCallback? onClose;
@@ -23,6 +25,8 @@ class _HistoryPanel extends StatelessWidget {
   final String errorMessage;
   final DisplayAreaStage stage;
   final bool showCurrentChips;
+  final ValueChanged<String>? onPreviousSessionTapped;
+  final String? restoreSemanticsLabel;
 
   static const double _closeBorderWidth = 1.5;
 
@@ -82,6 +86,8 @@ class _HistoryPanel extends StatelessWidget {
               key: const Key('display_area_previous_section'),
               sessions: previousSessions,
               limitToLast: stage == DisplayAreaStage.expandedPrevious,
+              onSessionTapped: onPreviousSessionTapped,
+              restoreSemanticsLabel: restoreSemanticsLabel,
             ),
           )
         : const SizedBox.shrink();
@@ -180,14 +186,30 @@ class _PreviousChipsSection extends StatelessWidget {
     super.key,
     required this.sessions,
     this.limitToLast = false,
+    this.onSessionTapped,
+    this.restoreSemanticsLabel,
   });
 
   final List<CoreHistorySessionData> sessions;
   final bool limitToLast;
+  final ValueChanged<String>? onSessionTapped;
+  final String? restoreSemanticsLabel;
   static const double _kDividerThickness = 1;
 
   @override
   Widget build(BuildContext context) {
+    assert(() {
+      if (onSessionTapped == null) return true;
+      final ids = sessions
+          .map((session) => session.id)
+          .whereType<String>()
+          .where((id) => id.isNotEmpty);
+      return ids.toSet().length == ids.length;
+    }(),
+        'previousSessions must carry unique ids: onPreviousSessionTapped '
+        'reports an id, and a repeated one cannot say which session the user '
+        'tapped.');
+
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
@@ -206,39 +228,79 @@ class _PreviousChipsSection extends StatelessWidget {
               thickness: _kDividerThickness,
               color: colors.lineDarkOutline,
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: CoreSpacing.space4),
-                Text(
-                  sessions[i].dateLabel,
-                  style: typography.titleMediumSemiBold.copyWith(
-                    color: colors.textDark,
-                  ),
-                ),
-                const SizedBox(height: CoreSpacing.space5),
-                Wrap(
-                  spacing: CoreSpacing.space2,
-                  runSpacing: CoreSpacing.space2,
-                  children: sessions[i].chipsList,
-                ),
-                const SizedBox(height: CoreSpacing.space5),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    sessions[i].value,
-                    style: typography.headlineLargeSemiBold
-                        .copyWith(color: colors.textDark),
-                  ),
-                ),
-                const SizedBox(height: CoreSpacing.space1),
-              ],
-            ),
-          ),
+          _buildSessionCard(sessions[i], colors, typography),
         ],
       ],
+    );
+  }
+
+  Widget _buildSessionCard(
+    CoreHistorySessionData session,
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
+    final card = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: CoreSpacing.space4),
+          Text(
+            session.dateLabel,
+            style: typography.titleMediumSemiBold.copyWith(
+              color: colors.textDark,
+            ),
+          ),
+          const SizedBox(height: CoreSpacing.space5),
+          Wrap(
+            spacing: CoreSpacing.space2,
+            runSpacing: CoreSpacing.space2,
+            children: session.chipsList,
+          ),
+          const SizedBox(height: CoreSpacing.space5),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              session.value,
+              style: typography.headlineLargeSemiBold
+                  .copyWith(color: colors.textDark),
+            ),
+          ),
+          const SizedBox(height: CoreSpacing.space1),
+        ],
+      ),
+    );
+
+    final id = session.id;
+    final onTap = onSessionTapped;
+    final label = restoreSemanticsLabel;
+    if (id == null ||
+        id.isEmpty ||
+        onTap == null ||
+        label == null ||
+        label.isEmpty) {
+      return card;
+    }
+
+    return MergeSemantics(
+      child: Semantics(
+        button: true,
+        enabled: true,
+        label: label,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            key: Key('display_area_previous_session_$id'),
+            onTap: () => onTap(id),
+            splashFactory: NoSplash.splashFactory,
+            highlightColor: colors.transparent,
+            hoverColor: colors.transparent,
+            child: ExcludeFocus(
+              child: IgnorePointer(child: card),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

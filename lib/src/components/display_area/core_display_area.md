@@ -60,11 +60,14 @@ CoreDisplayArea(
   ],
   previousSessions: const [
     CoreHistorySessionData(
+      id: 'session-42',
       dateLabel: 'Yesterday',
       value: '10.5',
       chipsList: [...], // past chips
     ),
   ],
+  onPreviousSessionTapped: (id) => controller.restoreSession(id),
+  restoreSemanticsLabel: 'Restore this calculation',
 )
 ```
 
@@ -145,10 +148,19 @@ TweenAnimationBuilder<double>(
 | `chipsList` | `List<CoreCalculatorChip>` | `[]` | Ordered list of current-session chips displayed in the history panel. Controls the adaptive expansion threshold. |
 | `previousSessions` | `List<CoreHistorySessionData>` | `[]` | Past session data revealed natively in `expandedPrevious` and `fullScreen` stages. |
 
+#### `CoreHistorySessionData`
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `dateLabel` | `String` | When the session happened — "Today", "May 27, 2025". |
+| `chipsList` | `List<CoreCalculatorChip>` | The tokens that produced the calculation. |
+| `value` | `String` | The evaluated result. |
+| `id` | `String?` | Identifies the session to the consumer. Optional: a session with no `id` — or with an empty one, which the consumer could not look up either — renders as a plain card that reports nothing when tapped, so callers written before the field keep compiling. Ids must be unique across `previousSessions` — a repeated one cannot say which session was tapped, and is asserted against. |
+
 ### Callbacks & Actions
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `onStageChanged` | `void Function(DisplayAreaStage)?` | `null` | Triggered precisely when the expansion stage transitions. |
+| `onPreviousSessionTapped` | `ValueChanged<String>?` | `null` | Called with a session's `id` when its card is tapped, so the consumer can restore that tape. Only sessions carrying an `id` are tappable. Requires `restoreSemanticsLabel`. |
 | `onClose` | `VoidCallback?` | `null` | Triggered when the user taps the top-right close icon (which is hidden in `expandedPrevious` and `fullScreen` modes). |
 | `onPressedDependentKey` | `VoidCallback?` | `null` | **Deprecated** — action fired when the legacy single dependent-key pill is tapped. Use `CoreDependentKeyData.onPressed`. |
 
@@ -191,6 +203,23 @@ Every pill carries a stable `Key`, so a Patrol journey or a widget test taps it 
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `closeSemanticLabel` | `String` | **required** | The semantic label announced by screen readers for the close icon. Has no default — pass a localized string so screen readers announce it in the user's language. |
+| `restoreSemanticsLabel` | `String?` | `null` | The label announced for a tappable session card. Asserted non-null whenever `onPreviousSessionTapped` is given: a control a screen reader cannot announce is invisible to it. |
+
+A tappable session card is marked `button: true` and carries `restoreSemanticsLabel`. It is an `InkWell` whose splash is `NoSplash.splashFactory` and whose highlight and hover colours are cleared, as `CoreCalculatorChip`, `CoreSearchRowItem` and `CoreCheckRowItem` do: the design gives a card no pressed or hover state, so the ink is hidden rather than the `InkWell` dropped — a bare `GestureDetector` would announce a button that keyboard, D-pad and switch-access users cannot reach. The keyboard focus highlight is deliberately left in place, because it is what those users navigate by. The history goldens are untouched by the change.
+
+`restoreSemanticsLabel` is asserted at the constructor, and an assert is gone in release. A card whose label is missing or empty therefore stays a plain card rather than becoming a button announced only by the date and value it already reads out — the same call `Toast.receipt` makes for its second action.
+
+The `InkWell` sits on a `Material(type: MaterialType.transparency)` of its own, as the library's other `InkWell`s do. Without one, a host that embeds the display area outside a `Scaffold` throws "No Material widget found" — which it did not before the card became tappable.
+
+A tappable card is one control, and it takes three widgets to hold that true for the three ways a user reaches it. A chip carrying its own `onTap` is otherwise live in all three.
+
+- `IgnorePointer` — touch. Without it the chip wins the gesture arena and most of the card is a dead zone for restore.
+- `ExcludeFocus` — keyboard. `IgnorePointer` stops the pointer, not the focus, so the chip stays a tab stop inside the card and Enter runs a past session's chip action.
+- `MergeSemantics` — screen readers. Neither of the other two changes the semantics tree: the chip stays a node flagged `isButton` and `isEnabled` that carries no `tap` action, so a swipe lands on a button that answers nothing. Merging folds it into the card, which keeps its text in the announcement instead of dropping it the way `ExcludeSemantics` would.
+
+Merging unions the merged nodes' flags, so the card states `enabled: true` for itself. Without it a `CoreCalculatorChipType.disabled` chip — which is how a past session's chips are normally drawn — hands the card its own disabled state, and a screen reader announces a working Restore button as unavailable.
+
+Chips in a past session are not interactive by touch, by keyboard or to a screen reader.
 
 The value text is a **live region**: a screen reader announces the new value (or `errorTitle`) whenever it changes, so a result computed from the keyboard is heard without moving focus. Each dependent-key pill announces its label (or `CoreDependentKeyData.semanticsLabel`) followed by `CoreDependentKeyData.semanticsHint`.
 

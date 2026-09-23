@@ -28,6 +28,46 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   static const GroupNameType _trigonometryGroup =
       GroupNameType(id: 'Trigonometry', label: 'Trigonometry');
 
+  /// The tape a restore tap brings back. A real consumer would hold these in
+  /// its own store; the showcase keeps them here so [_restoreSession] can look
+  /// one up by the id the callback reports.
+  static const List<CoreHistorySessionData> _previousSessions = [
+    CoreHistorySessionData(
+      id: 'session-may-24',
+      dateLabel: 'May 24, 2026',
+      value: '12.0',
+      chipsList: [
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Length',
+          value: '10 ft',
+        ),
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Width',
+          value: '12 ft',
+        ),
+      ],
+    ),
+    CoreHistorySessionData(
+      id: 'session-yesterday',
+      dateLabel: 'Yesterday',
+      value: '10.5',
+      chipsList: [
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Rise',
+          value: '8.4 ft',
+        ),
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Run',
+          value: '0.8 ft',
+        ),
+      ],
+    ),
+  ];
+
   List<FunctionGroup> _groups = [
     FunctionGroup(
       name: _basicGeometryGroup,
@@ -117,40 +157,10 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                           },
                           dependentKeys: state.dependentKeys,
                           chipsList: chips,
-                          previousSessions: [
-                            CoreHistorySessionData(
-                              dateLabel: 'May 24, 2026',
-                              value: '12.0',
-                              chipsList: [
-                                const CoreCalculatorChip(
-                                  type: CoreCalculatorChipType.disabled,
-                                  label: 'Length',
-                                  value: '10 ft',
-                                ),
-                                const CoreCalculatorChip(
-                                  type: CoreCalculatorChipType.disabled,
-                                  label: 'Width',
-                                  value: '12 ft',
-                                ),
-                              ],
-                            ),
-                            CoreHistorySessionData(
-                              dateLabel: 'Yesterday',
-                              value: '10.5',
-                              chipsList: [
-                                const CoreCalculatorChip(
-                                  type: CoreCalculatorChipType.disabled,
-                                  label: 'Rise',
-                                  value: '8.4 ft',
-                                ),
-                                const CoreCalculatorChip(
-                                  type: CoreCalculatorChipType.disabled,
-                                  label: 'Run',
-                                  value: '0.8 ft',
-                                ),
-                              ],
-                            ),
-                          ],
+                          onPreviousSessionTapped: (id) =>
+                              _restoreSession(context, id),
+                          restoreSemanticsLabel: 'Restore this calculation',
+                          previousSessions: _previousSessions,
                         ),
                       ),
                     ),
@@ -208,6 +218,24 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _restoreSession(BuildContext context, String id) {
+    final session = _previousSessions.firstWhere((session) => session.id == id);
+    CoreToast.showReceipt(
+      context,
+      'Restored from history',
+      'Undo',
+      () => _report(context, 'Undo tapped — the current tape comes back'),
+      highlight: session.dateLabel,
+    );
+  }
+
+  void _report(BuildContext context, String message) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }

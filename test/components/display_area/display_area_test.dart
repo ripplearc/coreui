@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -1153,6 +1154,389 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('calc_dep_pill_sheet_size')));
       await tester.pumpAndSettle();
       expect(pressed, isTrue);
+    });
+  });
+
+  group('CoreDisplayArea previous-session restore', () {
+    CoreHistorySessionData session({
+      String? id,
+      String value = '2700ft³',
+      VoidCallback? onChipTap,
+      CoreCalculatorChipType chipType = CoreCalculatorChipType.editable,
+    }) {
+      return CoreHistorySessionData(
+        id: id,
+        dateLabel: 'May 27, 2025',
+        value: value,
+        chipsList: [
+          CoreCalculatorChip(
+            label: 'Length',
+            value: '16ft 14in',
+            type: chipType,
+            onTap: onChipTap,
+          ),
+        ],
+      );
+    }
+
+    Widget buildArea({
+      required List<CoreHistorySessionData> sessions,
+      ValueChanged<String>? onTapped,
+    }) {
+      return MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            label: 'Length',
+            value: '16ft 14in',
+            previousSessions: sessions,
+            onPreviousSessionTapped: onTapped,
+            restoreSemanticsLabel:
+                onTapped == null ? null : testRestoreSemanticsLabel,
+          ),
+        ),
+      );
+    }
+
+    /// Swipes down once to reach the stage where previous sessions show.
+    Future<void> revealPreviousSessions(WidgetTester tester) async {
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('display_area_previous_section')),
+          findsOneWidget);
+    }
+
+    testWidgets('reports the id of the session that was tapped',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1')],
+          onTapped: tapped.add,
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      await tester.tap(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tapped, ['session-1']);
+    });
+
+    testWidgets('a chip inside a restorable card cannot steal the tap',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      var chipTaps = 0;
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1', onChipTap: () => chipTaps++)],
+          onTapped: tapped.add,
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      final chip = find.descendant(
+        of: find.byKey(const Key('display_area_previous_session_session-1')),
+        matching: find.byType(CoreCalculatorChip),
+      );
+      expect(chip, findsOneWidget);
+
+      // warnIfMissed is off because the miss is the point: the chip sits
+      // under an IgnorePointer, so the card's InkWell takes the tap. Without
+      // it the chip wins the gesture arena and most of the card goes dead.
+      await tester.tap(chip, warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      expect(tapped, ['session-1']);
+      expect(chipTaps, 0);
+    });
+
+    testWidgets('a session without an id reports nothing and is not a button',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(sessions: [session()], onTapped: tapped.add),
+      );
+      await revealPreviousSessions(tester);
+
+      await tester.tap(find.text('2700ft³'));
+      await tester.pumpAndSettle();
+
+      expect(tapped, isEmpty);
+      // CoreCalculatorChip brings its own InkWell, so the card's absence is
+      // asserted on the semantics rather than on the widget type.
+      final semantics = tester.getSemantics(find.text('2700ft³'));
+      expect(semantics.flagsCollection.isButton, isFalse);
+    });
+
+    testWidgets('an empty id counts as no id',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(sessions: [session(id: '')], onTapped: tapped.add),
+      );
+      await revealPreviousSessions(tester);
+
+      await tester.tap(find.text('2700ft³'));
+      await tester.pumpAndSettle();
+
+      // Reporting '' hands the consumer a value it cannot look up.
+      expect(tapped, isEmpty);
+      final semantics = tester.getSemantics(find.text('2700ft³'));
+      expect(semantics.flagsCollection.isButton, isFalse);
+    });
+
+    testWidgets('a card can be restored from the keyboard',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        buildArea(sessions: [session(id: 'session-1')], onTapped: tapped.add),
+      );
+      await revealPreviousSessions(tester);
+
+      // The card is an InkWell so that keyboard, D-pad and switch users can
+      // reach it. An opaque GestureDetector passes every other test here.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(tapped, ['session-1']);
+    });
+
+    testWidgets('a chip inside a restorable card is not a keyboard stop',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      var chipTaps = 0;
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1', onChipTap: () => chipTaps++)],
+          onTapped: tapped.add,
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // IgnorePointer stops the touch but not the focus: a chip carrying its
+      // own onTap stays a focus stop unless ExcludeFocus removes it, and a
+      // keyboard user tabbing through the cards would run a past session's
+      // chip action.
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+      }
+
+      expect(tapped, ['session-1', 'session-1', 'session-1']);
+      expect(chipTaps, 0);
+    });
+
+    testWidgets('a chip inside a restorable card is not its own semantics node',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [session(id: 'session-1', onChipTap: () {})],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // ExcludeFocus takes the chip off the tab order but leaves its
+      // semantics alone: without MergeSemantics a screen reader still lands
+      // on a nested node flagged as an enabled button that answers nothing.
+      final card = tester.getSemantics(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      expect(card.mergeAllDescendantsIntoThisNode, isTrue);
+      // Merged, not dropped: the chip's text is still announced with the
+      // card. The merged text lives in the node's data, not in its own label.
+      expect(card.getSemanticsData().label, contains('Length, 16ft 14in'));
+      handle.dispose();
+    });
+
+    // MergeSemantics folds the chip's node into the card's, and merging
+    // unions flags: a disabled chip handed the whole card its disabled state,
+    // so a screen reader announced a working Restore button as unavailable.
+    // The showcase draws every past-session chip disabled, and the other
+    // tests here use an editable chip or none, so nothing caught it.
+    testWidgets('a disabled chip does not disable the card that holds it',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: 'session-1', chipType: CoreCalculatorChipType.disabled)
+          ],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      final card = tester
+          .getSemantics(
+            find.byKey(const Key('display_area_previous_session_session-1')),
+          )
+          .getSemanticsData();
+      expect(card.flagsCollection.isButton, isTrue);
+      expect(card.flagsCollection.isEnabled, ui.Tristate.isTrue);
+      handle.dispose();
+    });
+
+    testWidgets('sessions sharing an empty id are tolerated',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: '', value: '100'),
+            session(id: '', value: '200'),
+          ],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      // An empty id is no id, so two of them are two plain cards. Asserting
+      // on them would reject a caller whose backend spells "no id" as ''.
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a card is inert when no callback is given',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(buildArea(sessions: [session(id: 'session-1')]));
+      await revealPreviousSessions(tester);
+
+      expect(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a tappable card is announced as a button',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        buildArea(sessions: [session(id: 'session-1')], onTapped: (_) {}),
+      );
+      await revealPreviousSessions(tester);
+
+      final semantics = tester.getSemantics(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      expect(semantics.label, contains(testRestoreSemanticsLabel));
+      expect(semantics.flagsCollection.isButton, isTrue);
+      handle.dispose();
+    });
+
+    testWidgets('sessions sharing an id are rejected',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: 'dup', value: '100'),
+            session(id: 'dup', value: '200'),
+          ],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      expect(tester.takeException(), isAssertionError);
+    });
+
+    testWidgets('a restorable card needs no Material from its host',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          // Deliberately no Scaffold: opting into the callback must not make
+          // the display area demand an ink surface it never needed before.
+          home: CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            label: 'Length',
+            value: '16ft 14in',
+            previousSessions: [session(id: 'session-1')],
+            onPreviousSessionTapped: tapped.add,
+            restoreSemanticsLabel: testRestoreSemanticsLabel,
+          ),
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tapped, ['session-1']);
+    });
+
+    testWidgets('sessions sharing an id are tolerated when nothing reads them',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: 'dup', value: '100'),
+            session(id: 'dup', value: '200'),
+          ],
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      expect(tester.takeException(), isNull);
+    });
+
+    test('a tappable card must carry a semantics label', () {
+      expect(
+        () => CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          onPreviousSessionTapped: (_) {},
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    testWidgets('a card with an empty label stays a plain card',
+        (WidgetTester tester) async {
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              label: 'Length',
+              value: '16ft 14in',
+              // The constructor assert passes an empty string, and asserts are
+              // gone in release. A button announced only by the date and value
+              // it already reads out is worse than the plain card.
+              restoreSemanticsLabel: '',
+              onPreviousSessionTapped: tapped.add,
+              previousSessions: [session(id: 'session-1')],
+            ),
+          ),
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      expect(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+        findsNothing,
+      );
+      await tester.tap(find.text('2700ft³'));
+      await tester.pumpAndSettle();
+      expect(tapped, isEmpty);
     });
   });
 }

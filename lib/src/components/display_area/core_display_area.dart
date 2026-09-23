@@ -87,7 +87,13 @@ class CoreDisplayArea extends StatefulWidget {
         'next minor release.')
     this.onPressedDependentKey,
     this.onStageChanged,
-  });
+    this.onPreviousSessionTapped,
+    this.restoreSemanticsLabel,
+  }) : assert(
+          onPreviousSessionTapped == null || restoreSemanticsLabel != null,
+          'A tappable session card needs restoreSemanticsLabel: a control a '
+          'screen reader cannot announce is invisible to it.',
+        );
 
   /// Called when the user taps the close icon.
   final VoidCallback? onClose;
@@ -193,6 +199,25 @@ class CoreDisplayArea extends StatefulWidget {
     ];
   }
 
+  /// Called with a session's `id` when the user taps its card in the history
+  /// panel, so the consumer can restore that tape.
+  ///
+  /// Only sessions carrying a [CoreHistorySessionData.id] are tappable; the
+  /// rest render as plain cards. Requires [restoreSemanticsLabel].
+  /// ```dart
+  /// onPreviousSessionTapped: (id) => controller.restoreSession(id),
+  /// ```
+  final ValueChanged<String>? onPreviousSessionTapped;
+
+  /// The semantic label announced by screen readers for a session card.
+  ///
+  /// Required alongside [onPreviousSessionTapped]: localisation is the
+  /// consumer's responsibility. Pass a localised string from the app layer:
+  /// ```dart
+  /// restoreSemanticsLabel: AppLocalizations.of(context).restoreSession,
+  /// ```
+  final String? restoreSemanticsLabel;
+
   /// Called whenever the expansion stage changes.
   ///
   /// Use this to drive external animations — for example sliding a keyboard
@@ -259,6 +284,8 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
           hasError: widget.hasError,
           stage: _stage,
           showCurrentChips: _stage != DisplayAreaStage.fullScreen,
+          onPreviousSessionTapped: widget.onPreviousSessionTapped,
+          restoreSemanticsLabel: widget.restoreSemanticsLabel,
         ),
       ),
       DecoratedBox(
