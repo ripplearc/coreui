@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -573,6 +574,25 @@ void main() {
         final semantics = tester.getSemantics(secondaryFinder);
         expect(semantics.label, 'View');
         expect(semantics.flagsCollection.isButton, isTrue);
+        expect(semantics.rect.size, tester.getSize(secondaryFinder));
+        handle.dispose();
+      });
+
+      // Without a boundary of its own the InkWell folded its tap and its
+      // label into the toast's node, so the whole row became the View button
+      // and voice control aiming at its centre would have hit the message.
+      testWidgets('the toast is not itself the second action',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          buildReceipt(onAction: _noop, onSecondary: _noop),
+        );
+
+        final toast = tester.getSemantics(find.byType(Toast));
+        expect(toast.label, '$description · $highlight');
+        expect(toast.flagsCollection.isButton, isFalse);
+        expect(toast.getSemanticsData().hasAction(SemanticsAction.tap),
+            isFalse);
         handle.dispose();
       });
 

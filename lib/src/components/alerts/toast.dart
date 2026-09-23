@@ -514,29 +514,32 @@ class _ToastState extends State<Toast> {
     final onSecondary = widget.onSecondary;
     if (secondaryLabel == null || onSecondary == null) return null;
 
-    return InkWell(
-      key: const Key('toast_secondary_button'),
-      onTap: () => _answer(onSecondary),
-      splashFactory: NoSplash.splashFactory,
-      highlightColor: colors.transparent,
-      hoverColor: colors.transparent,
-      child: Semantics(
-        button: true,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: CoreSpacing.space12,
-            minHeight: CoreSpacing.space12,
-            maxHeight: CoreSpacing.space12,
-          ),
-          child: Center(
-            widthFactor: 1,
-            child: Text(
-              secondaryLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: typography.bodyLargeSemiBold.copyWith(
-                color: colors.textLink
-                    .withValues(alpha: Toast._secondaryActionOpacity),
+    return Semantics(
+      container: true,
+      child: InkWell(
+        key: const Key('toast_secondary_button'),
+        onTap: () => _answer(onSecondary),
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: colors.transparent,
+        hoverColor: colors.transparent,
+        child: Semantics(
+          button: true,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: CoreSpacing.space12,
+              minHeight: CoreSpacing.space12,
+              maxHeight: CoreSpacing.space12,
+            ),
+            child: Center(
+              widthFactor: 1,
+              child: Text(
+                secondaryLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: typography.bodyLargeSemiBold.copyWith(
+                  color: colors.textLink
+                      .withValues(alpha: Toast._secondaryActionOpacity),
+                ),
               ),
             ),
           ),
