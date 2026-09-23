@@ -25,7 +25,7 @@ enum _ToastType {
   success,
 
   /// Receipt toast confirming something was saved, with an action that undoes
-  /// it. Auto-dismisses; carries no close button.
+  /// it. Carries no close button — it leaves through [Toast.onClose].
   receipt,
 }
 
@@ -33,8 +33,8 @@ enum _ToastType {
 ///
 /// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
 /// factory constructors to create a toast with the appropriate visual style.
-/// Use [Toast.receipt] for the self-dismissing confirmation that offers an
-/// action to undo what it reports.
+/// Use [Toast.receipt] for the confirmation that offers an action to undo
+/// what it reports; it leaves through [Toast.onClose].
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
@@ -61,6 +61,11 @@ class Toast extends StatefulWidget {
       CoreIconSize.size24 + CoreSpacing.space3 * 2;
 
   static const double _radius = CoreSpacing.space2;
+
+  static const double _verticalPadding = CoreSpacing.space3;
+
+  static const double _receiptVerticalPaddingAroundTheTapTarget =
+      CoreSpacing.space1;
 
   const Toast._({
     required this.description,
@@ -243,18 +248,18 @@ class _ToastState extends State<Toast> {
     return Semantics(
       container: true,
       button: !isReceipt && widget.onClose != null,
-      // The receipt is the one toast that is both timed and actionable: a
-      // screen reader has to be told it arrived, or the Undo window closes
-      // before its user knows there was one.
+      // The receipt is the one toast that offers an action rather than a
+      // close button: a screen reader has to be told it arrived, or its user
+      // never learns there is an Undo to take.
       liveRegion: isReceipt,
       label: widget.title,
       hint: widget.title != null ? widget.description : null,
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: CoreSpacing.space4,
-          // Tighter, because the row below is already pinned to the tap-target
-          // height — which also keeps both receipt shapes the same height.
-          vertical: isReceipt ? CoreSpacing.space1 : CoreSpacing.space3,
+          vertical: isReceipt
+              ? Toast._receiptVerticalPaddingAroundTheTapTarget
+              : Toast._verticalPadding,
         ),
         decoration: BoxDecoration(
           color: _getBackgroundColor(colors),
@@ -396,7 +401,7 @@ class _ToastState extends State<Toast> {
   }
 
   Widget _buildReceiptAction(String actionLabel) {
-    return CoreButton(
+    final button = CoreButton(
       key: const Key('toast_action_button'),
       label: actionLabel,
       semanticsLabel: actionLabel,
@@ -404,6 +409,8 @@ class _ToastState extends State<Toast> {
       size: CoreButtonSize.large,
       fullWidth: false,
     );
+
+    return Semantics(container: true, child: button);
   }
 
   Widget _buildCloseButton(

@@ -204,6 +204,32 @@ void main() {
         expect(semantics.label, contains('Your changes have been saved.'));
         expect(semantics.hint, contains('Your changes have been saved.'));
       });
+
+      testWidgets('an untitled toast announces its description once',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Toast.error(
+                description: 'Your changes were not saved.',
+                closeLabel: 'Dismiss',
+              ),
+            ),
+          ),
+        );
+
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(
+          'Your changes were not saved.'.allMatches(semantics.label).length,
+          1,
+          reason: 'the description reaches the screen reader through the text '
+              'it labels, so the toast node must not repeat it',
+        );
+        expect(semantics.hint, isEmpty);
+        handle.dispose();
+      });
     });
 
     group('Receipt Toast', () {
@@ -307,8 +333,8 @@ void main() {
         final handle = tester.ensureSemantics();
         await tester.pumpWidget(buildReceipt(onAction: () {}));
 
-        // A timed, actionable toast that is never announced closes its own
-        // Undo window before a screen-reader user knows it opened.
+        // An actionable toast that is never announced offers an Undo its
+        // screen-reader user never learns about.
         final semantics = tester.getSemantics(find.byType(Toast));
         expect(semantics.flagsCollection.isLiveRegion, isTrue);
         handle.dispose();
@@ -340,6 +366,36 @@ void main() {
         expect(tester.getSize(actionFinder).height, CoreSpacing.space12);
       });
 
+      // The size above is the layout box. These tap that box near its edges,
+      // so a CoreButton that later stops reacting to them cannot pass unseen.
+      testWidgets('the action answers a tap just inside its top and bottom',
+          (WidgetTester tester) async {
+        const insetFromTheEdge = 4.0;
+
+        for (final atTheTop in const [true, false]) {
+          var taps = 0;
+          // A receipt answers at most once, so each edge needs its own state.
+          await tester.pumpWidget(KeyedSubtree(
+            key: ValueKey(atTheTop),
+            child: buildReceipt(onAction: () => taps++),
+          ));
+
+          final box = tester.getRect(actionFinder);
+          await tester.tapAt(Offset(
+            box.center.dx,
+            atTheTop
+                ? box.top + insetFromTheEdge
+                : box.bottom - insetFromTheEdge,
+          ));
+          await tester.pump();
+
+          expect(taps, 1,
+              reason: atTheTop
+                  ? 'the top edge of the tap target is dead'
+                  : 'the bottom edge of the tap target is dead');
+        }
+      });
+
       testWidgets('reads the lead and the highlight as one label',
           (WidgetTester tester) async {
         await setupA11yTest(tester);
@@ -352,7 +408,20 @@ void main() {
         // Exact, not contains: the message used to be announced twice, once
         // from the container's own label and once from the text it wraps,
         // and a contains() assertion reads the same either way.
-        expect(semantics.label, '$description · $highlight\nUndo');
+        expect(semantics.label, '$description · $highlight');
+      });
+
+      // Voice control taps the centre of a node. Were the action folded into
+      // the message's node, that centre would land on the text.
+      testWidgets('the action is a node of its own, apart from the message',
+          (WidgetTester tester) async {
+        await setupA11yTest(tester);
+        await tester.pumpWidget(buildReceipt(onAction: () {}));
+        await tester.pumpAndSettle();
+
+        final action = tester.getSemantics(actionFinder);
+        expect(action.label, 'Undo');
+        expect(action.rect.size, tester.getSize(actionFinder));
       });
 
       testWidgets('reports the action before the dismissal',

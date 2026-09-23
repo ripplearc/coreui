@@ -11,6 +11,7 @@
 
 ### ⚠️ Behaviour change
 
+- **Toast**: an untitled toast is announced once instead of twice. Its semantics label is the title alone, and the description reaches the screen reader through the text it labels; before, an untitled toast used its description as the node label as well, so the description was read out and then read again (CA-1042)
 - **CoreToast**: every overlay removal now goes through one idempotent path, and each `onClose` and timer carries the entry it was built with rather than reading whichever entry is current. Two defects go with it. Two toasts shown in the same frame left the first orphaned in the overlay, because an entry inserted in that same frame has not mounted yet and the old `mounted` check skipped it. And `cleanup()` followed by a new toast threw "An OverlayEntry should be removed only once" in debug builds, because `cleanup()` removed the entry but left it in `_entry` for the next call to remove again. A close tapped on a toast that has already been replaced is now ignored instead of taking the replacement off the screen (CA-1042)
 
 ## [0.26.0] - CorePreferencesSheet and CorePreferenceOptionSheet

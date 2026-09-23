@@ -89,7 +89,7 @@ Creates the confirmation the calculator shows when a session is
 banked: "**Saved to history** · Calc 60ft²" with `Undo`.
 It differs from the other four variants in shape as well as content — one line
 of text rather than a stacked title and description, an outlined surface rather
-than a flat tinted one, actions instead of a close button.
+than a flat tinted one, an action instead of a close button.
 
 ## Visual Properties
 
@@ -121,6 +121,9 @@ Each toast type has specific styling:
     - Icon Color: `CoreIconColors.dark`
     - Icon: `CoreIcons.success`
     - No shadow, and a `CoreSpacing.space3` corner radius rather than 8
+    - `CoreSpacing.space1` of vertical padding rather than `space3`: the row
+      inside is already pinned to the 48 dp tap-target height, which also keeps
+      a receipt with a highlight and one without at the same height
 
 ## Accessibility
 
