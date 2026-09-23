@@ -75,6 +75,8 @@ class CoreSizesTableData {
     this.addLabel,
     this.editLabel,
     this.dragHandleLabel,
+    this.editRowSemanticsLabelBuilder,
+    this.deleteRowSemanticsLabelBuilder,
     this.onAdd,
     this.onSaved,
     this.onDeleted,
@@ -94,6 +96,18 @@ class CoreSizesTableData {
           onSaved == null || editLabel != null,
           'CoreSizesTableData: a table with onSaved must supply editLabel, '
           'otherwise tapping a row opens the entry sheet with no title.',
+        ),
+        assert(
+          onSaved == null || editRowSemanticsLabelBuilder != null,
+          'CoreSizesTableData: a table with onSaved renders a pencil on every '
+          'row, so it must supply editRowSemanticsLabelBuilder — otherwise the '
+          'button reaches screen readers unlabelled.',
+        ),
+        assert(
+          onDeleted == null || deleteRowSemanticsLabelBuilder != null,
+          'CoreSizesTableData: a table with onDeleted renders a trash button on '
+          'every row, so it must supply deleteRowSemanticsLabelBuilder — '
+          'otherwise the button reaches screen readers unlabelled.',
         ),
         assert(
           onAdd == null || addLabel != null,
@@ -153,6 +167,20 @@ class CoreSizesTableData {
   /// from the app layer.
   final String? dragHandleLabel;
 
+  /// Builds the semantic label for a row's edit button, from that row.
+  ///
+  /// A builder rather than a fixed string so the label can name the row it acts
+  /// on — `'Edit ${row.values.first}'` reads far better than ten identical
+  /// `'Edit'`s. Required whenever [onSaved] is provided, since that is what
+  /// renders the button.
+  final String Function(CoreSizeCardData row)? editRowSemanticsLabelBuilder;
+
+  /// Builds the semantic label for a row's delete button, from that row.
+  ///
+  /// Required whenever [onDeleted] is provided. See
+  /// [editRowSemanticsLabelBuilder] for why this is a builder.
+  final String Function(CoreSizeCardData row)? deleteRowSemanticsLabelBuilder;
+
   /// Invoked when the user taps this table's add action, taking ownership of
   /// the add flow.
   ///
@@ -206,6 +234,18 @@ class CoreGeometryArea extends StatelessWidget {
 
   /// The default text shown for the collapse button.
   static const String defaultCollapseLabel = 'Collapse';
+
+  /// Key for a row's edit button, so tests and consuming apps can address it
+  /// by table and row rather than by position.
+  ///
+  /// Row ids are unique within a table but not across tables, so the table's
+  /// own id is part of the key.
+  static ValueKey<String> editRowKey(String tableId, String rowId) =>
+      ValueKey('core_geometry_area_edit_${tableId}_$rowId');
+
+  /// Key for a row's delete button. See [editRowKey].
+  static ValueKey<String> deleteRowKey(String tableId, String rowId) =>
+      ValueKey('core_geometry_area_delete_${tableId}_$rowId');
 
   /// The default text shown for the attachments section title.
   static const String defaultAttachmentsTitleLabel = 'Attachments';

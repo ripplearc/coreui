@@ -24,6 +24,8 @@ CoreSizesTableData _table({
     columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
     rows: rows,
     dragHandleLabel: dragHandleLabel,
+    editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
+    deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
     onAdd: onAdd,
     // A table is editable unless a test asks otherwise. Defaulting onSaved to a
     // no-op unconditionally would leave a save path on every table a test
@@ -72,6 +74,25 @@ Finder _inSheet(Finder matching) => find.descendant(
       of: find.byType(SizeEntryBottomSheet),
       matching: matching,
     );
+
+/// Drags the first row's handle down by [rows] row-heights, in half-row steps.
+///
+/// Measured at runtime and stepped rather than one jump: a single large
+/// `tester.drag` against `ReorderableListView` lands non-monotonically, and
+/// hard-coded pixel offsets break whenever the row height changes.
+Future<void> _dragFirstRowDown(WidgetTester tester, double rows) async {
+  final rowHeight = tester
+      .getSize(find.byWidgetPredicate((w) => w is Dismissible).first)
+      .height;
+  final gesture = await tester.startGesture(tester.getCenter(_dragHandles.first));
+  await tester.pump(const Duration(milliseconds: 200));
+  for (var i = 0; i < (rows * 2).round(); i++) {
+    await gesture.moveBy(Offset(0, rowHeight / 2));
+    await tester.pump();
+  }
+  await gesture.up();
+  await tester.pumpAndSettle();
+}
 
 void main() {
   group('CoreGeometryArea', () {
@@ -298,6 +319,12 @@ void main() {
 
     testWidgets('renders each table with independent callbacks',
         (tester) async {
+      // Three tables of 72 dp rows exceed the default 600 dp test surface.
+      // CoreGeometryArea is mainAxisSize.min and leaves scrolling to its
+      // parent, so the fixture supplies the room instead.
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       final deletedIds = <String>[];
       final reorderCalls = <(int, int)>[];
 
@@ -466,6 +493,385 @@ void main() {
       // Without the assert this is a framework "Duplicate keys found" error
       // that never names CoreSizesTableData.id.
       expect(tester.takeException(), isAssertionError);
+    });
+
+    group('row actions', () {
+      Finder editButtons() => find.byWidgetPredicate(
+            (w) => w is CoreIconWidget && w.icon == CoreIcons.edit,
+          );
+      Finder deleteButtons() => find.byWidgetPredicate(
+            (w) => w is CoreIconWidget && w.icon == CoreIcons.delete,
+          );
+
+      testWidgets('an editable, deletable row renders both buttons',
+          (tester) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+                ],
+                onDeleted: (_) {},
+              ),
+            ],
+          )),
+        );
+
+        expect(editButtons(), findsOneWidget);
+        // Only the row's button: Dismissible builds its swipe background
+        // lazily, once a drag starts.
+        expect(deleteButtons(), findsOneWidget);
+      });
+
+      testWidgets('a read-only table renders neither button', (tester) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: const [
+              CoreSizesTableData(
+                id: 'rates',
+                title: 'Rates',
+                columns: [CoreSizesColumn(title: 'Per unit')],
+                rows: [
+                  CoreSizeCardData(id: 'ft3', values: [r'$6.5']),
+                ],
+              ),
+            ],
+          )),
+        );
+
+        expect(editButtons(), findsNothing);
+        expect(deleteButtons(), findsNothing);
+      });
+
+      // The reserved action slot is two independent terms, one per callback.
+      // "Both buttons" and "neither button" above agree on a flat 96 dp and a
+      // flat 0, so neither can tell a per-callback reservation from a
+      // table-wide one: reserving two buttons whenever either callback is set
+      // passes both of them.
+      //
+      // Icon count cannot pin it either. The row builds its buttons straight
+      // from the callbacks, so the icons stay right even when the reservation
+      // is wrong. `actionsWidth` is read by the header, which mirrors the
+      // row's action slot so the column titles stay over their columns — and
+      // by the scroll threshold. Measuring that header box is what catches the
+      // math.
+      const trailingSpace = CoreSpacing.space4;
+
+      Future<double> headerActionsSlot(
+        WidgetTester tester, {
+        required bool editable,
+        required bool deletable,
+      }) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                columnTitles: const ['Col'],
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['1a']),
+                ],
+                editable: editable,
+                onDeleted: deletable ? (_) {} : null,
+              ),
+            ],
+          )),
+        );
+        // The header row is the only Row above the column title; its one
+        // SizedBox is the reserved slot.
+        final headerRow = find
+            .ancestor(of: find.text('Col'), matching: find.byType(Row))
+            .first;
+        final slot = find.descendant(
+          of: headerRow,
+          matching: find.byType(SizedBox),
+        );
+        expect(slot, findsOneWidget);
+        return tester.getSize(slot).width;
+      }
+
+      testWidgets('an edit-only table reserves one button of width, not two',
+          (tester) async {
+        final width =
+            await headerActionsSlot(tester, editable: true, deletable: false);
+
+        expect(editButtons(), findsOneWidget);
+        expect(deleteButtons(), findsNothing);
+        // Reserving a flat two-button slot whenever either callback is set
+        // would leave 48 dp of empty header over the row's single button.
+        expect(width, CoreSpacing.space12 + trailingSpace);
+      });
+
+      testWidgets('a delete-only table reserves one button of width, not two',
+          (tester) async {
+        final width =
+            await headerActionsSlot(tester, editable: false, deletable: true);
+
+        expect(editButtons(), findsNothing);
+        // Only the row's button: Dismissible builds its swipe background
+        // lazily, once a drag starts.
+        expect(deleteButtons(), findsOneWidget);
+        expect(width, CoreSpacing.space12 + trailingSpace);
+      });
+
+      testWidgets('the two-button and no-button slots bracket them',
+          (tester) async {
+        expect(
+          await headerActionsSlot(tester, editable: true, deletable: true),
+          CoreSpacing.space12 * 2 + trailingSpace,
+        );
+        expect(
+          await headerActionsSlot(tester, editable: false, deletable: false),
+          trailingSpace,
+        );
+      });
+
+      testWidgets('the delete button reports its row id', (tester) async {
+        final deleted = <String>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: 'first', values: ['A1', 'A2']),
+                  CoreSizeCardData(id: 'second', values: ['B1', 'B2']),
+                ],
+                onDeleted: deleted.add,
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.byKey(CoreGeometryArea.deleteRowKey('table', 'second')));
+        await tester.pumpAndSettle();
+
+        expect(deleted, ['second']);
+      });
+
+      testWidgets('the edit button opens the entry sheet pre-filled',
+          (tester) async {
+        // The sheet carries a full keyboard and does not fit the default
+        // surface; its own tests size up the same way.
+        await tester.binding.setSurfaceSize(const Size(1080, 2400));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                columnTitles: const ['Rail', 'O.C.'],
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['5', '8ft']),
+                ],
+              ),
+            ],
+          )),
+        );
+
+        await tester.tap(find.byKey(CoreGeometryArea.editRowKey('table', '1')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Edit size'), findsOneWidget);
+        expect(find.text('5'), findsWidgets);
+        expect(find.text('8ft'), findsWidgets);
+      });
+
+      testWidgets('a horizontal drag starting on the delete button does not '
+          'dismiss the row', (tester) async {
+        final deleted = <String>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+                ],
+                onDeleted: deleted.add,
+              ),
+            ],
+          )),
+        );
+
+        // The button claims horizontal drags, so a sloppy swipe that begins on
+        // it must not reach the row's Dismissible and delete by gesture.
+        await tester.drag(deleteButtons().first, const Offset(-500, 0));
+        await tester.pumpAndSettle();
+
+        expect(deleted, isEmpty);
+        expect(find.text('Val 1'), findsOneWidget);
+      });
+
+      testWidgets('the drag proxy keeps its action buttons', (tester) async {
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                columnTitles: const ['Col'],
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['1a']),
+                  CoreSizeCardData(id: '2', values: ['2a']),
+                ],
+                onDeleted: (_) {},
+                onReordered: (_, __) {},
+              ),
+            ],
+          )),
+        );
+
+        final staticWidth = tester.getSize(find.text('1a')).width;
+        final gesture =
+            await tester.startGesture(tester.getCenter(_dragHandles.first));
+        await tester.pump(const Duration(milliseconds: 200));
+        await gesture.moveBy(const Offset(0, 40));
+        await tester.pump();
+
+        // The floating proxy keeps layout's reserved actionsWidth either way.
+        // If it dropped the buttons, the value columns would stretch into the
+        // freed space and the text would visibly jump mid-drag.
+        // One remaining static row plus the floating proxy. Without the fix
+        // the proxy contributes none and this is 1.
+        expect(editButtons(), findsNWidgets(2));
+        // Within the 3 dp the drop-highlight border takes off the content box.
+        // Dropping the proxy's buttons would free the reserved actions width
+        // and stretch this cell by tens of pixels instead.
+        expect(
+          tester.getSize(find.text('1a').first).width,
+          closeTo(staticWidth, 4),
+        );
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 500));
+      });
+
+      testWidgets('a button is no more of a scroll dead zone than the row body',
+          (tester) async {
+        // A phone-width surface, so eight columns genuinely overflow.
+        await tester.binding.setSurfaceSize(const Size(412, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        Future<double> dragAndMeasure({
+          required bool deletable,
+          required bool fromButton,
+        }) async {
+          await tester.pumpWidget(
+            _app(CoreGeometryArea(
+              onMediaButtonPressed: () {},
+              onDocumentButtonPressed: () {},
+              tables: [
+                _table(
+                  columnTitles: const ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+                  rows: const [
+                    CoreSizeCardData(
+                      id: '1',
+                      values: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                    ),
+                  ],
+                  onDeleted: deletable ? (_) {} : null,
+                ),
+              ],
+            )),
+          );
+
+          // The row's buttons sit at its right edge, well past a 412 dp
+          // viewport at the initial offset. An earlier version of this test
+          // dragged from there: the gesture landed in empty space, scrolled
+          // nothing, and the assertion passed without a button involved.
+          //
+          // Scrolling one into view puts the table at its end, and both cases
+          // are measured from there — so the button and the row body differ
+          // only in where the drag starts, not in how far the table can move.
+          await tester.ensureVisible(
+            find.byKey(CoreGeometryArea.editRowKey('table', '1')),
+          );
+          await tester.pumpAndSettle();
+
+          final target = fromButton
+              ? find.byKey(deletable
+                  ? CoreGeometryArea.deleteRowKey('table', '1')
+                  // A row without onDeleted renders no trash, so the control
+                  // is the pencil — guarded by the same onHorizontalDragStart.
+                  : CoreGeometryArea.editRowKey('table', '1'))
+              // Column F: cells A-C sit off the left edge once the table is
+              // scrolled to its end.
+              : find.text('6');
+
+          // Checked, not assumed — if a change puts the target back off screen
+          // this must fail rather than quietly go vacuous again.
+          final rect = tester.getRect(target);
+          expect(
+            rect.left >= 0 && rect.right <= 412.0,
+            isTrue,
+            reason: 'the drag must land on $rect, not on empty space',
+          );
+
+          final before = tester.getTopLeft(find.text('1')).dx;
+          // Towards the start, not the end. Revealing the button means
+          // scrolling to the far end, where a further end-ward drag has
+          // nowhere left to go and would read as "did not scroll" for every
+          // case — vacuous in the other direction.
+          await tester.drag(target, const Offset(120, 0));
+          await tester.pumpAndSettle();
+          return tester.getTopLeft(find.text('1')).dx - before;
+        }
+
+        // A deletable row claims horizontal drags across its whole width — the
+        // Dismissible over the body, the button's own guard over the button —
+        // so neither scrolls the table.
+        expect(await dragAndMeasure(deletable: true, fromButton: false), 0);
+        expect(await dragAndMeasure(deletable: true, fromButton: true), 0);
+
+        // With nothing to guard, both scroll. The pair is the actual claim:
+        // the button is no deader to a scroll than the row body beside it.
+        expect(
+          await dragAndMeasure(deletable: false, fromButton: false),
+          greaterThan(0),
+        );
+        expect(
+          await dragAndMeasure(deletable: false, fromButton: true),
+          greaterThan(0),
+        );
+      });
+
+      testWidgets('swiping the row body still deletes', (tester) async {
+        final deleted = <String>[];
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [
+              _table(
+                rows: const [
+                  CoreSizeCardData(id: '1', values: ['Val 1', 'Val 2']),
+                ],
+                onDeleted: deleted.add,
+              ),
+            ],
+          )),
+        );
+
+        await tester.drag(find.text('Val 1'), const Offset(-500, 0));
+        await tester.pumpAndSettle();
+
+        expect(deleted, ['1']);
+      });
     });
 
     group('label and callback pairing', () {
@@ -788,8 +1194,7 @@ void main() {
       final dragHandles = _dragHandles;
       expect(dragHandles, findsNWidgets(3));
 
-      await tester.drag(dragHandles.first, const Offset(0, 100));
-      await tester.pumpAndSettle();
+      await _dragFirstRowDown(tester, 1);
 
       expect(reorderCalls.length, 1);
       expect(reorderCalls.first, (0, 1));
@@ -839,10 +1244,8 @@ void main() {
       final dragHandles = _dragHandles;
       expect(dragHandles, findsNWidgets(4));
 
-      // Drag the first card past two other rows so it lands at index 2,
-      // not just the adjacent slot.
-      await tester.drag(dragHandles.first, const Offset(0, 150));
-      await tester.pumpAndSettle();
+      // Past two rows, so it lands at index 2 rather than the adjacent slot.
+      await _dragFirstRowDown(tester, 1.5);
 
       expect(reorderCalls.length, 1);
       expect(reorderCalls.first, (0, 2));
@@ -885,10 +1288,7 @@ void main() {
         ),
       );
 
-      final dragHandles = _dragHandles;
-
-      await tester.drag(dragHandles.first, const Offset(0, 100));
-      await tester.pumpAndSettle();
+      await _dragFirstRowDown(tester, 1);
 
       final highlightedCardFinder = find.byWidgetPredicate((w) {
         return w is DecoratedBox &&

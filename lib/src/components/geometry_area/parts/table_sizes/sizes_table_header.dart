@@ -31,8 +31,10 @@ class _SizesTableHeader extends StatelessWidget {
                   ),
                 ),
               ),
-          SizedBox(width: layout.trailingSpace),
-          // right-edge guard so last column isn't flush
+          // Mirrors the row's action buttons so the header titles stay over
+          // their columns, plus the right-edge guard that keeps the last
+          // column off the edge.
+          SizedBox(width: layout.actionsWidth + layout.trailingSpace),
         ],
       ),
     );

@@ -6,6 +6,7 @@ class _TableLayout {
     required this.trailingSpace,
     required this.columnWidths,
     required this.endMargin,
+    required this.actionsWidth,
     required this.isScrollable,
   });
 
@@ -13,6 +14,12 @@ class _TableLayout {
   final double trailingSpace;
   final double endMargin;
   final List<double> columnWidths;
+
+  /// Width reserved for the row's trailing edit/delete buttons, zero when the
+  /// table renders neither. The header reserves the same width so its
+  /// fixed-width columns stay aligned with the row's flexible ones.
+  final double actionsWidth;
+
   final bool isScrollable;
 }
 
@@ -28,16 +35,46 @@ class _SizesTable extends StatefulWidget {
 class _SizesTableState extends State<_SizesTable> {
   int? _recentlyDroppedIndex;
 
+  _SizeCard _card({
+    required CoreSizeCardData row,
+    required int index,
+    required _TableLayout layout,
+    required bool isReorderable,
+    required bool isHighlighted,
+  }) {
+    final table = widget.table;
+    return _SizeCard(
+      index: index,
+      layout: layout,
+      values: row.values,
+      dragHandleLabel: table.dragHandleLabel,
+      isReorderable: isReorderable,
+      isHighlighted: isHighlighted,
+      editButtonKey: CoreGeometryArea.editRowKey(table.id, row.id),
+      deleteButtonKey: CoreGeometryArea.deleteRowKey(table.id, row.id),
+      editSemanticsLabel: table.editRowSemanticsLabelBuilder?.call(row),
+      deleteSemanticsLabel: table.deleteRowSemanticsLabelBuilder?.call(row),
+      onEdit: table.onSaved == null
+          ? null
+          : () => _openEntrySheet(row: row, index: index),
+      onDelete:
+          table.onDeleted == null ? null : () => table.onDeleted?.call(row.id),
+    );
+  }
+
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
       BuildContext context, _TableLayout layout) {
     final colors = AppColorsExtension.of(context);
     final row = widget.table.rows[index];
 
-    final draggingCard = _SizeCard(
+    // The proxy renders the same card as the static row. Were it to drop the
+    // action buttons it would keep layout's reserved actionsWidth with nothing
+    // to put in it, and the value columns would stretch into the gap the moment
+    // a drag starts.
+    final draggingCard = _card(
+      row: row,
       index: index,
       layout: layout,
-      values: row.values,
-      dragHandleLabel: widget.table.dragHandleLabel,
       isReorderable: true,
       isHighlighted: true,
     );
@@ -62,6 +99,7 @@ class _SizesTableState extends State<_SizesTable> {
   }
 
   static const _highlightDuration = 500;
+
 
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
@@ -146,11 +184,10 @@ class _SizesTableState extends State<_SizesTable> {
             onTap: table.onSaved == null
                 ? null
                 : () => _openEntrySheet(row: row, index: index),
-            child: _SizeCard(
+            child: _card(
+              row: row,
               index: index,
               layout: layout,
-              values: row.values,
-              dragHandleLabel: table.dragHandleLabel,
               isReorderable: isReorderable,
               isHighlighted: index == _recentlyDroppedIndex,
             ),
@@ -188,8 +225,15 @@ class _SizesTableState extends State<_SizesTable> {
         const columnWidth = CoreSpacing.space16;
         const endMargin = CoreSpacing.space1;
 
+        // Each button is a full 48 dp tap target, so the slot is sized by how
+        // many of them the table's callbacks actually render.
+        final actionsWidth =
+            (table.onSaved == null ? 0.0 : _SizeCard.actionSize) +
+            (table.onDeleted == null ? 0.0 : _SizeCard.actionSize);
+
         final totalWidth = leadingSpace +
             trailingSpace +
+            actionsWidth +
             ((columnWidth + endMargin) * table.columns.length);
         final bool isScrollable = constraints.maxWidth < totalWidth;
         final containerWidth = math.max(constraints.maxWidth, totalWidth);
@@ -202,6 +246,7 @@ class _SizesTableState extends State<_SizesTable> {
             table.columns.length,
             columnWidth,
           ),
+          actionsWidth: actionsWidth,
           isScrollable: isScrollable,
         );
 
