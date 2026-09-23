@@ -186,6 +186,10 @@ class _GeometryAreaShowcaseScreenState
                                         title: 'Circle measurements',
                                         addLabel: 'Add size',
                                         editLabel: 'Edit size',
+                                        addResultLabel: 'Add',
+                                        editResultLabel: 'Update',
+                                        unitOptions: const ['m', 'cm', 'mm'],
+                                        unitGroupLabel: 'Unit',
                                         dragHandleLabel: 'Reorder',
                                         editRowSemanticsLabelBuilder: (row) =>
                                             'Edit ${row.values.first}',

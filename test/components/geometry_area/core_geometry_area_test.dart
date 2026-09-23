@@ -23,6 +23,10 @@ CoreSizesTableData _table({
     title: title,
     columns: columnTitles.map((t) => CoreSizesColumn(title: t)).toList(),
     rows: rows,
+    addResultLabel: 'Add',
+    editResultLabel: 'Update',
+    unitOptions: const ['m', 'cm', 'mm'],
+    unitGroupLabel: 'Unit',
     dragHandleLabel: dragHandleLabel,
     editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
     deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
@@ -61,10 +65,10 @@ void _setTestViewport(WidgetTester tester) {
 }
 
 /// The sheet commits through the keyboard's result button. Anchored on the type
-/// rather than its text because the rendered label is currently '=': the sheet
-/// passes `customResultLabel: 'Add'`/`'Update'` but [CoreResultButton] renders
-/// [ResultType.label] and ignores it — a follow-up noted on PR #169. The type
-/// finder keeps these tests honest either way.
+/// rather than its text: the key now renders the sheet's `customResultLabel`
+/// ('Add'/'Update'), but these tests are about which sheet opens and what it
+/// reports, not what the key says. The type finder holds either way, and
+/// `core_value_editor_sheet_test.dart` covers the label itself.
 Finder get _sheetSubmit => find.byType(CoreResultButton);
 
 /// Scopes a finder to the open entry sheet. The table underneath keeps its own
@@ -898,10 +902,47 @@ void main() {
             columns: const [CoreSizesColumn(title: 'Col')],
             rows: const [],
             editLabel: null,
+            addResultLabel: 'Add',
+            editResultLabel: 'Update',
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: 'Unit',
             onSaved: (_) {},
           ),
           throwsAssertionError,
           reason: 'the entry sheet would open with no title',
+        );
+      });
+
+      test('a table with onSaved requires the commit-key labels', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'editable',
+            title: 'Editable',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            editLabel: 'Edit',
+            editRowSemanticsLabelBuilder: (row) => 'Edit',
+            addResultLabel: null,
+            editResultLabel: 'Update',
+            onSaved: (_) {},
+          ),
+          throwsAssertionError,
+          reason: 'the sheet never names its own commit key',
+        );
+      });
+
+      test('a table with unitOptions requires unitGroupLabel', () {
+        expect(
+          () => CoreSizesTableData(
+            id: 'united',
+            title: 'United',
+            columns: const [CoreSizesColumn(title: 'Col')],
+            rows: const [],
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: null,
+          ),
+          throwsAssertionError,
+          reason: 'the unit row would name itself in English',
         );
       });
 
