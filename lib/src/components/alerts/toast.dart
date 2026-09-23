@@ -361,6 +361,7 @@ class _ToastState extends State<Toast> {
     if (!rowWidth.isFinite) return action;
 
     final widthTheMessageShares = rowWidth - Toast._receiptRowLeadingWidth;
+    if (widthTheMessageShares <= 0) return action;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth:

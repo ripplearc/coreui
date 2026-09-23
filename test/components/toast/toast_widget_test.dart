@@ -320,6 +320,38 @@ void main() {
             greaterThanOrEqualTo(shared * 0.4));
       });
 
+      // The width the message shares is the row less the icon column. In a
+      // host narrower than that column it went negative, and a negative
+      // maxWidth is a non-normalized BoxConstraints, which asserts.
+      testWidgets('survives a host narrower than its own icon column',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 40,
+                  child: Toast.receipt(
+                    description: description,
+                    actionLabel: 'Undo',
+                    onAction: _noop,
+                    onClose: _noop,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // A 40 dp host cannot hold a 48 dp icon column, so an overflow is
+        // the honest complaint. A negative cap asserted before reaching it,
+        // and clamping that cap to zero only traded the assert for an Undo
+        // nobody can tap.
+        expect('${tester.takeException()}', isNot(contains('NOT NORMALIZED')));
+        expect(tester.getSize(actionFinder).height, CoreSpacing.space12);
+        expect(tester.getSize(actionFinder).width, greaterThan(0));
+      });
+
       testWidgets('a short label is not padded out to the cap',
           (WidgetTester tester) async {
         await tester.pumpWidget(buildReceipt(onAction: _noop));
