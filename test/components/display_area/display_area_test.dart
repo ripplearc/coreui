@@ -1162,6 +1162,7 @@ void main() {
       String? id,
       String value = '2700ft³',
       VoidCallback? onChipTap,
+      CoreCalculatorChipType chipType = CoreCalculatorChipType.editable,
     }) {
       return CoreHistorySessionData(
         id: id,
@@ -1171,7 +1172,7 @@ void main() {
           CoreCalculatorChip(
             label: 'Length',
             value: '16ft 14in',
-            type: CoreCalculatorChipType.editable,
+            type: chipType,
             onTap: onChipTap,
           ),
         ],
@@ -1356,6 +1357,34 @@ void main() {
       // Merged, not dropped: the chip's text is still announced with the
       // card. The merged text lives in the node's data, not in its own label.
       expect(card.getSemanticsData().label, contains('Length, 16ft 14in'));
+      handle.dispose();
+    });
+
+    // MergeSemantics folds the chip's node into the card's, and merging
+    // unions flags: a disabled chip handed the whole card its disabled state,
+    // so a screen reader announced a working Restore button as unavailable.
+    // The showcase draws every past-session chip disabled, and the other
+    // tests here use an editable chip or none, so nothing caught it.
+    testWidgets('a disabled chip does not disable the card that holds it',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        buildArea(
+          sessions: [
+            session(id: 'session-1', chipType: CoreCalculatorChipType.disabled)
+          ],
+          onTapped: (_) {},
+        ),
+      );
+      await revealPreviousSessions(tester);
+
+      final card = tester
+          .getSemantics(
+            find.byKey(const Key('display_area_previous_session_session-1')),
+          )
+          .getSemanticsData();
+      expect(card.flagsCollection.isButton, isTrue);
+      expect(card.flagsCollection.isEnabled, ui.Tristate.isTrue);
       handle.dispose();
     });
 

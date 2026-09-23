@@ -285,6 +285,7 @@ class _PreviousChipsSection extends StatelessWidget {
     return MergeSemantics(
       child: Semantics(
         button: true,
+        enabled: true,
         label: label,
         child: Material(
           type: MaterialType.transparency,

@@ -217,6 +217,8 @@ A tappable card is one control, and it takes three widgets to hold that true for
 - `ExcludeFocus` — keyboard. `IgnorePointer` stops the pointer, not the focus, so the chip stays a tab stop inside the card and Enter runs a past session's chip action.
 - `MergeSemantics` — screen readers. Neither of the other two changes the semantics tree: the chip stays a node flagged `isButton` and `isEnabled` that carries no `tap` action, so a swipe lands on a button that answers nothing. Merging folds it into the card, which keeps its text in the announcement instead of dropping it the way `ExcludeSemantics` would.
 
+Merging unions the merged nodes' flags, so the card states `enabled: true` for itself. Without it a `CoreCalculatorChipType.disabled` chip — which is how a past session's chips are normally drawn — hands the card its own disabled state, and a screen reader announces a working Restore button as unavailable.
+
 Chips in a past session are not interactive by touch, by keyboard or to a screen reader.
 
 The value text is a **live region**: a screen reader announces the new value (or `errorTitle`) whenever it changes, so a result computed from the keyboard is heard without moving focus. Each dependent-key pill announces its label (or `CoreDependentKeyData.semanticsLabel`) followed by `CoreDependentKeyData.semanticsHint`.
