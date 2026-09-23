@@ -29,15 +29,13 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) => Toast.error(
+      (dismiss) => Toast.error(
         description: message,
         closeLabel: closeLabel,
         title: title,
-        onClose: () {
-          _entry?.remove();
-        },
+        onClose: dismiss,
       ),
     );
   }
@@ -49,15 +47,13 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) => Toast.success(
+      (dismiss) => Toast.success(
         description: message,
         closeLabel: closeLabel,
         title: title,
-        onClose: () {
-          _entry?.remove();
-        },
+        onClose: dismiss,
       ),
     );
   }
@@ -69,15 +65,13 @@ class CoreToast {
     String closeLabel, {
     String? title,
   }) {
-    showCustomToast(
+    _showWithDismiss(
       context,
-      (overlayContext) => Toast.warning(
+      (dismiss) => Toast.warning(
         description: message,
         closeLabel: closeLabel,
         title: title,
-        onClose: () {
-          _entry?.remove();
-        },
+        onClose: dismiss,
       ),
     );
   }
@@ -92,15 +86,12 @@ class CoreToast {
     // hides keyboard if visible
     FocusScope.of(context).unfocus();
     final overlay = Overlay.of(context);
-    // removes previous entry
-    if (_entry?.mounted ?? false) {
-      _entry?.remove();
-    }
+    _removeEntryOnce(_entry);
     // cancels previous timer
     if (_timer != null) {
       _timer?.cancel();
     }
-    _entry = OverlayEntry(
+    final ownEntry = OverlayEntry(
       builder: (context) => Positioned(
         bottom: 100,
         width: MediaQuery.of(context).size.width,
@@ -110,18 +101,12 @@ class CoreToast {
         ),
       ),
     );
-    final entryToAdd = _entry;
-    if (entryToAdd != null) {
-      overlay.insert(entryToAdd);
-    }
+    _entry = ownEntry;
+    overlay.insert(ownEntry);
 
     // Only create timer if timers are not disabled
     if (!_disableTimers) {
-      _timer = Timer(duration, () {
-        if (_entry?.mounted ?? false) {
-          _entry?.remove();
-        }
-      });
+      _timer = Timer(duration, () => _removeEntryOnce(ownEntry));
     }
   }
 
@@ -129,10 +114,24 @@ class CoreToast {
   /// This method should be called when the app is being disposed.
   static void cleanup() {
     _timer?.cancel();
-    final entry = _entry;
-    if (entry != null && entry.mounted) {
-      entry.remove();
-    }
+    _removeEntryOnce(_entry);
+  }
+
+  static void _showWithDismiss(
+    BuildContext context,
+    Widget Function(VoidCallback dismiss) build,
+  ) {
+    showCustomToast(context, (overlayContext) {
+      final ownEntry = _entry;
+      return build(() => _removeEntryOnce(ownEntry));
+    });
+  }
+
+  static void _removeEntryOnce(OverlayEntry? entry) {
+    if (entry == null || !identical(entry, _entry)) return;
+    _entry = null;
+    entry.remove();
+    entry.dispose();
   }
 
   /// Disables timers for testing purposes.
