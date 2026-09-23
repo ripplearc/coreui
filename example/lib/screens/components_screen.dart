@@ -13,6 +13,7 @@ import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/multi_select_sheet_showcase_screen.dart';
+import 'package:example/screens/preferences_sheet_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
 import 'package:example/screens/search/search_row_item_screen.dart';
 import 'package:example/screens/search_box_showcase_screen.dart';
@@ -156,6 +157,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Writing Dots Components',
                 const WritingDotsShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Preferences Sheet Component',
+                const PreferencesSheetShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

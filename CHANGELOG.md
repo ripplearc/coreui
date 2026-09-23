@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.26.0] - CorePreferencesSheet and CorePreferenceOptionSheet
+
+### ✨ Features
+
+- **CorePreferencesSheet**: a bottom sheet body listing settings grouped into `CorePreferenceSection`s, each row showing its label and current value and opening a single-choice sub-sheet (CA-1041). The sheet holds no persistent state — it reports through `onChanged(key, optionId)` and the caller re-supplies `sections`, so the stored preference stays the single source of truth
+  - **`CorePreferenceValue`** is sealed with two variants, because the rows do not all read the same way: `CorePreferenceTextValue(label, isMuted:)` renders `textLink` text (or `textDisable` when the preference is still a stub) and `CorePreferencePillValue(label, isOn:)` renders an outlined pill with a green or grey state dot, as `System of units` and `Thousands separator` do
+  - **`initialKey`** deep-links to one row: it is scrolled into view before the first frame the user sees and marked for `CorePreferencesSheet.emphasisDuration`, the path a tapped fraction in a result takes to Fractional resolution. An unknown key opens the list at the top
+  - A row with fewer than two options is inert — it renders its value and opens nothing
+- **CorePreferenceOptionSheet**: the single-choice sub-sheet. Selection is local until the user taps Update, at which point `onUpdate` receives the chosen id and the sheet pops itself, so backing out of a setting leaves it unchanged. Update stays disabled until the pick matches one of `options`, so a `selectedOptionId` left over after the option set changed shows no ticked row and cannot be committed
+  - **`CorePreferenceInfo { title, description, semanticsLabel, closeLabel }`** on a row adds an info button to the sub-sheet's header; opening it replaces the Update button with a `Toast.info`. The footer holds the taller of the two states, so the explanation does not grow the sheet under the thumb that opened it — a row carrying an explanation reserves that height from the start, a row without one stays as tight as the button (Figma `62481:80137` and `62481:80158` are the same 354px container). The four fields travel as one object rather than loose optional parameters, so the button cannot be configured without its labels — an interactive control with no semantics label is invisible to a screen reader (RULE 14)
+- **CorePreferencesSheet** forwards `optionKeyOf` and `optionUpdateButtonKey` to the sub-sheet, so a consumer can drive open-row → pick → commit entirely by key rather than by matching option labels as text (RULE 8)
+- The five preference model types (`CorePreferenceRow`, `CorePreferenceSection`, `CorePreferenceOption`, `CorePreferenceInfo` and both `CorePreferenceValue` variants) compare by value, so two equal-by-value instances are equal and hash alike. Lists compare element-wise, so a row is judged by the options it holds rather than by which list instance holds them
+- Showcase: the calculator's display preferences (UX design doc, Appendix C) with deep-link buttons to Fractional resolution and to the last row
+
+### 📐 Design notes
+
+Built to Figma `62481:79132` ("Settings page"), which differs from the ticket's
+description: rows carry no chevron, the option sheet marks its choice with a
+check rather than a radio, and a choice is committed with a sticky Update
+button. The deep-link mark has no design of its own. The option sheet's back
+button uses `CoreIcons.arrowLeft`, as the design system has no chevron icon.
+
+### 🧪 Tests
+
+- Widget: an option reports nothing until Update commits it; a `selectedOptionId` matching no option cannot be committed; a pick the user made survives the same preference changing elsewhere, including when they land back on the value the sheet opened with; back leaves the preference untouched; the info button swaps Update for the explanation without changing the sheet's height, and needs both a title and a description; Update is disabled with nothing selected, commits the pick and dismisses the sheet, and stays disabled for a sheet opened on an id matching no option; `initialKey` lands on a row the fixture proves starts off-screen; an unknown key opens the list; the sheet does not update its own rows; a single-option row opens nothing
+- A11y: rows, the back button, the info button, option rows and Update all meet tap target, label and contrast guidelines in light and dark; an option row is announced as a button and as selected, and the decorative tick is excluded from semantics so it is not announced twice
+- Goldens: `core_preferences_sheet_{light,dark}.png` and `core_preference_option_sheet_{,info_}{light,dark}.png`
+
 ## [0.25.0] - CoreValueEditorSheet gains a single-value mode
 
 ### ✨ New
