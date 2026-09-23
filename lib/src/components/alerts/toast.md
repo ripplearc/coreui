@@ -256,8 +256,13 @@ holds its current answer until they make it.
 A receipt with both actions cannot give all three of message, `View` and `Undo`
 their natural width on a phone. The order it gives ground in:
 
-1. `Undo` keeps its label — it is the action the toast exists for.
-2. `View` keeps its 48 dp target; the cluster's cap reserves it.
+1. `Undo` keeps its label — it is the action the toast exists for. Inside the
+   cluster it takes twice the share `View` does, so a long translated
+   `secondaryLabel` ellipsises itself rather than squeezing `Undo`. Both
+   actions flex: a non-flex `View` is handed unbounded width by the `Row` and
+   takes whatever its label asks for, which left `Undo` 0 dp wide.
+2. `View` keeps its 48 dp target; the cluster's cap reserves it, and its own
+   share does not fall below it above roughly 260 dp of row.
 3. The message keeps 40 % of the width it shares with the action, less that
    reserved target when there is a second action, and ellipsises at two lines
    beyond that.

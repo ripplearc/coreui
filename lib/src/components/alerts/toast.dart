@@ -67,6 +67,8 @@ class Toast extends StatefulWidget {
   final Duration? duration;
   final _ToastType _type;
 
+  static const int _primaryActionFlex = 2;
+
   static const double _secondaryActionOpacity = 0.85;
 
   static const double _receiptRadius = CoreSpacing.space3;
@@ -452,10 +454,13 @@ class _ToastState extends State<Toast> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (secondAction != null) ...[
-          secondAction,
+          Flexible(child: secondAction),
           const SizedBox(width: CoreSpacing.space4),
         ],
-        Flexible(child: _buildReceiptAction(actionLabel)),
+        Flexible(
+          flex: Toast._primaryActionFlex,
+          child: _buildReceiptAction(actionLabel),
+        ),
       ],
     );
     if (!rowWidth.isFinite) return actions;

@@ -553,6 +553,41 @@ void main() {
         }
       });
 
+      // A non-flex second action is handed unbounded width by the Row, so a
+      // long translated label took all of it and left Undo 0 dp wide — the
+      // action the toast exists for, gone, and the row overflowing.
+      testWidgets('a long second label gives ground before Undo does',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 360,
+                  child: Toast.receipt(
+                    description: 'Im Verlauf gespeichert',
+                    highlight: 'Berechnung 60ft²',
+                    actionLabel: 'Rückgängig',
+                    onAction: _noop,
+                    secondaryLabel: 'Verlauf anzeigen',
+                    onSecondary: _noop,
+                    onClose: _noop,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(tester.getSize(secondaryFinder).width,
+            greaterThanOrEqualTo(CoreSpacing.space12),
+            reason: 'View may shrink, but not past its tap target');
+        expect(tester.getSize(actionFinder).width,
+            greaterThan(tester.getSize(secondaryFinder).width),
+            reason: 'Undo takes twice the share, so it stays the larger');
+      });
+
       testWidgets('the secondary action stands a full tap target tall',
           (WidgetTester tester) async {
         await tester.pumpWidget(
