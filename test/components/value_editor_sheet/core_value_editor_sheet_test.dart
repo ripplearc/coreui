@@ -50,6 +50,45 @@ Widget _buildShowTrigger({
   );
 }
 
+Widget _buildSingleValueTrigger({
+  String title = 'Rate (\$ per ft²)',
+  String label = 'Rate',
+  String resultLabel = 'Update',
+  String? initialValue,
+  List<String>? unitOptions,
+  String? unit,
+  String? unitGroupLabel,
+  String? Function(String value)? validator,
+  void Function(String value, String? unit)? onSaved,
+}) {
+  return MaterialApp(
+    theme: CoreTheme.light(),
+    home: Scaffold(
+      body: Builder(
+        builder: (context) {
+          return ElevatedButton(
+            onPressed: () {
+              CoreValueEditorSheet.showSingleValue(
+                context: context,
+                title: title,
+                label: label,
+                resultLabel: resultLabel,
+                initialValue: initialValue,
+                unitOptions: unitOptions,
+                unit: unit,
+                unitGroupLabel: unitGroupLabel,
+                validator: validator,
+                onSaved: onSaved,
+              );
+            },
+            child: const Text('Show'),
+          );
+        },
+      ),
+    ),
+  );
+}
+
 // Spelled out rather than using `?? 0`: optional operators are banned inside
 // test blocks, and a non-numeric value deserves its own message anyway.
 String? _positiveValidator(String value) {
@@ -126,6 +165,145 @@ void main() {
 
       expect(find.byType(CoreValueEditorSheet), findsOneWidget);
       expect(find.text('Required'), findsWidgets);
+    });
+  });
+
+  group('CoreValueEditorSheet single value', () {
+    testWidgets('renders one field under the caller-supplied title',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(initialValue: '12.3'));
+
+      expect(find.byType(CoreValueEditorSheet), findsOneWidget);
+      expect(find.text('Rate (\$ per ft²)'), findsOneWidget);
+      expect(find.text('Rate*'), findsOneWidget);
+      expect(find.byType(CoreTextField), findsOneWidget);
+      expect(find.text('12.3'), findsWidgets);
+    });
+
+    testWidgets('renders no unit row when the caller supplies none',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger());
+
+      expect(find.byType(FunctionKeyTile), findsNothing);
+    });
+
+    testWidgets('digits reach the single field', (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger());
+
+      await tester.tap(find.text('4'));
+      await tester.tap(find.text('2'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('42'), findsWidgets);
+    });
+
+    testWidgets('clear-all empties the single field', (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(initialValue: '99'));
+
+      await tester.tap(find.bySemanticsLabel('Clear all button'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('99'), findsNothing);
+    });
+
+    testWidgets('onSaved reports the value and the selected unit',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          unitOptions: const ['m', 'cm', 'mm'],
+          unitGroupLabel: 'Unit',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      await tester.tap(find.text('cm'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      // The unit is its own field, so it must not also be spelled into the
+      // value — a round-trip through initialValue would compound it.
+      expect(savedValue, '12.3');
+      expect(savedUnit, 'cm');
+    });
+
+    testWidgets('commits the same value shape whether or not a unit is tapped',
+        (tester) async {
+      _setTestViewport(tester);
+      final commits = <(String, String?)>[];
+
+      Widget trigger() => _buildSingleValueTrigger(
+            initialValue: '12.3',
+            unitOptions: const ['m', 'cm', 'mm'],
+            unitGroupLabel: 'Unit',
+            unit: 'cm',
+            onSaved: (value, unit) => commits.add((value, unit)),
+          );
+
+      await _open(tester, trigger());
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      await _open(tester, trigger());
+      await tester.tap(find.text('mm'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(commits, [('12.3', 'cm'), ('12.3', 'mm')]);
+    });
+
+    testWidgets('onSaved reports a null unit when there is no unit row',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedUnit = 'untouched';
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) => savedUnit = unit,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedUnit, isNull);
+    });
+
+    testWidgets('a failing validator blocks the commit', (tester) async {
+      _setTestViewport(tester);
+      var saved = false;
+
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '0',
+          validator: _positiveValidator,
+          onSaved: (_, __) => saved = true,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(saved, isFalse);
+      expect(find.byType(CoreValueEditorSheet), findsOneWidget);
+      expect(find.text('Must be positive'), findsWidgets);
     });
   });
 
@@ -269,6 +447,152 @@ void main() {
       expect(result, isNotNull);
       expect(result!.values.first, '4cm');
     });
+
+    // CoreKeyboard's own unit column cannot be hidden, so it has to obey the
+    // same rule as the function strip. Typing its label in would commit
+    // '12.3Inch', which compounds on the next round-trip through initialValue
+    // — the exact corruption single-value mode exists to prevent.
+    testWidgets('single-value records the keyboard unit column, not types it',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      await tester.tap(find.text('Inch'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('12.3Inch'), findsNothing);
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedValue, '12.3');
+      expect(savedUnit, 'Inch');
+    });
+
+    testWidgets('single-value ignores the unit column divide key',
+        (tester) async {
+      _setTestViewport(tester);
+      String? savedValue;
+      String? savedUnit;
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '12.3',
+          onSaved: (value, unit) {
+            savedValue = value;
+            savedUnit = unit;
+          },
+        ),
+      );
+
+      // '/' composes compound units inside the text ('ft/in'), which is a
+      // multi-column idea. Reporting it as the unit would be nonsense.
+      // It renders as an icon, so it is found by its semantics label.
+      await tester.tap(find.bySemanticsLabel('/ unit button'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(savedValue, '12.3');
+      expect(savedUnit, isNull);
+    });
+  });
+
+  group('CoreValueEditorSheet unit selection across rebuilds', () {
+    // Embedded rather than pushed: a routed sheet keeps the widget the route
+    // was generated with, so pumping a new tree would never reach
+    // didUpdateWidget — which is the whole subject here. onSaved fires before
+    // _submit pops, so the committed unit is captured either way.
+    late String? savedUnit;
+
+    Widget sheet({List<String>? unitOptions, String? unit}) {
+      savedUnit = null;
+      return MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: CoreValueEditorSheet.singleValue(
+            title: 'Rate',
+            label: 'Rate',
+            resultLabel: 'Update',
+            initialValue: '12.3',
+            unitOptions: unitOptions,
+            unit: unit,
+            unitGroupLabel: 'Unit',
+            onSaved: (_, u) => savedUnit = u,
+          ),
+        ),
+      );
+    }
+
+    Future<String?> commit(WidgetTester tester) async {
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+      return savedUnit;
+    }
+
+    testWidgets('a unit the row no longer offers is dropped', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
+      await tester.tap(find.text('cm'));
+      await tester.pumpAndSettle();
+
+      // A unit-system toggle. Committing 'cm' from a row that now offers only
+      // feet and inches would report a unit the sheet no longer shows.
+      await tester.pumpWidget(sheet(unitOptions: const ['ft', 'in']));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), isNull);
+    });
+
+    testWidgets('a keyboard-column unit survives a row change',
+        (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
+      await tester.tap(find.text('Inch'));
+      await tester.pumpAndSettle();
+
+      // It was never one of the row's options, so the row changing underneath
+      // it says nothing about whether it is still the user's answer.
+      await tester.pumpWidget(sheet(unitOptions: const ['ft', 'in']));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'Inch');
+    });
+
+    testWidgets('a seed survives a sheet with no unit row', (tester) async {
+      _setTestViewport(tester);
+      // The rate variant has no unit row at all, yet the keyboard's own unit
+      // column can still commit one. Gating the seed on unitOptions dropped it
+      // every time here, so reopening a saved rate and committing again
+      // silently returned unit: null.
+      await tester.pumpWidget(sheet(unit: 'Inch'));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'Inch');
+    });
+
+    testWidgets('a new seed replaces the old selection', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(
+        sheet(unitOptions: const ['m', 'cm'], unit: 'cm'),
+      );
+      await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm'], unit: 'm'));
+      await tester.pumpAndSettle();
+
+      expect(await commit(tester), 'm');
+    });
   });
 
   group('SizeEntryBottomSheet deprecated alias', () {
@@ -297,12 +621,10 @@ void main() {
   });
 
   group('CoreValueEditorSheet validation', () {
-    testWidgets('editing a rejected field clears its message', (tester) async {
+    testWidgets('multi-column clears only the edited field\'s message',
+        (tester) async {
       _setTestViewport(tester);
-      await _open(
-        tester,
-        _buildShowTrigger(validator: _positiveValidator),
-      );
+      await _open(tester, _buildShowTrigger(validator: _positiveValidator));
 
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
@@ -313,6 +635,26 @@ void main() {
 
       // Only the edited field clears; the untouched one keeps its message.
       expect(find.text('Enter a number'), findsOneWidget);
+    });
+
+    testWidgets('editing a rejected field clears its message', (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildSingleValueTrigger(
+          initialValue: '0',
+          validator: _positiveValidator,
+        ),
+      );
+
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+      expect(find.text('Must be positive'), findsWidgets);
+
+      await tester.tap(find.text('5'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Must be positive'), findsNothing);
     });
   });
 
@@ -325,6 +667,65 @@ void main() {
       expect(find.text('Commit'), findsOneWidget);
       expect(find.text('Add'), findsNothing);
       expect(find.text('Update'), findsNothing);
+    });
+
+    testWidgets('single-value mode wears the caller-supplied label',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(tester, _buildSingleValueTrigger(resultLabel: 'Apply'));
+
+      expect(find.text('Apply'), findsOneWidget);
+      expect(find.text('Add'), findsNothing);
+      expect(find.text('Update'), findsNothing);
+    });
+  });
+
+  group('CoreValueEditorSheet asserts', () {
+    test('multi-column mode rejects a unit', () {
+      // Nothing in multi-column mode reads it: SizeEntryResult has no unit
+      // field, and a unit key types its label into the value instead. Without
+      // the assert the sheet seeds a selection, reports none, and the caller
+      // gets no signal that the argument did nothing.
+      expect(
+        () => CoreValueEditorSheet(
+          titles: const ['Length', 'Width'],
+          addSizeTitle: 'Add size',
+          editSizeTitle: 'Edit size',
+          resultLabel: 'Update',
+          unitOptions: const ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+          unit: 'cm',
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test('multi-column mode is fine without one', () {
+      expect(
+        () => const CoreValueEditorSheet(
+          titles: ['Length', 'Width'],
+          addSizeTitle: 'Add size',
+          editSizeTitle: 'Edit size',
+          resultLabel: 'Update',
+          unitOptions: ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('single-value mode takes the unit the assert refuses', () {
+      expect(
+        () => CoreValueEditorSheet.singleValue(
+          title: 'Rate',
+          label: 'Rate',
+          resultLabel: 'Update',
+          unitOptions: const ['m', 'cm'],
+          unitGroupLabel: 'Unit',
+          unit: 'cm',
+        ),
+        returnsNormally,
+      );
     });
   });
 }

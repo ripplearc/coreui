@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.25.0] - CoreValueEditorSheet gains a single-value mode
+
+### ✨ New
+
+- **CoreValueEditorSheet**: `CoreValueEditorSheet.singleValue` /
+  `showSingleValue` edit one labelled value with an optional unit — the sheet
+  the calculator opens behind a dependent-key pill (sheet size, rate, waste,
+  density) — committing a `CoreValueEditorResult` and reporting through
+  `onSaved(String value, String? unit)` (CA-1040).
+  - Both modes share one widget and one keyboard wiring: internally the sheet
+    is a list of fields, and single-value is a one-element list.
+  - New `unit` seeds the unit a commit reports when the user never taps the
+    unit row. Single-value only — a debug assert rejects it on the
+    multi-column constructor, where nothing would read it.
+  - A unit key differs by mode: single-value records the selection and reports
+    it separately, while multi-column keeps spelling it into the value the way
+    `47.24in` does, since `SizeEntryResult` carries no unit. This covers the
+    keyboard's own unit column (Yards/Feet/Inch) as well as the `unitOptions`
+    row — it cannot be hidden, so it follows the same rule. Its `/` key, which
+    exists to compose compound units inside the text, is ignored in
+    single-value mode. The two controls report different vocabularies: the row
+    gives back one of your `unitOptions`, the column its own label.
+
 ## [0.24.0] - CoreValueEditorSheet: the size entry sheet becomes public
 
 ### ⚠️ Breaking changes
