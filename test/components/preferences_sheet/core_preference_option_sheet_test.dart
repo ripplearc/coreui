@@ -113,12 +113,11 @@ void main() {
     expect(recorder.updateCount, 1);
   });
 
-  testWidgets('the back button dismisses the sheet, preference untouched',
-      (tester) async {
+  /// Pushes the sheet over a home route rather than pumping it as one: with
+  /// nothing to pop back to, a sheet that fails to dismiss itself looks
+  /// exactly like one that dismissed correctly.
+  Future<_Recorder> pumpSheetOverHome(WidgetTester tester) async {
     final recorder = _Recorder();
-    // Pushed over a home route rather than pumped as one: with nothing to pop
-    // back to, the back button cannot dismiss anything and the test would
-    // only prove that onUpdate stayed quiet.
     await tester.pumpWidget(
       MaterialApp(
         theme: CoreTheme.light(),
@@ -140,6 +139,12 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     expect(find.byType(CorePreferenceOptionSheet), findsOneWidget);
+    return recorder;
+  }
+
+  testWidgets('the back button dismisses the sheet, preference untouched',
+      (tester) async {
+    final recorder = await pumpSheetOverHome(tester);
 
     await tester.tap(find.byKey(const Key('option_0.000')));
     await tester.pump();
@@ -148,6 +153,24 @@ void main() {
 
     expect(find.byType(CorePreferenceOptionSheet), findsNothing);
     expect(recorder.updateCount, 0);
+  });
+
+  testWidgets('Update commits the pick and dismisses the sheet',
+      (tester) async {
+    final recorder = await pumpSheetOverHome(tester);
+
+    await tester.tap(find.byKey(const Key('option_0.000')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('update_button')));
+    await tester.pumpAndSettle();
+
+    expect(recorder.updatedId, '0.000');
+    expect(
+      find.byType(CorePreferenceOptionSheet),
+      findsNothing,
+      reason: 'committing closes the sheet, so the user is returned to what '
+          'they opened it from rather than left on the choices they just made',
+    );
   });
 
   testWidgets('a preference changed elsewhere moves an untouched pick',
@@ -212,7 +235,44 @@ void main() {
     );
   });
 
-  testWidgets('the info button swaps Update for the explanation',
+  testWidgets('the info button swaps Update for the explanation, '
+      'leaving the sheet the same height', (tester) async {
+    await pumpSheet(
+      tester,
+      info: const CorePreferenceInfo(
+        title: 'Meter length display',
+        description: 'Changes the number of decimal places shown',
+        semanticsLabel: 'About this preference',
+        closeLabel: 'Close',
+      ),
+    );
+
+    final sheet = find.byType(CorePreferenceOptionSheet);
+    final updateButton = find.byKey(const Key('update_button'));
+    expect(updateButton.hitTestable(), findsOneWidget);
+    final heightShowingUpdate = tester.getSize(sheet).height;
+
+    await tester.tap(find.byKey(const Key('info_button')));
+    await tester.pump();
+
+    expect(find.text('Changes the number of decimal places shown'),
+        findsOneWidget);
+    expect(
+      updateButton.hitTestable(),
+      findsNothing,
+      reason: 'the explanation takes the commit button\'s slot, so Update '
+          'cannot be tapped from behind it',
+    );
+    expect(
+      tester.getSize(sheet).height,
+      heightShowingUpdate,
+      reason: 'the explanation is taller than the button it replaces, so the '
+          'footer holds the taller of the two in both states — the sheet must '
+          'not grow under the thumb that just opened it',
+    );
+  });
+
+  testWidgets('the explanation takes Update out of the focus traversal',
       (tester) async {
     await pumpSheet(
       tester,
@@ -224,18 +284,70 @@ void main() {
       ),
     );
 
-    expect(find.byKey(const Key('update_button')), findsOneWidget);
+    /// The Update button's focus nodes that keyboard traversal can still
+    /// reach. The button stays laid out behind the explanation, so being in
+    /// the tree says nothing about whether a Tab can land on it.
+    int reachableUpdateNodes() {
+      final scope = FocusScope.of(
+        tester.element(find.byType(CorePreferenceOptionSheet)),
+      );
+      final button = find.byKey(const Key('update_button')).evaluate().toSet();
+      return scope.traversalDescendants.where((node) {
+        final context = node.context;
+        if (context == null) return false;
+        var underButton = false;
+        context.visitAncestorElements((element) {
+          if (button.contains(element)) {
+            underButton = true;
+            return false;
+          }
+          return true;
+        });
+        return underButton;
+      }).length;
+    }
+
+    expect(reachableUpdateNodes(), 1);
 
     await tester.tap(find.byKey(const Key('info_button')));
     await tester.pump();
 
-    expect(find.text('Changes the number of decimal places shown'),
-        findsOneWidget);
     expect(
-      find.byKey(const Key('update_button')),
-      findsNothing,
-      reason: 'the explanation takes the commit button\'s slot, '
-          'so the sheet keeps its height',
+      reachableUpdateNodes(),
+      0,
+      reason: 'a Tab must not land on a button the explanation is covering, '
+          'which would move focus out of what the user can see',
+    );
+  });
+
+  testWidgets('the reserved explanation height sits above Update, not below it',
+      (tester) async {
+    Future<double> gapUnderUpdate({required CorePreferenceInfo? info}) async {
+      await pumpSheet(tester, info: info);
+      final sheetBottom =
+          tester.getRect(find.byType(CorePreferenceOptionSheet)).bottom;
+      final buttonBottom =
+          tester.getRect(find.byKey(const Key('update_button'))).bottom;
+      return sheetBottom - buttonBottom;
+    }
+
+    final withoutInfo = await gapUnderUpdate(info: null);
+    final withInfo = await gapUnderUpdate(
+      info: const CorePreferenceInfo(
+        title: 'Meter length display',
+        description: 'Changes the number of decimal places shown',
+        semanticsLabel: 'About this preference',
+        closeLabel: 'Close',
+      ),
+    );
+
+    expect(
+      withInfo,
+      withoutInfo,
+      reason: 'the height a row with an explanation reserves belongs between '
+          'the options and Update, not beneath it — Update is the sheet\'s '
+          'only call to action and stays against the bottom padding, as it '
+          'does in both Figma frames',
     );
   });
 
@@ -256,7 +368,7 @@ void main() {
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('a selectedOptionId matching no option cannot be committed',
+  testWidgets('an option set that drops the pick disables Update',
       (tester) async {
     await pumpSheet(tester, selectedOptionId: '0.00');
     expect(
@@ -282,6 +394,31 @@ void main() {
       isNull,
       reason: 'a stale id left over after the options changed must not be '
           'handed back to the caller as a choice the user never saw made',
+    );
+  });
+
+  testWidgets('a sheet opened on an id matching no option cannot commit it',
+      (tester) async {
+    // The test above reaches the unmatched id through didUpdateWidget, since
+    // Flutter keeps the state across two pumps of the same tree. A fresh mount
+    // is the initState path, and a caller opening a sheet on a stale stored
+    // value takes it.
+    await pumpSheet(tester, selectedOptionId: 'gone');
+
+    expect(
+      tick,
+      findsNothing,
+      reason: 'no row can show a pick the option list does not offer',
+    );
+
+    final button = tester.widget<CoreButton>(
+      find.byKey(const Key('update_button')),
+    );
+    expect(
+      button.onPressed,
+      isNull,
+      reason: 'a sheet that opens on a stale id must wait for the user to '
+          'choose rather than offer to commit an id no row ever ticked',
     );
   });
 }

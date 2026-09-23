@@ -13,9 +13,12 @@ import 'preference_option_tile.dart';
 /// changes nothing the caller can see, which is what lets a user browse the
 /// choices and back out unchanged.
 ///
-/// When [info] is set the header carries an info button; opening it
-/// replaces the Update button with the explanation,
-/// so the sheet keeps its height (Figma `62481:80137` and `62481:80158`).
+/// When [info] is set the header carries an info button; opening it replaces
+/// the Update button with the explanation, so the sheet keeps its height
+/// (Figma `62481:80137` and `62481:80158`). The explanation is the taller of
+/// the two, so setting [info] reserves that height from the start: the footer
+/// of such a sheet is already explanation-sized while Update is showing, with
+/// Update held against the bottom. A sheet with no [info] reserves nothing.
 ///
 /// Present it with `CoreQuickSheet.show(context: context, child: ...)`.
 class CorePreferenceOptionSheet extends StatefulWidget {
@@ -78,10 +81,6 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
   String? _selectedId;
   bool _infoOpen = false;
 
-  /// Whether the user has picked a row for themselves. This cannot be
-  /// inferred by comparing [_selectedId] against what the sheet opened with:
-  /// a user who taps away and taps back lands on that same value, and their
-  /// deliberate re-pick would then be treated as untouched.
   bool _userPicked = false;
 
   @override
@@ -102,10 +101,6 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
     }
   }
 
-  /// Whether Update has something real to commit. A caller can hand the sheet
-  /// an id that matches no option — a value left over after the option set
-  /// changed — and no row would tick; committing it would hand that ghost id
-  /// straight back to the caller as a fresh choice.
   bool get _hasValidSelection =>
       widget.options.any((option) => option.id == _selectedId);
 
@@ -169,23 +164,36 @@ class _CorePreferenceOptionSheetState extends State<CorePreferenceOptionSheet> {
 
   Widget _buildFooter(BuildContext context) {
     final info = widget.info;
+    final updateButton = CoreButton(
+      key: widget.updateButtonKey,
+      label: widget.updateLabel,
+      size: CoreButtonSize.large,
+      variant: CoreButtonVariant.primary,
+      fullWidth: true,
+      onPressed: _hasValidSelection ? _commit : null,
+    );
 
     return Padding(
       padding: const EdgeInsets.all(CoreSpacing.space4),
-      child: _infoOpen && info != null
-          ? Toast.info(
-              title: info.title,
-              description: info.description,
-              closeLabel: info.closeLabel,
-              onClose: () => setState(() => _infoOpen = false),
-            )
-          : CoreButton(
-              key: widget.updateButtonKey,
-              label: widget.updateLabel,
-              size: CoreButtonSize.large,
-              variant: CoreButtonVariant.primary,
-              fullWidth: true,
-              onPressed: _hasValidSelection ? _commit : null,
+      child: info == null
+          ? updateButton
+          // An IndexedStack lays both states out and takes the height of the
+          // taller, so opening the explanation swaps what is shown without
+          // moving the sheet under the thumb that opened it. The branch behind
+          // is left out of painting, hit testing, semantics and focus
+          // traversal, so it cannot be reached by touch, reader or keyboard.
+          : IndexedStack(
+              alignment: AlignmentDirectional.bottomCenter,
+              index: _infoOpen ? 1 : 0,
+              children: [
+                updateButton,
+                Toast.info(
+                  title: info.title,
+                  description: info.description,
+                  closeLabel: info.closeLabel,
+                  onClose: () => setState(() => _infoOpen = false),
+                ),
+              ],
             ),
     );
   }
