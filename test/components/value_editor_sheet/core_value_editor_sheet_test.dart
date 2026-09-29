@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -150,7 +152,8 @@ void main() {
       expect(find.text('mm'), findsOneWidget);
     });
 
-    testWidgets('a failing validator keeps the sheet open and shows the message',
+    testWidgets(
+        'a failing validator keeps the sheet open and shows the message',
         (tester) async {
       _setTestViewport(tester);
       await _open(
@@ -198,6 +201,22 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('42'), findsWidgets);
+    });
+
+    testWidgets('the bracket key is disabled in the editor', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(_buildSingleValueTrigger(initialValue: '12'));
+      await tester.tap(find.text('Show'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(ControlAction.paren.testKey));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          '12');
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
 
     testWidgets('clear-all empties the single field', (tester) async {
@@ -556,8 +575,7 @@ void main() {
       expect(await commit(tester), isNull);
     });
 
-    testWidgets('a keyboard-column unit survives a row change',
-        (tester) async {
+    testWidgets('a keyboard-column unit survives a row change', (tester) async {
       _setTestViewport(tester);
       await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
       await tester.tap(find.text('Inch'));

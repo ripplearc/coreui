@@ -26,6 +26,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
         GroupNameType currentGroup =
             GroupNameType(id: "Basic Geometry", label: "Basic Geometry");
         UnitSystem currentUnitSystem = UnitSystem.imperial;
+        bool parenEnabled = true;
 
         final List<FunctionGroup> groups = [
           const FunctionGroup(
@@ -126,22 +127,38 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
             child: MediaQuery.removePadding(
               context: context,
               removeBottom: true,
-              child: CoreKeyboard(
-                currentGroup: currentGroup,
-                allGroups: groups,
-                onDigitPressed: onDigitPressed,
-                onUnitSelected: onUnitSelected,
-                onOperatorPressed: onOperatorPressed,
-                onControlAction: onControlActionTriggered,
-                onResultTapped: () => log('Result tapped'),
-                onGroupSelected: onGroupSelected,
-                onKeyTapped: onFunctionKeyTapped,
-                result: ResultType(label: "="),
-                currentUnitSystem: currentUnitSystem,
-                onUnitSystemChanged: onUnitSystemChanged,
-                groupAccentColors: groupAccentColors,
-                onGroupsReordered: onGroupsReordered,
-                reorderSemanticsLabelBuilder: (label) => 'Reorder $label group',
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CoreSwitch(
+                    value: parenEnabled,
+                    activeLabel: 'Bracket key enabled',
+                    inactiveLabel:
+                        'Bracket key disabled, as in the value editor',
+                    onChanged: (value) =>
+                        sheetSetState(() => parenEnabled = value),
+                  ),
+                  const SizedBox(height: CoreSpacing.space2),
+                  CoreKeyboard(
+                    currentGroup: currentGroup,
+                    allGroups: groups,
+                    onDigitPressed: onDigitPressed,
+                    onUnitSelected: onUnitSelected,
+                    onOperatorPressed: onOperatorPressed,
+                    onControlAction: onControlActionTriggered,
+                    onResultTapped: () => log('Result tapped'),
+                    onGroupSelected: onGroupSelected,
+                    onKeyTapped: onFunctionKeyTapped,
+                    result: ResultType(label: "="),
+                    currentUnitSystem: currentUnitSystem,
+                    onUnitSystemChanged: onUnitSystemChanged,
+                    groupAccentColors: groupAccentColors,
+                    onGroupsReordered: onGroupsReordered,
+                    reorderSemanticsLabelBuilder: (label) =>
+                        'Reorder $label group',
+                    parenEnabled: parenEnabled,
+                  ),
+                ],
               ),
             ),
           );

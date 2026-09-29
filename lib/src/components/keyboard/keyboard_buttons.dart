@@ -183,8 +183,10 @@ class CoreUnitButton extends StatelessWidget {
 
 /// A button widget for control actions on the keyboard.
 ///
-/// [action] is the type of control action (delete, clear all, more options).
+/// [action] is the type of control action (delete, clear all, bracket).
 /// [onControlAction] is called when the button is pressed.
+/// [enabled] is whether the button answers taps; `false` dims it, drops its
+/// tap action and reports it disabled to a screen reader.
 /// [width] is the width of the button.
 /// [height] is the height of the button.
 ///
@@ -193,6 +195,7 @@ class CoreUnitButton extends StatelessWidget {
 class CoreControlButton extends StatelessWidget {
   final ControlAction action;
   final ValueChanged<ControlAction> onControlAction;
+  final bool enabled;
   final double? width;
   final double? height;
 
@@ -200,6 +203,7 @@ class CoreControlButton extends StatelessWidget {
     super.key,
     required this.action,
     required this.onControlAction,
+    this.enabled = true,
     this.width,
     this.height,
   });
@@ -208,41 +212,46 @@ class CoreControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    final backgroundColor = switch (action) {
-      ControlAction.clearAll => colors.keyboardActions,
-      ControlAction.delete => colors.keyboardMain,
-      ControlAction.moreOptions => colors.keyboardCalculate,
+    final (backgroundColor, isOutlined) = switch (action) {
+      ControlAction.clearAll => (colors.keyboardActions, false),
+      ControlAction.delete => (colors.keyboardMain, false),
+      ControlAction.moreOptions || ControlAction.paren => (
+          colors.keyboardCalculate,
+          true
+        ),
     };
-    final isMoreAction = action == ControlAction.moreOptions;
-    final textColor =
-        isMoreAction ? colors.keyboardActions : colors.textInverse;
-    final borderColor = isMoreAction ? colors.keyboardActions : null;
+    final textColor = isOutlined ? colors.keyboardActions : colors.textInverse;
+    final borderColor = isOutlined ? colors.keyboardActions : null;
+    final label = action.label;
 
     final h = height;
-    double? fontSize;
-    if (h != null) {
-      fontSize = h * _KeyboardButton._smallFontSizeRatio;
-    }
+    final textStyle = label != null
+        ? typography.titleLargeSemiBold.copyWith(
+            color: textColor,
+            fontSize:
+                h != null ? h * _KeyboardButton._largeFontSizeRatio : null,
+          )
+        : typography.bodySmallRegular.copyWith(
+            color: textColor,
+            fontSize:
+                h != null ? h * _KeyboardButton._smallFontSizeRatio : null,
+          );
 
     return Semantics(
       label: _getSemanticLabel(action),
       button: true,
-      hint: _getSemanticHint(action),
+      enabled: enabled,
+      hint: enabled ? _getSemanticHint(action) : null,
       child: _KeyboardButton(
         key: action.testKey,
-        isLabel: false,
+        isLabel: label != null,
+        label: label,
         icon: action.icon,
+        enabled: enabled,
         borderColor: borderColor,
         backgroundColor: backgroundColor,
         onPressed: () => onControlAction(action),
-        textStyle: fontSize != null
-            ? typography.bodySmallRegular.copyWith(
-                color: textColor,
-                fontSize: fontSize,
-              )
-            : typography.bodySmallRegular.copyWith(
-                color: textColor,
-              ),
+        textStyle: textStyle,
         width: width,
         height: height,
         borderRadius:
@@ -257,6 +266,7 @@ class CoreControlButton extends StatelessWidget {
       ControlAction.delete => 'Delete button',
       ControlAction.clearAll => 'Clear all button',
       ControlAction.moreOptions => 'More options button',
+      ControlAction.paren => 'Bracket button',
     };
   }
 
@@ -265,6 +275,7 @@ class CoreControlButton extends StatelessWidget {
       ControlAction.delete => 'Deletes the last entered character',
       ControlAction.clearAll => 'Clears all input',
       ControlAction.moreOptions => 'Shows additional options',
+      ControlAction.paren => 'Opens a bracket; the next press closes it',
     };
   }
 }
@@ -361,9 +372,11 @@ class _KeyboardButton extends StatefulWidget {
   final BorderRadius borderRadius;
   final BorderRadius? pressedBorderRadius;
   final bool isLabel;
+  final bool enabled;
 
   static const double _defaultSize = CoreSpacing.space16;
   static const double _defaultBorderWidth = 2.0;
+  static const double _disabledOpacity = 0.3;
 
   static const double _largeFontSizeRatio = 0.35;
 
@@ -386,6 +399,7 @@ class _KeyboardButton extends StatefulWidget {
     BorderRadius? borderRadius,
     this.pressedBorderRadius,
     required this.isLabel,
+    this.enabled = true,
   }) : borderRadius = borderRadius ??
             const BorderRadius.all(Radius.circular(CoreSpacing.space8));
 
@@ -429,6 +443,10 @@ class _KeyboardButtonState extends State<_KeyboardButton>
   @override
   void didUpdateWidget(_KeyboardButton oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!widget.enabled && _isPressed) {
+      _isPressed = false;
+      _animationController.reverse();
+    }
     if (widget.borderRadius == oldWidget.borderRadius &&
         widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
       return;
@@ -512,40 +530,42 @@ class _KeyboardButtonState extends State<_KeyboardButton>
             widget.borderRadius;
 
         return GestureDetector(
-          onTapDown: _handleTapDown,
-          onTapUp: _handleTapUp,
-          onTapCancel: _handleTapCancel,
-          child: Container(
-            decoration: BoxDecoration(
-              border: effectiveBorderColor != null
-                  ? Border.all(
-                      color: effectiveBorderColor,
-                      width: _KeyboardButton._defaultBorderWidth,
-                    )
-                  : null,
-              borderRadius: currentBorderRadius,
-              color: effectiveBackgroundColor,
-            ),
-            width: effectiveWidth,
-            height: effectiveHeight,
-            child: ClipRRect(
-              borderRadius: currentBorderRadius,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  child ?? const SizedBox.shrink(),
-                  IgnorePointer(
-                    child: Opacity(
-                      opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: colors.iconGrayLight,
-                          borderRadius: currentBorderRadius,
+          onTapDown: widget.enabled ? _handleTapDown : null,
+          onTapUp: widget.enabled ? _handleTapUp : null,
+          onTapCancel: widget.enabled ? _handleTapCancel : null,
+          child: _dimmedUnlessEnabled(
+            Container(
+              decoration: BoxDecoration(
+                border: effectiveBorderColor != null
+                    ? Border.all(
+                        color: effectiveBorderColor,
+                        width: _KeyboardButton._defaultBorderWidth,
+                      )
+                    : null,
+                borderRadius: currentBorderRadius,
+                color: effectiveBackgroundColor,
+              ),
+              width: effectiveWidth,
+              height: effectiveHeight,
+              child: ClipRRect(
+                borderRadius: currentBorderRadius,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    child ?? const SizedBox.shrink(),
+                    IgnorePointer(
+                      child: Opacity(
+                        opacity: t * _KeyboardButton._flashOverlayMaxOpacity,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: colors.iconGrayLight,
+                            borderRadius: currentBorderRadius,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -554,4 +574,8 @@ class _KeyboardButtonState extends State<_KeyboardButton>
       child: staticChild,
     );
   }
+
+  Widget _dimmedUnlessEnabled(Widget child) => widget.enabled
+      ? child
+      : Opacity(opacity: _KeyboardButton._disabledOpacity, child: child);
 }

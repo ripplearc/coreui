@@ -29,6 +29,20 @@ void main() {
     });
   });
 
+  group('ControlAction', () {
+    test('the bracket key has a text face and no icon', () {
+      expect(ControlAction.paren.label, equals('( )'));
+      expect(ControlAction.paren.icon, isNull);
+    });
+
+    test('the icon controls have no text face', () {
+      expect(ControlAction.delete.label, isNull);
+      expect(ControlAction.clearAll.label, isNull);
+      expect(ControlAction.delete.icon, isNotNull);
+      expect(ControlAction.clearAll.icon, isNotNull);
+    });
+  });
+
   group('UnitType', () {
     test('label returns correct string for all unit types', () {
       expect(UnitType.yards.label, equals('Yards'));
@@ -109,6 +123,7 @@ void main() {
           const ValueKey('calc_key_divideSymbol'));
       expect(
           ControlAction.clearAll.testKey, const ValueKey('calc_key_clearAll'));
+      expect(ControlAction.paren.testKey, const ValueKey('calc_key_paren'));
       expect(CoreResultButton.testKey, const ValueKey('calc_key_result'));
     });
 

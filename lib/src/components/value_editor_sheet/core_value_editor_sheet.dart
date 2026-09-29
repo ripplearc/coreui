@@ -727,6 +727,7 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
               onKeyTapped: _onUnitKeyTapped,
               onUnitSystemChanged: (_) {},
               customResultLabel: widget.resultLabel,
+              parenEnabled: false,
             ),
           ],
         ),

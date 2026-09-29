@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -329,6 +332,141 @@ void main() {
       expect(semantics.label, contains('Delete button'));
       expect(semantics.hint, contains('Deletes the last entered character'));
     });
+
+    testWidgets('the bracket key wears a ( ) face and no icon', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreControlButton(
+              action: ControlAction.paren,
+              onControlAction: (_) {},
+              height: CoreSpacing.space14,
+              width: CoreSpacing.space14,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('( )'), findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsNothing);
+      expect(find.byKey(const ValueKey('calc_key_paren')), findsOneWidget);
+      final semantics = tester.getSemantics(find.byType(CoreControlButton));
+      expect(semantics.label, contains('Bracket button'));
+      expect(semantics.hint, contains('Opens a bracket'));
+    });
+
+    testWidgets('the bracket key sends paren on every press and keeps its face',
+        (tester) async {
+      final pressed = <ControlAction>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreControlButton(
+              action: ControlAction.paren,
+              onControlAction: pressed.add,
+              height: CoreSpacing.space14,
+              width: CoreSpacing.space14,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(CoreControlButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CoreControlButton));
+      await tester.pumpAndSettle();
+
+      expect(pressed, [ControlAction.paren, ControlAction.paren]);
+      expect(find.text('( )'), findsOneWidget);
+    });
+
+    testWidgets('a disabled control ignores taps and reports itself disabled',
+        (tester) async {
+      final pressed = <ControlAction>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreControlButton(
+              action: ControlAction.paren,
+              onControlAction: pressed.add,
+              enabled: false,
+              height: CoreSpacing.space14,
+              width: CoreSpacing.space14,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(CoreControlButton));
+      await tester.pumpAndSettle();
+
+      expect(pressed, isEmpty);
+      expect(find.text('( )'), findsOneWidget);
+      final data = tester
+          .getSemantics(find.byType(CoreControlButton))
+          .getSemanticsData();
+      expect(data.flagsCollection.isEnabled, ui.Tristate.isFalse);
+      expect(data.hasAction(SemanticsAction.tap), isFalse);
+      expect(data.label, contains('Bracket button'));
+      expect(data.hint, isEmpty);
+    });
+
+    testWidgets('disabling a control mid-press releases it without firing',
+        (tester) async {
+      final pressed = <ControlAction>[];
+      Widget build({required bool enabled}) => MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreControlButton(
+                action: ControlAction.paren,
+                onControlAction: pressed.add,
+                enabled: enabled,
+                height: CoreSpacing.space14,
+                width: CoreSpacing.space14,
+              ),
+            ),
+          );
+      await tester.pumpWidget(build(enabled: true));
+
+      final gesture = await tester
+          .startGesture(tester.getCenter(find.byType(CoreControlButton)));
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pumpWidget(build(enabled: false));
+      await tester.pumpAndSettle();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(pressed, isEmpty);
+      await tester.pumpWidget(build(enabled: true));
+      await tester.tap(find.byType(CoreControlButton));
+      await tester.pumpAndSettle();
+      expect(pressed, [ControlAction.paren]);
+    });
+
+    testWidgets('an enabled control keeps its tap action', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreControlButton(
+              action: ControlAction.paren,
+              onControlAction: (_) {},
+              height: CoreSpacing.space14,
+              width: CoreSpacing.space14,
+            ),
+          ),
+        ),
+      );
+
+      final data = tester
+          .getSemantics(find.byType(CoreControlButton))
+          .getSemanticsData();
+      expect(data.flagsCollection.isEnabled, ui.Tristate.isTrue);
+      expect(data.hasAction(SemanticsAction.tap), isTrue);
+    });
   });
 
   group('CoreResultButton', () {
@@ -657,7 +795,7 @@ void main() {
           width: 60,
         ),
         CoreControlButton(
-          action: ControlAction.moreOptions,
+          action: ControlAction.paren,
           onControlAction: (_) {},
           height: 60,
           width: 60,

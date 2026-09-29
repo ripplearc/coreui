@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.28.0] - CoreKeyboard bracket key
+
+### ✨ Features
+
+- **CoreKeyboard**: the bottom-left key is the `( )` bracket key, `ControlAction.paren`, in the place the ⋮ control held. It reaches the consumer through `onControlAction` like the other controls and carries the stable test key `calc_key_paren`. The key is a toggle the tape reads, not the key: its face never changes, the first press opens a bracket and the next press closes it (UX design doc 1.3 and key card 3.6). `parenEnabled` (default `true`) dims the key, drops its tap action and reports it disabled to a screen reader, so the value editor can keep a bracket out of a single number — `CoreValueEditorSheet` passes `false` (CA-1189)
+- **CoreControlButton**: `enabled` (default `true`) is the same switch on a control built on its own; a disabled control announces no hint, and disabling it while a finger is down releases the press without firing. `ControlActionX.label` is the text face of a control (`( )` for the bracket key, `null` for the icon controls) and `ControlActionX.icon` returns `null` for the bracket key
+- Keyboard showcase: a switch above the keyboard disables the bracket key the way the value editor does
+
+### ⚠️ Breaking change
+
+- **ControlAction** gains `paren`, so an exhaustive `switch` over it no longer compiles until it handles the new case — the calculator bloc's `moreOptions` arm did nothing, and the bracket handler is its replacement. **CoreKeyboard** no longer renders the ⋮ control and never sends `ControlAction.moreOptions`; the value stays, deprecated, so an existing `moreOptions` arm keeps compiling, and is removed in a later release
+
+### 🧪 Tests
+
+- Keyboard: the bracket key sits left of the zero key, sends `paren` on every press and keeps its face; `parenEnabled: false` silences the bracket key and no other; the `moreOptions` key is gone. Control button: the `( )` face, the semantics label and hint, a disabled control ignores taps and carries no tap action. Value editor: the bracket key is disabled. A11y: the bracket key meets the tap-target and label guidelines in both themes, enabled and disabled. Goldens: the keyboard and value-editor goldens change at the bottom-left key only; the buttons grid adds an enabled and a disabled bracket key
+
 ## [0.27.0] - Receipt toast and display-area session restore
 
 ### ✨ Features

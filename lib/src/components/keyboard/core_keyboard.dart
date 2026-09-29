@@ -55,6 +55,7 @@ class CoreKeyboard extends StatefulWidget {
     this.currentUnitSystem = UnitSystem.imperial,
     this.groupAccentColors = const {},
     this.customResultLabel,
+    this.parenEnabled = true,
     this.onCollapseChanged,
     this.onGroupsReordered,
     this.reorderSemanticsLabelBuilder,
@@ -79,6 +80,12 @@ class CoreKeyboard extends StatefulWidget {
   final ValueChanged<UnitSystem> onUnitSystemChanged;
   final Map<GroupNameType, Color> groupAccentColors;
   final String? customResultLabel;
+
+  /// Whether the `( )` key bottom-left answers taps. `false` dims it and drops
+  /// its tap action, which is how the value editor keeps a bracket out of a
+  /// single number. The key's face never changes either way.
+  final bool parenEnabled;
+
   final ValueChanged<bool>? onCollapseChanged;
 
   /// Called when the user drags a group to a new position in the "View all"
@@ -551,8 +558,9 @@ class _CoreKeyboardState extends State<CoreKeyboard>
     return Row(
       children: [
         CoreControlButton(
-          action: ControlAction.moreOptions,
+          action: ControlAction.paren,
           onControlAction: widget.onControlAction,
+          enabled: widget.parenEnabled,
           width: buttonWidth,
           height: buttonHeight,
         ),

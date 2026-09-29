@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -32,7 +34,7 @@ void main() {
       ),
     ];
 
-    Widget buildTestKeyboard() {
+    Widget buildTestKeyboard({bool parenEnabled = true}) {
       return CoreKeyboard(
         currentGroup:
             const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
@@ -45,6 +47,7 @@ void main() {
         onGroupSelected: (_) {},
         onKeyTapped: (_) {},
         onUnitSystemChanged: (_) {},
+        parenEnabled: parenEnabled,
       );
     }
 
@@ -73,6 +76,42 @@ void main() {
         },
       );
     }
+
+    testWidgets(
+      'the bracket key meets tap target and label guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(),
+          find.byKey(ControlAction.paren.testKey),
+        );
+      },
+    );
+
+    testWidgets(
+      'a disabled bracket key keeps the keyboard within guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(parenEnabled: false),
+          find.byKey(ControlAction.paren.testKey),
+        );
+
+        final semantics =
+            tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+        expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
+      },
+    );
 
     testWidgets(
       'drag handle meets tap target and label guidelines',
