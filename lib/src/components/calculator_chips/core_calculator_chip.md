@@ -1,8 +1,8 @@
 # CoreCalculatorChip
 
-A specialized chip for the calculator tape that supports six types (`editable`, `disabled`, `active`, `result`,
-`dashed`, `error`), an optional label, a value, an optional factor icon (+, -, etc), and tap / long-press callbacks.
-Uses semantic structuring for accessibility.
+A specialized chip for the calculator tape that supports eight types (`editable`, `disabled`, `active`, `result`,
+`dashed`, `error`, `bracketOpen`, `bracketClosed`), an optional label, a value, an optional factor icon (+, -, etc),
+and tap / long-press callbacks. Uses semantic structuring for accessibility.
 
 ## Usage
 
@@ -19,10 +19,12 @@ CoreCalculatorChip(
 
 | Property                 | Type                     | Required | Default | Description                                                                                             |
 |--------------------------|--------------------------|---------:|---------|---------------------------------------------------------------------------------------------------------|
-| `type`                   | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disabled`, `active`, `result`, `dashed`, `error`).     |
-| `value`                  | `String`                 |       No | `null`  | The numeric value or content displayed on the chip with heavy text style.                               |
+| `type`                   | `CoreCalculatorChipType` |      Yes | —       | The variant of the calculator chip (`editable`, `disabled`, `active`, `result`, `dashed`, `error`, `bracketOpen`, `bracketClosed`). |
+| `value`                  | `String`                 |       No | `null`  | The numeric value or content displayed on the chip with heavy text style. For the bracket variants, the text inside the brackets — the chip draws the brackets. |
 | `factor`                 | `CoreIconData?`          |       No | `null`  | An optional factor icon (e.g. `+`, `-`, `x`) displayed before the element.                              |
 | `onTap`                  | `VoidCallback`           |       No | `null`  | Called when the chip is tapped. Ignored if type is `disabled`.                                          |
+| `tapSemanticLabel`       | `String?`                |       No | `null`  | Screen-reader hint for the tap action ("double tap to …"). Requires `onTap` (asserted); a closed bracket's "reopen the bracket". Pass a localised string. |
+| `semanticsLabel`         | `String?`                |       No | `null`  | Replaces the screen-reader label built from `label` and the drawn value. The bracket variants need it — their state is punctuation a screen reader skips. Pass a localised string. |
 | `onLongPress`            | `VoidCallback`           |       No | `null`  | Called when the chip is long-pressed (the calculator opens provenance this way). Ignored if `disabled`. |
 | `longPressSemanticLabel` | `String?`                |       No | `null`  | Screen-reader hint for the long-press action. Requires `onLongPress` (asserted) and is withheld while `disabled`; pass a localised string. |
 | `label`                  | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.                    |
@@ -37,6 +39,10 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 - **Result**: Filled grey chip for an answer the app computed. Shares the `disabled` fill by design (prototype `.t-result`) but stays interactive so a long-press can open provenance.
 - **Dashed**: Dashed teal outline for a tentative value — a bind offer (`Height: 8ft ?`) or a chip being edited in place.
 - **Error**: Red fill with a regular-weight value for the dimension-error chip that backspace repairs. Keeps button semantics on purpose: it stays interactive like every variant but `disabled`, so the app can attach a repair action to tap or long-press.
+- **Bracket open**: A bracket the user is still typing inside (UX design doc term 2.22, Section 7). The `active` green under a dashed teal edge, drawn without its closing bracket: `value: '3×4'` reads `(3×4`. The dash means one thing on the tape — this chip is not settled yet.
+- **Bracket closed**: The same chip once closed: `(3×4)` on a blue fill under a solid teal edge. A tap reopens it, so `onTap` is the reopen action. Requires a `value` (asserted): an empty closed bracket is removed by the calculator, never drawn.
+
+A screen reader skips brackets, so both variants announce the same "3 times 4" unless the app passes `semanticsLabel` ("open bracket, 3 times 4" / "bracket, 3 times 4") and, on the closed chip, `tapSemanticLabel` ("reopen the bracket").
 
 | Type       | Background            | Border                      | Label/Value Color | Factor Color   | Shadow  |
 |------------|-----------------------|-----------------------------|-------------------|----------------|---------|
@@ -46,6 +52,8 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 | `result`   | `backgroundGrayMid`   | `lineMid`                   | `textDark`        | `iconGrayDark` | `null`  |
 | `dashed`   | `backgroundBlueLight` | dashed `outlineFocus`       | `textLink`        | `iconOrient`   | `small` |
 | `error`    | `alertRed`            | `alertRedOutline`           | `textDark`        | `iconRed`      | `small` |
+| `bracketOpen` | `backgroundGreenMid` | dashed `outlineFocus`     | `textLink`        | `iconOrient`   | `null`  |
+| `bracketClosed` | `backgroundBlueMid` | `outlineFocus`           | `textLink`        | `iconOrient`   | `null`  |
 
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
 `CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
@@ -59,6 +67,12 @@ the `Disabled` fill and border, `Dashed` is `#EEFAFF` under a `#015B7C` dashed s
 stroke. The populated calculator screens (`61948:65013` result, `61948:65858` editing) use the same instances. Two
 spec values stay off-grid and are not reproduced: the dashed stroke is 1.5 px with a 4 / 3 dash in Figma, here 1 px
 with a 4 / 4 dash (`CoreSpacing.space1`) so every variant keeps the same border width.
+
+The bracket chips follow the prototype (`.t-group` / `.t-group-open` in `construculator-prototype.html`) and the UX
+design doc walkthroughs 12.6 and 12.8; there is no Figma variant for them. The open bracket wears the live green
+every chip being typed into wears (`#cffce4`, `backgroundGreenMid`) and the closed one the prototype's blue
+(`#d6eeff`, nearest token `backgroundBlueMid`), both under the teal the typed chips use. They sit flat like the other
+filled chips; the prototype draws no shadows at all.
 
 ## Examples
 
@@ -140,6 +154,29 @@ CoreCalculatorChip(
 );
 ```
 
+### Bracket Chips
+
+The operator before the bracket is the `factor`; `value` is what sits inside the brackets.
+
+```dart
+// Reads "+ (3×4" while the user types inside the bracket…
+CoreCalculatorChip(
+  type: CoreCalculatorChipType.bracketOpen,
+  factor: CoreIcons.addOperator,
+  value: '3×4',
+);
+
+// …and "+ (3×4)" once it closes; a tap reopens it.
+CoreCalculatorChip(
+  type: CoreCalculatorChipType.bracketClosed,
+  factor: CoreIcons.addOperator,
+  value: '3×4',
+  semanticsLabel: l10n.bracketChip('3×4'),
+  onTap: () => reopenBracket(),
+  tapSemanticLabel: l10n.reopenBracket,
+);
+```
+
 ## Styling
 
 The component uses theme-aware tokens from `AppColorsExtension` and `AppTypographyExtension`, managed within
@@ -151,4 +188,5 @@ The component uses theme-aware tokens from `AppColorsExtension` and `AppTypograp
 - **Value style**: `typography.bodyMediumSemiBold` (`bodyMediumRegular` for `error`)
 - **Icon size**: `CoreSpacing.space5`.
 - **Shadow**: `CoreShadows.small` for `editable`, `null` otherwise.
-- **Dashed outline**: `CoreSpacing.space1` dash / `CoreSpacing.space1` gap at `borderWidth`.
+- **Dashed outline**: `CoreSpacing.space1` dash / `CoreSpacing.space1` gap at `borderWidth`. `CoreCalculatorChipTheme.isDashed` decides which variants dash; `edgeColor` is the edge's colour whether solid or dashed, `borderColor` the solid side (transparent when dashed) and `dashedOutline` the decoration.
+- **Value spacing**: the `space1` gap before the value is drawn only when a factor or a label precedes it, so a value-only chip sits centred.

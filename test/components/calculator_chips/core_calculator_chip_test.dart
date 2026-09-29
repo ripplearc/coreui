@@ -221,15 +221,230 @@ void main() {
       });
     }
 
-    test('only the dashed variant resolves a dashed outline', () {
+    test('the dashed variants resolve a dashed outline', () {
       final colors = AppColorsExtension.create();
+      const dashedTypes = {
+        CoreCalculatorChipType.dashed,
+        CoreCalculatorChipType.bracketOpen,
+      };
       for (final type in CoreCalculatorChipType.values) {
         expect(
           CoreCalculatorChipTheme.dashedOutline(type: type, colors: colors),
-          type == CoreCalculatorChipType.dashed ? isNotNull : isNull,
+          dashedTypes.contains(type) ? isNotNull : isNull,
           reason: '$type',
         );
       }
+    });
+  });
+
+  group('CoreCalculatorChip brackets', () {
+    testWidgets('an open bracket draws its value without a closing bracket',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketOpen,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+        ),
+      );
+
+      expect(find.text('(3×4'), findsOneWidget);
+      expect(find.textContaining(')'), findsNothing);
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+    });
+
+    testWidgets('a closed bracket draws its value inside both brackets',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+        ),
+      );
+
+      expect(find.text('(3×4)'), findsOneWidget);
+    });
+
+    testWidgets('a bracket just opened reads a lone opening bracket',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketOpen,
+          factor: CoreIcons.addOperator,
+        ),
+      );
+
+      expect(find.text('('), findsOneWidget);
+    });
+
+    testWidgets('the semantics label reads the bracketed text',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreCalculatorChip));
+      expect(semantics.label, '(3×4)');
+    });
+
+    test('displayedValue is what the chip draws', () {
+      const open = CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketOpen,
+        value: '3×4',
+      );
+      const closed = CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketClosed,
+        value: '3×4',
+      );
+      const plain = CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        value: '3×4',
+      );
+
+      expect(open.displayedValue, '(3×4');
+      expect(closed.displayedValue, '(3×4)');
+      expect(plain.displayedValue, '3×4');
+    });
+
+    for (final type in [
+      CoreCalculatorChipType.bracketOpen,
+      CoreCalculatorChipType.bracketClosed,
+    ]) {
+      final closing = type == CoreCalculatorChipType.bracketClosed ? ')' : '';
+
+      testWidgets('renders $type with label, value and factor',
+          (WidgetTester tester) async {
+        await pumpChip(
+          tester,
+          CoreCalculatorChip(
+            type: type,
+            label: 'Area',
+            value: '410.67ft²',
+            factor: CoreIcons.addOperator,
+          ),
+        );
+
+        expect(find.text('Area'), findsOneWidget);
+        expect(find.text('(410.67ft²$closing'), findsOneWidget);
+        expect(find.byType(CoreIconWidget), findsOneWidget);
+      });
+
+      testWidgets('calls onTap for $type', (WidgetTester tester) async {
+        bool tapped = false;
+        await pumpChip(
+          tester,
+          CoreCalculatorChip(
+            type: type,
+            value: '3×4',
+            onTap: () => tapped = true,
+          ),
+        );
+
+        await tester.tap(find.byType(InkWell));
+        await tester.pumpAndSettle();
+        expect(tapped, isTrue);
+      });
+    }
+
+    testWidgets('a closed bracket refuses to be empty',
+        (WidgetTester tester) async {
+      expect(
+        () => CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          onTap: () {},
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    testWidgets('semanticsLabel replaces the label built from the text',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketOpen,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+          semanticsLabel: 'open bracket, 3 times 4',
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreCalculatorChip));
+      expect(semantics.label, 'open bracket, 3 times 4');
+      expect(find.text('(3×4'), findsOneWidget);
+    });
+
+    testWidgets('tapSemanticLabel is the tap hint while onTap is set',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+          onTap: () {},
+          tapSemanticLabel: 'reopen the bracket',
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreCalculatorChip));
+      expect(semantics.hintOverrides!.onTapHint, 'reopen the bracket');
+    });
+
+    testWidgets('tapSemanticLabel without onTap is refused',
+        (WidgetTester tester) async {
+      expect(
+        () => CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          value: '3×4',
+          tapSemanticLabel: 'reopen the bracket',
+          onLongPress: () {},
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    testWidgets('a value-only chip keeps its value centred',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketOpen,
+          value: '3×4',
+        ),
+      );
+
+      final chip = tester.getRect(find.byType(CoreCalculatorChip));
+      final text = tester.getRect(find.text('(3×4'));
+      expect(text.center.dx, closeTo(chip.center.dx, 0.5));
+    });
+
+    testWidgets('a tap on a closed bracket reaches onTap',
+        (WidgetTester tester) async {
+      var reopened = 0;
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.bracketClosed,
+          factor: CoreIcons.addOperator,
+          value: '3×4',
+          onTap: () => reopened++,
+        ),
+      );
+
+      await tester.tap(find.byType(InkWell));
+      await tester.pumpAndSettle();
+
+      expect(reopened, 1);
     });
   });
 
@@ -350,6 +565,65 @@ void main() {
         );
       });
 
+      test('${entry.key}: an open bracket wears the live green under a dash',
+          () {
+        const type = CoreCalculatorChipType.bracketOpen;
+        expect(
+          CoreCalculatorChipTheme.background(type: type, colors: colors),
+          colors.backgroundGreenMid,
+        );
+        expect(
+          CoreCalculatorChipTheme.borderColor(type: type, colors: colors),
+          colors.transparent,
+        );
+        final outline =
+            CoreCalculatorChipTheme.dashedOutline(type: type, colors: colors)!;
+        expect(outline.color, colors.outlineFocus);
+        expect(outline.strokeWidth, CoreCalculatorChipTheme.borderWidth);
+        expect(CoreCalculatorChipTheme.shadow(type), isNull);
+        expect(
+          CoreCalculatorChipTheme.valueStyle(
+            type: type,
+            colors: colors,
+            typography: typography,
+          ).color,
+          colors.textLink,
+        );
+        expect(
+          CoreCalculatorChipTheme.factorColor(type: type, colors: colors),
+          colors.iconOrient,
+        );
+      });
+
+      test('${entry.key}: a closed bracket is solid teal on the blue fill', () {
+        const type = CoreCalculatorChipType.bracketClosed;
+        expect(
+          CoreCalculatorChipTheme.background(type: type, colors: colors),
+          colors.backgroundBlueMid,
+        );
+        expect(
+          CoreCalculatorChipTheme.borderColor(type: type, colors: colors),
+          colors.outlineFocus,
+        );
+        expect(
+          CoreCalculatorChipTheme.dashedOutline(type: type, colors: colors),
+          isNull,
+        );
+        expect(CoreCalculatorChipTheme.shadow(type), isNull);
+        expect(
+          CoreCalculatorChipTheme.labelStyle(
+            type: type,
+            colors: colors,
+            typography: typography,
+          ).color,
+          colors.textLink,
+        );
+        expect(
+          CoreCalculatorChipTheme.factorColor(type: type, colors: colors),
+          colors.iconOrient,
+        );
+      });
+
       test('${entry.key}: error uses the alert fill and a regular value', () {
         const type = CoreCalculatorChipType.error;
         expect(
@@ -427,6 +701,8 @@ void main() {
       CoreCalculatorChipType.result,
       CoreCalculatorChipType.dashed,
       CoreCalculatorChipType.error,
+      CoreCalculatorChipType.bracketOpen,
+      CoreCalculatorChipType.bracketClosed,
     ]) {
       testWidgets('$type text meets contrast guidelines in both themes',
           (WidgetTester tester) async {

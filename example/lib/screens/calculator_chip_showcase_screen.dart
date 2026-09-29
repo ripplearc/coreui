@@ -110,6 +110,20 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 onTap: () {},
               ),
             ]),
+            _section(context, 'Bracket — one chip from ( to )', [
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.bracketOpen,
+                factor: CoreIcons.addOperator,
+                value: '3×4',
+              ),
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.bracketClosed,
+                factor: CoreIcons.addOperator,
+                value: '3×4',
+                onTap: () =>
+                    _showProvenance(context, 'Tap reopens the bracket'),
+              ),
+            ]),
             _section(context, 'Error', [
               const CoreCalculatorChip(
                 type: CoreCalculatorChipType.error,

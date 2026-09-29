@@ -18,7 +18,9 @@ abstract final class CoreCalculatorChipTheme {
   ///
   /// [CoreCalculatorChipType.result] deliberately shares the muted grey of
   /// [CoreCalculatorChipType.disabled] (prototype `.t-result`): the two differ
-  /// in interactivity, not in fill.
+  /// in interactivity, not in fill. [CoreCalculatorChipType.bracketOpen]
+  /// wears the live green of [CoreCalculatorChipType.active] (prototype
+  /// `.t-group-open`), because it is the chip being typed into.
   static Color background({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
@@ -26,43 +28,79 @@ abstract final class CoreCalculatorChipTheme {
     return switch (type) {
       CoreCalculatorChipType.editable => colors.pageBackground,
       CoreCalculatorChipType.disabled => colors.backgroundGrayMid,
-      CoreCalculatorChipType.active => colors.backgroundGreenMid,
+      CoreCalculatorChipType.active ||
+      CoreCalculatorChipType.bracketOpen =>
+        colors.backgroundGreenMid,
       CoreCalculatorChipType.result => colors.backgroundGrayMid,
       CoreCalculatorChipType.dashed => colors.backgroundBlueLight,
+      CoreCalculatorChipType.bracketClosed => colors.backgroundBlueMid,
       CoreCalculatorChipType.error => colors.alertRed,
+    };
+  }
+
+  /// Whether [type] paints its edge as a dash rather than a solid border.
+  /// The dash means one thing on the tape: this chip is not settled yet — a
+  /// tentative value, or a bracket still open. [borderColor] and
+  /// [dashedOutline] both read it, so a variant is never solid and dashed at
+  /// once, or neither.
+  static bool isDashed(CoreCalculatorChipType type) => switch (type) {
+        CoreCalculatorChipType.dashed ||
+        CoreCalculatorChipType.bracketOpen =>
+          true,
+        CoreCalculatorChipType.editable ||
+        CoreCalculatorChipType.disabled ||
+        CoreCalculatorChipType.active ||
+        CoreCalculatorChipType.result ||
+        CoreCalculatorChipType.error ||
+        CoreCalculatorChipType.bracketClosed =>
+          false,
+      };
+
+  /// Returns the edge color of a calculator chip given its [type] and the
+  /// current [colors] theme — the solid border, or the dash for a variant
+  /// that [isDashed].
+  static Color edgeColor({
+    required CoreCalculatorChipType type,
+    required AppColorsExtension colors,
+  }) {
+    return switch (type) {
+      CoreCalculatorChipType.editable ||
+      CoreCalculatorChipType.dashed ||
+      CoreCalculatorChipType.bracketOpen ||
+      CoreCalculatorChipType.bracketClosed =>
+        colors.outlineFocus,
+      CoreCalculatorChipType.disabled ||
+      CoreCalculatorChipType.active ||
+      CoreCalculatorChipType.result =>
+        colors.lineMid,
+      CoreCalculatorChipType.error => colors.alertRedOutline,
     };
   }
 
   /// Returns the solid border color for a calculator chip given its [type]
   /// and the current [colors] theme.
   ///
-  /// [CoreCalculatorChipType.dashed] resolves to `transparent`: its outline is
+  /// A variant that [isDashed] resolves to `transparent`: its outline is
   /// painted by [dashedOutline] instead, and the transparent side keeps the
   /// border width in the layout so every variant measures the same.
   static Color borderColor({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
-  }) {
-    return switch (type) {
-      CoreCalculatorChipType.editable => colors.outlineFocus,
-      CoreCalculatorChipType.disabled => colors.lineMid,
-      CoreCalculatorChipType.active => colors.lineMid,
-      CoreCalculatorChipType.result => colors.lineMid,
-      CoreCalculatorChipType.dashed => colors.transparent,
-      CoreCalculatorChipType.error => colors.alertRedOutline,
-    };
-  }
+  }) =>
+      isDashed(type)
+          ? colors.transparent
+          : edgeColor(type: type, colors: colors);
 
   /// Returns the dashed outline for a calculator chip given its [type] and
-  /// the current [colors] theme, or `null` when the variant has a solid
-  /// border. [CoreCalculatorChip] applies it as its `foregroundDecoration`.
+  /// the current [colors] theme, or `null` unless the variant [isDashed].
+  /// [CoreCalculatorChip] applies it as its `foregroundDecoration`.
   static CoreDashedBorderDecoration? dashedOutline({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
   }) {
-    if (type != CoreCalculatorChipType.dashed) return null;
+    if (!isDashed(type)) return null;
     return CoreDashedBorderDecoration(
-      color: colors.outlineFocus,
+      color: edgeColor(type: type, colors: colors),
       strokeWidth: borderWidth,
       radius: CoreSpacing.space6,
       dashLength: dashLength,
@@ -79,7 +117,9 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable ||
-      CoreCalculatorChipType.dashed =>
+      CoreCalculatorChipType.dashed ||
+      CoreCalculatorChipType.bracketOpen ||
+      CoreCalculatorChipType.bracketClosed =>
         typography.bodySmallRegular.copyWith(color: colors.textLink),
       CoreCalculatorChipType.disabled ||
       CoreCalculatorChipType.active ||
@@ -101,7 +141,9 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable ||
-      CoreCalculatorChipType.dashed =>
+      CoreCalculatorChipType.dashed ||
+      CoreCalculatorChipType.bracketOpen ||
+      CoreCalculatorChipType.bracketClosed =>
         typography.bodyMediumSemiBold.copyWith(color: colors.textLink),
       CoreCalculatorChipType.disabled ||
       CoreCalculatorChipType.active ||
@@ -120,7 +162,9 @@ abstract final class CoreCalculatorChipTheme {
   }) {
     return switch (type) {
       CoreCalculatorChipType.editable ||
-      CoreCalculatorChipType.dashed =>
+      CoreCalculatorChipType.dashed ||
+      CoreCalculatorChipType.bracketOpen ||
+      CoreCalculatorChipType.bracketClosed =>
         colors.iconOrient,
       CoreCalculatorChipType.disabled => colors.iconGrayMid,
       CoreCalculatorChipType.active ||
@@ -136,7 +180,8 @@ abstract final class CoreCalculatorChipTheme {
   /// The Figma Calculator Chip spec raises the outlined chips —
   /// [CoreCalculatorChipType.editable], [CoreCalculatorChipType.dashed] and
   /// [CoreCalculatorChipType.error] — with [CoreShadows.small]; the filled
-  /// `disabled`, `active` and `result` chips sit flat on the tape.
+  /// `disabled`, `active` and `result` chips sit flat on the tape, and so do
+  /// the two bracket chips, whose fills carry their meaning.
   static List<BoxShadow>? shadow(CoreCalculatorChipType type) => switch (type) {
         CoreCalculatorChipType.editable ||
         CoreCalculatorChipType.dashed ||
@@ -144,7 +189,9 @@ abstract final class CoreCalculatorChipTheme {
           CoreShadows.small,
         CoreCalculatorChipType.disabled ||
         CoreCalculatorChipType.active ||
-        CoreCalculatorChipType.result =>
+        CoreCalculatorChipType.result ||
+        CoreCalculatorChipType.bracketOpen ||
+        CoreCalculatorChipType.bracketClosed =>
           null,
       };
 

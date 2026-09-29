@@ -37,9 +37,10 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 1040x452 @ 2.0 => 520x226 logical: three rows of captioned chips (four,
-    // four, two) with space4 padding and no dead space below the last row.
-    tester.view.physicalSize = const Size(1040, 452);
+    // 1040x604 @ 2.0 => 520x302 logical: four rows of captioned chips (four,
+    // four, three, one) with space4 padding and no dead space below the last
+    // row.
+    tester.view.physicalSize = const Size(1040, 604);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -152,6 +153,25 @@ void main() {
                     type: CoreCalculatorChipType.error,
                     value: 'Dimension error',
                     factor: CoreIcons.addOperator,
+                  ),
+                ),
+                captioned(
+                  'Bracket open',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.bracketOpen,
+                    value: '3×4',
+                    factor: CoreIcons.addOperator,
+                  ),
+                ),
+                captioned(
+                  'Bracket closed',
+                  caption,
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.bracketClosed,
+                    value: '3×4',
+                    factor: CoreIcons.addOperator,
+                    onTap: () {},
                   ),
                 ),
               ],
