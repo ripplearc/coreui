@@ -31,7 +31,9 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.active ||
       CoreCalculatorChipType.bracketOpen =>
         colors.backgroundGreenMid,
-      CoreCalculatorChipType.result => colors.backgroundGrayMid,
+      CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale =>
+        colors.backgroundGrayMid,
       CoreCalculatorChipType.dashed => colors.backgroundBlueLight,
       CoreCalculatorChipType.bracketClosed => colors.backgroundBlueMid,
       CoreCalculatorChipType.error => colors.alertRed,
@@ -40,12 +42,13 @@ abstract final class CoreCalculatorChipTheme {
 
   /// Whether [type] paints its edge as a dash rather than a solid border.
   /// The dash means one thing on the tape: this chip is not settled yet — a
-  /// tentative value, or a bracket still open. [borderColor] and
-  /// [dashedOutline] both read it, so a variant is never solid and dashed at
-  /// once, or neither.
+  /// tentative value, a bracket still open, or an answer waiting to be
+  /// rebuilt. [borderColor] and [dashedOutline] both read it, so a variant is
+  /// never solid and dashed at once, or neither.
   static bool isDashed(CoreCalculatorChipType type) => switch (type) {
         CoreCalculatorChipType.dashed ||
-        CoreCalculatorChipType.bracketOpen =>
+        CoreCalculatorChipType.bracketOpen ||
+        CoreCalculatorChipType.stale =>
           true,
         CoreCalculatorChipType.editable ||
         CoreCalculatorChipType.disabled ||
@@ -58,7 +61,9 @@ abstract final class CoreCalculatorChipTheme {
 
   /// Returns the edge color of a calculator chip given its [type] and the
   /// current [colors] theme — the solid border, or the dash for a variant
-  /// that [isDashed].
+  /// that [isDashed]. The stale answer dashes in grey
+  /// ([AppColorsExtension.lineDarkOutline], prototype `.t-stale`) rather than
+  /// teal, because nothing is being typed into it.
   static Color edgeColor({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
@@ -74,6 +79,7 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.result =>
         colors.lineMid,
       CoreCalculatorChipType.error => colors.alertRedOutline,
+      CoreCalculatorChipType.stale => colors.lineDarkOutline,
     };
   }
 
@@ -124,6 +130,7 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.disabled ||
       CoreCalculatorChipType.active ||
       CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale ||
       CoreCalculatorChipType.error =>
         typography.bodySmallRegular.copyWith(color: colors.textDark),
     };
@@ -147,7 +154,8 @@ abstract final class CoreCalculatorChipTheme {
         typography.bodyMediumSemiBold.copyWith(color: colors.textLink),
       CoreCalculatorChipType.disabled ||
       CoreCalculatorChipType.active ||
-      CoreCalculatorChipType.result =>
+      CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale =>
         typography.bodyMediumSemiBold.copyWith(color: colors.textDark),
       CoreCalculatorChipType.error =>
         typography.bodyMediumRegular.copyWith(color: colors.textDark),
@@ -168,7 +176,8 @@ abstract final class CoreCalculatorChipTheme {
         colors.iconOrient,
       CoreCalculatorChipType.disabled => colors.iconGrayMid,
       CoreCalculatorChipType.active ||
-      CoreCalculatorChipType.result =>
+      CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale =>
         colors.iconGrayDark,
       CoreCalculatorChipType.error => colors.iconRed,
     };
@@ -191,9 +200,17 @@ abstract final class CoreCalculatorChipTheme {
         CoreCalculatorChipType.active ||
         CoreCalculatorChipType.result ||
         CoreCalculatorChipType.bracketOpen ||
-        CoreCalculatorChipType.bracketClosed =>
+        CoreCalculatorChipType.bracketClosed ||
+        CoreCalculatorChipType.stale =>
           null,
       };
+
+  /// Opacity of an inert [CoreCalculatorChip]. The prototype dims a waiting
+  /// chip to 55 % (`.t-frozen`), which drops the typed teal to 2.7:1 on the
+  /// page; 70 % is the strongest dim that keeps every variant's text at or
+  /// above the 3:1 floor WCAG 1.4.11 sets for user-interface components, in
+  /// both themes.
+  static const double inertOpacity = 0.7;
 
   /// The standard border radius for all calculator chips.
   static BorderRadius get borderRadius =>

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.30.0] - CoreCalculatorChip inert state and the stale answer
+
+### ✨ Features
+
+- **CoreCalculatorChip.inert** (default `false`): dims the chip to `CoreCalculatorChipTheme.inertOpacity`, makes it ignore `onTap` and `onLongPress` and reports it disabled to a screen reader, while keeping the look of its `type` — a `×5` keeps its operator and an answer keeps its label. The chips before an open bracket, and the chips after a reopened one, wait like this until the bracket closes (UX design doc term 2.22, Section 7 "Editing a bracket", walkthrough 12.8). Unlike `disabled` it is a state over any type, not a look of its own (CA-1189)
+- **CoreCalculatorChipType.stale**: an answer that is out of date because a chip before it is being edited. The `result` fill under a dashed `lineDarkOutline` edge (prototype `.t-stale`), showing `CoreCalculatorChip.stalePlaceholder` (`—`) in place of a number so no out-of-date figure can be read; the label stays, so it reads `Calc —`. Takes no `value` (asserted) and stays interactive unless `inert`. The dash keeps its one meaning on the tape — not settled yet — and dashes grey rather than teal because nothing is being typed into it. The placeholder is punctuation a screen reader skips, so the app passes `semanticsLabel` ("Calc, pending")
+- **CoreCalculatorChip.effectiveOpacity** exposes the opacity the chip is drawn at, for tests
+- Calculator chip showcase: the bracket section becomes the three tapes of walkthroughs 12.6 and 12.8 — an open bracket with the `2` waiting, the closed bracket with its `Calc 70`, and the reopened bracket with `×5` waiting and `Calc —`
+
+### 📐 Design notes
+
+The prototype dims a waiting chip to 55 % (`.t-frozen`), which drops the typed teal to 2.7:1 against the page. `inertOpacity` is 70 %, the strongest dim that keeps every variant's text at or above the 3:1 floor WCAG 1.4.11 sets for user-interface components in both themes — a test composites all nine variants' text over their fills at that opacity and asserts the ratio; WCAG 1.4.3 exempts an inactive control from the 4.5:1 text floor, and an inert chip reports itself disabled so the automated contrast guideline treats it as one. Open with design.
+
+### 🧪 Tests
+
+- Chip: an inert chip keeps its text and factor, ignores tap and long-press, and is drawn at `inertOpacity` while a live chip is not; inert over a result keeps its label. A stale answer reads its label and the placeholder and never a number, announces them or the caller's `semanticsLabel`, refuses a `value`, and stays interactive unless inert. Theme: the stale tokens in light and dark; the dashed outline resolves for `dashed`, `bracketOpen` and `stale` only. A11y: stale meets text contrast in both themes; an inert chip reports `isEnabled` false with no tap or long-press action; an inert tape passes the guidelines in both themes; and for all nine types in both themes the dimmed text composited over the dimmed fill keeps at least 3:1. Goldens: light and dark gain `Stale`, `Inert` and `Stale + inert` cells
+
 ## [0.29.0] - CoreCalculatorChip bracket looks
 
 ### ✨ Features

@@ -38,7 +38,7 @@ void main() {
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
     // 1040x604 @ 2.0 => 520x302 logical: four rows of captioned chips (four,
-    // four, three, one) with space4 padding and no dead space below the last
+    // four, three, four) with space4 padding and no dead space below the last
     // row.
     tester.view.physicalSize = const Size(1040, 604);
     tester.view.devicePixelRatio = 2.0;
@@ -172,6 +172,33 @@ void main() {
                     value: '3×4',
                     factor: CoreIcons.addOperator,
                     onTap: () {},
+                  ),
+                ),
+                captioned(
+                  'Stale',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.stale,
+                    label: 'Calc',
+                  ),
+                ),
+                captioned(
+                  'Inert',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.editable,
+                    value: '5',
+                    factor: CoreIcons.multiplyOperator,
+                    inert: true,
+                  ),
+                ),
+                captioned(
+                  'Stale + inert',
+                  caption,
+                  const CoreCalculatorChip(
+                    type: CoreCalculatorChipType.stale,
+                    label: 'Calc',
+                    inert: true,
                   ),
                 ),
               ],
