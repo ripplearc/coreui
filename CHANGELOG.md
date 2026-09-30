@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.29.0] - CoreCalculatorChip bracket looks
+
+### ✨ Features
+
+- **CoreCalculatorChip**: two bracket variants for the one chip that holds a whole bracket (UX design doc term 2.22, Section 7, walkthroughs 12.6 and 12.8). `CoreCalculatorChipType.bracketOpen` is the bracket still being typed into: the `active` green under a dashed teal edge, drawn without its closing bracket. `CoreCalculatorChipType.bracketClosed` is the same chip once closed: solid teal on `backgroundBlueMid`, with its closing bracket, and a tap on it is how the bracket reopens. The chip draws the brackets itself — `value` is the text inside them, so `3×4` reads `(3×4` while open and `(3×4)` once closed and the missing bracket can never disagree with the type; `displayedValue` exposes the drawn text. The operator before the bracket is the `factor`, as on every other chip. A closed bracket requires a `value` (asserted): the calculator removes an empty bracket rather than draw one (CA-1189)
+- **CoreCalculatorChip.semanticsLabel** replaces the screen-reader label built from `label` and the drawn value, and **`tapSemanticLabel`** is the tap hint ("double tap to …"), which requires `onTap` as `longPressSemanticLabel` requires `onLongPress`. A bracket's state is punctuation a screen reader skips, so the app says it in words — "open bracket, 3 times 4", and "reopen the bracket" on the closed chip. Both are localised by the caller
+- **CoreCalculatorChipTheme.isDashed** and **`edgeColor`**: one place decides which variants dash and what colour their edge is; `borderColor` (transparent when dashed) and `dashedOutline` both read them, so a variant can no longer be solid and dashed at once, or neither
+- Calculator chip showcase: a Bracket section with the open and the closed chip
+
+### 🐛 Fixes
+
+- **CoreCalculatorChip**: a chip with a value but no factor and no label drew the `space1` gap meant to separate the value from what precedes it, so its value sat 4 dp off-centre — visible on the `Dimension error` cell and on a bracket that starts a chain. The gap is drawn only when a factor or a label precedes the value; the two error cells in the chip goldens shift by 4 dp
+
+### 📐 Design notes
+
+The bracket chips follow the prototype (`.t-group` / `.t-group-open`); there is no Figma variant. The open fill is the prototype's `#cffce4` exactly (`backgroundGreenMid`); the closed fill is the nearest token to its `#d6eeff` (`backgroundBlueMid`, `#dcf5ff`). Both sit flat like the other filled chips — the prototype draws no shadows — and keep the 1 px edge every variant shares against the prototype's 1.5 px.
+
+### 🧪 Tests
+
+- Chip: an open bracket draws `(3×4` and nothing ending in `)`, a closed one `(3×4)`, a bracket just opened reads `(`; the semantics label reads the bracketed text; a tap on a closed bracket reaches `onTap`; long-press fires on both. Theme: both variants' tokens in light and dark; the dashed outline resolves for `dashed` and `bracketOpen` only. A11y: both variants meet text contrast in both themes. Goldens: light and dark gain the two bracket cells
+
 ## [0.28.0] - CoreKeyboard bracket key
 
 ### ✨ Features
