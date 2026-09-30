@@ -269,6 +269,8 @@ class CoreControlButton extends StatelessWidget {
     );
   }
 
+  // TODO: [CA-1198] https://ripplearc.youtrack.cloud/issue/CA-1198
+  // Take every key's screen-reader label and hint from the app.
   String _getSemanticLabel(ControlAction action) {
     return switch (action) {
       ControlAction.delete => 'Delete button',
