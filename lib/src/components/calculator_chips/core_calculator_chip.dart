@@ -42,6 +42,15 @@ enum CoreCalculatorChipType {
   /// A closed bracket, drawn with its closing bracket: `+(3×4)`. Solid teal
   /// edge on a blue fill; a tap reopens it for editing.
   bracketClosed,
+
+  /// An answer that is out of date because a chip before it is being edited:
+  /// a reopened bracket, or a value changed in place. The [result] fill under
+  /// a dashed grey edge, showing [CoreCalculatorChip.stalePlaceholder] in
+  /// place of a number so no out-of-date figure can be read; the label
+  /// (`Calc`) stays. Takes no [CoreCalculatorChip.value] and requires a
+  /// [CoreCalculatorChip.semanticsLabel], because a screen reader skips the
+  /// placeholder.
+  stale,
 }
 
 /// A chip component specifically designed for calculator or input-driven
@@ -56,11 +65,18 @@ enum CoreCalculatorChipType {
 /// closing bracket is what tells the open chip from the closed one, so it
 /// cannot be left to the caller to remember.
 ///
+/// While a bracket is open the chips before it wait, and while a reopened
+/// bracket is edited the chips after it wait too: [inert] dims a chip of any
+/// type and makes it ignore taps until the bracket closes, and an answer after
+/// a reopened bracket takes [CoreCalculatorChipType.stale] so its number is
+/// replaced by [stalePlaceholder] (UX design doc Section 7, "Editing a
+/// bracket"; walkthrough 12.8).
+///
 /// ## Interaction
 /// Every variant except [CoreCalculatorChipType.disabled] responds to [onTap]
-/// and [onLongPress]. Long-press is how the calculator opens provenance for a
-/// result; the callback is the whole contract, so the app can also offer the
-/// same action through a menu.
+/// and [onLongPress] unless it is [inert]. Long-press is how the calculator
+/// opens provenance for a result; the callback is the whole contract, so the
+/// app can also offer the same action through a menu.
 ///
 /// ## Accessibility
 /// Automatically provides a combined semantic label for [label] and [value],
@@ -70,7 +86,15 @@ enum CoreCalculatorChipType {
 /// chip left without a [semanticsLabel] announces only what is inside it: the
 /// app must pass [semanticsLabel] to say the state in words
 /// ("open bracket, 3 times 4") and [tapSemanticLabel] to say what a tap does
-/// ("reopen the bracket").
+/// ("reopen the bracket"). A stale answer's placeholder is a dash a screen
+/// reader skips too, which would leave "Calc" and no sign that the answer is
+/// pending, so [CoreCalculatorChipType.stale] requires [semanticsLabel]
+/// ("Calc, pending"; asserted). An [inert] chip reports itself disabled and
+/// carries no tap or long-press action. It is dimmed to
+/// [CoreCalculatorChipTheme.inertOpacity], chosen so the dimmed text and
+/// factor keep at least the 3:1 contrast WCAG 1.4.11 asks of a
+/// user-interface component; WCAG 1.4.3 exempts an inactive control from the
+/// 4.5:1 text floor.
 ///
 /// ## Example
 /// ```dart
@@ -94,9 +118,18 @@ class CoreCalculatorChip extends StatelessWidget {
     this.semanticsLabel,
     this.label,
     this.factor,
+    this.inert = false,
   })  : assert(
           !(type == CoreCalculatorChipType.disabled && label == null),
           'Label must not be null when type is disabled',
+        ),
+        assert(
+          !(type == CoreCalculatorChipType.stale && value != null),
+          'A stale chip shows the placeholder; pass no value',
+        ),
+        assert(
+          !(type == CoreCalculatorChipType.stale && semanticsLabel == null),
+          'A screen reader skips the stale placeholder; pass a semanticsLabel',
         ),
         assert(
           !(type == CoreCalculatorChipType.bracketClosed && value == null),
@@ -111,6 +144,9 @@ class CoreCalculatorChip extends StatelessWidget {
           'longPressSemanticLabel needs an onLongPress to describe',
         );
 
+  /// What a [CoreCalculatorChipType.stale] chip shows in place of its number.
+  static const String stalePlaceholder = '—';
+
   /// The type variant determining the chip's visual and interactive behavior.
   final CoreCalculatorChipType type;
 
@@ -120,7 +156,8 @@ class CoreCalculatorChip extends StatelessWidget {
   final String? label;
 
   /// The value displayed on the chip. For the bracket variants, the text
-  /// inside the brackets; the chip draws the brackets.
+  /// inside the brackets; the chip draws the brackets. Must be null for
+  /// [CoreCalculatorChipType.stale], which shows [stalePlaceholder].
   final String? value;
 
   /// An optional factor icon (e.g., +, -, ×) displayed before the chip content.
@@ -163,10 +200,21 @@ class CoreCalculatorChip extends StatelessWidget {
   /// The bracket variants must be given one: their state is the `)` a screen
   /// reader skips, so without it an open and a closed bracket announce the
   /// same text. The app says it in words — "open bracket, 3 times 4" /
-  /// "bracket, 3 times 4".
+  /// "bracket, 3 times 4". [CoreCalculatorChipType.stale] requires one
+  /// (asserted): its placeholder is a dash a screen reader skips, so the
+  /// built label would not say the answer is pending.
   final String? semanticsLabel;
 
+  /// Whether the chip is waiting on an open bracket: dimmed, deaf to [onTap]
+  /// and [onLongPress], and reported disabled to a screen reader, while
+  /// keeping the look of its [type] — a `×5` keeps its operator and an answer
+  /// keeps its label. Unlike [CoreCalculatorChipType.disabled] it is a state
+  /// over any type, not a look of its own. Defaults to `false`.
+  final bool inert;
+
   bool get _isInteractive => type != CoreCalculatorChipType.disabled;
+
+  bool get _acceptsInput => _isInteractive && !inert;
 
   /// The text the chip draws for [value]: the value itself, or the value
   /// inside its brackets for the bracket variants. The semantics label reads
@@ -175,8 +223,15 @@ class CoreCalculatorChip extends StatelessWidget {
   String? get displayedValue => switch (type) {
         CoreCalculatorChipType.bracketOpen => '(${value ?? ''}',
         CoreCalculatorChipType.bracketClosed => '(${value ?? ''})',
+        CoreCalculatorChipType.stale => stalePlaceholder,
         _ => value,
       };
+
+  /// The opacity the chip is drawn at: [CoreCalculatorChipTheme.inertOpacity]
+  /// while [inert], otherwise fully opaque.
+  @visibleForTesting
+  double get effectiveOpacity =>
+      inert ? CoreCalculatorChipTheme.inertOpacity : 1;
 
   @override
   Widget build(BuildContext context) {
@@ -189,90 +244,96 @@ class CoreCalculatorChip extends StatelessWidget {
         (label != null
             ? '$label${value != null ? ', $value' : ''}'
             : value ?? 'Factor chip');
-    final effectiveOnTap = _isInteractive ? onTap : null;
-    final effectiveOnLongPress = _isInteractive ? onLongPress : null;
+    final effectiveOnTap = _acceptsInput ? onTap : null;
+    final effectiveOnLongPress = _acceptsInput ? onLongPress : null;
     final hasLeading = (factor != null && _isInteractive) || label != null;
 
     return Semantics(
       label: semanticsLabel,
       button: true,
       container: true,
-      enabled: _isInteractive,
+      enabled: _acceptsInput,
       onTapHint: effectiveOnTap != null ? tapSemanticLabel : null,
       onLongPressHint:
           effectiveOnLongPress != null ? longPressSemanticLabel : null,
-      child: Material(
-        color: colors.transparent,
-        child: InkWell(
-          onTap: effectiveOnTap,
-          onLongPress: effectiveOnLongPress,
-          splashFactory: NoSplash.splashFactory,
-          overlayColor: WidgetStateProperty.all(
-            colors.transparent,
-          ),
-          borderRadius: CoreCalculatorChipTheme.borderRadius,
-          child: Container(
-            padding: CoreCalculatorChipTheme.padding,
-            foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
-              type: type,
-              colors: colors,
+      child: Opacity(
+        opacity: effectiveOpacity,
+        child: Material(
+          color: colors.transparent,
+          child: InkWell(
+            onTap: effectiveOnTap,
+            onLongPress: effectiveOnLongPress,
+            splashFactory: NoSplash.splashFactory,
+            overlayColor: WidgetStateProperty.all(
+              colors.transparent,
             ),
-            decoration: BoxDecoration(
-              color: CoreCalculatorChipTheme.background(
+            borderRadius: CoreCalculatorChipTheme.borderRadius,
+            child: Container(
+              padding: CoreCalculatorChipTheme.padding,
+              foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
                 type: type,
                 colors: colors,
               ),
-              borderRadius: CoreCalculatorChipTheme.borderRadius,
-              boxShadow: CoreCalculatorChipTheme.shadow(type),
-              border: Border.fromBorderSide(
-                BorderSide(
-                    color: CoreCalculatorChipTheme.borderColor(
-                      type: type,
-                      colors: colors,
-                    ),
-                    width: CoreCalculatorChipTheme.borderWidth),
+              decoration: BoxDecoration(
+                color: CoreCalculatorChipTheme.background(
+                  type: type,
+                  colors: colors,
+                ),
+                borderRadius: CoreCalculatorChipTheme.borderRadius,
+                boxShadow: CoreCalculatorChipTheme.shadow(type),
+                border: Border.fromBorderSide(
+                  BorderSide(
+                      color: CoreCalculatorChipTheme.borderColor(
+                        type: type,
+                        colors: colors,
+                      ),
+                      width: CoreCalculatorChipTheme.borderWidth),
+                ),
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (factor != null && _isInteractive)
-                  ExcludeSemantics(
-                    child: Center(
-                      child: CoreIconWidget(
-                        icon: factor,
-                        size: CoreSpacing.space5,
-                        color: CoreCalculatorChipTheme.factorColor(
-                            type: type, colors: colors),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (factor != null && _isInteractive)
+                    ExcludeSemantics(
+                      child: Center(
+                        child: CoreIconWidget(
+                          icon: factor,
+                          size: CoreSpacing.space5,
+                          color: CoreCalculatorChipTheme.factorColor(
+                            type: type,
+                            colors: colors,
+                            inert: inert,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                if (label != null)
-                  ExcludeSemantics(
-                    child: Text(
-                      label,
-                      style: CoreCalculatorChipTheme.labelStyle(
-                        type: type,
-                        colors: colors,
-                        typography: typography,
+                  if (label != null)
+                    ExcludeSemantics(
+                      child: Text(
+                        label,
+                        style: CoreCalculatorChipTheme.labelStyle(
+                          type: type,
+                          colors: colors,
+                          typography: typography,
+                        ),
                       ),
                     ),
-                  ),
-                if (value != null) ...[
-                  if (hasLeading) const SizedBox(width: CoreSpacing.space1),
-                  ExcludeSemantics(
-                    child: Text(
-                      value,
-                      style: CoreCalculatorChipTheme.valueStyle(
-                        type: type,
-                        colors: colors,
-                        typography: typography,
+                  if (value != null) ...[
+                    if (hasLeading) const SizedBox(width: CoreSpacing.space1),
+                    ExcludeSemantics(
+                      child: Text(
+                        value,
+                        style: CoreCalculatorChipTheme.valueStyle(
+                          type: type,
+                          colors: colors,
+                          typography: typography,
+                        ),
                       ),
                     ),
-                  ),
-                ]
-              ],
+                  ]
+                ],
+              ),
             ),
           ),
         ),

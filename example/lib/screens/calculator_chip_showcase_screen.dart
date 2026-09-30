@@ -110,12 +110,24 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 onTap: () {},
               ),
             ]),
-            _section(context, 'Bracket — one chip from ( to )', [
+            _section(context, 'Bracket open: 2 + (3×4 — the 2 waits', [
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                value: '2',
+                inert: true,
+              ),
               const CoreCalculatorChip(
                 type: CoreCalculatorChipType.bracketOpen,
                 factor: CoreIcons.addOperator,
                 value: '3×4',
                 semanticsLabel: 'plus open bracket, 3 times 4',
+              ),
+            ]),
+            _section(context, 'Bracket closed: 2 + (3×4) × 5 = 70', [
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                value: '2',
+                onTap: () {},
               ),
               CoreCalculatorChip(
                 type: CoreCalculatorChipType.bracketClosed,
@@ -125,6 +137,45 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 onTap: () =>
                     _showProvenance(context, 'Tap reopens the bracket'),
                 tapSemanticLabel: 'reopen the bracket',
+              ),
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                factor: CoreIcons.multiplyOperator,
+                value: '5',
+                onTap: () {},
+              ),
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.result,
+                label: 'Calc',
+                value: '70',
+                onLongPress: () =>
+                    _showProvenance(context, 'Calc 70 came from 2 + 12 × 5'),
+                longPressSemanticLabel: 'show which chips produced this result',
+              ),
+            ]),
+            _section(context, 'Bracket reopened: the chips after it wait', [
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                value: '2',
+                inert: true,
+              ),
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.bracketOpen,
+                factor: CoreIcons.addOperator,
+                value: '3×4',
+                semanticsLabel: 'plus open bracket, 3 times 4',
+              ),
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                factor: CoreIcons.multiplyOperator,
+                value: '5',
+                inert: true,
+              ),
+              const CoreCalculatorChip(
+                type: CoreCalculatorChipType.stale,
+                label: 'Calc',
+                semanticsLabel: 'Calc, pending',
+                inert: true,
               ),
             ]),
             _section(context, 'Error', [

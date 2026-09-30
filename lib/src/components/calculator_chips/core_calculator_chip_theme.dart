@@ -31,7 +31,9 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.active ||
       CoreCalculatorChipType.bracketOpen =>
         colors.backgroundGreenMid,
-      CoreCalculatorChipType.result => colors.backgroundGrayMid,
+      CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale =>
+        colors.backgroundGrayMid,
       CoreCalculatorChipType.dashed => colors.backgroundBlueLight,
       CoreCalculatorChipType.bracketClosed => colors.backgroundBlueMid,
       CoreCalculatorChipType.error => colors.alertRed,
@@ -39,13 +41,14 @@ abstract final class CoreCalculatorChipTheme {
   }
 
   /// Whether [type] paints its edge as a dash rather than a solid border.
-  /// The dash means one thing on the tape: this chip is not settled yet — a
-  /// tentative value, or a bracket still open. [borderColor] and
-  /// [dashedOutline] both read it, so a variant is never solid and dashed at
-  /// once, or neither.
+  /// The dash marks a chip that is unfinished — a tentative value, a bracket
+  /// still open, or an answer waiting to be rebuilt (prototype decision Q3).
+  /// [borderColor] and [dashedOutline] both read it, so a variant is never
+  /// solid and dashed at once, or neither.
   static bool isDashed(CoreCalculatorChipType type) => switch (type) {
         CoreCalculatorChipType.dashed ||
-        CoreCalculatorChipType.bracketOpen =>
+        CoreCalculatorChipType.bracketOpen ||
+        CoreCalculatorChipType.stale =>
           true,
         CoreCalculatorChipType.editable ||
         CoreCalculatorChipType.disabled ||
@@ -58,7 +61,9 @@ abstract final class CoreCalculatorChipTheme {
 
   /// Returns the edge color of a calculator chip given its [type] and the
   /// current [colors] theme — the solid border, or the dash for a variant
-  /// that [isDashed].
+  /// that [isDashed]. The stale answer dashes in grey
+  /// ([AppColorsExtension.lineDarkOutline], prototype `.t-stale`) rather than
+  /// teal, because nothing is being typed into it.
   static Color edgeColor({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
@@ -74,6 +79,7 @@ abstract final class CoreCalculatorChipTheme {
       CoreCalculatorChipType.result =>
         colors.lineMid,
       CoreCalculatorChipType.error => colors.alertRedOutline,
+      CoreCalculatorChipType.stale => colors.lineDarkOutline,
     };
   }
 
@@ -115,18 +121,9 @@ abstract final class CoreCalculatorChipTheme {
     required AppColorsExtension colors,
     required AppTypographyExtension typography,
   }) {
-    return switch (type) {
-      CoreCalculatorChipType.editable ||
-      CoreCalculatorChipType.dashed ||
-      CoreCalculatorChipType.bracketOpen ||
-      CoreCalculatorChipType.bracketClosed =>
-        typography.bodySmallRegular.copyWith(color: colors.textLink),
-      CoreCalculatorChipType.disabled ||
-      CoreCalculatorChipType.active ||
-      CoreCalculatorChipType.result ||
-      CoreCalculatorChipType.error =>
-        typography.bodySmallRegular.copyWith(color: colors.textDark),
-    };
+    return typography.bodySmallRegular.copyWith(
+      color: _textColor(type, colors),
+    );
   }
 
   /// Returns the value text style for a calculator chip given its [type],
@@ -139,27 +136,44 @@ abstract final class CoreCalculatorChipTheme {
     required AppColorsExtension colors,
     required AppTypographyExtension typography,
   }) {
-    return switch (type) {
-      CoreCalculatorChipType.editable ||
-      CoreCalculatorChipType.dashed ||
-      CoreCalculatorChipType.bracketOpen ||
-      CoreCalculatorChipType.bracketClosed =>
-        typography.bodyMediumSemiBold.copyWith(color: colors.textLink),
-      CoreCalculatorChipType.disabled ||
-      CoreCalculatorChipType.active ||
-      CoreCalculatorChipType.result =>
-        typography.bodyMediumSemiBold.copyWith(color: colors.textDark),
-      CoreCalculatorChipType.error =>
-        typography.bodyMediumRegular.copyWith(color: colors.textDark),
-    };
+    final style = type == CoreCalculatorChipType.error
+        ? typography.bodyMediumRegular
+        : typography.bodyMediumSemiBold;
+    return style.copyWith(color: _textColor(type, colors));
   }
+
+  static Color _textColor(
+    CoreCalculatorChipType type,
+    AppColorsExtension colors,
+  ) =>
+      switch (type) {
+        CoreCalculatorChipType.editable ||
+        CoreCalculatorChipType.dashed ||
+        CoreCalculatorChipType.bracketOpen ||
+        CoreCalculatorChipType.bracketClosed =>
+          colors.textLink,
+        CoreCalculatorChipType.disabled ||
+        CoreCalculatorChipType.active ||
+        CoreCalculatorChipType.result ||
+        CoreCalculatorChipType.stale ||
+        CoreCalculatorChipType.error =>
+          colors.textDark,
+      };
 
   /// Returns the factor icon color for a calculator chip given its [type]
   /// and the current [colors] theme.
+  ///
+  /// An [inert] chip draws its factor in the colour of its text. The light
+  /// theme's `iconOrient` and `iconRed` sit between 3.5:1 and 4:1 on their
+  /// fills and fall to 2.4–2.8:1 under [inertOpacity], and the operator
+  /// before a waiting `×5` is read as much as the number is; the text colour
+  /// keeps it at or above 3:1 once dimmed.
   static Color factorColor({
     required CoreCalculatorChipType type,
     required AppColorsExtension colors,
+    bool inert = false,
   }) {
+    if (inert) return _textColor(type, colors);
     return switch (type) {
       CoreCalculatorChipType.editable ||
       CoreCalculatorChipType.dashed ||
@@ -168,7 +182,8 @@ abstract final class CoreCalculatorChipTheme {
         colors.iconOrient,
       CoreCalculatorChipType.disabled => colors.iconGrayMid,
       CoreCalculatorChipType.active ||
-      CoreCalculatorChipType.result =>
+      CoreCalculatorChipType.result ||
+      CoreCalculatorChipType.stale =>
         colors.iconGrayDark,
       CoreCalculatorChipType.error => colors.iconRed,
     };
@@ -191,9 +206,19 @@ abstract final class CoreCalculatorChipTheme {
         CoreCalculatorChipType.active ||
         CoreCalculatorChipType.result ||
         CoreCalculatorChipType.bracketOpen ||
-        CoreCalculatorChipType.bracketClosed =>
+        CoreCalculatorChipType.bracketClosed ||
+        CoreCalculatorChipType.stale =>
           null,
       };
+
+  /// Opacity of an inert [CoreCalculatorChip]. The prototype dims a waiting
+  /// chip to 55 % (`.t-frozen`), which drops the typed teal to 2.7:1 on the
+  /// page; 70 % keeps every variant's text, its factor and the teal edge of
+  /// the typed variants at or above the 3:1 floor WCAG 1.4.11 sets for
+  /// user-interface components, in both themes. The grey and red hairlines
+  /// of the filled variants are outside that floor: they sit under 3:1 on
+  /// their fills before any dim.
+  static const double inertOpacity = 0.7;
 
   /// The standard border radius for all calculator chips.
   static BorderRadius get borderRadius =>

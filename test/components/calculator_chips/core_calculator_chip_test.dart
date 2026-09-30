@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -226,6 +228,7 @@ void main() {
       const dashedTypes = {
         CoreCalculatorChipType.dashed,
         CoreCalculatorChipType.bracketOpen,
+        CoreCalculatorChipType.stale,
       };
       for (final type in CoreCalculatorChipType.values) {
         expect(
@@ -446,6 +449,193 @@ void main() {
     });
   });
 
+  group('CoreCalculatorChip inert', () {
+    testWidgets('an inert chip keeps its look and ignores taps',
+        (WidgetTester tester) async {
+      var tapped = 0;
+      var longPressed = 0;
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          factor: CoreIcons.multiplyOperator,
+          value: '5',
+          inert: true,
+          onTap: () => tapped++,
+          onLongPress: () => longPressed++,
+        ),
+      );
+
+      await tester.tap(find.byType(InkWell));
+      await tester.pumpAndSettle();
+      await tester.longPress(find.byType(InkWell));
+      await tester.pumpAndSettle();
+
+      expect(tapped, 0);
+      expect(longPressed, 0);
+      expect(find.text('5'), findsOneWidget);
+      expect(find.byType(CoreIconWidget), findsOneWidget);
+    });
+
+    test('an inert chip is drawn at inertOpacity and a live one is not', () {
+      const inert = CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        value: '2',
+        inert: true,
+      );
+      const live = CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        value: '2',
+      );
+
+      expect(inert.effectiveOpacity, CoreCalculatorChipTheme.inertOpacity);
+      expect(live.effectiveOpacity, 1);
+    });
+
+    for (final inert in [true, false]) {
+      testWidgets(
+          '${inert ? 'an inert' : 'a live'} chip is built at its '
+          'effectiveOpacity', (WidgetTester tester) async {
+        final chip = CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '2',
+          inert: inert,
+        );
+        await pumpChip(tester, chip);
+
+        final opacity = tester.widget<Opacity>(
+          find.descendant(
+            of: find.byType(CoreCalculatorChip),
+            matching: find.byType(Opacity),
+          ),
+        );
+        expect(
+          opacity.opacity,
+          inert ? CoreCalculatorChipTheme.inertOpacity : 1,
+        );
+        expect(opacity.opacity, chip.effectiveOpacity);
+      });
+    }
+
+    testWidgets('an inert chip draws its factor in the colour of its text',
+        (WidgetTester tester) async {
+      final colors = AppColorsExtension.create();
+      for (final inert in [true, false]) {
+        await pumpChip(
+          tester,
+          CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            factor: CoreIcons.multiplyOperator,
+            value: '5',
+            inert: inert,
+          ),
+        );
+
+        final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(icon.color, inert ? colors.textLink : colors.iconOrient);
+      }
+    });
+
+    testWidgets('inert layers over a result and keeps its label',
+        (WidgetTester tester) async {
+      var longPressed = 0;
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.result,
+          label: 'Calc',
+          value: '14',
+          inert: true,
+          onLongPress: () => longPressed++,
+        ),
+      );
+
+      await tester.longPress(find.byType(InkWell));
+      await tester.pumpAndSettle();
+
+      expect(longPressed, 0);
+      expect(find.text('Calc'), findsOneWidget);
+      expect(find.text('14'), findsOneWidget);
+    });
+  });
+
+  group('CoreCalculatorChip stale', () {
+    testWidgets('a stale answer reads its label and the placeholder',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.stale,
+          label: 'Calc',
+          semanticsLabel: 'Calc, pending',
+        ),
+      );
+
+      expect(find.text('Calc'), findsOneWidget);
+      expect(find.text(CoreCalculatorChip.stalePlaceholder), findsOneWidget);
+      expect(find.text('70'), findsNothing);
+    });
+
+    test('a stale answer refuses to be left without a semanticsLabel', () {
+      expect(
+        () => CoreCalculatorChip(
+          type: CoreCalculatorChipType.stale,
+          label: 'Calc',
+          onTap: () {},
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    testWidgets('semanticsLabel says in words that the answer is pending',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        const CoreCalculatorChip(
+          type: CoreCalculatorChipType.stale,
+          label: 'Calc',
+          semanticsLabel: 'Calc, pending',
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.byType(CoreCalculatorChip));
+      expect(semantics.label, 'Calc, pending');
+      expect(find.text(CoreCalculatorChip.stalePlaceholder), findsOneWidget);
+    });
+
+    test('a stale answer refuses a value', () {
+      expect(
+        () => CoreCalculatorChip(
+          type: CoreCalculatorChipType.stale,
+          label: 'Calc',
+          value: '70',
+          semanticsLabel: 'Calc, pending',
+          onTap: () {},
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    testWidgets('a stale answer stays interactive unless inert',
+        (WidgetTester tester) async {
+      var tapped = 0;
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.stale,
+          label: 'Calc',
+          semanticsLabel: 'Calc, pending',
+          onTap: () => tapped++,
+        ),
+      );
+
+      await tester.tap(find.byType(InkWell));
+      await tester.pumpAndSettle();
+
+      expect(tapped, 1);
+    });
+  });
+
   group('CoreCalculatorChip long-press', () {
     for (final type in CoreCalculatorChipType.values) {
       final expectsCallback = type != CoreCalculatorChipType.disabled;
@@ -458,7 +648,9 @@ void main() {
           CoreCalculatorChip(
             type: type,
             label: 'Area',
-            value: '410.67ft²',
+            value: type == CoreCalculatorChipType.stale ? null : '410.67ft²',
+            semanticsLabel:
+                type == CoreCalculatorChipType.stale ? 'Area, pending' : null,
             onLongPress: () => longPressed = true,
           ),
         );
@@ -622,6 +814,35 @@ void main() {
         );
       });
 
+      test('${entry.key}: stale wears the result fill under a grey dash', () {
+        const type = CoreCalculatorChipType.stale;
+        expect(
+          CoreCalculatorChipTheme.background(type: type, colors: colors),
+          colors.backgroundGrayMid,
+        );
+        expect(
+          CoreCalculatorChipTheme.borderColor(type: type, colors: colors),
+          colors.transparent,
+        );
+        final outline =
+            CoreCalculatorChipTheme.dashedOutline(type: type, colors: colors)!;
+        expect(outline.color, colors.lineDarkOutline);
+        expect(outline.strokeWidth, CoreCalculatorChipTheme.borderWidth);
+        expect(CoreCalculatorChipTheme.shadow(type), isNull);
+        expect(
+          CoreCalculatorChipTheme.valueStyle(
+            type: type,
+            colors: colors,
+            typography: typography,
+          ).color,
+          colors.textDark,
+        );
+        expect(
+          CoreCalculatorChipTheme.factorColor(type: type, colors: colors),
+          colors.iconGrayDark,
+        );
+      });
+
       test('${entry.key}: error uses the alert fill and a regular value', () {
         const type = CoreCalculatorChipType.error;
         expect(
@@ -701,6 +922,7 @@ void main() {
       CoreCalculatorChipType.error,
       CoreCalculatorChipType.bracketOpen,
       CoreCalculatorChipType.bracketClosed,
+      CoreCalculatorChipType.stale,
     ]) {
       testWidgets('$type text meets contrast guidelines in both themes',
           (WidgetTester tester) async {
@@ -711,7 +933,9 @@ void main() {
           (theme) => CoreCalculatorChip(
             type: type,
             label: 'Area',
-            value: '410.67ft²',
+            value: type == CoreCalculatorChipType.stale ? null : '410.67ft²',
+            semanticsLabel:
+                type == CoreCalculatorChipType.stale ? 'Area, pending' : null,
             onTap: () {},
           ),
           find.byType(CoreCalculatorChip),
@@ -721,6 +945,163 @@ void main() {
         );
       });
     }
+
+    testWidgets('an inert chip reports itself disabled with no tap action',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            factor: CoreIcons.multiplyOperator,
+            value: '5',
+            inert: true,
+            onTap: () {},
+            onLongPress: () {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final data = tester
+          .getSemantics(find.byType(CoreCalculatorChip))
+          .getSemanticsData();
+      expect(data.label, '5');
+      expect(data.flagsCollection.isEnabled, ui.Tristate.isFalse);
+      expect(data.hasAction(SemanticsAction.tap), isFalse);
+      expect(data.hasAction(SemanticsAction.longPress), isFalse);
+    });
+
+    testWidgets('an inert tape still meets the guidelines in both themes',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => const Wrap(
+          spacing: CoreSpacing.space2,
+          children: [
+            CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              value: '2',
+              inert: true,
+            ),
+            CoreCalculatorChip(
+              type: CoreCalculatorChipType.bracketOpen,
+              factor: CoreIcons.addOperator,
+              value: '3×4',
+            ),
+            CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              factor: CoreIcons.multiplyOperator,
+              value: '5',
+              inert: true,
+            ),
+            CoreCalculatorChip(
+              type: CoreCalculatorChipType.stale,
+              label: 'Calc',
+              semanticsLabel: 'Calc, pending',
+              inert: true,
+            ),
+          ],
+        ),
+        find.byType(Wrap),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: true,
+      );
+    });
+
+    group('a dimmed chip keeps the 3:1 component floor', () {
+      double contrast(Color a, Color b) {
+        final la = a.computeLuminance();
+        final lb = b.computeLuminance();
+        final lighter = la > lb ? la : lb;
+        final darker = la > lb ? lb : la;
+        return (lighter + 0.05) / (darker + 0.05);
+      }
+
+      final typography = AppTypographyExtension.create();
+      final themes = {
+        'light': AppColorsExtension.create(),
+        'dark': AppColorsExtension.createDark(),
+      };
+      Color dimmed(Color color, AppColorsExtension colors) => Color.lerp(
+            colors.pageBackground,
+            color,
+            CoreCalculatorChipTheme.inertOpacity,
+          )!;
+
+      for (final entry in themes.entries) {
+        final colors = entry.value;
+        for (final type in CoreCalculatorChipType.values) {
+          final fill = dimmed(
+            CoreCalculatorChipTheme.background(type: type, colors: colors),
+            colors,
+          );
+
+          test('${entry.key}: inert $type value and label', () {
+            final value = CoreCalculatorChipTheme.valueStyle(
+              type: type,
+              colors: colors,
+              typography: typography,
+            ).color!;
+            final label = CoreCalculatorChipTheme.labelStyle(
+              type: type,
+              colors: colors,
+              typography: typography,
+            ).color!;
+
+            expect(
+              contrast(dimmed(value, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+            expect(
+              contrast(dimmed(label, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+          });
+
+          test('${entry.key}: inert $type factor', () {
+            final factor = CoreCalculatorChipTheme.factorColor(
+              type: type,
+              colors: colors,
+              inert: true,
+            );
+
+            expect(
+              contrast(dimmed(factor, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+          });
+        }
+
+        for (final type in [
+          CoreCalculatorChipType.editable,
+          CoreCalculatorChipType.dashed,
+          CoreCalculatorChipType.bracketOpen,
+          CoreCalculatorChipType.bracketClosed,
+        ]) {
+          test('${entry.key}: inert $type teal edge', () {
+            final edge = dimmed(
+              CoreCalculatorChipTheme.edgeColor(type: type, colors: colors),
+              colors,
+            );
+            final fill = dimmed(
+              CoreCalculatorChipTheme.background(type: type, colors: colors),
+              colors,
+            );
+
+            expect(
+              contrast(edge, colors.pageBackground),
+              greaterThanOrEqualTo(3),
+            );
+            expect(contrast(edge, fill), greaterThanOrEqualTo(3));
+          });
+        }
+      }
+    });
 
     testWidgets('factor icon is excluded from semantics tree', (tester) async {
       await tester.pumpWidget(
