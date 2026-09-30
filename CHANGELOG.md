@@ -11,7 +11,7 @@
 
 ### ⚠️ Breaking change
 
-- **ControlAction** gains `paren`, so an exhaustive `switch` over it no longer compiles until it handles the new case — the calculator bloc's `moreOptions` arm did nothing, and the bracket handler is its replacement. **CoreKeyboard** no longer renders the ⋮ control and never sends `ControlAction.moreOptions`; the value stays, deprecated, so an existing `moreOptions` arm keeps compiling, and is removed in a later release
+- **ControlAction** gains `paren`, so an exhaustive `switch` over it no longer compiles until it handles the new case — the calculator bloc's `moreOptions` arm did nothing, and the bracket handler is its replacement. **CoreKeyboard** no longer renders the ⋮ control and never sends `ControlAction.moreOptions`; the value stays, deprecated, so an existing `moreOptions` arm keeps compiling, and its removal is tracked by CA-1197
 
 ### 🧪 Tests
 

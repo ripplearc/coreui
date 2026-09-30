@@ -208,7 +208,7 @@ enum ControlAction {
   /// The ⋮ control that sat bottom-left on [CoreKeyboard] before 0.28.0.
   @Deprecated(
     'CoreKeyboard renders the bracket key (ControlAction.paren) bottom-left '
-    'since 0.28.0 and never sends moreOptions; removed in a later release.',
+    'since 0.28.0 and never sends moreOptions; removal is tracked by CA-1197.',
   )
   moreOptions,
 
