@@ -25,7 +25,7 @@ CoreCalculatorChip(
 | `factor`                 | `CoreIconData?`          |       No | `null`  | An optional factor icon (e.g. `+`, `-`, `x`) displayed before the element.                              |
 | `onTap`                  | `VoidCallback`           |       No | `null`  | Called when the chip is tapped. Ignored if type is `disabled` or the chip is `inert`.                   |
 | `tapSemanticLabel`       | `String?`                |       No | `null`  | Screen-reader hint for the tap action ("double tap to …"). Requires `onTap` (asserted); a closed bracket's "reopen the bracket". Pass a localised string. |
-| `semanticsLabel`         | `String?`                |       No | `null`  | Replaces the screen-reader label built from `label` and the drawn value. The app must pass it for the bracket variants — their state is punctuation a screen reader skips. Pass a localised string. |
+| `semanticsLabel`         | `String?`                |       No | `null`  | Replaces the screen-reader label built from `label` and the drawn value. **Required** when type is `stale` (asserted), and the app must pass it for the bracket variants — their state is punctuation a screen reader skips. Pass a localised string. |
 | `onLongPress`            | `VoidCallback`           |       No | `null`  | Called when the chip is long-pressed (the calculator opens provenance this way). Ignored if `disabled` or `inert`. |
 | `longPressSemanticLabel` | `String?`                |       No | `null`  | Screen-reader hint for the long-press action. Requires `onLongPress` (asserted) and is withheld while `disabled`; pass a localised string. |
 | `label`                  | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.                    |
@@ -41,9 +41,9 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 - **Result**: Filled grey chip for an answer the app computed. Shares the `disabled` fill by design (prototype `.t-result`) but stays interactive so a long-press can open provenance.
 - **Dashed**: Dashed teal outline for a tentative value — a bind offer (`Height: 8ft ?`) or a chip being edited in place.
 - **Error**: Red fill with a regular-weight value for the dimension-error chip that backspace repairs. Keeps button semantics on purpose: it stays interactive like every variant but `disabled`, so the app can attach a repair action to tap or long-press.
-- **Bracket open**: A bracket the user is still typing inside (UX design doc term 2.22, Section 7). The `active` green under a dashed teal edge, drawn without its closing bracket: `value: '3×4'` reads `(3×4`. The dash means one thing on the tape — this chip is not settled yet.
+- **Bracket open**: A bracket the user is still typing inside (UX design doc term 2.22, Section 7). The `active` green under a dashed teal edge, drawn without its closing bracket: `value: '3×4'` reads `(3×4`. The dash marks a chip that is unfinished (prototype decision Q3).
 - **Bracket closed**: The same chip once closed: `(3×4)` on a blue fill under a solid teal edge. A tap reopens it, so `onTap` is the reopen action. Requires a `value` (asserted): an empty closed bracket is removed by the calculator, never drawn.
-- **Stale**: An answer that is out of date because a chip before it is being edited (a reopened bracket, or a value changed in place). The `result` fill under a dashed grey edge, showing `CoreCalculatorChip.stalePlaceholder` (`—`) in place of a number so no out-of-date figure can be read; the label stays, so it reads `Calc —`. Takes no `value` (asserted). Stays interactive unless `inert`. The dash is punctuation a screen reader skips, so pass `semanticsLabel` ("Calc, pending").
+- **Stale**: An answer that is out of date because a chip before it is being edited (a reopened bracket, or a value changed in place). The `result` fill under a dashed grey edge, showing `CoreCalculatorChip.stalePlaceholder` (`—`) in place of a number so no out-of-date figure can be read; the label stays, so it reads `Calc —`. Takes no `value` (asserted). Stays interactive unless `inert`. The dash is punctuation a screen reader skips, which would leave "Calc" and no sign that the answer is pending, so `semanticsLabel` ("Calc, pending") is required (asserted).
 
 A screen reader skips brackets and coreui has no localised words of its own, so both bracket variants announce the same "3 times 4" when built without a `semanticsLabel`. The app must pass `semanticsLabel` ("open bracket, 3 times 4" / "bracket, 3 times 4") for every bracket chip and, on the closed chip, `tapSemanticLabel` ("reopen the bracket").
 
@@ -166,17 +166,27 @@ answer keeps its chip but reads `Calc —`.
 ```dart
 Wrap(children: [
   CoreCalculatorChip(type: CoreCalculatorChipType.editable, value: '2', inert: true),
-  CoreCalculatorChip(type: CoreCalculatorChipType.bracketOpen, factor: CoreIcons.addOperator, value: '3×4'),
+  CoreCalculatorChip(type: CoreCalculatorChipType.bracketOpen, factor: CoreIcons.addOperator, value: '3×4', semanticsLabel: l10n.openBracketChip('3×4')),
   CoreCalculatorChip(type: CoreCalculatorChipType.editable, factor: CoreIcons.multiplyOperator, value: '5', inert: true),
   CoreCalculatorChip(type: CoreCalculatorChipType.stale, label: 'Calc', semanticsLabel: l10n.calcPending, inert: true),
 ]);
 ```
 
 **Inert opacity.** The prototype dims a waiting chip to 55 % (`.t-frozen`), which drops the typed teal to 2.7:1 on the
-page. `CoreCalculatorChipTheme.inertOpacity` is 70 %, the strongest dim that keeps every variant's text at or above
-the 3:1 floor WCAG 1.4.11 sets for user-interface components in both themes — a test composites every type's text
-over its fill at that opacity and asserts the ratio. WCAG 1.4.3 exempts an inactive control from the 4.5:1 text floor,
-and an inert chip reports itself disabled so the automated contrast guideline treats it as one. Open with design.
+page. `CoreCalculatorChipTheme.inertOpacity` is 70 %, which keeps every variant's text and factor at or above the 3:1
+floor WCAG 1.4.11 sets for user-interface components in both themes — a test composites every type's value, label and
+factor over its fill at that opacity and asserts the ratio. WCAG 1.4.3 exempts an inactive control from the 4.5:1 text
+floor, and an inert chip reports itself disabled so the automated contrast guideline treats it as one.
+
+An inert chip draws its factor in the colour of its text (`CoreCalculatorChipTheme.factorColor(inert: true)`). The
+light theme's `iconOrient` and `iconRed` sit between 3.5:1 and 4:1 on their fills and would fall to 2.4–2.8:1 at 70 %,
+and the operator before a waiting `×5` is read as much as the number is.
+
+The same test holds the teal edge of the typed variants (`editable`, `dashed`, `bracketOpen`, `bracketClosed`) at 3:1
+against the page and the fill: on an `editable` chip the edge is all that separates the chip from the page. The grey
+and red hairlines of the filled variants are outside the floor — they sit at 1.2–2.3:1 on their fills before any dim.
+
+The 70 % against the prototype's 55 % is open with design, recorded on CA-1189.
 
 ### Bracket Chips
 

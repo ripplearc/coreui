@@ -180,6 +180,7 @@ void main() {
                   const CoreCalculatorChip(
                     type: CoreCalculatorChipType.stale,
                     label: 'Calc',
+                    semanticsLabel: 'Calc, pending',
                   ),
                 ),
                 captioned(
@@ -198,6 +199,7 @@ void main() {
                   const CoreCalculatorChip(
                     type: CoreCalculatorChipType.stale,
                     label: 'Calc',
+                    semanticsLabel: 'Calc, pending',
                     inert: true,
                   ),
                 ),

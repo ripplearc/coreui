@@ -492,6 +492,50 @@ void main() {
       expect(live.effectiveOpacity, 1);
     });
 
+    for (final inert in [true, false]) {
+      testWidgets(
+          '${inert ? 'an inert' : 'a live'} chip is built at its '
+          'effectiveOpacity', (WidgetTester tester) async {
+        final chip = CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '2',
+          inert: inert,
+        );
+        await pumpChip(tester, chip);
+
+        final opacity = tester.widget<Opacity>(
+          find.descendant(
+            of: find.byType(CoreCalculatorChip),
+            matching: find.byType(Opacity),
+          ),
+        );
+        expect(
+          opacity.opacity,
+          inert ? CoreCalculatorChipTheme.inertOpacity : 1,
+        );
+        expect(opacity.opacity, chip.effectiveOpacity);
+      });
+    }
+
+    testWidgets('an inert chip draws its factor in the colour of its text',
+        (WidgetTester tester) async {
+      final colors = AppColorsExtension.create();
+      for (final inert in [true, false]) {
+        await pumpChip(
+          tester,
+          CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            factor: CoreIcons.multiplyOperator,
+            value: '5',
+            inert: inert,
+          ),
+        );
+
+        final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(icon.color, inert ? colors.textLink : colors.iconOrient);
+      }
+    });
+
     testWidgets('inert layers over a result and keeps its label',
         (WidgetTester tester) async {
       var longPressed = 0;
@@ -523,6 +567,7 @@ void main() {
         const CoreCalculatorChip(
           type: CoreCalculatorChipType.stale,
           label: 'Calc',
+          semanticsLabel: 'Calc, pending',
         ),
       );
 
@@ -531,18 +576,15 @@ void main() {
       expect(find.text('70'), findsNothing);
     });
 
-    testWidgets('a stale answer announces its label and the placeholder',
-        (WidgetTester tester) async {
-      await pumpChip(
-        tester,
-        const CoreCalculatorChip(
+    test('a stale answer refuses to be left without a semanticsLabel', () {
+      expect(
+        () => CoreCalculatorChip(
           type: CoreCalculatorChipType.stale,
           label: 'Calc',
+          onTap: () {},
         ),
+        throwsA(isA<AssertionError>()),
       );
-
-      final semantics = tester.getSemantics(find.byType(CoreCalculatorChip));
-      expect(semantics.label, 'Calc, ${CoreCalculatorChip.stalePlaceholder}');
     });
 
     testWidgets('semanticsLabel says in words that the answer is pending',
@@ -561,12 +603,13 @@ void main() {
       expect(find.text(CoreCalculatorChip.stalePlaceholder), findsOneWidget);
     });
 
-    testWidgets('a stale answer refuses a value', (WidgetTester tester) async {
+    test('a stale answer refuses a value', () {
       expect(
         () => CoreCalculatorChip(
           type: CoreCalculatorChipType.stale,
           label: 'Calc',
           value: '70',
+          semanticsLabel: 'Calc, pending',
           onTap: () {},
         ),
         throwsA(isA<AssertionError>()),
@@ -581,6 +624,7 @@ void main() {
         CoreCalculatorChip(
           type: CoreCalculatorChipType.stale,
           label: 'Calc',
+          semanticsLabel: 'Calc, pending',
           onTap: () => tapped++,
         ),
       );
@@ -605,6 +649,8 @@ void main() {
             type: type,
             label: 'Area',
             value: type == CoreCalculatorChipType.stale ? null : '410.67ft²',
+            semanticsLabel:
+                type == CoreCalculatorChipType.stale ? 'Area, pending' : null,
             onLongPress: () => longPressed = true,
           ),
         );
@@ -888,6 +934,8 @@ void main() {
             type: type,
             label: 'Area',
             value: type == CoreCalculatorChipType.stale ? null : '410.67ft²',
+            semanticsLabel:
+                type == CoreCalculatorChipType.stale ? 'Area, pending' : null,
             onTap: () {},
           ),
           find.byType(CoreCalculatorChip),
@@ -953,6 +1001,7 @@ void main() {
             CoreCalculatorChip(
               type: CoreCalculatorChipType.stale,
               label: 'Calc',
+              semanticsLabel: 'Calc, pending',
               inert: true,
             ),
           ],
@@ -964,7 +1013,7 @@ void main() {
       );
     });
 
-    group('dimmed text keeps the 3:1 component floor', () {
+    group('a dimmed chip keeps the 3:1 component floor', () {
       double contrast(Color a, Color b) {
         final la = a.computeLuminance();
         final lb = b.computeLuminance();
@@ -978,23 +1027,77 @@ void main() {
         'light': AppColorsExtension.create(),
         'dark': AppColorsExtension.createDark(),
       };
+      Color dimmed(Color color, AppColorsExtension colors) => Color.lerp(
+            colors.pageBackground,
+            color,
+            CoreCalculatorChipTheme.inertOpacity,
+          )!;
+
       for (final entry in themes.entries) {
+        final colors = entry.value;
         for (final type in CoreCalculatorChipType.values) {
-          test('${entry.key}: inert $type', () {
-            final colors = entry.value;
-            final page = colors.pageBackground;
-            const alpha = CoreCalculatorChipTheme.inertOpacity;
-            final text = CoreCalculatorChipTheme.valueStyle(
+          final fill = dimmed(
+            CoreCalculatorChipTheme.background(type: type, colors: colors),
+            colors,
+          );
+
+          test('${entry.key}: inert $type value and label', () {
+            final value = CoreCalculatorChipTheme.valueStyle(
               type: type,
               colors: colors,
               typography: typography,
             ).color!;
-            final fill =
-                CoreCalculatorChipTheme.background(type: type, colors: colors);
-            final dimmedText = Color.lerp(page, text, alpha)!;
-            final dimmedFill = Color.lerp(page, fill, alpha)!;
+            final label = CoreCalculatorChipTheme.labelStyle(
+              type: type,
+              colors: colors,
+              typography: typography,
+            ).color!;
 
-            expect(contrast(dimmedText, dimmedFill), greaterThanOrEqualTo(3));
+            expect(
+              contrast(dimmed(value, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+            expect(
+              contrast(dimmed(label, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+          });
+
+          test('${entry.key}: inert $type factor', () {
+            final factor = CoreCalculatorChipTheme.factorColor(
+              type: type,
+              colors: colors,
+              inert: true,
+            );
+
+            expect(
+              contrast(dimmed(factor, colors), fill),
+              greaterThanOrEqualTo(3),
+            );
+          });
+        }
+
+        for (final type in [
+          CoreCalculatorChipType.editable,
+          CoreCalculatorChipType.dashed,
+          CoreCalculatorChipType.bracketOpen,
+          CoreCalculatorChipType.bracketClosed,
+        ]) {
+          test('${entry.key}: inert $type teal edge', () {
+            final edge = dimmed(
+              CoreCalculatorChipTheme.edgeColor(type: type, colors: colors),
+              colors,
+            );
+            final fill = dimmed(
+              CoreCalculatorChipTheme.background(type: type, colors: colors),
+              colors,
+            );
+
+            expect(
+              contrast(edge, colors.pageBackground),
+              greaterThanOrEqualTo(3),
+            );
+            expect(contrast(edge, fill), greaterThanOrEqualTo(3));
           });
         }
       }

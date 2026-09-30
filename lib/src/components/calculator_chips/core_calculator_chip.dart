@@ -47,7 +47,9 @@ enum CoreCalculatorChipType {
   /// a reopened bracket, or a value changed in place. The [result] fill under
   /// a dashed grey edge, showing [CoreCalculatorChip.stalePlaceholder] in
   /// place of a number so no out-of-date figure can be read; the label
-  /// (`Calc`) stays. Takes no [CoreCalculatorChip.value].
+  /// (`Calc`) stays. Takes no [CoreCalculatorChip.value] and requires a
+  /// [CoreCalculatorChip.semanticsLabel], because a screen reader skips the
+  /// placeholder.
   stale,
 }
 
@@ -85,12 +87,14 @@ enum CoreCalculatorChipType {
 /// app must pass [semanticsLabel] to say the state in words
 /// ("open bracket, 3 times 4") and [tapSemanticLabel] to say what a tap does
 /// ("reopen the bracket"). A stale answer's placeholder is a dash a screen
-/// reader skips too, so the app passes [semanticsLabel] for it as well
-/// ("Calc, pending"). An [inert] chip reports itself disabled and carries no
-/// tap or long-press action. It is dimmed to
-/// [CoreCalculatorChipTheme.inertOpacity], chosen so the dimmed text keeps at
-/// least the 3:1 contrast WCAG 1.4.11 asks of a user-interface component;
-/// WCAG 1.4.3 exempts an inactive control from the 4.5:1 text floor.
+/// reader skips too, which would leave "Calc" and no sign that the answer is
+/// pending, so [CoreCalculatorChipType.stale] requires [semanticsLabel]
+/// ("Calc, pending"; asserted). An [inert] chip reports itself disabled and
+/// carries no tap or long-press action. It is dimmed to
+/// [CoreCalculatorChipTheme.inertOpacity], chosen so the dimmed text and
+/// factor keep at least the 3:1 contrast WCAG 1.4.11 asks of a
+/// user-interface component; WCAG 1.4.3 exempts an inactive control from the
+/// 4.5:1 text floor.
 ///
 /// ## Example
 /// ```dart
@@ -122,6 +126,10 @@ class CoreCalculatorChip extends StatelessWidget {
         assert(
           !(type == CoreCalculatorChipType.stale && value != null),
           'A stale chip shows the placeholder; pass no value',
+        ),
+        assert(
+          !(type == CoreCalculatorChipType.stale && semanticsLabel == null),
+          'A screen reader skips the stale placeholder; pass a semanticsLabel',
         ),
         assert(
           !(type == CoreCalculatorChipType.bracketClosed && value == null),
@@ -192,7 +200,9 @@ class CoreCalculatorChip extends StatelessWidget {
   /// The bracket variants must be given one: their state is the `)` a screen
   /// reader skips, so without it an open and a closed bracket announce the
   /// same text. The app says it in words — "open bracket, 3 times 4" /
-  /// "bracket, 3 times 4".
+  /// "bracket, 3 times 4". [CoreCalculatorChipType.stale] requires one
+  /// (asserted): its placeholder is a dash a screen reader skips, so the
+  /// built label would not say the answer is pending.
   final String? semanticsLabel;
 
   /// Whether the chip is waiting on an open bracket: dimmed, deaf to [onTap]
@@ -291,7 +301,10 @@ class CoreCalculatorChip extends StatelessWidget {
                           icon: factor,
                           size: CoreSpacing.space5,
                           color: CoreCalculatorChipTheme.factorColor(
-                              type: type, colors: colors),
+                            type: type,
+                            colors: colors,
+                            inert: inert,
+                          ),
                         ),
                       ),
                     ),

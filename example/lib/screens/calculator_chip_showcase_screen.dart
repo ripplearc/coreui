@@ -174,6 +174,7 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
               const CoreCalculatorChip(
                 type: CoreCalculatorChipType.stale,
                 label: 'Calc',
+                semanticsLabel: 'Calc, pending',
                 inert: true,
               ),
             ]),
