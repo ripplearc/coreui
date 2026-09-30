@@ -869,6 +869,8 @@ void main() {
       WidgetTester tester, {
       required ValueChanged<ControlAction> onControlAction,
       bool parenEnabled = true,
+      String? parenSemanticLabel,
+      String? parenSemanticHint,
     }) async {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
@@ -888,11 +890,45 @@ void main() {
               onKeyTapped: _ignoreKey,
               onUnitSystemChanged: _ignoreUnitSystem,
               parenEnabled: parenEnabled,
+              parenSemanticLabel: parenSemanticLabel,
+              parenSemanticHint: parenSemanticHint,
             ),
           ),
         ),
       );
     }
+
+    testWidgets('parenSemanticLabel and parenSemanticHint name the bracket key',
+        (tester) async {
+      await pumpKeyboard(
+        tester,
+        onControlAction: (_) {},
+        parenSemanticLabel: 'Touche parenthèse',
+        parenSemanticHint: 'Ouvre une parenthèse',
+      );
+
+      final paren = tester
+          .getSemantics(find.byKey(ControlAction.paren.testKey))
+          .getSemanticsData();
+      expect(paren.label, contains('Touche parenthèse'));
+      expect(paren.label, isNot(contains('Bracket button')));
+      expect(paren.hint, 'Ouvre une parenthèse');
+      final clearAll = tester
+          .getSemantics(find.byKey(ControlAction.clearAll.testKey))
+          .getSemanticsData();
+      expect(clearAll.label, contains('Clear all button'));
+    });
+
+    testWidgets('the bracket key keeps its English label when none is passed',
+        (tester) async {
+      await pumpKeyboard(tester, onControlAction: (_) {});
+
+      final paren = tester
+          .getSemantics(find.byKey(ControlAction.paren.testKey))
+          .getSemanticsData();
+      expect(paren.label, contains('Bracket button'));
+      expect(paren.hint, 'Opens a bracket; the next press closes it');
+    });
 
     testWidgets('sits bottom-left, left of the zero key, and sends paren',
         (tester) async {

@@ -34,7 +34,10 @@ void main() {
       ),
     ];
 
-    Widget buildTestKeyboard({bool parenEnabled = true}) {
+    Widget buildTestKeyboard({
+      bool parenEnabled = true,
+      String? parenSemanticLabel,
+    }) {
       return CoreKeyboard(
         currentGroup:
             const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
@@ -48,6 +51,7 @@ void main() {
         onKeyTapped: (_) {},
         onUnitSystemChanged: (_) {},
         parenEnabled: parenEnabled,
+        parenSemanticLabel: parenSemanticLabel,
       );
     }
 
@@ -90,6 +94,26 @@ void main() {
           (_) => buildTestKeyboard(),
           find.byKey(ControlAction.paren.testKey),
         );
+      },
+    );
+
+    testWidgets(
+      'a bracket key labelled by the caller meets the guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(parenSemanticLabel: 'Touche parenthèse'),
+          find.byKey(ControlAction.paren.testKey),
+        );
+
+        final semantics =
+            tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+        expect(semantics.label, contains('Touche parenthèse'));
       },
     );
 

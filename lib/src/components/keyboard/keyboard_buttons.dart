@@ -187,6 +187,10 @@ class CoreUnitButton extends StatelessWidget {
 /// [onControlAction] is called when the button is pressed.
 /// [enabled] is whether the button answers taps; `false` dims it, drops its
 /// tap action and reports it disabled to a screen reader.
+/// [semanticLabel] replaces the English screen-reader label built for
+/// [action] with the app's localised one.
+/// [semanticHint] does the same for the hint, and is withheld while the
+/// button is not [enabled].
 /// [width] is the width of the button.
 /// [height] is the height of the button.
 ///
@@ -196,6 +200,8 @@ class CoreControlButton extends StatelessWidget {
   final ControlAction action;
   final ValueChanged<ControlAction> onControlAction;
   final bool enabled;
+  final String? semanticLabel;
+  final String? semanticHint;
   final double? width;
   final double? height;
 
@@ -204,6 +210,8 @@ class CoreControlButton extends StatelessWidget {
     required this.action,
     required this.onControlAction,
     this.enabled = true,
+    this.semanticLabel,
+    this.semanticHint,
     this.width,
     this.height,
   });
@@ -238,10 +246,10 @@ class CoreControlButton extends StatelessWidget {
           );
 
     return Semantics(
-      label: _getSemanticLabel(action),
+      label: semanticLabel ?? _getSemanticLabel(action),
       button: true,
       enabled: enabled,
-      hint: enabled ? _getSemanticHint(action) : null,
+      hint: enabled ? semanticHint ?? _getSemanticHint(action) : null,
       child: _KeyboardButton(
         key: action.testKey,
         isLabel: label != null,

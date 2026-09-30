@@ -56,6 +56,8 @@ class CoreKeyboard extends StatefulWidget {
     this.groupAccentColors = const {},
     this.customResultLabel,
     this.parenEnabled = true,
+    this.parenSemanticLabel,
+    this.parenSemanticHint,
     this.onCollapseChanged,
     this.onGroupsReordered,
     this.reorderSemanticsLabelBuilder,
@@ -85,6 +87,15 @@ class CoreKeyboard extends StatefulWidget {
   /// its tap action, which is how the value editor keeps a bracket out of a
   /// single number. The key's face never changes either way.
   final bool parenEnabled;
+
+  /// Screen-reader label of the `( )` key, in place of the English "Bracket
+  /// button". Pass a localised string from the app layer.
+  final String? parenSemanticLabel;
+
+  /// Screen-reader hint of the `( )` key, in place of the English "Opens a
+  /// bracket; the next press closes it". Withheld while the key is disabled.
+  /// Pass a localised string from the app layer.
+  final String? parenSemanticHint;
 
   final ValueChanged<bool>? onCollapseChanged;
 
@@ -561,6 +572,8 @@ class _CoreKeyboardState extends State<CoreKeyboard>
           action: ControlAction.paren,
           onControlAction: widget.onControlAction,
           enabled: widget.parenEnabled,
+          semanticLabel: widget.parenSemanticLabel,
+          semanticHint: widget.parenSemanticHint,
           width: buttonWidth,
           height: buttonHeight,
         ),

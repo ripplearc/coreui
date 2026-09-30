@@ -19,6 +19,7 @@ Widget _buildShowTrigger({
   String resultLabel = 'Add',
   List<String>? unitOptions,
   String? unitGroupLabel,
+  String? parenSemanticLabel,
   String? Function(String value)? validator,
   void Function(SizeEntryResult)? onResult,
 }) {
@@ -39,6 +40,7 @@ Widget _buildShowTrigger({
                 resultLabel: resultLabel,
                 unitOptions: unitOptions,
                 unitGroupLabel: unitGroupLabel,
+                parenSemanticLabel: parenSemanticLabel,
                 validator: validator,
               ).then((result) {
                 if (result != null) onResult?.call(result);
@@ -60,6 +62,7 @@ Widget _buildSingleValueTrigger({
   List<String>? unitOptions,
   String? unit,
   String? unitGroupLabel,
+  String? parenSemanticLabel,
   String? Function(String value)? validator,
   void Function(String value, String? unit)? onSaved,
 }) {
@@ -79,6 +82,7 @@ Widget _buildSingleValueTrigger({
                 unitOptions: unitOptions,
                 unit: unit,
                 unitGroupLabel: unitGroupLabel,
+                parenSemanticLabel: parenSemanticLabel,
                 validator: validator,
                 onSaved: onSaved,
               );
@@ -152,6 +156,19 @@ void main() {
       expect(find.text('mm'), findsOneWidget);
     });
 
+    testWidgets('parenSemanticLabel names the bracket key in the size editor',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildShowTrigger(parenSemanticLabel: 'Touche parenthèse'),
+      );
+
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.label, contains('Touche parenthèse'));
+    });
+
     testWidgets(
         'a failing validator keeps the sheet open and shows the message',
         (tester) async {
@@ -216,6 +233,20 @@ void main() {
           '12');
       final semantics =
           tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
+    });
+
+    testWidgets('parenSemanticLabel names the disabled bracket key',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildSingleValueTrigger(parenSemanticLabel: 'Touche parenthèse'),
+      );
+
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.label, contains('Touche parenthèse'));
       expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
 

@@ -157,6 +157,9 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                     reorderSemanticsLabelBuilder: (label) =>
                         'Reorder $label group',
                     parenEnabled: parenEnabled,
+                    parenSemanticLabel: 'Bracket key',
+                    parenSemanticHint:
+                        'Opens a bracket, or closes the open one',
                   ),
                 ],
               ),

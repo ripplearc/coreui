@@ -414,6 +414,36 @@ void main() {
       expect(data.hint, isEmpty);
     });
 
+    for (final enabled in [true, false]) {
+      testWidgets(
+          'semanticLabel and semanticHint replace the English defaults on '
+          '${enabled ? 'an enabled' : 'a disabled'} control', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreControlButton(
+                action: ControlAction.paren,
+                onControlAction: (_) {},
+                enabled: enabled,
+                semanticLabel: 'Touche parenthèse',
+                semanticHint: 'Ouvre une parenthèse',
+                height: CoreSpacing.space14,
+                width: CoreSpacing.space14,
+              ),
+            ),
+          ),
+        );
+
+        final data = tester
+            .getSemantics(find.byType(CoreControlButton))
+            .getSemanticsData();
+        expect(data.label, contains('Touche parenthèse'));
+        expect(data.label, isNot(contains('Bracket button')));
+        expect(data.hint, enabled ? 'Ouvre une parenthèse' : isEmpty);
+      });
+    }
+
     testWidgets('disabling a control mid-press releases it without firing',
         (tester) async {
       final pressed = <ControlAction>[];
