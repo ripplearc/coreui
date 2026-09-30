@@ -113,6 +113,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     this.unitOptions,
     this.unit,
     this.unitGroupLabel,
+    this.parenSemanticLabel,
     this.validator,
   })  : assert(
           unitOptions == null || unitGroupLabel != null,
@@ -141,6 +142,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     this.unitOptions,
     this.unit,
     this.unitGroupLabel,
+    this.parenSemanticLabel,
     this.validator,
     this.onSaved,
   })  : assert(
@@ -207,6 +209,11 @@ class CoreValueEditorSheet extends StatefulWidget {
   /// The label of the keyboard's equals key, such as "Add" or "Update".
   final String resultLabel;
 
+  /// Screen-reader label of the keyboard's `( )` key, which the editor keeps
+  /// disabled, in place of the English "Bracket button". Pass a localised
+  /// string from the app layer.
+  final String? parenSemanticLabel;
+
   /// Rejects a value when it returns a message, which is shown beneath the
   /// offending field and keeps the sheet open.
   ///
@@ -244,6 +251,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     required String resultLabel,
     List<String>? unitOptions,
     String? unitGroupLabel,
+    String? parenSemanticLabel,
     String? Function(String value)? validator,
   }) {
     return showModalBottomSheet<SizeEntryResult>(
@@ -258,6 +266,7 @@ class CoreValueEditorSheet extends StatefulWidget {
         resultLabel: resultLabel,
         unitOptions: unitOptions,
         unitGroupLabel: unitGroupLabel,
+        parenSemanticLabel: parenSemanticLabel,
         validator: validator,
       ),
     );
@@ -274,6 +283,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     List<String>? unitOptions,
     String? unit,
     String? unitGroupLabel,
+    String? parenSemanticLabel,
     String? Function(String value)? validator,
     void Function(String value, String? unit)? onSaved,
   }) {
@@ -288,6 +298,7 @@ class CoreValueEditorSheet extends StatefulWidget {
         unitOptions: unitOptions,
         unit: unit,
         unitGroupLabel: unitGroupLabel,
+        parenSemanticLabel: parenSemanticLabel,
         validator: validator,
         onSaved: onSaved,
       ),
@@ -727,6 +738,8 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
               onKeyTapped: _onUnitKeyTapped,
               onUnitSystemChanged: (_) {},
               customResultLabel: widget.resultLabel,
+              parenEnabled: false,
+              parenSemanticLabel: widget.parenSemanticLabel,
             ),
           ],
         ),

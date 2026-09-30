@@ -800,9 +800,14 @@ void main() {
         expect(find.byKey(operator.testKey), findsOneWidget,
             reason: operator.name);
       }
-      for (final action in ControlAction.values) {
+      for (final action in [
+        ControlAction.clearAll,
+        ControlAction.delete,
+        ControlAction.paren,
+      ]) {
         expect(find.byKey(action.testKey), findsOneWidget, reason: action.name);
       }
+      expect(find.byKey(const ValueKey('calc_key_moreOptions')), findsNothing);
       for (final unit in [
         UnitType.yards,
         UnitType.feet,
@@ -848,6 +853,121 @@ void main() {
 
       expect(digits, [DigitType.seven]);
       expect(keys, ['Area']);
+    });
+  });
+
+  group('CoreKeyboard bracket key', () {
+    const basic = GroupNameType(id: 'basic', label: 'Basic Geometry');
+    const groups = [
+      FunctionGroup(
+        name: basic,
+        keys: [KeyType(groupName: 'basic', id: 'Area', label: 'Area')],
+      ),
+    ];
+
+    Future<void> pumpKeyboard(
+      WidgetTester tester, {
+      required ValueChanged<ControlAction> onControlAction,
+      bool parenEnabled = true,
+      String? parenSemanticLabel,
+      String? parenSemanticHint,
+    }) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: basic,
+              allGroups: groups,
+              onDigitPressed: _ignoreDigit,
+              onUnitSelected: _ignoreUnit,
+              onOperatorPressed: _ignoreOperator,
+              onControlAction: onControlAction,
+              onResultTapped: _ignoreResult,
+              onGroupSelected: (_) {},
+              onKeyTapped: _ignoreKey,
+              onUnitSystemChanged: _ignoreUnitSystem,
+              parenEnabled: parenEnabled,
+              parenSemanticLabel: parenSemanticLabel,
+              parenSemanticHint: parenSemanticHint,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('parenSemanticLabel and parenSemanticHint name the bracket key',
+        (tester) async {
+      await pumpKeyboard(
+        tester,
+        onControlAction: (_) {},
+        parenSemanticLabel: 'Touche parenthèse',
+        parenSemanticHint: 'Ouvre une parenthèse',
+      );
+
+      final paren = tester
+          .getSemantics(find.byKey(ControlAction.paren.testKey))
+          .getSemanticsData();
+      expect(paren.label, contains('Touche parenthèse'));
+      expect(paren.label, isNot(contains('Bracket button')));
+      expect(paren.hint, 'Ouvre une parenthèse');
+      final clearAll = tester
+          .getSemantics(find.byKey(ControlAction.clearAll.testKey))
+          .getSemanticsData();
+      expect(clearAll.label, contains('Clear all button'));
+    });
+
+    testWidgets('the bracket key keeps its English label when none is passed',
+        (tester) async {
+      await pumpKeyboard(tester, onControlAction: (_) {});
+
+      final paren = tester
+          .getSemantics(find.byKey(ControlAction.paren.testKey))
+          .getSemanticsData();
+      expect(paren.label, contains('Bracket button'));
+      expect(paren.hint, 'Opens a bracket; the next press closes it');
+    });
+
+    testWidgets('sits bottom-left, left of the zero key, and sends paren',
+        (tester) async {
+      final actions = <ControlAction>[];
+      await pumpKeyboard(tester, onControlAction: actions.add);
+
+      final paren = tester.getRect(find.byKey(ControlAction.paren.testKey));
+      final zero = tester.getRect(find.byKey(DigitType.zero.testKey));
+      expect(paren.right, lessThan(zero.left));
+      expect(paren.top, zero.top);
+      expect(find.text('( )'), findsOneWidget);
+
+      await tester.tap(find.byKey(ControlAction.paren.testKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ControlAction.paren.testKey));
+      await tester.pumpAndSettle();
+
+      expect(actions, [ControlAction.paren, ControlAction.paren]);
+      expect(find.text('( )'), findsOneWidget);
+    });
+
+    testWidgets('parenEnabled false silences the bracket key alone',
+        (tester) async {
+      final actions = <ControlAction>[];
+      await pumpKeyboard(
+        tester,
+        onControlAction: actions.add,
+        parenEnabled: false,
+      );
+
+      await tester.tap(find.byKey(ControlAction.paren.testKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ControlAction.clearAll.testKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ControlAction.delete.testKey));
+      await tester.pumpAndSettle();
+
+      expect(actions, [ControlAction.clearAll, ControlAction.delete]);
+      expect(find.text('( )'), findsOneWidget);
     });
   });
 }

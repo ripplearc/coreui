@@ -197,7 +197,7 @@ extension UnitTypeX on UnitType {
 /// Defines control actions available on the keyboard.
 /// - [delete]: Backspace/delete action
 /// - [clearAll]: Clear all input action
-/// - [moreOptions]: Show additional options
+/// - [paren]: The bracket key; one press opens a bracket, the next closes it
 enum ControlAction {
   /// Backspace/delete action
   delete,
@@ -205,13 +205,23 @@ enum ControlAction {
   /// Clear all input action
   clearAll,
 
-  /// Show additional options
+  /// The ⋮ control that sat bottom-left on [CoreKeyboard] before 0.28.0.
+  @Deprecated(
+    'CoreKeyboard renders the bracket key (ControlAction.paren) bottom-left '
+    'since 0.28.0 and never sends moreOptions; removal is tracked by CA-1197.',
+  )
   moreOptions,
+
+  /// The `( )` bracket key. Its face never changes: the first press opens a
+  /// bracket and the next press closes it, and the open bracket on the tape
+  /// tells the user which of the two the next press will do.
+  paren,
 }
 
 /// Extension providing labels for [ControlAction] enum values.
 extension ControlActionX on ControlAction {
-  /// Returns the icon representation of the control action.
+  /// Returns the icon representation of the control action, or `null` for
+  /// [ControlAction.paren], whose face is the text [label].
   CoreIconData? get icon {
     switch (this) {
       case ControlAction.delete:
@@ -220,8 +230,14 @@ extension ControlActionX on ControlAction {
         return CoreIcons.cChar;
       case ControlAction.moreOptions:
         return CoreIcons.moreVert;
+      case ControlAction.paren:
+        return null;
     }
   }
+
+  /// The text face of the control, or `null` for the controls that draw an
+  /// [icon]. `( )` for [ControlAction.paren].
+  String? get label => this == ControlAction.paren ? '( )' : null;
 
   /// The [Key] the control's rendered button carries, for Patrol and
   /// widget tests: `ValueKey('calc_key_clearAll')`.

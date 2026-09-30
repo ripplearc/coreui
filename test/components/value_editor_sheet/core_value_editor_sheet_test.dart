@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -17,6 +19,7 @@ Widget _buildShowTrigger({
   String resultLabel = 'Add',
   List<String>? unitOptions,
   String? unitGroupLabel,
+  String? parenSemanticLabel,
   String? Function(String value)? validator,
   void Function(SizeEntryResult)? onResult,
 }) {
@@ -37,6 +40,7 @@ Widget _buildShowTrigger({
                 resultLabel: resultLabel,
                 unitOptions: unitOptions,
                 unitGroupLabel: unitGroupLabel,
+                parenSemanticLabel: parenSemanticLabel,
                 validator: validator,
               ).then((result) {
                 if (result != null) onResult?.call(result);
@@ -58,6 +62,7 @@ Widget _buildSingleValueTrigger({
   List<String>? unitOptions,
   String? unit,
   String? unitGroupLabel,
+  String? parenSemanticLabel,
   String? Function(String value)? validator,
   void Function(String value, String? unit)? onSaved,
 }) {
@@ -77,6 +82,7 @@ Widget _buildSingleValueTrigger({
                 unitOptions: unitOptions,
                 unit: unit,
                 unitGroupLabel: unitGroupLabel,
+                parenSemanticLabel: parenSemanticLabel,
                 validator: validator,
                 onSaved: onSaved,
               );
@@ -150,7 +156,21 @@ void main() {
       expect(find.text('mm'), findsOneWidget);
     });
 
-    testWidgets('a failing validator keeps the sheet open and shows the message',
+    testWidgets('parenSemanticLabel names the bracket key in the size editor',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildShowTrigger(parenSemanticLabel: 'Touche parenthèse'),
+      );
+
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.label, contains('Touche parenthèse'));
+    });
+
+    testWidgets(
+        'a failing validator keeps the sheet open and shows the message',
         (tester) async {
       _setTestViewport(tester);
       await _open(
@@ -198,6 +218,36 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('42'), findsWidgets);
+    });
+
+    testWidgets('the bracket key is disabled in the editor', (tester) async {
+      _setTestViewport(tester);
+      await tester.pumpWidget(_buildSingleValueTrigger(initialValue: '12'));
+      await tester.tap(find.text('Show'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(ControlAction.paren.testKey));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          '12');
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
+    });
+
+    testWidgets('parenSemanticLabel names the disabled bracket key',
+        (tester) async {
+      _setTestViewport(tester);
+      await _open(
+        tester,
+        _buildSingleValueTrigger(parenSemanticLabel: 'Touche parenthèse'),
+      );
+
+      final semantics =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(semantics.label, contains('Touche parenthèse'));
+      expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
 
     testWidgets('clear-all empties the single field', (tester) async {
@@ -556,8 +606,7 @@ void main() {
       expect(await commit(tester), isNull);
     });
 
-    testWidgets('a keyboard-column unit survives a row change',
-        (tester) async {
+    testWidgets('a keyboard-column unit survives a row change', (tester) async {
       _setTestViewport(tester);
       await tester.pumpWidget(sheet(unitOptions: const ['m', 'cm']));
       await tester.tap(find.text('Inch'));
