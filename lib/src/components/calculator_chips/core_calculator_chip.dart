@@ -66,7 +66,9 @@ enum CoreCalculatorChipType {
 /// Automatically provides a combined semantic label for [label] and [value],
 /// and exposes [longPressSemanticLabel] as the long-press hint while
 /// [onLongPress] is set. A bracket's state lives in punctuation a screen
-/// reader skips, so the app passes [semanticsLabel] to say it in words
+/// reader skips and coreui has no localised words of its own, so a bracket
+/// chip left without a [semanticsLabel] announces only what is inside it: the
+/// app must pass [semanticsLabel] to say the state in words
 /// ("open bracket, 3 times 4") and [tapSemanticLabel] to say what a tap does
 /// ("reopen the bracket").
 ///
@@ -155,10 +157,13 @@ class CoreCalculatorChip extends StatelessWidget {
   final String? longPressSemanticLabel;
 
   /// Replaces the label a screen reader is given, which is otherwise built
-  /// from [label] and [displayedValue]. The bracket variants need it: their
-  /// state is the `)` a screen reader skips, so the app says it in words —
-  /// "open bracket, 3 times 4" / "bracket, 3 times 4". Pass a localised
-  /// string from the app layer.
+  /// from [label] and [displayedValue]. Pass a localised string from the app
+  /// layer.
+  ///
+  /// The bracket variants must be given one: their state is the `)` a screen
+  /// reader skips, so without it an open and a closed bracket announce the
+  /// same text. The app says it in words — "open bracket, 3 times 4" /
+  /// "bracket, 3 times 4".
   final String? semanticsLabel;
 
   bool get _isInteractive => type != CoreCalculatorChipType.disabled;

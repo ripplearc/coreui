@@ -115,13 +115,16 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 type: CoreCalculatorChipType.bracketOpen,
                 factor: CoreIcons.addOperator,
                 value: '3×4',
+                semanticsLabel: 'plus open bracket, 3 times 4',
               ),
               CoreCalculatorChip(
                 type: CoreCalculatorChipType.bracketClosed,
                 factor: CoreIcons.addOperator,
                 value: '3×4',
+                semanticsLabel: 'plus bracket, 3 times 4',
                 onTap: () =>
                     _showProvenance(context, 'Tap reopens the bracket'),
+                tapSemanticLabel: 'reopen the bracket',
               ),
             ]),
             _section(context, 'Error', [

@@ -24,7 +24,7 @@ CoreCalculatorChip(
 | `factor`                 | `CoreIconData?`          |       No | `null`  | An optional factor icon (e.g. `+`, `-`, `x`) displayed before the element.                              |
 | `onTap`                  | `VoidCallback`           |       No | `null`  | Called when the chip is tapped. Ignored if type is `disabled`.                                          |
 | `tapSemanticLabel`       | `String?`                |       No | `null`  | Screen-reader hint for the tap action ("double tap to …"). Requires `onTap` (asserted); a closed bracket's "reopen the bracket". Pass a localised string. |
-| `semanticsLabel`         | `String?`                |       No | `null`  | Replaces the screen-reader label built from `label` and the drawn value. The bracket variants need it — their state is punctuation a screen reader skips. Pass a localised string. |
+| `semanticsLabel`         | `String?`                |       No | `null`  | Replaces the screen-reader label built from `label` and the drawn value. The app must pass it for the bracket variants — their state is punctuation a screen reader skips. Pass a localised string. |
 | `onLongPress`            | `VoidCallback`           |       No | `null`  | Called when the chip is long-pressed (the calculator opens provenance this way). Ignored if `disabled`. |
 | `longPressSemanticLabel` | `String?`                |       No | `null`  | Screen-reader hint for the long-press action. Requires `onLongPress` (asserted) and is withheld while `disabled`; pass a localised string. |
 | `label`                  | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.                    |
@@ -42,7 +42,7 @@ On the tape an **outlined** chip is something the user typed and a **filled** ch
 - **Bracket open**: A bracket the user is still typing inside (UX design doc term 2.22, Section 7). The `active` green under a dashed teal edge, drawn without its closing bracket: `value: '3×4'` reads `(3×4`. The dash means one thing on the tape — this chip is not settled yet.
 - **Bracket closed**: The same chip once closed: `(3×4)` on a blue fill under a solid teal edge. A tap reopens it, so `onTap` is the reopen action. Requires a `value` (asserted): an empty closed bracket is removed by the calculator, never drawn.
 
-A screen reader skips brackets, so both variants announce the same "3 times 4" unless the app passes `semanticsLabel` ("open bracket, 3 times 4" / "bracket, 3 times 4") and, on the closed chip, `tapSemanticLabel` ("reopen the bracket").
+A screen reader skips brackets and coreui has no localised words of its own, so both bracket variants announce the same "3 times 4" when built without a `semanticsLabel`. The app must pass `semanticsLabel` ("open bracket, 3 times 4" / "bracket, 3 times 4") for every bracket chip and, on the closed chip, `tapSemanticLabel` ("reopen the bracket").
 
 | Type       | Background            | Border                      | Label/Value Color | Factor Color   | Shadow  |
 |------------|-----------------------|-----------------------------|-------------------|----------------|---------|
@@ -164,6 +164,7 @@ CoreCalculatorChip(
   type: CoreCalculatorChipType.bracketOpen,
   factor: CoreIcons.addOperator,
   value: '3×4',
+  semanticsLabel: l10n.openBracketChip('3×4'),
 );
 
 // …and "+ (3×4)" once it closes; a tap reopens it.

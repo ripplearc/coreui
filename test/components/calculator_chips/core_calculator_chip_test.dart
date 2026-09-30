@@ -355,8 +355,7 @@ void main() {
       });
     }
 
-    testWidgets('a closed bracket refuses to be empty',
-        (WidgetTester tester) async {
+    test('a closed bracket refuses to be empty', () {
       expect(
         () => CoreCalculatorChip(
           type: CoreCalculatorChipType.bracketClosed,
@@ -400,8 +399,7 @@ void main() {
       expect(semantics.hintOverrides!.onTapHint, 'reopen the bracket');
     });
 
-    testWidgets('tapSemanticLabel without onTap is refused',
-        (WidgetTester tester) async {
+    test('tapSemanticLabel without onTap is refused', () {
       expect(
         () => CoreCalculatorChip(
           type: CoreCalculatorChipType.bracketClosed,
