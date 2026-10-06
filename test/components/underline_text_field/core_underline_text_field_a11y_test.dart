@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -98,6 +100,21 @@ void main() {
         const CoreUnderlineTextField(label: 'Equipment'),
         () async {
           expect(find.bySemanticsLabel('Equipment'), findsOneWidget);
+        },
+      );
+    });
+
+    testWidgets('gaining focus reports the field as focused', (tester) async {
+      await pumpWithSemantics(
+        tester,
+        const CoreUnderlineTextField(label: 'Equipment'),
+        () async {
+          await tester.tap(find.byType(TextField));
+          await tester.pumpAndSettle();
+
+          final data =
+              tester.getSemantics(find.byType(TextField)).getSemanticsData();
+          expect(data.flagsCollection.isFocused, ui.Tristate.isTrue);
         },
       );
     });
