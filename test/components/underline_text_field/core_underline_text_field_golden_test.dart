@@ -431,6 +431,92 @@ void main() {
             ),
       ),
       (
+        'regular_prefix_empty',
+        'Regular, focused, prefix, empty',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Delivery',
+              prefixText: r'$',
+            ),
+      ),
+      (
+        'regular_unit',
+        'Regular, focused, with a unit',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Duration',
+              initialValue: '4',
+              unitText: 'days',
+            ),
+      ),
+      (
+        'regular_suffix_no_cursor',
+        'Regular, focused, suffix, no cursor',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Waste',
+              initialValue: '10',
+              suffixText: '%',
+              showCursor: false,
+            ),
+      ),
+      (
+        'regular_accessory',
+        'Regular, focused, with an accessory',
+        (focusNode) => Builder(
+              builder: (context) => CoreUnderlineTextField(
+                focusNode: focusNode,
+                label: 'Quantity',
+                initialValue: '3',
+                inlineAccessory: Container(
+                  width: 63,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).coreColors.lineMid,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+      ),
+      (
+        'regular_selected',
+        'Regular, focused, value selected',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Waste',
+              initialValue: '25',
+              suffixText: '%',
+              showCursor: false,
+              selectAllOnFocus: true,
+            ),
+      ),
+      (
+        'large_unit',
+        'Large, focused, with a unit',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              size: CoreUnderlineTextFieldSize.large,
+              label: 'How many days?',
+              initialValue: '3',
+              unitText: 'days',
+            ),
+      ),
+      (
+        'large_error',
+        'Large, focused, error',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              size: CoreUnderlineTextFieldSize.large,
+              label: 'Amount',
+              prefixText: r'$',
+              initialValue: '0',
+              errorText: 'Needs an amount above zero.',
+            ),
+      ),
+      (
         'large_filled',
         'Large, focused, filled',
         (focusNode) => CoreUnderlineTextField(
@@ -447,10 +533,11 @@ void main() {
         final focusNode = FocusNode();
         addTearDown(focusNode.dispose);
 
-        await pumpScenarios(tester, theme, const Size(404, 164), [
+        await pumpScenarios(tester, theme, const Size(404, 176), [
           (caption, build(focusNode)),
         ]);
         focusNode.requestFocus();
+        await tester.pump();
         await tester.pump();
         await tester.pump();
 

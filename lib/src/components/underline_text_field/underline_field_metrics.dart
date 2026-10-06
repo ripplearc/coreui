@@ -26,6 +26,7 @@ class UnderlineFieldMetrics {
 
   static const double horizontalInset = 2;
   static const double caretWidth = 2;
+  static const double caretGap = 2;
   static const double labelTrailingGap = 5;
   static const double inlineAccessoryGap = 12;
   static const double prefixGap = 2;
