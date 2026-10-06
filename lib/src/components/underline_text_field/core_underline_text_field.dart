@@ -139,6 +139,27 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// instance only once the user has left the field.
   final String? errorText;
 
+  /// Whether the field takes input. A disabled field dims its label, value,
+  /// affixes and placeholder to `textDisable`, rests its underline on
+  /// `lineMid`, and neither takes focus nor reports taps.
+  ///
+  /// The design has no disabled variant. The colors follow [CoreTextField]'s
+  /// disabled state.
+  final bool enabled;
+
+  /// Whether the value can be read but not edited. A read-only field keeps its
+  /// normal look, as the recalled rate on the cost form does.
+  final bool readOnly;
+
+  /// Whether gaining focus selects the whole value, so the first digit typed
+  /// replaces it. Use it for a value the app filled in as a suggestion.
+  final bool selectAllOnFocus;
+
+  /// Called when the user taps anywhere on the field: the label, the value or
+  /// the underline. Use it to open an own number pad together with
+  /// `keyboardType: TextInputType.none`.
+  final VoidCallback? onTap;
+
   /// The key of the underline, for tests to read its color and weight.
   @visibleForTesting
   static const Key underlineKey = Key('core_underline_text_field_underline');
@@ -166,6 +187,10 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.trailing,
     this.helperText,
     this.errorText,
+    this.enabled = true,
+    this.readOnly = false,
+    this.selectAllOnFocus = false,
+    this.onTap,
   });
 
   @override
@@ -218,7 +243,25 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     super.dispose();
   }
 
-  void _onFocusChanged() => setState(() {});
+  void _onFocusChanged() {
+    setState(() {});
+    if (_focusNode.hasFocus && widget.selectAllOnFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _selectAll());
+    }
+  }
+
+  void _selectAll() {
+    if (!mounted || !_focusNode.hasFocus) return;
+    _controller.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: _controller.text.length,
+    );
+  }
+
+  void _handleTap() {
+    _focusNode.requestFocus();
+    widget.onTap?.call();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +272,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final errorText = widget.errorText;
     final hasError = errorText != null && errorText.isNotEmpty;
     final message = hasError ? errorText : widget.helperText;
-    final restLineColor = _isLarge ? colors.lineMid : colors.lineDarkOutline;
+    final restLineColor =
+        _isLarge || !widget.enabled ? colors.lineMid : colors.lineDarkOutline;
     final lineColor = _focusNode.hasFocus ? colors.outlineHover : restLineColor;
 
     final hasLabelTrailing = widget.labelTrailing != null;
@@ -237,7 +281,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
-      onTap: _focusNode.requestFocus,
+      onTap: widget.enabled ? _handleTap : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -281,7 +325,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
               child: Text(
                 widget.label ?? '',
                 style: style.copyWith(
-                  color: hasError ? colors.textError : colors.textBody,
+                  color: hasError
+                      ? colors.textError
+                      : (widget.enabled ? colors.textBody : colors.textDisable),
                 ),
               ),
             ),
@@ -304,10 +350,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         ? typography.headlineMediumSemiBold
         : typography.bodyLargeRegular;
 
-    final softStyle = style.copyWith(color: colors.textBody);
+    final affixColor = widget.enabled ? colors.textBody : colors.textDisable;
+    final softStyle = style.copyWith(color: affixColor);
     final unitStyle =
         (_isLarge ? typography.bodyLargeRegular : typography.bodySmallRegular)
-            .copyWith(color: colors.textBody);
+            .copyWith(color: affixColor);
     final prefixText = widget.prefixText;
     final suffixText = widget.suffixText;
     final unitText = widget.unitText;
@@ -394,7 +441,12 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
               if (widget.maxLength != null)
                 LengthLimitingTextInputFormatter(widget.maxLength),
             ],
-            style: style.copyWith(color: colors.textHeadline),
+            enabled: widget.enabled,
+            readOnly: widget.readOnly,
+            onTap: widget.onTap,
+            style: style.copyWith(
+              color: widget.enabled ? colors.textHeadline : colors.textDisable,
+            ),
             cursorColor: colors.outlineFocus,
             cursorWidth: UnderlineFieldMetrics.caretWidth,
             cursorHeight: metrics.caretHeight,
