@@ -24,45 +24,54 @@ class UnderlineFieldMetrics {
     required this.unitGap,
   });
 
-  static const double horizontalInset = 2;
-  static const double caretWidth = 2;
-  static const double caretGap = 2;
-  static const double labelTrailingGap = 5;
-  static const double inlineAccessoryGap = 12;
-  static const double prefixGap = 2;
-  static const double messageTopGap = 8;
+  // TODO: [CA-1238] https://ripplearc.youtrack.cloud/issue/CA-1238
+  // CoreSpacing has no 2, 3, 5, 6 or 10 step. Replace these with tokens once
+  // they exist.
+  static const double _px2 = 2;
+  static const double _px3 = 3;
+  static const double _px5 = 5;
+  static const double _px6 = 6;
+  static const double _px10 = 10;
+
+  static const double horizontalInset = _px2;
+  static const double caretWidth = _px2;
+  static const double caretGap = _px2;
+  static const double labelTrailingGap = _px5;
+  static const double inlineAccessoryGap = CoreSpacing.space3;
+  static const double prefixGap = _px2;
+  static const double messageTopGap = CoreSpacing.space2;
 
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,
     labelInset: horizontalInset,
-    labelGap: 3,
+    labelGap: _px3,
     valueRowHeight: CoreSpacing.space6,
-    lineGap: 10,
+    lineGap: _px10,
     strokeWidth: 1,
     caretHeight: 17,
-    unitGap: 5,
+    unitGap: _px5,
   );
 
   static const UnderlineFieldMetrics _compact = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,
     labelInset: horizontalInset,
-    labelGap: 3,
+    labelGap: _px3,
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
     strokeWidth: 1,
     caretHeight: 17,
-    unitGap: 5,
+    unitGap: _px5,
   );
 
   static const UnderlineFieldMetrics _large = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space5,
     labelInset: 0,
-    labelGap: 6,
+    labelGap: _px6,
     valueRowHeight: CoreSpacing.space8,
-    lineGap: 6,
+    lineGap: _px6,
     strokeWidth: 2,
-    caretHeight: 24,
-    unitGap: 8,
+    caretHeight: CoreSpacing.space6,
+    unitGap: CoreSpacing.space2,
   );
 
   double labelRowHeightFor({required bool hasTrailing}) => hasTrailing
