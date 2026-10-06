@@ -44,9 +44,47 @@ void main() {
       });
     }
 
-    testWidgets(
-        'an empty field meets the text contrast rule (the guideline does not check hint text)',
+    testWidgets('prefix, unit and a trailing button meet the guidelines',
         (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreUnderlineTextField(
+          label: 'Rate',
+          prefixText: r'$',
+          initialValue: '145.00',
+          unitText: '/day',
+          trailing: IconButton(
+            tooltip: 'Look up a rate',
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          ),
+        ),
+        find.byType(CoreUnderlineTextField),
+      );
+    });
+
+    testWidgets('the affix text is announced in reading order', (tester) async {
+      await pumpWithSemantics(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Rate',
+          prefixText: r'$',
+          initialValue: '145.00',
+          unitText: '/day',
+        ),
+        () async {
+          expect(find.bySemanticsLabel(r'$'), findsOneWidget);
+          expect(find.bySemanticsLabel('/day'), findsOneWidget);
+          expect(find.bySemanticsLabel('Rate'), findsOneWidget);
+        },
+      );
+    });
+
+    testWidgets(
+        'an empty field meets the text contrast rule '
+        '(the guideline does not check hint text)', (tester) async {
       await setupA11yTest(tester);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
