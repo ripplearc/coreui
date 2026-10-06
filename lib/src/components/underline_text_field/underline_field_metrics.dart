@@ -47,6 +47,9 @@ class UnderlineFieldMetrics {
   /// The width of the caret.
   static const double caretWidth = 2;
 
+  /// The room reserved for the caret while it shows.
+  static const double caretGap = 2;
+
   /// The space between the label and the widget after it.
   static const double labelTrailingGap = 5;
 
@@ -55,6 +58,8 @@ class UnderlineFieldMetrics {
 
   /// The space between the prefix text and the value.
   static const double prefixGap = 2;
+
+  /// The space between the underline and the helper or error line.
   static const double messageTopGap = 8;
 
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
