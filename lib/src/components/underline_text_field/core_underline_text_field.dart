@@ -20,7 +20,8 @@ import 'underline_field_metrics.dart';
 /// [CoreUnderlineTextFieldSize.large] size). While the field has focus it
 /// turns `outlineHover`, and the caret is `outlineFocus`. The weight does not
 /// change with focus: it is 1px for [CoreUnderlineTextFieldSize.regular] and
-/// 2px for [CoreUnderlineTextFieldSize.large].
+/// [CoreUnderlineTextFieldSize.compact], and 2px for
+/// [CoreUnderlineTextFieldSize.large].
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
