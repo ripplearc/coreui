@@ -401,6 +401,61 @@ void main() {
       );
     });
 
+    testWidgets('CoreUnderlineTextField compact - $name', (tester) async {
+      await pumpScenarios(tester, theme, const Size(404, 560), [
+        (
+          'Compact, note placeholder',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.compact,
+            label: 'Note',
+            hintText: 'Add a note (optional)',
+          ),
+        ),
+        (
+          'Compact, suffix',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.compact,
+            label: 'Waste',
+            initialValue: '10',
+            suffixText: '%',
+          ),
+        ),
+        (
+          'Compact, prefix',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.compact,
+            label: 'Delivery',
+            prefixText: r'$',
+            initialValue: '0.00',
+          ),
+        ),
+        (
+          'Compact, helper line',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.compact,
+            label: 'Waste',
+            initialValue: '10',
+            suffixText: '%',
+            helperText: 'Suggested for paint - change or clear anytime.',
+          ),
+        ),
+        (
+          'Regular, for comparison',
+          const CoreUnderlineTextField(
+            label: 'Waste',
+            initialValue: '10',
+            suffixText: '%',
+          ),
+        ),
+      ]);
+
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile(
+            'goldens/core_underline_text_field_compact_$name.png'),
+      );
+    });
+
     final focusedCases = <(String, String, Widget Function(FocusNode))>[
       (
         'regular_empty',
@@ -514,6 +569,17 @@ void main() {
               prefixText: r'$',
               initialValue: '0',
               errorText: 'Needs an amount above zero.',
+            ),
+      ),
+      (
+        'compact_filled',
+        'Compact, focused, filled',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              size: CoreUnderlineTextFieldSize.compact,
+              label: 'Delivery',
+              prefixText: r'$',
+              initialValue: '85',
             ),
       ),
       (
