@@ -21,21 +21,38 @@ import 'underline_field_metrics.dart';
 /// turns `outlineHover`, and the caret is `outlineFocus`. The weight does not
 /// change with focus: it is 1px for [CoreUnderlineTextFieldSize.regular] and
 /// [CoreUnderlineTextFieldSize.compact], and 2px for
-/// [CoreUnderlineTextFieldSize.large].
+/// [CoreUnderlineTextFieldSize.large]. An [errorText] turns it
+/// `statusError`.
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
 /// `textDisable`.
 ///
+/// ### Prefix, suffix and unit
+/// [prefixText], [suffixText] and [unitText] are drawn by the field around the
+/// typed text, never inside it. An empty field still reads `$` with a caret,
+/// and backspace can never delete it. The value hugs its text when something
+/// follows it, so `4 days` reads as one unit.
+///
+/// ### Slots
+/// [labelTrailing], [inlineAccessory] and [trailing] take any widget and own
+/// only its position, not its look. The widgets you pass are responsible for
+/// their own tap targets and semantics.
+///
+/// ### Helper and error lines
+/// [helperText] and [errorText] share one line under the underline. The field
+/// never decides when a value is wrong: the caller sets [errorText], for
+/// instance once the user has left the field.
+///
 /// ### Tap target
-/// The label, the value row and the underline all focus the field when
-/// tapped. The text field's own accessibility node is 48px tall, though the
+/// A tap anywhere on the field focuses it, on the label, the value row, the
+/// underline and the helper or error line. The text field's own accessibility node is 48px tall, though the
 /// value row is drawn 24px or 32px tall, so the field meets the minimum tap
 /// target without changing the design's spacing.
 ///
 /// ### Strings
-/// This field owns no user-facing strings. Every label and hint is passed in
-/// by the caller, who localises it.
+/// This field owns no user-facing strings. Every label, hint and message is
+/// passed in by the caller, who localises it.
 ///
 /// ---
 /// ## Examples
@@ -45,16 +62,37 @@ import 'underline_field_metrics.dart';
 /// CoreUnderlineTextField(
 ///   label: 'Equipment',
 ///   hintText: 'Name the equipment',
+///   maxLength: 80,
 ///   onChanged: (value) => bloc.add(NameChanged(value)),
 /// )
 /// ```
 ///
-/// ### 2) A single-question form
+/// ### 2) A value with a prefix and a unit
+/// ```dart
+/// CoreUnderlineTextField(
+///   label: 'Rate',
+///   prefixText: r'$',
+///   initialValue: '145.00',
+///   unitText: '/day',
+///   keyboardType: TextInputType.number,
+/// )
+/// ```
+///
+/// ### 3) A single-question form
 /// ```dart
 /// CoreUnderlineTextField(
 ///   size: CoreUnderlineTextFieldSize.large,
 ///   label: 'Amount',
 ///   keyboardType: TextInputType.number,
+/// )
+/// ```
+///
+/// ### 4) An error the caller decides to show
+/// ```dart
+/// CoreUnderlineTextField(
+///   label: 'Quantity',
+///   initialValue: '0',
+///   errorText: 'Quantity must be more than zero.',
 /// )
 /// ```
 class CoreUnderlineTextField extends StatefulWidget {
@@ -165,8 +203,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// or not the caret is there.
   final bool? showCursor;
 
-  /// Called when the user taps anywhere on the field: the label, the value or
-  /// the underline. Use it to open an own number pad together with
+  /// Called when the user taps anywhere on the field: the label, the value,
+  /// the underline or the helper or error line. Use it to open an own number pad together with
   /// `keyboardType: TextInputType.none`.
   final VoidCallback? onTap;
 
