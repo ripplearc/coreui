@@ -41,6 +41,8 @@ export 'src/components/switches/switch.dart';
 export 'src/components/tabs/core_tabs.dart';
 export 'src/components/text_fields/text_field.dart';
 export 'src/components/tooltips/tooltip.dart';
+export 'src/components/underline_text_field/core_underline_text_field.dart';
+export 'src/components/underline_text_field/core_underline_text_field_size.dart';
 export 'src/components/value_editor_sheet/core_value_editor_sheet.dart';
 export 'src/components/writing_dots/core_writing_dots.dart';
 export 'src/notifications/success_modal.dart';
