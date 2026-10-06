@@ -55,6 +55,7 @@ class UnderlineFieldMetrics {
 
   /// The space between the prefix text and the value.
   static const double prefixGap = 2;
+  static const double messageTopGap = 8;
 
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,

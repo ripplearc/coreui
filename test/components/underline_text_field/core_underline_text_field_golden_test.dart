@@ -261,6 +261,96 @@ void main() {
       );
     });
 
+    testWidgets('CoreUnderlineTextField helper and error lines - $name',
+        (tester) async {
+      await pumpScenarios(tester, theme, const Size(404, 940), [
+        (
+          'Helper line',
+          const CoreUnderlineTextField(
+            label: 'Rate',
+            hintText: 'Set your rate',
+            helperText:
+                'Never priced this? Use the search icon above to look it up '
+                'in the cost file.',
+          ),
+        ),
+        (
+          'Error, filled',
+          const CoreUnderlineTextField(
+            label: 'Quantity',
+            initialValue: '0',
+            errorText: 'Quantity must be more than zero.',
+          ),
+        ),
+        (
+          'Error, empty with placeholder',
+          const CoreUnderlineTextField(
+            label: 'Quantity',
+            hintText: 'Set the quantity',
+            errorText: 'Quantity must be more than zero.',
+          ),
+        ),
+        (
+          'Error with a unit',
+          const CoreUnderlineTextField(
+            label: 'Duration',
+            initialValue: '0',
+            unitText: 'days',
+            errorText: 'Duration must be more than zero.',
+          ),
+        ),
+        (
+          'Helper line with a label badge',
+          Builder(
+            builder: (context) {
+              final colors = Theme.of(context).coreColors;
+              return CoreUnderlineTextField(
+                label: 'Rate',
+                initialValue: '52.00',
+                prefixText: r'$',
+                labelTrailing: Container(
+                  height: 20,
+                  width: 89,
+                  decoration: BoxDecoration(
+                    color: colors.backgroundOrangeLight,
+                    border: Border.all(color: colors.textWarning),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                helperText: 'Saved to Your rates.',
+              );
+            },
+          ),
+        ),
+        (
+          'Helper line, large',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.large,
+            label: 'Amount',
+            prefixText: r'$',
+            initialValue: '400.00',
+            helperText: 'Used on this line only.',
+          ),
+        ),
+        (
+          'Error, large',
+          const CoreUnderlineTextField(
+            size: CoreUnderlineTextFieldSize.large,
+            label: 'Amount',
+            prefixText: r'$',
+            initialValue: '0',
+            errorText: 'Needs an amount above zero.',
+          ),
+        ),
+      ]);
+
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile(
+            'goldens/core_underline_text_field_messages_$name.png'),
+      );
+    });
+
     final focusedCases = <(String, String, Widget Function(FocusNode))>[
       (
         'regular_empty',
@@ -281,6 +371,16 @@ void main() {
             ),
       ),
       (
+        'regular_error',
+        'Regular, focused, error',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Quantity',
+              initialValue: '0',
+              errorText: 'Quantity must be more than zero.',
+            ),
+      ),
+      (
         'large_filled',
         'Large, focused, filled',
         (focusNode) => CoreUnderlineTextField(
@@ -297,7 +397,7 @@ void main() {
         final focusNode = FocusNode();
         addTearDown(focusNode.dispose);
 
-        await pumpScenarios(tester, theme, const Size(404, 152), [
+        await pumpScenarios(tester, theme, const Size(404, 164), [
           (caption, build(focusNode)),
         ]);
         focusNode.requestFocus();
