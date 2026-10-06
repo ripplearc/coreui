@@ -351,6 +351,56 @@ void main() {
       );
     });
 
+    testWidgets('CoreUnderlineTextField disabled and read-only - $name',
+        (tester) async {
+      await pumpScenarios(tester, theme, const Size(404, 440), [
+        (
+          'Disabled, empty with placeholder',
+          const CoreUnderlineTextField(
+            enabled: false,
+            label: 'Rate',
+            hintText: 'Set your rate',
+          ),
+        ),
+        (
+          'Disabled, filled with prefix and unit',
+          const CoreUnderlineTextField(
+            enabled: false,
+            label: 'Rate',
+            prefixText: r'$',
+            initialValue: '145.00',
+            unitText: '/day',
+          ),
+        ),
+        (
+          'Disabled, large',
+          const CoreUnderlineTextField(
+            enabled: false,
+            size: CoreUnderlineTextFieldSize.large,
+            label: 'Amount',
+            prefixText: r'$',
+            initialValue: '450.00',
+            unitText: 'job',
+          ),
+        ),
+        (
+          'Read-only, normal look',
+          const CoreUnderlineTextField(
+            readOnly: true,
+            label: 'Rate',
+            prefixText: r'$',
+            initialValue: '150.00',
+            unitText: '/day',
+          ),
+        ),
+      ]);
+
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/core_underline_text_field_states_$name.png'),
+      );
+    });
+
     final focusedCases = <(String, String, Widget Function(FocusNode))>[
       (
         'regular_empty',
