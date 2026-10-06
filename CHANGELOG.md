@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.31.0] - CoreUnderlineTextField
+
+### ✨ Features
+
+- **CoreUnderlineTextField**: a text field drawn as a label over a value with a single rule beneath it and no border, for the dense stacked forms of the "New material, labor or equipment cost" screens (CA-1158). A sibling of `CoreTextField`, not a replacement. The underline is `lineDarkOutline` at rest and `outlineHover` on focus, 1px, and `statusError` for an error. It takes a placeholder (`hintText`), a controller or `initialValue`, a `focusNode`, `keyboardType`, `textInputAction`, `inputFormatters`, `maxLength` (no counter), `autofocus`, `onChanged`, `onSubmitted` and `onTap`, and owns no user-facing string
+- **CoreUnderlineTextFieldSize**: `regular` (12/16 label over a 16/24 value, 1px underline, 54px tall), `compact` (the same with the underline 2px closer to the value, 52px tall, for the fields of an open editor panel such as waste, burden, delivery and note) and `large` (14/20 label over a 24/32 semibold value, 2px `lineMid` underline, 66px tall) for a form that asks a single question
+- **Prefix, suffix and unit**: `prefixText` (`$`), `suffixText` (`%`) and `unitText` (`days`, `/gal`) are drawn by the field around the typed text, so an empty field still reads `$` with a caret, backspace can never delete it, and the controller holds only what the user typed. The value hugs its text when something follows it, and the prefix, value, suffix and unit share one text baseline as the design draws them
+- **Slots**: `labelTrailing` (a badge beside the label, which keeps the field's height), `inlineAccessory` (a unit chip 12px after the value) and `trailing` (a lookup button at the far end of the row). The row grows to fit a taller widget and centers the value against it
+- **Helper and error lines**: `helperText` draws an info icon and a 12/16 line 8px under the underline, which adds 24px to the field. `errorText` (null or empty means no error) replaces it, turns the label, underline, icon and line to the error colors, keeps the underline red on focus, and is announced as a live region. The caller decides when to show it
+- **States**: `enabled: false` dims the field and stops focus and taps; `readOnly` keeps the normal look and refuses edits; `selectAllOnFocus` selects the value so the first digit typed replaces it; `showCursor` turns the caret off for a value on an own number pad. The caret takes 2px of room only while it shows
+- Underline text field showcase screen in the example app and a component doc
+
+### 📐 Design notes
+
+The focus underline is `outlineHover` (`#003A54` in light mode), which is the value the design draws; `outlineFocus` is the caret. The design draws no disabled variant, so the disabled colors follow `CoreTextField`. The design draws the `%` of a waste field as part of the value; the storyboard calls it a soft fixed suffix with no cursor, so `suffixText` is soft and a waste field passes `showCursor: false`. The placeholder is `textDisable` as drawn, about 2.5:1 on a white page, below the 4.5:1 WCAG asks of text; it is the token `CoreTextField` already uses for its hint. The text field's accessibility node is 48px tall though the value row is drawn 24px or 32px tall, so the field meets the minimum tap target without changing the design's spacing.
+
+### 🧪 Tests
+
+- Content, sizes and offsets against the design's numbers, colors in both themes, underline rest and focus, tap-to-focus on the label and underline, a replaced focus node, prefix, suffix, unit, hugging, slots, helper and error lines, disabled and read-only, select-all on focus, `onTap`, and caret room
+- A11y: tap target, label and contrast in both themes for both sizes, the announced label and value, error as a live region, disabled and read-only flags, and a 48px accessibility node
+- Goldens in light and dark: rest, focused (regular empty, regular filled, large filled, regular error), affixes and slots, helper and error lines, and disabled and read-only
+
 ## [0.30.0] - CoreCalculatorChip inert state and the stale answer
 
 ### ✨ Features
