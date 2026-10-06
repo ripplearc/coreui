@@ -29,6 +29,7 @@ class UnderlineFieldMetrics {
   static const double labelTrailingGap = 5;
   static const double inlineAccessoryGap = 12;
   static const double prefixGap = 2;
+  static const double messageTopGap = 8;
 
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,

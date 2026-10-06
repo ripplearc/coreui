@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../theme/app_typography_extension.dart';
 import '../../theme/theme_extensions.dart';
 import 'core_underline_text_field_size.dart';
+import 'underline_field_message.dart';
 import 'underline_field_metrics.dart';
 
 /// A text field drawn as a label over a value with a single rule beneath it,
@@ -123,6 +124,21 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// row grows to fit it and centers the value against it.
   final Widget? trailing;
 
+  /// A line under the field with an info icon, for a hint about what to type.
+  /// Replaced by [errorText] while there is one.
+  final String? helperText;
+
+  /// A line under the field with an error icon. While it is set, and not
+  /// empty, the label,
+  /// the underline and the line itself turn to the error colors, and the
+  /// underline stays in the error color on focus. It pushes whatever sits
+  /// below the field down by one line, and a screen reader announces it as it
+  /// appears.
+  ///
+  /// The field never decides when a value is wrong. The caller sets this, for
+  /// instance only once the user has left the field.
+  final String? errorText;
+
   /// The key of the underline, for tests to read its color and weight.
   @visibleForTesting
   static const Key underlineKey = Key('core_underline_text_field_underline');
@@ -148,6 +164,8 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.unitText,
     this.inlineAccessory,
     this.trailing,
+    this.helperText,
+    this.errorText,
   });
 
   @override
@@ -208,7 +226,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
     final metrics = UnderlineFieldMetrics.of(widget.size);
+    final errorText = widget.errorText;
+    final hasError = errorText != null && errorText.isNotEmpty;
+    final message = hasError ? errorText : widget.helperText;
     final restLineColor = _isLarge ? colors.lineMid : colors.lineDarkOutline;
+    final lineColor = _focusNode.hasFocus ? colors.outlineHover : restLineColor;
 
     final hasLabelTrailing = widget.labelTrailing != null;
 
@@ -221,7 +243,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.label != null || hasLabelTrailing) ...[
-            _buildLabel(metrics, typography, colors),
+            _buildLabel(metrics, typography, colors, hasError: hasError),
             SizedBox(height: metrics.labelGap),
           ],
           _buildValueRow(metrics, typography, colors),
@@ -229,8 +251,10 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
           Container(
             key: CoreUnderlineTextField.underlineKey,
             height: metrics.strokeWidth,
-            color: _focusNode.hasFocus ? colors.outlineHover : restLineColor,
+            color: hasError ? colors.statusError : lineColor,
           ),
+          if (message != null)
+            UnderlineFieldMessage(text: message, isError: hasError),
         ],
       ),
     );
@@ -239,8 +263,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
   Widget _buildLabel(
     UnderlineFieldMetrics metrics,
     AppTypographyExtension typography,
-    AppColorsExtension colors,
-  ) {
+    AppColorsExtension colors, {
+    required bool hasError,
+  }) {
     final style =
         _isLarge ? typography.bodyMediumRegular : typography.bodySmallRegular;
 
@@ -255,7 +280,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
             child: ExcludeSemantics(
               child: Text(
                 widget.label ?? '',
-                style: style.copyWith(color: colors.textBody),
+                style: style.copyWith(
+                  color: hasError ? colors.textError : colors.textBody,
+                ),
               ),
             ),
           ),
