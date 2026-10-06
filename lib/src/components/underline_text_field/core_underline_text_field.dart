@@ -155,6 +155,15 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// replaces it. Use it for a value the app filled in as a suggestion.
   final bool selectAllOnFocus;
 
+  /// Whether the caret shows while the field has focus. Defaults to `true`,
+  /// or to `false` for a [readOnly] field. Turn it off for a value edited on
+  /// an own number pad, such as a `%` waste field.
+  ///
+  /// The caret takes 2px of room in the row only while it shows, so the
+  /// suffix, unit or accessory after the value keeps the design's gap whether
+  /// or not the caret is there.
+  final bool? showCursor;
+
   /// Called when the user taps anywhere on the field: the label, the value or
   /// the underline. Use it to open an own number pad together with
   /// `keyboardType: TextInputType.none`.
@@ -191,6 +200,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.readOnly = false,
     this.selectAllOnFocus = false,
     this.onTap,
+    this.showCursor,
   });
 
   @override
@@ -207,6 +217,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   FocusNode get _focusNode =>
       widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+
+  bool get _showsCaret =>
+      _focusNode.hasFocus &&
+      widget.enabled &&
+      (widget.showCursor ?? !widget.readOnly);
 
   bool get _isLarge => widget.size == CoreUnderlineTextFieldSize.large;
 
@@ -361,6 +376,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final inlineAccessory = widget.inlineAccessory;
     final trailing = widget.trailing;
     final input = _buildInput(metrics, style, colors);
+    final caretGap = _showsCaret ? UnderlineFieldMetrics.caretGap : 0.0;
     final hugsValue =
         suffixText != null || unitText != null || inlineAccessory != null;
 
@@ -377,9 +393,14 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
           Flexible(child: IntrinsicWidth(child: input))
         else
           Expanded(child: input),
-        if (suffixText != null) Text(suffixText, style: softStyle),
+        if (suffixText != null) ...[
+          SizedBox(width: caretGap),
+          Text(suffixText, style: softStyle),
+        ],
         if (unitText != null) ...[
-          SizedBox(width: metrics.unitGap),
+          SizedBox(
+            width: metrics.unitGap + (suffixText == null ? caretGap : 0),
+          ),
           Text(unitText, style: unitStyle),
         ],
       ],
@@ -402,8 +423,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
                   else
                     Expanded(child: valueGroup),
                   if (inlineAccessory != null) ...[
-                    const SizedBox(
-                      width: UnderlineFieldMetrics.inlineAccessoryGap,
+                    SizedBox(
+                      width: UnderlineFieldMetrics.inlineAccessoryGap +
+                          (suffixText == null && unitText == null
+                              ? caretGap
+                              : 0),
                     ),
                     inlineAccessory,
                   ],
@@ -448,7 +472,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
               color: widget.enabled ? colors.textHeadline : colors.textDisable,
             ),
             cursorColor: colors.outlineFocus,
-            cursorWidth: UnderlineFieldMetrics.caretWidth,
+            showCursor: widget.showCursor,
+            cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
             cursorHeight: metrics.caretHeight,
             decoration: InputDecoration(
               isCollapsed: true,
