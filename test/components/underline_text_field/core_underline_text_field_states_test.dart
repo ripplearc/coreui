@@ -227,6 +227,28 @@ void main() {
       expect(taps, 1);
     });
 
+    testWidgets('fires once for a tap on the helper or error line',
+        (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      var taps = 0;
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          focusNode: focusNode,
+          helperText: 'A hint',
+          onTap: () => taps++,
+        ),
+      );
+      await tester.tap(find.text('A hint'));
+      await tester.pump();
+
+      expect(taps, 1);
+      expect(focusNode.hasFocus, isTrue);
+    });
+
     testWidgets('a tap on the label also focuses the field', (tester) async {
       final focusNode = FocusNode();
       addTearDown(focusNode.dispose);
