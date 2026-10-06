@@ -106,5 +106,57 @@ void main() {
         matchesGoldenFile('goldens/core_underline_text_field_rest_$name.png'),
       );
     });
+
+    final focusedCases = <(String, String, Widget Function(FocusNode))>[
+      (
+        'regular_empty',
+        'Regular, focused, empty with placeholder',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Equipment',
+              hintText: 'Name the equipment',
+            ),
+      ),
+      (
+        'regular_filled',
+        'Regular, focused, filled',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              label: 'Equipment',
+              initialValue: 'Mini excavator - 1.5 ton',
+            ),
+      ),
+      (
+        'large_filled',
+        'Large, focused, filled',
+        (focusNode) => CoreUnderlineTextField(
+              focusNode: focusNode,
+              size: CoreUnderlineTextFieldSize.large,
+              label: 'How many days?',
+              initialValue: '3',
+            ),
+      ),
+    ];
+
+    for (final (id, caption, build) in focusedCases) {
+      testWidgets('CoreUnderlineTextField $id focused - $name', (tester) async {
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+
+        await pumpScenarios(tester, theme, const Size(404, 152), [
+          (caption, build(focusNode)),
+        ]);
+        focusNode.requestFocus();
+        await tester.pump();
+        await tester.pump();
+
+        await expectLater(
+          find.byType(Scaffold),
+          matchesGoldenFile(
+            'goldens/core_underline_text_field_focused_${id}_$name.png',
+          ),
+        );
+      });
+    }
   }
 }

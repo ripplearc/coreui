@@ -14,19 +14,21 @@ import 'underline_field_metrics.dart';
 /// the underline, which is the field's whole focus affordance.
 ///
 /// ### Underline
-/// The underline is `lineDarkOutline` (`lineMid` for the
-/// [CoreUnderlineTextFieldSize.large] size) and the caret is `outlineFocus`.
-/// It is 1px for [CoreUnderlineTextFieldSize.regular] and 2px for
-/// [CoreUnderlineTextFieldSize.large].
+/// At rest the underline is `lineDarkOutline` (`lineMid` for the
+/// [CoreUnderlineTextFieldSize.large] size). While the field has focus it
+/// turns `outlineHover`, and the caret is `outlineFocus`. The weight does not
+/// change with focus: it is 1px for [CoreUnderlineTextFieldSize.regular] and
+/// 2px for [CoreUnderlineTextFieldSize.large].
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
 /// `textDisable`.
 ///
 /// ### Tap target
-/// The text field's accessibility node is 48px tall, though the value row is
-/// drawn 24px or 32px tall, so the field meets the minimum tap target without
-/// changing the design's spacing.
+/// The label, the value row and the underline all focus the field when
+/// tapped. The text field's own accessibility node is 48px tall, though the
+/// value row is drawn 24px or 32px tall, so the field meets the minimum tap
+/// target without changing the design's spacing.
 ///
 /// ### Strings
 /// This field owns no user-facing strings. Every label and hint is passed in
@@ -65,6 +67,9 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// The text the field starts with. Ignored when [controller] is given.
   final String? initialValue;
 
+  /// Owns focus for the field. When omitted the field keeps its own.
+  final FocusNode? focusNode;
+
   /// The size of the label and value. Defaults to
   /// [CoreUnderlineTextFieldSize.regular].
   final CoreUnderlineTextFieldSize size;
@@ -82,6 +87,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.hintText,
     this.controller,
     this.initialValue,
+    this.focusNode,
     this.size = CoreUnderlineTextFieldSize.regular,
     this.onChanged,
   });
@@ -92,18 +98,51 @@ class CoreUnderlineTextField extends StatefulWidget {
 
 class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
   TextEditingController? _ownedController;
+  FocusNode? _ownedFocusNode;
 
   TextEditingController get _controller =>
       widget.controller ??
       (_ownedController ??= TextEditingController(text: widget.initialValue));
 
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+
   bool get _isLarge => widget.size == CoreUnderlineTextFieldSize.large;
 
   @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(CoreUnderlineTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      (oldWidget.focusNode ?? _ownedFocusNode)?.removeListener(
+        _onFocusChanged,
+      );
+      _focusNode.addListener(_onFocusChanged);
+      _releaseOwnedFocusNode();
+    }
+  }
+
+  void _releaseOwnedFocusNode() {
+    final owned = _ownedFocusNode;
+    if (owned == null || widget.focusNode == null) return;
+    _ownedFocusNode = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) => owned.dispose());
+  }
+
+  @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _ownedFocusNode?.dispose();
     _ownedController?.dispose();
     super.dispose();
   }
+
+  void _onFocusChanged() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
@@ -111,23 +150,29 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
     final metrics = UnderlineFieldMetrics.of(widget.size);
+    final restLineColor = _isLarge ? colors.lineMid : colors.lineDarkOutline;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.label != null) ...[
-          _buildLabel(metrics, typography, colors),
-          SizedBox(height: metrics.labelGap),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      excludeFromSemantics: true,
+      onTap: _focusNode.requestFocus,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.label != null) ...[
+            _buildLabel(metrics, typography, colors),
+            SizedBox(height: metrics.labelGap),
+          ],
+          _buildValueRow(metrics, typography, colors),
+          SizedBox(height: metrics.lineGap),
+          Container(
+            key: CoreUnderlineTextField.underlineKey,
+            height: metrics.strokeWidth,
+            color: _focusNode.hasFocus ? colors.outlineHover : restLineColor,
+          ),
         ],
-        _buildValueRow(metrics, typography, colors),
-        SizedBox(height: metrics.lineGap),
-        Container(
-          key: CoreUnderlineTextField.underlineKey,
-          height: metrics.strokeWidth,
-          color: _isLarge ? colors.lineMid : colors.lineDarkOutline,
-        ),
-      ],
+      ),
     );
   }
 
@@ -171,6 +216,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
           label: widget.label,
           child: TextField(
             controller: _controller,
+            focusNode: _focusNode,
             onChanged: widget.onChanged,
             style: style.copyWith(color: colors.textHeadline),
             cursorColor: colors.outlineFocus,
