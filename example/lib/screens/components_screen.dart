@@ -28,6 +28,7 @@ import 'package:example/screens/suggestion_area_showcase_screen.dart';
 import 'package:example/screens/switch_showcase_screen.dart';
 import 'package:example/screens/tabs_showcase_screen.dart';
 import 'package:example/screens/text_field_showcase_screen.dart';
+import 'package:example/screens/underline_text_field_showcase_screen.dart';
 import 'package:example/screens/toast_showcase_screen.dart';
 import 'package:example/screens/tooltip_showcase_screen.dart';
 import 'package:example/screens/value_editor_sheet_showcase_screen.dart';
@@ -257,6 +258,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Details Row Component',
                 const DetailsRowShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Underline Text Field Component',
+                const UnderlineTextFieldShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
