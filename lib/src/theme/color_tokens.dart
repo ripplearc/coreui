@@ -99,10 +99,12 @@ class CoreTextColors {
   static const Color dark = _CoreColorPalette.gray800;
   static const Color body = _CoreColorPalette.gray600;
   static const Color disable = _CoreColorPalette.gray400;
+  static const Color grayMid = _CoreColorPalette.gray500;
   static const Color inverse = _CoreColorPalette.gray25;
   static const Color link = _CoreColorPalette.orient800;
   static const Color info = _CoreColorPalette.blue600;
   static const Color warning = _CoreColorPalette.orange600;
+  static const Color warningStrong = _CoreColorPalette.orange700;
   static const Color error = _CoreColorPalette.red600;
   static const Color success = _CoreColorPalette.green600;
 }
@@ -135,6 +137,7 @@ class CoreBorderColors {
   static const Color outlineHover = _CoreColorPalette.orient900;
   static const Color outlineFocus = _CoreColorPalette.orient800;
   static const Color tabsHighlight = _CoreColorPalette.orient500;
+  static const Color lineOrange = _CoreColorPalette.orange200;
 }
 
 // Status-related color tokens
@@ -243,10 +246,12 @@ class CoreDarkTextColors {
   static const Color dark = _CoreColorPalette.gray100;
   static const Color body = _CoreColorPalette.gray300;
   static const Color disable = _CoreColorPalette.gray500;
+  static const Color grayMid = _CoreColorPalette.gray300;
   static const Color inverse = _CoreColorPalette.gray900;
   static const Color link = _CoreColorPalette.orient300;
   static const Color info = _CoreColorPalette.blue300;
   static const Color warning = _CoreColorPalette.orange300;
+  static const Color warningStrong = _CoreColorPalette.orange200;
   static const Color error = _CoreColorPalette.red300;
   static const Color success = _CoreColorPalette.green300;
 }
@@ -281,6 +286,7 @@ class CoreDarkBorderColors {
   static const Color outlineHover = _CoreColorPalette.orient300;
   static const Color outlineFocus = _CoreColorPalette.orient200;
   static const Color tabsHighlight = _CoreColorPalette.orient300;
+  static const Color lineOrange = _CoreColorPalette.orange300;
 }
 
 /// Dark-mode status color tokens for error and success states.

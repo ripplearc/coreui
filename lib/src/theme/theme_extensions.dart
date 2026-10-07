@@ -8,10 +8,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color textDark;
   final Color textBody;
   final Color textDisable;
+  final Color textGrayMid;
   final Color textInverse;
   final Color textLink;
   final Color textInfo;
   final Color textWarning;
+  final Color textWarningStrong;
   final Color textError;
   final Color textSuccess;
 
@@ -40,6 +42,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color outlineHover;
   final Color outlineFocus;
   final Color tabsHighlight;
+  final Color lineOrange;
 
   // Status Colors
   final Color statusError;
@@ -107,10 +110,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.textDark,
     required this.textBody,
     required this.textDisable,
+    required this.textGrayMid,
     required this.textInverse,
     required this.textLink,
     required this.textInfo,
     required this.textWarning,
+    required this.textWarningStrong,
     required this.textError,
     required this.textSuccess,
     required this.pageBackground,
@@ -135,6 +140,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.outlineHover,
     required this.outlineFocus,
     required this.tabsHighlight,
+    required this.lineOrange,
     required this.statusError,
     required this.statusSuccess,
     required this.buttonInverse,
@@ -199,10 +205,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? textDark,
     Color? textBody,
     Color? textDisable,
+    Color? textGrayMid,
     Color? textInverse,
     Color? textLink,
     Color? textInfo,
     Color? textWarning,
+    Color? textWarningStrong,
     Color? textError,
     Color? textSuccess,
     Color? pageBackground,
@@ -227,6 +235,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? outlineHover,
     Color? outlineFocus,
     Color? tabsHighlight,
+    Color? lineOrange,
     Color? statusError,
     Color? statusSuccess,
     Color? buttonInverse,
@@ -276,10 +285,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       textDark: textDark ?? this.textDark,
       textBody: textBody ?? this.textBody,
       textDisable: textDisable ?? this.textDisable,
+      textGrayMid: textGrayMid ?? this.textGrayMid,
       textInverse: textInverse ?? this.textInverse,
       textLink: textLink ?? this.textLink,
       textInfo: textInfo ?? this.textInfo,
       textWarning: textWarning ?? this.textWarning,
+      textWarningStrong: textWarningStrong ?? this.textWarningStrong,
       textError: textError ?? this.textError,
       textSuccess: textSuccess ?? this.textSuccess,
       pageBackground: pageBackground ?? this.pageBackground,
@@ -305,6 +316,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       outlineHover: outlineHover ?? this.outlineHover,
       outlineFocus: outlineFocus ?? this.outlineFocus,
       tabsHighlight: tabsHighlight ?? this.tabsHighlight,
+      lineOrange: lineOrange ?? this.lineOrange,
       statusError: statusError ?? this.statusError,
       statusSuccess: statusSuccess ?? this.statusSuccess,
       buttonInverse: buttonInverse ?? this.buttonInverse,
@@ -363,10 +375,14 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       textDark: Color.lerp(textDark, other.textDark, t) ?? textDark,
       textBody: Color.lerp(textBody, other.textBody, t) ?? textBody,
       textDisable: Color.lerp(textDisable, other.textDisable, t) ?? textDisable,
+      textGrayMid: Color.lerp(textGrayMid, other.textGrayMid, t) ?? textGrayMid,
       textInverse: Color.lerp(textInverse, other.textInverse, t) ?? textInverse,
       textLink: Color.lerp(textLink, other.textLink, t) ?? textLink,
       textInfo: Color.lerp(textInfo, other.textInfo, t) ?? textInfo,
       textWarning: Color.lerp(textWarning, other.textWarning, t) ?? textWarning,
+      textWarningStrong:
+          Color.lerp(textWarningStrong, other.textWarningStrong, t) ??
+              textWarningStrong,
       textError: Color.lerp(textError, other.textError, t) ?? textError,
       textSuccess: Color.lerp(textSuccess, other.textSuccess, t) ?? textSuccess,
       pageBackground:
@@ -421,6 +437,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           Color.lerp(outlineFocus, other.outlineFocus, t) ?? outlineFocus,
       tabsHighlight:
           Color.lerp(tabsHighlight, other.tabsHighlight, t) ?? tabsHighlight,
+      lineOrange: Color.lerp(lineOrange, other.lineOrange, t) ?? lineOrange,
       statusError: Color.lerp(statusError, other.statusError, t) ?? statusError,
       statusSuccess:
           Color.lerp(statusSuccess, other.statusSuccess, t) ?? statusSuccess,
