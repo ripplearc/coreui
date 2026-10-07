@@ -142,4 +142,49 @@ void main() {
       checkTapTargetSize: false,
     );
   });
+
+  testWidgets(
+      'every variant and size meets the text contrast guideline and '
+      '4.5:1 in both themes', (tester) async {
+    const badges = [
+      CoreStatusBadge(label: 'Sample rate'),
+      CoreStatusBadge(label: 'Sample rate', size: CoreStatusBadgeSize.compact),
+      CoreStatusBadge(
+        label: 'After first send',
+        variant: CoreStatusBadgeVariant.neutral,
+      ),
+    ];
+    await setupA11yTest(tester);
+
+    for (final each in badges) {
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => each,
+        find.byType(CoreStatusBadge),
+        checkTapTargetSize: false,
+      );
+
+      for (final theme in kA11yTestThemes) {
+        await tester.pumpWidget(buildTestApp(each, theme: theme));
+        await tester.pumpAndSettle();
+
+        final decoration = tester
+            .widget<Container>(
+              find.descendant(
+                of: find.byType(CoreStatusBadge),
+                matching: find.byType(Container),
+              ),
+            )
+            .decoration! as BoxDecoration;
+        final label = tester.widget<Text>(find.text(each.label)).style!.color!;
+
+        expect(
+          _contrastRatio(label, decoration.color!),
+          greaterThanOrEqualTo(4.5),
+          reason: '${each.label} ${each.variant} ${each.size} '
+              'on ${theme.brightness}',
+        );
+      }
+    }
+  });
 }
