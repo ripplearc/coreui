@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.32.0] - CoreStatusBadge and its colour, radius and icon size tokens
+
+### ✨ Features
+
+- **CoreStatusBadge**: a small pill that tags a value with its status, in three looks Figma draws: the 24 dp orange warning pill (optional 14 dp info icon), the 20 dp compact warning badge, and the 22 dp grey neutral tag. `variant` (`CoreStatusBadgeVariant.warning` / `neutral`) and `size` (`CoreStatusBadgeSize.regular` / `compact`) select the look, and an assert refuses the pairings Figma does not draw. The label is passed in by the app and is cut with an ellipsis when it does not fit. `onInfoTap` with `infoSemanticLabel` turns the info icon into a labelled button, as the storyboard has it open the explanation of the tag; without them the icon is decorative (CA-1159)
+- **AppColorsExtension.textWarningStrong** (light `orange700` `#B03C00`, dark `orange200` `#F7B999`): orange text that reaches 4.5:1 on the orange badge fills in both themes. The existing `textWarning` reached only 3.98:1 in the light theme and 4.24:1 in the dark one (the orange text token CA-1230 asked for, merged into CA-1159)
+- **AppColorsExtension.lineOrange** (light `orange200`, dark `orange300`): the orange outline of the warning badge
+- **AppColorsExtension.textGrayMid** (light `gray500`, dark `gray300`): the grey text of the neutral tag. The dark value is `gray300` because `gray400` reaches only 4.06:1 on the dark grey fill
+- **CoreRadius** (`radius6`, `radius8`): corner radius tokens, exported from the package
+- **CoreIconSize.size14**: the 14 dp info icon size
+- Showcase: a Status Badge screen in the example app and a component doc
+
+### 📐 Design notes
+
+The 10 and 11 dp side padding waits on CA-1238. The ticket text lists a "✓ Your rate" variant. The storyboard has a cost saved as your default carry no badge, so it is not built. "Estimated" is the regular warning look without an icon and needs no variant of its own.
+
+### 🧪 Tests
+
+- Badge: label, height, width, padding, icon on and off, icon size and gap, fill, outline, radius and text style for each look; light and dark colours; no overflow when squeezed; the asserts; the info tap (hit area, labelled button, same size as the decorative icon). A11y: one announced label, no actions on a decorative icon, a labelled button on a tappable one, the text contrast guideline, and 4.5:1 label and 3:1 icon contrast for every variant and size in both themes. Goldens: light and dark with all four states
+- Tokens: all three new colours in both themes, through `copyWith` and `lerp`; 4.5:1 contrast of `textWarningStrong` on both orange fills and of `textGrayMid` on the grey fill, in each theme; `CoreRadius` and `CoreIconSize.size14` values. The colour and icon size swatch goldens gain the new tokens
+
 ## [0.30.0] - CoreCalculatorChip inert state and the stale answer
 
 ### ✨ Features
