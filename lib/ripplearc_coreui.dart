@@ -54,6 +54,7 @@ export 'src/theme/icons/icon_data.dart';
 export 'src/theme/icons/letter_avatar_icons.dart';
 export 'src/theme/icons/material_icons.dart';
 export 'src/theme/icons/svg_icons.dart';
+export 'src/theme/radius.dart';
 export 'src/theme/shadows.dart';
 export 'src/theme/spacing.dart';
 export 'src/theme/theme_data.dart';
