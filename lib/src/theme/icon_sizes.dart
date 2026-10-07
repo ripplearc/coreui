@@ -1,8 +1,11 @@
 /// Core icon size tokens for standardized icon dimensions.
 ///
-/// Four canonical sizes matching the design system's icon grid.
+/// Canonical sizes matching the design system's icon grid.
 class CoreIconSize {
   CoreIconSize._();
+
+  /// 14×14 dp — the info icon inside a status badge.
+  static const double size14 = 14.0;
 
   /// 16×16 dp — extra small icons (1rem).
   static const double size16 = 16.0;
