@@ -86,6 +86,16 @@ class CoreShadows {
     ),
   ];
 
+  // Floating Shadow: lifts a dark surface off the page, such as
+  // [Toast.acknowledgement]
+  static List<BoxShadow> floating = [
+    BoxShadow(
+      color: CoreShadowColors.shadowGrey28,
+      blurRadius: 24,
+      offset: const Offset(0, 8),
+    ),
+  ];
+
   static List<BoxShadow> sticky = [
     BoxShadow(
       color: CoreShadowColors.shadowGrey6,

@@ -1,7 +1,8 @@
 # Toast Component
 
 The Toast component is a notification widget that displays temporary messages to users. It supports different types of
-notifications (error, warning, info, success) with customizable content and styling.
+notifications (error, warning, info, success), the receipt that offers `Undo`, and the dark acknowledgement that
+reports a finished task.
 
 ## Usage
 
@@ -42,6 +43,9 @@ Toast.receipt(
   onSecondary: controller.openHistory,
   onClose: removeTheToast,
 );
+
+// Acknowledgement toast — reports a finished task, no action, no close button
+Toast.acknowledgement(description: 'Added to Bedroom 2');
 ```
 
 ## Properties
@@ -70,6 +74,15 @@ Toast.receipt(
 | `onClose`        | `VoidCallback`  | Yes      | The single dismissal path: fires once, either when `duration` elapses or when an action answers the toast. Required, because it is the only way a receipt leaves the screen |
 | `duration`       | `Duration?`     | No       | Auto-dismiss delay, 5 s by default. `null` keeps the toast until something else removes it, and so does an active screen reader |
 
+### Toast.acknowledgement Properties
+
+| Property      | Type     | Required | Description                                             |
+|---------------|----------|----------|---------------------------------------------------------|
+| `description` | `String` | Yes      | The whole message — "Added to Bedroom 2". Localised by the caller |
+
+It takes no `closeLabel` and no `onClose`: whoever shows it removes it. Through
+`CoreToast.showAcknowledgement` that is a 4 s timer.
+
 ## Factory Constructors
 
 ### Toast.error
@@ -95,6 +108,12 @@ banked: "**Saved to history** · Calc 60ft²" with `Undo`, and optionally `View`
 It differs from the other four variants in shape as well as content — one line
 of text rather than a stacked title and description, an outlined surface rather
 than a flat tinted one, an action instead of a close button.
+
+### Toast.acknowledgement
+
+Creates the dark toast that reports a finished task: a green tick and one line of
+white text, with no action and no close button. Use it when there is nothing to
+undo; use `Toast.receipt` when there is.
 
 ## Visual Properties
 
@@ -130,6 +149,15 @@ Each toast type has specific styling:
       inside is already pinned to the 48 dp tap-target height, which also keeps
       a receipt with a highlight and one without at the same height
 
+- **Acknowledgement Toast**
+    - Background Color: `backgroundDarkGray` in the light theme, `backgroundGrayMid`
+      in the dark theme
+    - Tick: `CoreIcons.checkMark` at 24 dp in `textInverse`, on a 24 dp
+      `statusSuccess` circle
+    - Text: `CoreTypography.bodyMediumSemiBold` in `textInverse` (light) or
+      `textHeadline` (dark)
+    - Shadow: `CoreShadows.floating`; a `CoreSpacing.space3` corner radius
+
 ## Accessibility
 
 The Toast component includes semantic labels for accessibility:
@@ -163,6 +191,13 @@ The Toast component includes semantic labels for accessibility:
   `MediaQuery.accessibleNavigationOf` is true the timer does not start at all, the
   way `SnackBar` persists an action for assistive tech: a window a screen-reader
   user cannot reach in time is worse than no window
+
+- An acknowledgement is a live region, so a screen reader reads its message when
+  it appears. It has nothing to tap, so its 4 s timer runs whether or not a screen
+  reader is on
+- An acknowledgement's tick keeps 3:1 against its circle in both themes. White on
+  the dark theme's `statusSuccess` (green400) is 2.3:1, so the tick takes
+  `textInverse`, which is dark there (7.6:1)
 
 ## Styling
 
@@ -219,6 +254,18 @@ With no timer, three things remove a receipt: the user takes the action,
 another toast replaces it, or `cleanup()` runs. The caller holds no handle of
 its own.
 
+## Showing an acknowledgement through CoreToast
+
+```dart
+CoreToast.showAcknowledgement(context, 'Added to Bedroom 2');
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `context` | `BuildContext` | Yes | Must sit under an `Overlay` |
+| `message` | `String` | Yes | The whole message — "Added to Bedroom 2" |
+| `duration` | `Duration` | No | 4 s by default, the "~4 s" the Figma component describes |
+
 ## Design source
 
 The receipt variant follows the **Construculator Calculator UX Design Doc v1.0**,
@@ -266,3 +313,21 @@ their natural width on a phone. The order it gives ground in:
 3. The message keeps 40 % of the width it shares with the action, less that
    reserved target when there is a second action, and ellipsises at two lines
    beyond that.
+
+### Acknowledgement toast
+
+The acknowledgement follows the Figma "Toast" component, node `65687:157849`
+(used on the Estimate V2 canvas at `66337:158841`). It differs from the frame in
+four places:
+
+- **Dark theme.** Figma binds the frame to `Background/Dark Grey` and
+  `Text/Inverse`. In the dark theme both resolve to gray900, which is also the
+  dark page, so the toast and its text would vanish. The dark theme steps up to
+  `backgroundGrayMid` (gray700) with `textHeadline` text instead.
+- **Tick colour in the dark theme.** See Accessibility: it turns dark to keep 3:1.
+- **Green.** Figma's `State Color/Success` is green500 (`#009E69`); the code's
+  `statusSuccess` token is green600 (`#007E57`). The token is used, so the circle
+  is one step darker than the frame.
+- **Spacing.** Figma draws 13/15 dp padding and an 11 dp gap. The nearest
+  `CoreSpacing` steps (12/16 and 12) are used, so the toast is 48 dp tall
+  against the frame's 50.

@@ -420,6 +420,70 @@ void main() {
       });
     });
 
+    group('showAcknowledgement', () {
+      Widget buildHost({Duration? duration}) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => duration == null
+                    ? CoreToast.showAcknowledgement(
+                        context,
+                        'Added to Bedroom 2',
+                      )
+                    : CoreToast.showAcknowledgement(
+                        context,
+                        'Added to Bedroom 2',
+                        duration: duration,
+                      ),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        );
+      }
+
+      testWidgets('displays the message with no close button', (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Added to Bedroom 2'), findsOneWidget);
+        expect(find.byKey(const Key('toast_close_button')), findsNothing);
+      });
+
+      testWidgets('leaves after four seconds by default', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        // A single pump: settling the button's ripple would spend the clock
+        // the timer is measured against.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 3900));
+        expect(find.byType(Toast), findsOneWidget);
+
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pumpAndSettle();
+        expect(find.byType(Toast), findsNothing);
+      });
+
+      testWidgets('leaves after the duration it is given', (tester) async {
+        CoreToast.enableTimers();
+        await tester.pumpWidget(
+          buildHost(duration: const Duration(seconds: 1)),
+        );
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Toast), findsNothing);
+      });
+    });
+
     group('showReceipt', () {
       Widget buildHost({
         VoidCallback onAction = _noop,

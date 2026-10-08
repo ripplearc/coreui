@@ -29,6 +29,10 @@ enum _ToastType {
   /// Receipt toast confirming something was saved, with an action that undoes
   /// it. Dismisses itself after [Toast.duration]; carries no close button.
   receipt,
+
+  /// Acknowledgement toast: a dark surface with a green tick that reports a
+  /// finished task. Carries no action and no close button.
+  acknowledgement,
 }
 
 /// A notification widget that displays temporary messages to users.
@@ -36,7 +40,8 @@ enum _ToastType {
 /// Use [Toast.error], [Toast.warning], [Toast.info], or [Toast.success]
 /// factory constructors to create a toast with the appropriate visual style.
 /// Use [Toast.receipt] for the self-dismissing confirmation that offers an
-/// action to undo what it reports.
+/// action to undo what it reports. Use [Toast.acknowledgement] for the dark
+/// toast that only reports a finished task.
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
@@ -71,7 +76,7 @@ class Toast extends StatefulWidget {
 
   static const double _secondaryActionOpacity = 0.85;
 
-  static const double _receiptRadius = CoreSpacing.space3;
+  static const double _largeRadius = CoreSpacing.space3;
 
   static const double _receiptActionMaxWidthFraction = 0.6;
 
@@ -215,6 +220,19 @@ class Toast extends StatefulWidget {
     );
   }
 
+  /// Reports a finished task on a dark surface behind a green tick — "Added to
+  /// Bedroom 2".
+  ///
+  /// It carries no action and no close button, so whoever shows it removes
+  /// it; [CoreToast.showAcknowledgement] does that on a timer. The
+  /// [description] is the whole message and is localised by the caller.
+  factory Toast.acknowledgement({required String description}) {
+    return Toast._(
+      description: description,
+      type: _ToastType.acknowledgement,
+    );
+  }
+
   @override
   State<Toast> createState() => _ToastState();
 }
@@ -278,6 +296,8 @@ class _ToastState extends State<Toast> {
 
   void _dismissWithoutAnAction() => _answer(null);
 
+  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+
   CoreIconData get _icon {
     switch (widget._type) {
       case _ToastType.error:
@@ -289,6 +309,8 @@ class _ToastState extends State<Toast> {
       case _ToastType.success:
       case _ToastType.receipt:
         return CoreIcons.success;
+      case _ToastType.acknowledgement:
+        return CoreIcons.checkMark;
     }
   }
 
@@ -304,6 +326,10 @@ class _ToastState extends State<Toast> {
         return colors.alertGreen;
       case _ToastType.receipt:
         return colors.backgroundBlueLight;
+      // The dark theme's backgroundDarkGray is its page colour, so the
+      // acknowledgement steps up to the next grey to stay visible.
+      case _ToastType.acknowledgement:
+        return _isDark ? colors.backgroundGrayMid : colors.backgroundDarkGray;
     }
   }
 
@@ -319,6 +345,10 @@ class _ToastState extends State<Toast> {
         return colors.iconGreen;
       case _ToastType.receipt:
         return colors.iconDark;
+      // White on the dark theme's lighter success green is 2.3:1, under the
+      // 3:1 a graphic needs; textInverse turns the tick dark there.
+      case _ToastType.acknowledgement:
+        return colors.textInverse;
     }
   }
 
@@ -327,6 +357,7 @@ class _ToastState extends State<Toast> {
     final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
     final isReceipt = widget._type == _ToastType.receipt;
+    final isAcknowledgement = widget._type == _ToastType.acknowledgement;
     final closeLabel = widget.closeLabel;
     final actionLabel = widget.actionLabel;
 
@@ -335,11 +366,13 @@ class _ToastState extends State<Toast> {
       button: !isReceipt && widget.onClose != null,
       // The receipt is the one toast that is both timed and actionable: a
       // screen reader has to be told it arrived, or the Undo window closes
-      // before its user knows there was one.
-      liveRegion: isReceipt,
+      // before its user knows there was one. An acknowledgement is nothing
+      // but its message, so it is announced too.
+      liveRegion: isReceipt || isAcknowledgement,
       label: widget.title,
       hint: widget.title != null ? widget.description : null,
       child: Container(
+        key: const Key('toast_surface'),
         padding: EdgeInsets.symmetric(
           horizontal: CoreSpacing.space4,
           vertical: isReceipt
@@ -349,7 +382,9 @@ class _ToastState extends State<Toast> {
         decoration: BoxDecoration(
           color: _getBackgroundColor(colors),
           borderRadius: BorderRadius.circular(
-            isReceipt ? Toast._receiptRadius : Toast._radius,
+            isReceipt || isAcknowledgement
+                ? Toast._largeRadius
+                : Toast._radius,
           ),
           border: isReceipt
               ? Border.all(
@@ -357,7 +392,11 @@ class _ToastState extends State<Toast> {
                   width: CoreButton.hairlineBorderWidth,
                 )
               : null,
-          boxShadow: isReceipt ? null : CoreShadows.medium,
+          boxShadow: isReceipt
+              ? null
+              : isAcknowledgement
+                  ? CoreShadows.floating
+                  : CoreShadows.medium,
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -402,16 +441,32 @@ class _ToastState extends State<Toast> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CoreIconWidget(
-          icon: _icon,
-          size: CoreIconSize.size24,
-          color: _getIconColor(colors),
-        ),
+        _buildLeading(colors),
         const SizedBox(width: CoreSpacing.space3),
         Expanded(child: text),
-        const SizedBox(width: CoreSpacing.space3),
-        if (trailing != null) trailing,
+        if (trailing != null) ...[
+          const SizedBox(width: CoreSpacing.space3),
+          trailing,
+        ],
       ],
+    );
+  }
+
+  Widget _buildLeading(AppColorsExtension colors) {
+    final icon = CoreIconWidget(
+      icon: _icon,
+      size: CoreIconSize.size24,
+      color: _getIconColor(colors),
+    );
+    if (widget._type != _ToastType.acknowledgement) return icon;
+
+    return DecoratedBox(
+      key: const Key('toast_tick_circle'),
+      decoration: BoxDecoration(
+        color: colors.statusSuccess,
+        shape: BoxShape.circle,
+      ),
+      child: icon,
     );
   }
 
@@ -425,9 +480,13 @@ class _ToastState extends State<Toast> {
       children: [
         Text(
           widget.title ?? widget.description,
-          style: typography.bodyLargeMedium.copyWith(
-            color: colors.textDark,
-          ),
+          style: widget._type == _ToastType.acknowledgement
+              ? typography.bodyMediumSemiBold.copyWith(
+                  color: _isDark ? colors.textHeadline : colors.textInverse,
+                )
+              : typography.bodyLargeMedium.copyWith(
+                  color: colors.textDark,
+                ),
         ),
         if (widget.title != null)
           Padding(
