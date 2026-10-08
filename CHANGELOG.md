@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.31.0] - The acknowledgement toast
+
+### ✨ Features
+
+- **Toast.acknowledgement**: the dark toast that reports a finished task — "Added to Bedroom 2". A 24 dp `statusSuccess` circle with a white tick and one line of `bodyMediumSemiBold` text on `backgroundDarkGray`, with a 12 dp corner radius and the new `CoreShadows.floating`. It has no action and no close button, and it is a live region, so a screen reader reads it when it appears (Figma component `65687:157849`, CA-1256)
+- **CoreToast.showAcknowledgement**: shows it in the overlay and removes it after `duration`, 4 s by default
+- **CoreShadows.floating** (0/8/24, `CoreShadowColors.shadowGrey28`): the shadow that lifts a dark surface off the page
+- Toast showcase: an acknowledgement preview and a button that shows a live one
+
+### 📐 Design notes
+
+In the dark theme Figma's `Background/Dark Grey` and `Text/Inverse` both resolve to gray900, the dark page colour, so the toast would vanish. The dark theme draws it on `backgroundGrayMid` with `textHeadline` text, and the tick turns dark (`textInverse`): white on the dark theme's green400 is 2.3:1, under the 3:1 a graphic needs. The circle uses the `statusSuccess` token (green600) where Figma draws green500, and the padding and gap use the nearest `CoreSpacing` steps (12/16, 12) instead of 13/15 and 11, so the toast is 48 dp tall against the frame's 50.
+
+### 🧪 Tests
+
+- Widget: the acknowledgement shows its message with no close button and nothing to tap, announces the message once as a live region, stands off the page in both themes, and keeps its tick at 3:1 against the circle in both themes. A11y: it meets the guidelines in both themes. CoreToast: `showAcknowledgement` shows no close button and leaves after 4 s, or after the `duration` it is given. Golden: `toast_component` gains the acknowledgement
+
 ## [0.30.0] - CoreCalculatorChip inert state and the stale answer
 
 ### ✨ Features
