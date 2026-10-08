@@ -37,6 +37,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color lineMid;
   final Color lineDarkOutline;
   final Color lineHighlight;
+
+  /// The rule on a `backgroundBlueLight` panel, where `lineLight` reads as
+  /// grey on blue.
+  final Color lineBlue;
   final Color outlineHover;
   final Color outlineFocus;
   final Color tabsHighlight;
@@ -132,6 +136,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.lineMid,
     required this.lineDarkOutline,
     required this.lineHighlight,
+    required this.lineBlue,
     required this.outlineHover,
     required this.outlineFocus,
     required this.tabsHighlight,
@@ -224,6 +229,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? lineMid,
     Color? lineDarkOutline,
     Color? lineHighlight,
+    Color? lineBlue,
     Color? outlineHover,
     Color? outlineFocus,
     Color? tabsHighlight,
@@ -302,6 +308,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       lineMid: lineMid ?? this.lineMid,
       lineDarkOutline: lineDarkOutline ?? this.lineDarkOutline,
       lineHighlight: lineHighlight ?? this.lineHighlight,
+      lineBlue: lineBlue ?? this.lineBlue,
       outlineHover: outlineHover ?? this.outlineHover,
       outlineFocus: outlineFocus ?? this.outlineFocus,
       tabsHighlight: tabsHighlight ?? this.tabsHighlight,
@@ -415,6 +422,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           lineDarkOutline,
       lineHighlight:
           Color.lerp(lineHighlight, other.lineHighlight, t) ?? lineHighlight,
+      lineBlue: Color.lerp(lineBlue, other.lineBlue, t) ?? lineBlue,
       outlineHover:
           Color.lerp(outlineHover, other.outlineHover, t) ?? outlineHover,
       outlineFocus:

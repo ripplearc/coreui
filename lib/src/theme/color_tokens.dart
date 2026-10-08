@@ -45,6 +45,8 @@ abstract class _CoreColorPalette {
   static const Color blue700 = Color(0xFF006B95);
   static const Color blue800 = Color(0xFF00557A);
   static const Color blue900 = Color(0xFF00344E);
+  // Figma "Boarder Color/Line Blue": between blue50 and blue100, no step.
+  static const Color blueLine = Color(0xFFC7ECFA);
 
   // Red
   static const Color red25 = Color(0xFFFEF3F2);
@@ -132,6 +134,7 @@ class CoreBorderColors {
   static const Color lineMid = _CoreColorPalette.gray300;
   static const Color lineDarkOutline = _CoreColorPalette.gray400;
   static const Color lineHighlight = _CoreColorPalette.blue200;
+  static const Color lineBlue = _CoreColorPalette.blueLine;
   static const Color outlineHover = _CoreColorPalette.orient900;
   static const Color outlineFocus = _CoreColorPalette.orient800;
   static const Color tabsHighlight = _CoreColorPalette.orient500;
@@ -278,6 +281,7 @@ class CoreDarkBorderColors {
   static const Color lineMid = _CoreColorPalette.gray600;
   static const Color lineDarkOutline = _CoreColorPalette.gray500;
   static const Color lineHighlight = _CoreColorPalette.blue400;
+  static const Color lineBlue = _CoreColorPalette.blue800;
   static const Color outlineHover = _CoreColorPalette.orient300;
   static const Color outlineFocus = _CoreColorPalette.orient200;
   static const Color tabsHighlight = _CoreColorPalette.orient300;

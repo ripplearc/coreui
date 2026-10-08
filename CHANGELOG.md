@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.32.0] - The estimate summary card
+
+### ✨ Features
+
+- **CoreEstimateSummaryCard**: the "Adds to this estimate" card above a cost form's Add button (Figma "Estimate Change" `66335:151611`, used by the material, labor and equipment forms, CA-1255). It shows the caption, the line total in 32/40 semibold with -0.32 letter spacing, an optional extra charge, a rule, then the estimate's name and its total before the change on the left and the new total on the right. Every string arrives formatted and localised. The card is 125 dp tall without an extra charge, as in the frame: radius 14, padding 13/15/12/15 and a 1 dp gap between rows, on `backgroundBlueLight`. It is one live region, so a screen reader reads the new totals as the user types
+- **CoreEstimateSummaryCharge** (`label`, `amount`): the "incl. delivery  +$85.00" row, a 24 dp row under the amount
+- **lineBlue** (`CoreBorderColors`, `CoreDarkBorderColors`, `AppColorsExtension`): the rule on a `backgroundBlueLight` panel. Light is Figma's `Boarder Color/Line Blue` `#C7ECFA`, which sits between blue50 and blue100 and has no palette step. Dark is blue800, one step lighter than the dark panel's blue900. The storyboard asks for the rule to be coloured from the panel, not from the grey used on white
+- Estimate summary card showcase: the card with and without an extra charge
+
+### 📐 Design notes
+
+Figma draws the "Bedroom 2 total  $2,993.62 →" text in `textDisable`, which is 2.4:1 on the blue fill in light and 2.6:1 in dark, under WCAG's 4.5:1. The card uses `textBody` (7.2:1 and 8.9:1) instead. The padding, radius and gaps are Figma's own numbers, because none of them is a `CoreSpacing` step.
+
+### 🧪 Tests
+
+- Widget: the card shows every string, is 125 dp tall without a charge and 150 with one, puts the charge under the amount and the new total against the right padding, and draws the amount at 32 with -0.32 spacing. In both themes it uses the blue fill, radius 14, a `lineBlue` rule and `textBody` for the before text. A11y: every text on the card is at least 4.5:1 on the fill in both themes, checked one text at a time because the merged node lets Flutter's contrast guideline pass any grey; the card is one live region that reads the caption, the amount, the charge and the new total. Theme: `lineBlue` in light and dark. Goldens: `core_estimate_summary_card` light and dark, and the colour token sheets gain `lineBlue`
+
 ## [0.30.0] - CoreCalculatorChip inert state and the stale answer
 
 ### ✨ Features
