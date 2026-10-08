@@ -67,6 +67,17 @@ void main() {
       expect(semantics.label, contains('New updates are available'));
     });
 
+    testWidgets('acknowledgement toast meets accessibility guidelines',
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => Toast.acknowledgement(description: 'Added to Bedroom 2'),
+        find.byType(Toast),
+      );
+    });
+
     testWidgets('the action meets accessibility guidelines',
         (WidgetTester tester) async {
       await setupA11yTest(tester);

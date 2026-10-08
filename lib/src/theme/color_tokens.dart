@@ -211,6 +211,8 @@ class CoreShadowColors {
       _CoreColorPalette.gray900.withAlpha((0.10 * 255).toInt());
   static final Color shadowGrey18 =
       _CoreColorPalette.gray900.withAlpha((0.18 * 255).toInt());
+  static final Color shadowGrey28 =
+      _CoreColorPalette.gray900.withAlpha((0.28 * 255).toInt());
 }
 
 class CoreBrandColors {

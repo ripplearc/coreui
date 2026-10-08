@@ -102,6 +102,13 @@ class ToastShowcaseScreen extends StatelessWidget {
               ),
             ),
 
+            // Acknowledgement Toast
+            _buildToastSection(
+              context,
+              title: 'Acknowledgement Toast',
+              toast: Toast.acknowledgement(description: 'Added to Bedroom 2'),
+            ),
+
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
@@ -113,6 +120,14 @@ class ToastShowcaseScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _showReceiptToast(context),
               child: const Text('Show Receipt Toast (dismisses in 5s)'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => CoreToast.showAcknowledgement(
+                context,
+                'Added to Bedroom 2',
+              ),
+              child: const Text('Show Acknowledgement Toast (dismisses in 4s)'),
             ),
           ],
         ),
