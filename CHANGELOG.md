@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.34.0] - CoreListRow
+
+### ✨ Features
+
+- **CoreListRow**: a tappable list row with a title, an optional subtitle under it, and an optional value at the end (`value` plus a smaller `unit`, e.g. `$145.00 /day`). The row pads its content by `CoreSpacing.space2` and is at least 48 dp tall; the list around it supplies the page inset. The default screen-reader label is the visible texts in order, or `semanticLabel` (CA-1204)
+- **CoreListRow.selectable**: a row in a pick-one list. It keeps a 20 dp check slot even when unselected, so rows don't shift when the pick moves. A selected row fills `backgroundBlueLight`, turns its title `textLink`, shows the check and reports its selected state to a screen reader
+- List row showcase: a plain and a pick-one list from the Equipment rate screens
+
+### 📐 Design notes
+
+Built from the storyboard's Equipment "Your recents" and "Look up a rate" frames (`cuj6-equip-1-recents`, `cuj6-equip-4-lookup`), which the app built as one-off rows in CA-1151. The 2 dp gap between title and subtitle is the storyboard's; `CoreSpacing` has no step that small.
+
+### 🧪 Tests
+
+- Row: texts, no leading slot and no fill on a plain row, a unit without a value is dropped, tap, 48 dp minimum height, default and custom screen-reader labels with the tap action kept. Selectable: the empty check slot keeps its width so selected and unselected titles start at the same x, the selected fill, check and title colour, and the selected state. A11y: tap target and label guidelines in both themes, and every text colour at 4.5:1 on the page and on the selected fill in both themes. Goldens: light and dark
+
 ## [0.30.0] - CoreCalculatorChip inert state and the stale answer
 
 ### ✨ Features
