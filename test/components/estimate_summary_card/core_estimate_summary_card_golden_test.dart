@@ -16,9 +16,9 @@ void main() {
   });
 
   Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
-    // 412 x 360 logical at 2x: the two cards at Figma's 372 width with
+    // 412 x 520 logical at 2x: the three cards at Figma's 372 width with
     // the 20 px page margin of the cost sheets.
-    tester.view.physicalSize = const Size(824, 720);
+    tester.view.physicalSize = const Size(824, 1040);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -51,9 +51,14 @@ void main() {
                     label: 'incl. delivery',
                     amount: r'+$85.00',
                   ),
-                  estimateName: 'Bedroom 2',
+                  estimateName: 'Primary bedroom and walk-in closet suite',
                   totalBeforeSuffix: r' total  $2,993.62 →',
                   totalAfter: r'$3,598.62',
+                ),
+                SizedBox(height: CoreSpacing.space4),
+                CoreEstimateSummaryCard.empty(
+                  title: 'Adds to this estimate',
+                  note: 'Needs a duration before it can total',
                 ),
               ],
             ),
