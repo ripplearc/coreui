@@ -10,6 +10,7 @@ class ListRowShowcaseScreen extends StatefulWidget {
 
 class _ListRowShowcaseScreenState extends State<ListRowShowcaseScreen> {
   String _pickedRate = 'Mini excavator — 1.5 ton';
+  int _actionTaps = 0;
 
   static const _rates = [
     ('Mini excavator — 1.5 ton', 'Compact, tight-access digging', r'$145.00'),
@@ -44,6 +45,11 @@ class _ListRowShowcaseScreenState extends State<ListRowShowcaseScreen> {
               value: r'$400.00',
               unit: 'job',
               onTap: () {},
+            ),
+            CoreListRow.action(
+              icon: CoreIcons.add,
+              title: 'New equipment cost ($_actionTaps)',
+              onTap: () => setState(() => _actionTaps++),
             ),
             const SizedBox(height: CoreSpacing.space6),
             Text('Selectable rows (tap to pick)',

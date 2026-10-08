@@ -1,11 +1,12 @@
 # CoreListRow Component
 
-`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). It has two looks that share one geometry:
+`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). It has three looks that share one geometry, so the titles of mixed rows line up:
 
 | Constructor | Leading slot | Use |
 |---|---|---|
 | `CoreListRow(...)` | none | A plain row, e.g. a recently used rate. |
 | `CoreListRow.selectable(...)` | a check, shown only when `selected`; the slot keeps its width when empty | A pick-one list, e.g. "Look up a rate". A selected row fills light blue and its title turns the link colour. |
+| `CoreListRow.action(...)` | `icon`, always shown | An action at the end of a list, e.g. "+ New equipment cost". Icon and title use the link colour. |
 
 Design: Figma [List item set](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`). The plain row is its Recent row; `.selectable` is its Result row ([Selected, `66337:154975`](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154975)).
 
@@ -32,6 +33,13 @@ CoreListRow.selectable(
   selected: picked == rate,
   onTap: () => setState(() => picked = rate),
 )
+
+// Action
+CoreListRow.action(
+  icon: CoreIcons.add,
+  title: 'New equipment cost',
+  onTap: startNewCost,
+)
 ```
 
 ## Properties
@@ -39,22 +47,23 @@ CoreListRow.selectable(
 | Property | Type | Required | Description |
 |---|---|---|---|
 | `title` | `String` | Yes | Primary text, e.g. an item name. Wraps when long. |
-| `subtitle` | `String?` | No | Secondary line under `title`. |
-| `value` | `String?` | No | Value at the end of the row, already formatted, e.g. `$145.00`. |
-| `unit` | `String?` | No | Smaller text after `value`, e.g. `/day`. Ignored without `value`. |
+| `subtitle` | `String?` | No | Secondary line under `title`. Not on `.action`. |
+| `value` | `String?` | No | Value at the end of the row, already formatted, e.g. `$145.00`. Not on `.action`. |
+| `unit` | `String?` | No | Smaller text after `value`, e.g. `/day`. Ignored without `value`. Not on `.action`. |
 | `selected` | `bool` | `.selectable` only | Whether this row is the current pick. |
-| `onTap` | `VoidCallback?` | No | Called when the row is tapped. Null disables the row. |
+| `icon` | `CoreIconData` | `.action` only | The leading icon. |
+| `onTap` | `VoidCallback?` | `.action` only | Called when the row is tapped. Null disables the row. |
 | `semanticLabel` | `String?` | No | Screen-reader label. Defaults to the visible texts joined by `. `, e.g. `Scissor lift — 19ft. Used last week. $120.00 /day`. A screen reader may say "slash day"; pass e.g. `120 dollars per day` to avoid it. |
 
 ## Styling
 
 | Part | Typography | Colour |
 |---|---|---|
-| Title | `bodyLargeSemiBold` | `textHeadline`; `textLink` when selected |
+| Title | `bodyLargeSemiBold` (`.action`: `bodyMediumSemiBold`) | `textHeadline`; `textLink` when selected or on `.action` |
 | Subtitle | `bodySmallRegular` | `textBody` |
 | Value | `bodyLargeSemiBold` | `textHeadline` |
 | Unit | `bodySmallRegular` | `textBody` |
-| Check | 20 dp, then a 12 dp gap | `iconDark` |
+| Leading icon | 20 dp, then a 12 dp gap | `iconDark` |
 | Selected fill | radius 12 dp | `backgroundBlueLight` |
 | Ink ripple | radius 12 dp | — |
 
