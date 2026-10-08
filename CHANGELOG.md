@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.33.0] - The empty estimate summary card, and long names
+
+### ✨ Features
+
+- **CoreEstimateSummaryCard.empty** (`title`, `note`): the card before the line can total. It has four parts instead of five: the caption, a dash in place of the amount (`CoreEstimateSummaryCard.emptyAmount`), the rule, and the note naming the missing field, e.g. "Needs a rate before it can total" (storyboard "Unpriced state", CA-1255). A screen reader skips the dash and reads the note
+- **CoreEstimateSummaryCard** fits long text. A long estimate name ellipsises first, so "total  $2,993.62 →" stays whole. The new total takes at most half the row, and the before text at most 70 % of what is left, and both shrink to fit instead of clipping. The line total shrinks to its 40 dp slot the same way
+- Estimate summary card showcase: the empty card
+
+### 🧪 Tests
+
+- Widget: the empty card shows the dash and the note and no totals, and is 117 dp tall (four parts). A long name ellipsises while the before text and the new total stay whole, with the new total against the right padding. On a 200 dp card the amounts shrink to one line inside the padding. A11y: every text on the empty card is at least 4.5:1 on the fill in both themes, and the empty card reads the note but not the dash. Goldens: `core_estimate_summary_card` gains a long name and the empty card
+
 ## [0.32.0] - The estimate summary card
 
 ### ✨ Features

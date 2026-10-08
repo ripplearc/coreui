@@ -41,6 +41,13 @@ class EstimateSummaryCardShowcaseScreen extends StatelessWidget {
               totalBeforeSuffix: r' total  $2,993.62 →',
               totalAfter: r'$3,598.62',
             ),
+            const SizedBox(height: CoreSpacing.space6),
+            Text('Empty', style: typography.bodyLargeSemiBold),
+            const SizedBox(height: CoreSpacing.space2),
+            const CoreEstimateSummaryCard.empty(
+              title: 'Adds to this estimate',
+              note: 'Needs a rate before it can total',
+            ),
           ],
         ),
       ),
