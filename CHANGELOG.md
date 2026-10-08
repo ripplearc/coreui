@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.35.0] - CoreListRow.action
+
+### ✨ Features
+
+- **CoreListRow.action**: a leading `icon` and a `title`, both `textLink`, with the title in `bodyMediumSemiBold`, e.g. "+ New equipment cost" under a list of recent rates. The icon sits in the same 20 dp slot as `.selectable`'s check, so its title lines up with every selectable row's. Takes no subtitle or value, and `onTap` is required (CA-1204)
+- List row showcase: the action row under the plain list
+
+### 🧪 Tests
+
+- Action: the icon and title in the link colour, the title at the same x as a selectable row's, and tap. A11y: tap target and label guidelines in both themes. Goldens: light and dark gain the action row
+
 ## [0.34.0] - CoreListRow
 
 ### ✨ Features
