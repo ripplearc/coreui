@@ -141,6 +141,7 @@ void main() {
                 const MapEntry(
                     'lineDarkOutline', CoreBorderColors.lineDarkOutline),
                 const MapEntry('lineHighlight', CoreBorderColors.lineHighlight),
+                const MapEntry('lineBlue', CoreBorderColors.lineBlue),
                 const MapEntry('outlineHover', CoreBorderColors.outlineHover),
                 const MapEntry('outlineFocus', CoreBorderColors.outlineFocus),
                 const MapEntry('tabsHighlight', CoreBorderColors.tabsHighlight),
@@ -258,6 +259,7 @@ void main() {
                 const MapEntry('lineMid', CoreDarkBorderColors.lineMid),
                 const MapEntry('lineDarkOutline', CoreDarkBorderColors.lineDarkOutline),
                 const MapEntry('lineHighlight', CoreDarkBorderColors.lineHighlight),
+                const MapEntry('lineBlue', CoreDarkBorderColors.lineBlue),
                 const MapEntry('outlineHover', CoreDarkBorderColors.outlineHover),
                 const MapEntry('outlineFocus', CoreDarkBorderColors.outlineFocus),
                 const MapEntry('tabsHighlight', CoreDarkBorderColors.tabsHighlight),
