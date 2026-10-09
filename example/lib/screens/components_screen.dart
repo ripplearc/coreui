@@ -11,6 +11,7 @@ import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/divider_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
+import 'package:example/screens/list_row_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/multi_select_sheet_showcase_screen.dart';
 import 'package:example/screens/preferences_sheet_showcase_screen.dart';
@@ -199,6 +200,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Check Row Item Component',
                 const CheckRowItemShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'List Row Component',
+                const ListRowShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

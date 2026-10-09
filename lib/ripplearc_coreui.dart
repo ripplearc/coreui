@@ -25,6 +25,7 @@ export 'src/components/keyboard/function_key_tile.dart';
 export 'src/components/keyboard/keyboard_buttons.dart';
 export 'src/components/keyboard/keyboard_models.dart';
 export 'src/components/letter_avatar/letter_avatar.dart';
+export 'src/components/list_row/core_list_row.dart';
 export 'src/components/loading/core_loading_indicator.dart';
 export 'src/components/multi_select_sheet/core_multi_select_sheet.dart';
 export 'src/components/navigation/core_app_bar.dart';
