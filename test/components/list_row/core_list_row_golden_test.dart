@@ -28,37 +28,42 @@ void main() {
         theme: theme,
         home: Scaffold(
           backgroundColor: theme.coreColors.pageBackground,
-          body: const Padding(
+          body: Padding(
             // The storyboard's sheets inset their lists by 12 dp.
-            padding: EdgeInsets.all(CoreSpacing.space3),
+            padding: const EdgeInsets.all(CoreSpacing.space3),
             child: Column(
               children: [
-                CoreListRow(
+                const CoreListRow(
                   title: 'Scissor lift — 19ft',
                   subtitle: 'Used last week',
                   value: r'$120.00',
                   unit: '/day',
                 ),
-                CoreListRow(
+                const CoreListRow(
                   title: 'Dumpster — 30 yd',
                   value: r'$400.00',
                   unit: 'job',
                 ),
-                CoreListRow.selectable(
+                CoreListRow.action(
+                  icon: CoreIcons.add,
+                  title: 'New equipment cost',
+                  onTap: () {},
+                ),
+                const CoreListRow.selectable(
                   title: 'Mini excavator — 1.5 ton',
                   subtitle: 'Compact, tight-access digging',
                   value: r'$145.00',
                   unit: '/day',
                   selected: true,
                 ),
-                CoreListRow.selectable(
+                const CoreListRow.selectable(
                   title: 'Skid steer — track',
                   subtitle: 'Loader attachment ready',
                   value: r'$165.00',
                   unit: '/day',
                   selected: false,
                 ),
-                CoreListRow.selectable(
+                const CoreListRow.selectable(
                   title: 'Compact track loader with a very long model name '
                       'that wraps',
                   value: r'$1,250.00',

@@ -222,4 +222,65 @@ void main() {
       handle.dispose();
     });
   });
+
+  group('CoreListRow.action', () {
+    testWidgets('shows the icon and the title in the link colour',
+        (tester) async {
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      final colors = CoreTheme.light().coreColors;
+      final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+      expect(leadingOpacityOf(tester).opacity, 1);
+      expect(icon.icon, CoreIcons.add);
+      expect(icon.color, colors.textLink);
+      expect(textColorOf(tester, 'New equipment cost'), colors.textLink);
+    });
+
+    testWidgets('lines its title up with a selectable row', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CoreListRow.selectable(title: 'Picked', selected: false),
+              CoreListRow.action(
+                icon: CoreIcons.add,
+                title: 'New equipment cost',
+                onTap: () {},
+              ),
+            ],
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      expect(
+        titleLeftOf(tester, 'New equipment cost'),
+        titleLeftOf(tester, 'Picked'),
+      );
+    });
+
+    testWidgets('calls onTap when tapped', (tester) async {
+      var taps = 0;
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () => taps++,
+        ),
+      );
+
+      await tester.tap(find.text('New equipment cost'));
+
+      expect(taps, 1);
+    });
+  });
 }
