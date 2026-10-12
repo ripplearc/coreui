@@ -13,7 +13,7 @@ Built from the storyboard's Equipment "Your recents" frame (`cuj6-equip-1-recent
 
 ### 🧪 Tests
 
-- Row: texts, no leading slot and no fill on a plain row, a unit without a value is dropped, tap, 48 dp minimum height, default and custom screen-reader labels with the tap action kept, and a wide value at 200 % text on a 320 dp row shrinks instead of overflowing. A11y: tap target and label guidelines in both themes, and every text colour at 4.5:1 on the page in both themes. Goldens: light and dark
+- Row: texts, no leading slot and no fill on a plain row, a unit without a value is dropped from the row and its screen-reader label, an empty subtitle is left out of the label, tap, 48 dp minimum height, default and custom screen-reader labels with the tap action kept, and a wide value at 200 % text on a 320 dp row shrinks instead of overflowing. A11y: tap target and label guidelines in both themes, and every text colour at 4.5:1 on the page in both themes. Goldens: light and dark
 
 ## [0.34.0] - The acknowledgement toast
 

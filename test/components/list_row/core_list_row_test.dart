@@ -44,12 +44,18 @@ void main() {
     });
 
     testWidgets('ignores a unit without a value', (tester) async {
+      final handle = tester.ensureSemantics();
       await pumpRow(
         tester,
         const CoreListRow(title: 'Dumpster — 30 yd', unit: '/day'),
       );
 
       expect(find.textContaining('/day', findRichText: true), findsNothing);
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)).label,
+        'Dumpster — 30 yd',
+      );
+      handle.dispose();
     });
 
     testWidgets('calls onTap when tapped', (tester) async {
@@ -97,6 +103,26 @@ void main() {
           isFocusable: true,
           hasFocusAction: true,
         ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('leaves an empty subtitle out of what it reads',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpRow(
+        tester,
+        const CoreListRow(
+          title: 'Scissor lift — 19ft',
+          subtitle: '',
+          value: r'$120.00',
+          unit: '/day',
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)).label,
+        r'Scissor lift — 19ft. $120.00 /day',
       );
       handle.dispose();
     });
