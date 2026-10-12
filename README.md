@@ -31,6 +31,7 @@ coreui/
 │           ├── display_area/
 │           ├── keyboard/
 │           ├── letter_avatar/
+│           ├── list_row/
 │           ├── navigation/
 │           ├── search/
 │           ├── select_button/
