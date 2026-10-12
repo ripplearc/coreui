@@ -29,9 +29,6 @@ enum _ToastType {
   /// Receipt toast confirming something was saved, with an action that undoes
   /// it. Dismisses itself after [Toast.duration]; carries no close button.
   receipt,
-
-  /// Acknowledgement toast: a dark surface with a green tick that reports a
-  /// finished task. Carries no action and no close button.
   acknowledgement,
 }
 
