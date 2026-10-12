@@ -9,7 +9,7 @@
 
 ### 🧪 Tests
 
-- Action: the icon and title in the link colour, the title at the same x as a selectable row's, and tap. A11y: tap target and label guidelines in both themes. Goldens: light and dark gain the action row
+- Action: the icon and title in the link colour, the title at the same x as a selectable row's, tap, and a screen reader hears a button with no selected state. A11y: tap target and label guidelines in both themes. Goldens: light and dark gain the action row
 
 ## [0.36.0] - CoreListRow.selectable
 

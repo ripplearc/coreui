@@ -392,5 +392,31 @@ void main() {
 
       expect(taps, 1);
     });
+
+    testWidgets('reads as a button with no selected state', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)),
+        matchesSemantics(
+          label: 'New equipment cost',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+        ),
+      );
+      handle.dispose();
+    });
   });
 }
