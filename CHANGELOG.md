@@ -13,7 +13,7 @@ Built from the storyboard's Equipment "Look up a rate" frame (`cuj6-equip-4-look
 
 ### 🧪 Tests
 
-- Selectable: the empty check slot keeps its width so selected and unselected titles start at the same x, the selected fill, check and title colour, and the selected state. A11y: a selected row meets the tap target and label guidelines in both themes, and every text colour holds 4.5:1 on the selected fill in both themes. Goldens: light and dark gain selected and unselected rows
+- Selectable: the empty check slot keeps its width so selected and unselected titles start at the same x, the selected fill, check and title colour, and the selected state, picked or not. A11y: a selected row meets the tap target and label guidelines in both themes, and every text colour holds 4.5:1 on the selected fill in both themes. Goldens: light and dark gain selected and unselected rows
 
 ## [0.35.0] - CoreListRow
 

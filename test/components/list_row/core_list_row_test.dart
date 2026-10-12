@@ -284,5 +284,33 @@ void main() {
       );
       handle.dispose();
     });
+
+    testWidgets('reports that it is not selected', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpRow(
+        tester,
+        CoreListRow.selectable(
+          title: 'Skid steer — track',
+          selected: false,
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)),
+        matchesSemantics(
+          label: 'Skid steer — track',
+          isButton: true,
+          hasSelectedState: true,
+          isSelected: false,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+        ),
+      );
+      handle.dispose();
+    });
   });
 }

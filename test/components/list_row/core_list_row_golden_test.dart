@@ -59,10 +59,16 @@ void main() {
                   unit: '/day',
                   selected: false,
                 ),
-                CoreListRow.selectable(
+                CoreListRow(
                   title: 'Compact track loader with a very long model name '
                       'that wraps',
                   value: r'$1,250.00',
+                  unit: '/week',
+                ),
+                CoreListRow.selectable(
+                  title: 'Telehandler with a very long model name that '
+                      'wraps',
+                  value: r'$1,450.00',
                   unit: '/week',
                   selected: false,
                 ),
