@@ -21,7 +21,10 @@ class CoreEstimateSummaryCharge {
 /// and equipment forms. Every string arrives formatted and localised, so the
 /// card never formats money. Its padding, radius and gaps are Figma's own
 /// measurements; none of them is a CoreSpacing step. The amount and the rows
-/// grow with the text size rather than clip.
+/// grow with the text size rather than clip. On a narrow card the new total
+/// takes at most half the totals row and the " total … →" suffix most of the
+/// rest, so a long estimate name ellipsises but keeps its first letters, and
+/// the amounts shrink rather than clip.
 ///
 /// [CoreEstimateSummaryCard.empty] is the card before the line can total: a
 /// dash in place of the amount and a [note] naming the missing field in place
@@ -204,8 +207,6 @@ class CoreEstimateSummaryCard extends StatelessWidget {
   }
 }
 
-/// "Bedroom 2 total  $2,993.62 →" on the left and the new total on the right.
-/// A long name ellipsises; the amounts shrink rather than clip.
 class _TotalsRow extends StatelessWidget {
   final String estimateName;
   final String totalBeforeSuffix;
@@ -221,8 +222,6 @@ class _TotalsRow extends StatelessWidget {
     required this.afterStyle,
   });
 
-  // The new total may take this much of the row and the suffix this much of
-  // what is left before they shrink, so a long name keeps its first letters.
   static const _afterMaxWidthFactor = 0.5;
   static const _suffixMaxWidthFactor = 0.7;
 
@@ -262,7 +261,6 @@ class _TotalsRow extends StatelessWidget {
   }
 }
 
-/// One line of [child], scaled down rather than clipped past [maxWidth].
 class _ShrinkToFit extends StatelessWidget {
   final double maxWidth;
   final Widget child;
