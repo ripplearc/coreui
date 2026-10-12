@@ -955,12 +955,25 @@ void main() {
 
       testWidgets('shows the message with no close button and no action',
           (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
         await tester.pumpWidget(buildAcknowledgement());
 
         expect(find.text(message), findsOneWidget);
         expect(find.byKey(const Key('toast_close_button')), findsNothing);
         expect(find.byKey(const Key('toast_action_button')), findsNothing);
-        expect(find.byType(GestureDetector), findsNothing);
+
+        final tappable = <SemanticsNode>[];
+        bool collectTappable(SemanticsNode node) {
+          if (node.getSemanticsData().hasAction(SemanticsAction.tap)) {
+            tappable.add(node);
+          }
+          node.visitChildren(collectTappable);
+          return true;
+        }
+
+        collectTappable(tester.getSemantics(find.byType(Toast)));
+        expect(tappable, isEmpty);
+        handle.dispose();
       });
 
       testWidgets('announces its message once, as a live region',
