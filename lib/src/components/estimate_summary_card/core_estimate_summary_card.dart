@@ -19,7 +19,9 @@ class CoreEstimateSummaryCharge {
 ///
 /// Figma "Estimate Change" (`66335:151611`), shared by the material, labor
 /// and equipment forms. Every string arrives formatted and localised, so the
-/// card never formats money.
+/// card never formats money. Its padding, radius and gaps are Figma's own
+/// measurements; none of them is a CoreSpacing step. The amount and the rows
+/// grow with the text size rather than clip.
 ///
 /// The grey "before" text uses `textBody`, not Figma's `textDisable`, which is
 /// 2.4:1 on the blue fill in light and 2.6:1 in dark.
@@ -63,7 +65,6 @@ class CoreEstimateSummaryCard extends StatelessWidget {
     required this.totalAfter,
   });
 
-  // Figma's own measurements: none of them is a CoreSpacing step.
   static const _padding = EdgeInsets.fromLTRB(15, 13, 15, 12);
   static const _radius = 14.0;
   static const _gap = SizedBox(height: 1);
@@ -95,8 +96,8 @@ class CoreEstimateSummaryCard extends StatelessWidget {
               children: [
                 Text(title, style: small),
                 _gap,
-                SizedBox(
-                  height: _amountHeight,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: _amountHeight),
                   child: Text(
                     lineTotal,
                     style: typography.headlineLargeSemiBold.copyWith(
@@ -107,12 +108,20 @@ class CoreEstimateSummaryCard extends StatelessWidget {
                 ),
                 if (charge != null) ...[
                   _gap,
-                  SizedBox(
-                    height: _rowHeight,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: _rowHeight),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(charge.label, style: small),
+                        Flexible(
+                          child: Text(
+                            charge.label,
+                            style: small,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: CoreSpacing.space2),
                         Text(charge.amount, style: small),
                       ],
                     ),
@@ -124,8 +133,8 @@ class CoreEstimateSummaryCard extends StatelessWidget {
                   child: CoreDivider(color: colors.lineBlue),
                 ),
                 _gap,
-                SizedBox(
-                  height: _rowHeight,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: _rowHeight),
                   child: Row(
                     children: [
                       Expanded(

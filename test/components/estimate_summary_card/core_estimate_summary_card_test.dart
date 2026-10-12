@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -91,6 +92,37 @@ void main() {
       final style = tester.widget<Text>(find.text(r'$520.00')).style!;
       expect(style.fontSize, 32);
       expect(style.letterSpacing, -0.32);
+    });
+
+    testWidgets('gives every text its full height at 200 % text size',
+        (tester) async {
+      await pump(
+        tester,
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: totalsCard(
+            extraCharge: const CoreEstimateSummaryCharge(
+              label: 'incl. delivery',
+              amount: r'+$85.00',
+            ),
+          ),
+        ),
+        theme: CoreTheme.light(),
+      );
+
+      final paragraphs = tester.renderObjectList<RenderParagraph>(
+        find.descendant(of: find.byKey(cardKey), matching: find.byType(Text)),
+      );
+      expect(paragraphs, isNotEmpty);
+      for (final paragraph in paragraphs) {
+        expect(
+          paragraph.size.height,
+          greaterThanOrEqualTo(
+            paragraph.getMaxIntrinsicHeight(paragraph.size.width),
+          ),
+          reason: paragraph.text.toPlainText(),
+        );
+      }
     });
   });
 

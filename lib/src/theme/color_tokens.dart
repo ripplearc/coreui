@@ -45,7 +45,6 @@ abstract class _CoreColorPalette {
   static const Color blue700 = Color(0xFF006B95);
   static const Color blue800 = Color(0xFF00557A);
   static const Color blue900 = Color(0xFF00344E);
-  // Figma "Boarder Color/Line Blue": between blue50 and blue100, no step.
   static const Color blueLine = Color(0xFFC7ECFA);
 
   // Red
