@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
-class ListRowShowcaseScreen extends StatelessWidget {
+class ListRowShowcaseScreen extends StatefulWidget {
   const ListRowShowcaseScreen({super.key});
+
+  @override
+  State<ListRowShowcaseScreen> createState() => _ListRowShowcaseScreenState();
+}
+
+class _ListRowShowcaseScreenState extends State<ListRowShowcaseScreen> {
+  String _pickedRate = 'Mini excavator — 1.5 ton';
+
+  static const _rates = [
+    ('Mini excavator — 1.5 ton', 'Compact, tight-access digging', r'$145.00'),
+    ('Skid steer — track', 'Loader attachment ready', r'$165.00'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +45,19 @@ class ListRowShowcaseScreen extends StatelessWidget {
               unit: 'job',
               onTap: () {},
             ),
+            const SizedBox(height: CoreSpacing.space6),
+            Text('Selectable rows (tap to pick)',
+                style: typography.bodyLargeSemiBold),
+            const SizedBox(height: CoreSpacing.space2),
+            for (final (title, subtitle, value) in _rates)
+              CoreListRow.selectable(
+                title: title,
+                subtitle: subtitle,
+                value: value,
+                unit: '/day',
+                selected: _pickedRate == title,
+                onTap: () => setState(() => _pickedRate = title),
+              ),
           ],
         ),
       ),

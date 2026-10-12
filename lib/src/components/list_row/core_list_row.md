@@ -1,19 +1,36 @@
 # CoreListRow Component
 
-`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). For example, a recently used rate. Design: Figma [List item set, Recent row](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`).
+`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). It has two looks that share one geometry:
+
+| Constructor | Leading slot | Use |
+|---|---|---|
+| `CoreListRow(...)` | none | A plain row, e.g. a recently used rate. |
+| `CoreListRow.selectable(...)` | a check, shown only when `selected`; the slot keeps its width when empty | A pick-one list, e.g. "Look up a rate". A selected row fills light blue and its title turns the link colour. |
+
+Design: Figma [List item set](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`). The plain row is its Recent row; `.selectable` is its Result row ([Selected, `66337:154975`](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154975)).
 
 The value takes at most half the row and shrinks rather than overflow; the title wraps. The row pads its content by `CoreSpacing.space2` (8 dp) on each side and is at least 48 dp tall. The list around it supplies the page inset.
 
 ## Usage
 
 ```dart
-// Name, how long ago, and the price
+// Plain: name, how long ago, and the price
 CoreListRow(
   title: 'Scissor lift — 19ft',
   subtitle: 'Used last week',
   value: r'$120.00',
   unit: '/day',
   onTap: () => reuse(rate),
+)
+
+// Pick-one list
+CoreListRow.selectable(
+  title: 'Mini excavator — 1.5 ton',
+  subtitle: 'Compact, tight-access digging',
+  value: r'$145.00',
+  unit: '/day',
+  selected: picked == rate,
+  onTap: () => setState(() => picked = rate),
 )
 ```
 
@@ -25,6 +42,7 @@ CoreListRow(
 | `subtitle` | `String?` | No | Secondary line under `title`. |
 | `value` | `String?` | No | Value at the end of the row, already formatted, e.g. `$145.00`. |
 | `unit` | `String?` | No | Smaller text after `value`, e.g. `/day`. Ignored without `value`. |
+| `selected` | `bool` | `.selectable` only | Whether this row is the current pick. |
 | `onTap` | `VoidCallback?` | No | Called when the row is tapped. Null disables the row. |
 | `semanticLabel` | `String?` | No | Screen-reader label. Defaults to the visible texts joined by `. `, e.g. `Scissor lift — 19ft. Used last week. $120.00 /day`. A screen reader may say "slash day"; pass e.g. `120 dollars per day` to avoid it. |
 
@@ -32,14 +50,15 @@ CoreListRow(
 
 | Part | Typography | Colour |
 |---|---|---|
-| Title | `bodyLargeSemiBold` | `textHeadline` |
+| Title | `bodyLargeSemiBold` | `textHeadline`; `textLink` when selected |
 | Subtitle | `bodySmallRegular` | `textBody` |
 | Value | `bodyLargeSemiBold` | `textHeadline` |
 | Unit | `bodySmallRegular` | `textBody` |
-| Ink ripple | radius 12 dp | — |
+| Check | 20 dp, then a 12 dp gap | `textLink` |
+| Selected fill | radius 12 dp | `backgroundBlueLight` |
 
 The 2 dp gap between title and subtitle comes from the storyboard; `CoreSpacing` has no step that small.
 
 ## Accessibility
 
-The row is one button node with the label above. Every text colour holds 4.5:1 on the page, in both themes.
+The row is one button node with the label above. A `.selectable` row also reports its selected state. Every text colour holds 4.5:1 on the page and on the selected fill, in both themes.

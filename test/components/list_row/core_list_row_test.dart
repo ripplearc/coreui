@@ -19,6 +19,23 @@ void main() {
     return material.color!;
   }
 
+  Opacity leadingOpacityOf(WidgetTester tester) {
+    return tester.widget<Opacity>(
+      find.ancestor(
+        of: find.byType(CoreIconWidget),
+        matching: find.byType(Opacity),
+      ),
+    );
+  }
+
+  Color textColorOf(WidgetTester tester, String text) {
+    return tester.widget<Text>(find.text(text)).style!.color!;
+  }
+
+  double titleLeftOf(WidgetTester tester, String title) {
+    return tester.getTopLeft(find.text(title)).dx;
+  }
+
   group('CoreListRow', () {
     testWidgets('shows the title, subtitle, value and unit', (tester) async {
       await pumpRow(
@@ -186,6 +203,86 @@ void main() {
         tester.getSize(find.byType(FittedBox)).width,
         lessThanOrEqualTo(tester.getSize(find.byType(CoreListRow)).width / 2),
       );
+    });
+  });
+
+  group('CoreListRow.selectable', () {
+    testWidgets('keeps an invisible check slot when unselected',
+        (tester) async {
+      await pumpRow(
+        tester,
+        const CoreListRow.selectable(
+          title: 'Skid steer — track',
+          selected: false,
+        ),
+      );
+
+      expect(leadingOpacityOf(tester).opacity, 0);
+      expect(fillOf(tester), CoreTheme.light().coreColors.transparent);
+    });
+
+    testWidgets('shows the check and the light blue fill when selected',
+        (tester) async {
+      await pumpRow(
+        tester,
+        const CoreListRow.selectable(
+          title: 'Mini excavator — 1.5 ton',
+          selected: true,
+        ),
+      );
+
+      final colors = CoreTheme.light().coreColors;
+      final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+      expect(leadingOpacityOf(tester).opacity, 1);
+      expect(icon.icon, CoreIcons.checkMark);
+      expect(fillOf(tester), colors.backgroundBlueLight);
+      expect(textColorOf(tester, 'Mini excavator — 1.5 ton'), colors.textLink);
+    });
+
+    testWidgets('puts the title at the same x selected or not',
+        (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CoreListRow.selectable(title: 'Picked', selected: true),
+              CoreListRow.selectable(title: 'Not picked', selected: false),
+            ],
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      expect(titleLeftOf(tester, 'Picked'), titleLeftOf(tester, 'Not picked'));
+    });
+
+    testWidgets('reports its selected state', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpRow(
+        tester,
+        CoreListRow.selectable(
+          title: 'Mini excavator — 1.5 ton',
+          selected: true,
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)),
+        matchesSemantics(
+          label: 'Mini excavator — 1.5 ton',
+          isButton: true,
+          hasSelectedState: true,
+          isSelected: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+        ),
+      );
+      handle.dispose();
     });
   });
 }

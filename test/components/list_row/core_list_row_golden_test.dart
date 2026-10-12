@@ -45,11 +45,26 @@ void main() {
                   value: r'$400.00',
                   unit: 'job',
                 ),
-                CoreListRow(
+                CoreListRow.selectable(
+                  title: 'Mini excavator — 1.5 ton',
+                  subtitle: 'Compact, tight-access digging',
+                  value: r'$145.00',
+                  unit: '/day',
+                  selected: true,
+                ),
+                CoreListRow.selectable(
+                  title: 'Skid steer — track',
+                  subtitle: 'Loader attachment ready',
+                  value: r'$165.00',
+                  unit: '/day',
+                  selected: false,
+                ),
+                CoreListRow.selectable(
                   title: 'Compact track loader with a very long model name '
                       'that wraps',
                   value: r'$1,250.00',
                   unit: '/week',
+                  selected: false,
                 ),
               ],
             ),
