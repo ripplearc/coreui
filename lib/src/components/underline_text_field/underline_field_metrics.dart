@@ -42,13 +42,14 @@ class UnderlineFieldMetrics {
   });
 
   // TODO: [CA-1238] https://ripplearc.youtrack.cloud/issue/CA-1238
-  // CoreSpacing has no 2, 3, 5, 6 or 10 step. Replace these with tokens once
-  // they exist.
+  // CoreSpacing has no 2, 3, 5, 6, 10 or 17 step. Replace these with tokens
+  // once they exist.
   static const double _px2 = 2;
   static const double _px3 = 3;
   static const double _px5 = 5;
   static const double _px6 = 6;
   static const double _px10 = 10;
+  static const double _px17 = 17;
 
   /// The space either side of the value, so the caret is not clipped.
   static const double horizontalInset = _px2;
@@ -75,7 +76,7 @@ class UnderlineFieldMetrics {
     valueRowHeight: CoreSpacing.space6,
     lineGap: _px10,
     strokeWidth: 1,
-    caretHeight: 17,
+    caretHeight: _px17,
     unitGap: _px5,
   );
 
@@ -86,7 +87,7 @@ class UnderlineFieldMetrics {
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
     strokeWidth: 1,
-    caretHeight: 17,
+    caretHeight: _px17,
     unitGap: _px5,
   );
 
