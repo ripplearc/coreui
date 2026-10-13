@@ -73,7 +73,8 @@ class _UnderlineTextFieldShowcaseScreenState
               controller: _duration,
               focusNode: _durationFocus,
               unitText: _duration.text.isEmpty ? null : 'days',
-              keyboardType: TextInputType.number,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
@@ -87,7 +88,8 @@ class _UnderlineTextFieldShowcaseScreenState
               initialValue: _rateLookedUp ? '145.00' : null,
               unitText: _rateLookedUp ? '/day' : null,
               key: ValueKey(_rateLookedUp),
-              keyboardType: TextInputType.number,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               labelTrailing: _rateLookedUp ? _badge(context) : null,
               trailing: _rateLookedUp
                   ? null
@@ -103,7 +105,8 @@ class _UnderlineTextFieldShowcaseScreenState
             CoreUnderlineTextField(
               label: 'Quantity',
               initialValue: '3',
-              keyboardType: TextInputType.number,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inlineAccessory: _unitChip(context),
             ),
             const SizedBox(height: CoreSpacing.space3),
@@ -111,7 +114,7 @@ class _UnderlineTextFieldShowcaseScreenState
               label: 'Delivery',
               prefixText: r'$',
               initialValue: '85',
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
               selectAllOnFocus: true,
             ),
             const SizedBox(height: CoreSpacing.space3),
@@ -119,9 +122,23 @@ class _UnderlineTextFieldShowcaseScreenState
               label: 'Waste',
               suffixText: '%',
               initialValue: '10',
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
               showCursor: false,
               selectAllOnFocus: true,
+            ),
+            _section('An open editor panel'),
+            const CoreUnderlineTextField(
+              size: CoreUnderlineTextFieldSize.compact,
+              label: 'Note',
+              hintText: 'Add a note',
+            ),
+            const SizedBox(height: CoreSpacing.space3),
+            const CoreUnderlineTextField(
+              size: CoreUnderlineTextFieldSize.compact,
+              label: 'Burden',
+              suffixText: '%',
+              initialValue: '25',
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
             ),
             _section('A form that asks one question'),
             const CoreUnderlineTextField(
@@ -129,7 +146,7 @@ class _UnderlineTextFieldShowcaseScreenState
               label: 'How many days?',
               unitText: 'days',
               initialValue: '3',
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
             ),
             const SizedBox(height: CoreSpacing.space4),
             const CoreUnderlineTextField(
@@ -138,7 +155,7 @@ class _UnderlineTextFieldShowcaseScreenState
               prefixText: r'$',
               initialValue: '450.00',
               unitText: 'job',
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
             ),
             _section('Error'),
             const CoreUnderlineTextField(
