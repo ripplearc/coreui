@@ -9,8 +9,9 @@ draws an outlined box, this field draws no border at all.
 CoreUnderlineTextField(
   label: 'Duration',
   hintText: 'Set the days',
-  unitText: 'days',
-  keyboardType: TextInputType.number,
+  controller: duration,
+  unitText: duration.text.isEmpty ? null : 'days',
+  keyboardType: const TextInputType.numberWithOptions(decimal: true),
   onChanged: (value) => bloc.add(DurationChanged(value)),
 )
 ```
@@ -24,34 +25,34 @@ $ 145.00 /day  [inlineAccessory]                [trailing]
 (i) helperText, or (!) errorText
 ```
 
-| Property          | Type                          | Description                                                                 |
-|-------------------|-------------------------------|-----------------------------------------------------------------------------|
-| `label`           | `String?`                     | The small caption above the value                                           |
-| `hintText`        | `String?`                     | Dimmed text in the value row while the field is empty                       |
-| `controller`      | `TextEditingController?`      | Controls the text. The field keeps its own, seeded with `initialValue`      |
-| `initialValue`    | `String?`                     | The starting text. Ignored when `controller` is given                       |
-| `focusNode`       | `FocusNode?`                  | Owns focus. The field keeps its own when omitted                            |
-| `size`            | `CoreUnderlineTextFieldSize`  | `regular` (default), `compact` or `large`                                   |
-| `onChanged`       | `ValueChanged<String>?`       | Called on every change                                                      |
-| `onSubmitted`     | `ValueChanged<String>?`       | Called with the keyboard's action key                                       |
-| `keyboardType`    | `TextInputType?`              | The keyboard. `TextInputType.none` asks for no system keyboard              |
-| `textInputAction` | `TextInputAction?`            | The keyboard's action key                                                   |
-| `inputFormatters` | `List<TextInputFormatter>?`   | Filters or reshapes what is typed                                           |
-| `maxLength`       | `int?`                        | Most characters accepted. No counter is drawn                               |
-| `autofocus`       | `bool`                        | Takes focus when first built                                                |
-| `labelTrailing`   | `Widget?`                     | A widget beside the label, such as a badge                                  |
-| `prefixText`      | `String?`                     | Fixed text before the value, such as `$`                                    |
-| `suffixText`      | `String?`                     | Fixed text after the value in the value's size, such as `%`                 |
-| `unitText`        | `String?`                     | Fixed text after the value in a smaller size, such as `days` or `/gal`      |
-| `inlineAccessory` | `Widget?`                     | A widget right after the value and unit, such as a unit chip                |
-| `trailing`        | `Widget?`                     | A widget at the far end of the value row, such as a lookup button           |
-| `helperText`      | `String?`                     | A hint line with an info icon under the field                               |
-| `errorText`       | `String?`                     | An error line under the field. Turns the label and underline red            |
-| `enabled`         | `bool`                        | `false` dims the field and stops it taking focus or taps                    |
-| `readOnly`        | `bool`                        | `true` shows the value, with its normal look, and refuses edits             |
-| `selectAllOnFocus`| `bool`                        | Selects the whole value on focus so the first digit typed replaces it       |
-| `showCursor`      | `bool?`                       | Whether the caret shows on focus. `false` for a value on an own number pad  |
-| `onTap`           | `VoidCallback?`               | A tap anywhere on the field, including its helper or error line             |
+| Property           | Type                         | Description                                                                |
+|--------------------|------------------------------|----------------------------------------------------------------------------|
+| `label`            | `String?`                    | The small caption above the value                                          |
+| `hintText`         | `String?`                    | Dimmed text in the value row while the field is empty                      |
+| `controller`       | `TextEditingController?`     | Controls the text. The field keeps its own, seeded with `initialValue`     |
+| `initialValue`     | `String?`                    | The starting text. Ignored when `controller` is given                      |
+| `focusNode`        | `FocusNode?`                 | Owns focus. The field keeps its own when omitted                           |
+| `size`             | `CoreUnderlineTextFieldSize` | `regular` (default), `compact` or `large`                                  |
+| `onChanged`        | `ValueChanged<String>?`      | Called on every change                                                     |
+| `onSubmitted`      | `ValueChanged<String>?`      | Called with the keyboard's action key                                      |
+| `keyboardType`     | `TextInputType?`             | The keyboard. `TextInputType.none` asks for no system keyboard             |
+| `textInputAction`  | `TextInputAction?`           | The keyboard's action key                                                  |
+| `inputFormatters`  | `List<TextInputFormatter>?`  | Filters or reshapes what is typed                                          |
+| `maxLength`        | `int?`                       | Most characters accepted. No counter is drawn                              |
+| `autofocus`        | `bool`                       | Takes focus when first built                                               |
+| `labelTrailing`    | `Widget?`                    | A widget beside the label, such as a badge                                 |
+| `prefixText`       | `String?`                    | Fixed text before the value, such as `$`                                   |
+| `suffixText`       | `String?`                    | Fixed text after the value in the value's size, such as `%`                |
+| `unitText`         | `String?`                    | Fixed text after the value in a smaller size, such as `days` or `/gal`     |
+| `inlineAccessory`  | `Widget?`                    | A widget right after the value and unit, such as a unit chip               |
+| `trailing`         | `Widget?`                    | A widget at the far end of the value row, such as a lookup button          |
+| `helperText`       | `String?`                    | A hint line with an info icon under the field                              |
+| `errorText`        | `String?`                    | An error line under the field. Turns the label and underline red           |
+| `enabled`          | `bool`                       | `false` dims the field and stops it taking focus or taps                   |
+| `readOnly`         | `bool`                       | `true` shows the value, with its normal look, and refuses edits            |
+| `selectAllOnFocus` | `bool`                       | Selects the whole value on focus so the first digit typed replaces it      |
+| `showCursor`       | `bool?`                      | Whether the caret shows on focus. `false` for a value on an own number pad |
+| `onTap`            | `VoidCallback?`              | A tap anywhere on the field, including its helper or error line            |
 
 ## Sizes
 
@@ -69,7 +70,8 @@ Use `large` only when a form asks a single question, so one number is enlarged.
 A form with several fields of equal weight uses `regular` for every field.
 
 Heights are for a field with a label, no helper or error line and nothing in
-the value row taller than the text. A helper or error line adds 24px. A 32px
+the value row taller than the text. A one-line helper or error line adds
+24px, and a longer one adds more. A 32px
 `inlineAccessory` makes the regular field 62px, and a 36px `trailing` widget
 makes it 66px, with the value centered against the widget.
 
@@ -130,8 +132,8 @@ for instance:
 - show no error while the user types;
 - show it when the user leaves the field, then re-check on every key;
 - clear it as soon as the value is valid;
-- leave an empty field without an error, as the storyboard asks. The field
-  draws whatever `errorText` it is given, so this is the app's rule.
+- leave an empty field without an error unless the app requires a value. The
+  field draws whatever `errorText` it is given, so this is the app's rule.
 
 A `null` or empty `errorText` means no error.
 
@@ -157,16 +159,19 @@ CoreUnderlineTextField(
 )
 ```
 
-`TextInputType.none` stops the system keyboard. `onTap` fires for a tap on the
-label, the value or the underline, and `selectAllOnFocus` makes the first digit
-typed replace the suggested value.
+`TextInputType.none` stops the system keyboard. `onTap` fires for a tap
+anywhere on the field except a tappable slot, and for a screen reader's double
+tap. `selectAllOnFocus` makes the first digit typed replace the suggested
+value.
 
 ## Accessibility
 
 - The text field announces the label, so the visible label is not read twice.
 - The text field's accessibility node is 48px tall, though the value row is
   drawn 24px or 32px tall.
-- Prefix, suffix and unit text are read as separate items in reading order.
+- Prefix, suffix and unit text are read as separate items: prefix, then the
+  field (label and value), then unit.
+- A screen reader's double tap on the field calls `onTap` and focuses the field.
 - Prefix, value and unit sit on one text baseline, as the design draws them.
 - The placeholder uses `textDisable`, as the design draws it. On a white page
   that is about 2.5:1, below the 4.5:1 WCAG asks of text, and it is the same
