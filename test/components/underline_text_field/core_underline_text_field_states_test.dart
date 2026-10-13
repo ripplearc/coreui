@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -245,6 +246,87 @@ void main() {
       expect(focusNode.hasFocus, isTrue);
     });
 
+    testWidgets('a screen reader double tap fires it once and focuses',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        var taps = 0;
+
+        await pumpField(
+          tester,
+          CoreUnderlineTextField(
+            label: 'Rate',
+            focusNode: focusNode,
+            keyboardType: TextInputType.none,
+            onTap: () => taps++,
+          ),
+        );
+        final node = tester.getSemantics(input);
+        tester.binding.pipelineOwner.semanticsOwner!
+            .performAction(node.id, SemanticsAction.tap);
+        await tester.pump();
+
+        expect(taps, 1);
+        expect(focusNode.hasFocus, isTrue);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('fires for the message line, a plain slot and the affixes',
+        (tester) async {
+      var taps = 0;
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          suffixText: '%',
+          unitText: '/day',
+          helperText: 'A hint',
+          labelTrailing: const Icon(Icons.info, key: Key('label-slot')),
+          inlineAccessory: const Icon(Icons.info, key: Key('inline-slot')),
+          onTap: () => taps++,
+        ),
+      );
+      for (final finder in [
+        find.text('A hint'),
+        find.text('%'),
+        find.text('/day'),
+        find.byKey(const Key('label-slot')),
+        find.byKey(const Key('inline-slot')),
+      ]) {
+        await tester.tap(finder);
+      }
+
+      expect(taps, 5);
+    });
+
+    testWidgets('does not fire for a tappable slot that takes the tap',
+        (tester) async {
+      var taps = 0;
+      var lookups = 0;
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          trailing: IconButton(
+            tooltip: 'Look up a rate',
+            onPressed: () => lookups++,
+            icon: const Icon(Icons.search),
+          ),
+          onTap: () => taps++,
+        ),
+      );
+      await tester.tap(find.byType(IconButton));
+
+      expect(lookups, 1);
+      expect(taps, 0);
+    });
+
     testWidgets('with keyboardType none, no system keyboard is asked for',
         (tester) async {
       await pumpField(
@@ -279,6 +361,72 @@ void main() {
 
       expect(controller.selection.baseOffset, 0);
       expect(controller.selection.extentOffset, 2);
+    });
+
+    testWidgets('does not select when focus leaves before the next frame',
+        (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      final controller = TextEditingController(text: '25');
+      addTearDown(controller.dispose);
+      controller.selection = const TextSelection.collapsed(offset: 1);
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Waste',
+          selectAllOnFocus: true,
+          controller: controller,
+          focusNode: focusNode,
+        ),
+      );
+      focusNode.requestFocus();
+      await tester.idle();
+      focusNode.unfocus();
+      await tester.idle();
+      await tester.pump();
+
+      expect(focusNode.hasFocus, isFalse);
+      expect(controller.selection, const TextSelection.collapsed(offset: 1));
+    });
+
+    testWidgets('selects the value of a given controller on autofocus',
+        (tester) async {
+      final controller = TextEditingController(text: '25');
+      addTearDown(controller.dispose);
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Waste',
+          selectAllOnFocus: true,
+          autofocus: true,
+          controller: controller,
+        ),
+      );
+
+      expect(controller.selection.baseOffset, 0);
+      expect(controller.selection.extentOffset, 2);
+    });
+
+    testWidgets('selects the initial value of its own controller on autofocus',
+        (tester) async {
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Waste',
+          selectAllOnFocus: true,
+          autofocus: true,
+          initialValue: '25',
+        ),
+      );
+
+      final selection = tester
+          .state<EditableTextState>(find.byType(EditableText))
+          .textEditingValue
+          .selection;
+      expect(selection.baseOffset, 0);
+      expect(selection.extentOffset, 2);
     });
 
     testWidgets('the first digit typed then replaces the value',
