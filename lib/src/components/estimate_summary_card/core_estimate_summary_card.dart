@@ -110,6 +110,12 @@ class CoreEstimateSummaryCard extends StatelessWidget {
     final small = typography.bodySmallRegular.copyWith(color: colors.textBody);
     final charge = extraCharge;
     final note = this.note;
+    final silentDash = ExcludeSemantics(
+      child: Text(
+        emptyAmount,
+        style: typography.titleLargeSemiBold.copyWith(color: colors.textBody),
+      ),
+    );
 
     return MergeSemantics(
       child: Semantics(
@@ -130,7 +136,9 @@ class CoreEstimateSummaryCard extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: _amountHeight),
                   child: Align(
-                    alignment: Alignment.topLeft,
+                    alignment: lineTotal == null
+                        ? Alignment.centerLeft
+                        : Alignment.topLeft,
                     child: switch (lineTotal) {
                       final total? => FittedBox(
                           fit: BoxFit.scaleDown,
@@ -142,16 +150,7 @@ class CoreEstimateSummaryCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      // A dash means nothing to a screen reader; the note
-                      // says why there is no amount.
-                      null => ExcludeSemantics(
-                          child: Text(
-                            emptyAmount,
-                            style: typography.titleLargeSemiBold.copyWith(
-                              color: colors.textBody,
-                            ),
-                          ),
-                        ),
+                      null => silentDash,
                     },
                   ),
                 ),

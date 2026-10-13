@@ -97,6 +97,15 @@ void main() {
     testWidgets('ellipsises a long estimate name and keeps both totals whole',
         (tester) async {
       const name = 'Primary bedroom and walk-in closet suite';
+      const suffix = r' total  $2,993.62 →';
+      Size suffixSize() => tester.getSize(
+            find.ancestor(
+              of: find.text(suffix),
+              matching: find.byType(FittedBox),
+            ),
+          );
+      await pump(tester, totalsCard(), theme: CoreTheme.light());
+      final shortNameSuffixWidth = suffixSize().width;
       await pump(
         tester,
         totalsCard(estimateName: name),
@@ -104,14 +113,21 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(tester.widget<Text>(find.text(name)).overflow,
-          TextOverflow.ellipsis);
+      expect(
+        tester.widget<Text>(find.text(name)).overflow,
+        TextOverflow.ellipsis,
+      );
       final cardRight = tester.getTopRight(find.byKey(cardKey)).dx - 15;
       expect(
         tester.getTopRight(find.text(r' total  $2,993.62 →')).dx,
         lessThan(tester.getTopLeft(find.text(r'$3,513.62')).dx),
       );
       expect(tester.getTopRight(find.text(r'$3,513.62')).dx, cardRight);
+      expect(suffixSize().width, shortNameSuffixWidth);
+      expect(
+        suffixSize().width,
+        greaterThan(tester.getSize(find.text(suffix)).width / 2),
+      );
     });
 
     testWidgets('shrinks the totals rather than clip them on a narrow card',
@@ -197,6 +213,18 @@ void main() {
       expect(find.text('Needs a rate before it can total'), findsOneWidget);
       expect(find.text(r' total  $2,993.62 →'), findsNothing);
       expect(find.byType(CoreDivider), findsOneWidget);
+    });
+
+    testWidgets('centres the dash in the 40 px amount space', (tester) async {
+      await pump(tester, emptyCard, theme: CoreTheme.light());
+
+      final dashCentre = tester
+          .getCenter(find.text(CoreEstimateSummaryCard.emptyAmount))
+          .dy;
+      expect(
+        dashCentre - tester.getTopLeft(find.byKey(cardKey)).dy,
+        closeTo(50, 1),
+      );
     });
 
     testWidgets('is as tall as the storyboard frame: four parts, no totals row',
