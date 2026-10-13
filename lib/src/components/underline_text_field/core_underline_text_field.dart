@@ -201,6 +201,17 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// replaces it. Use it for a value the app filled in as a suggestion.
   final bool selectAllOnFocus;
 
+  /// Whether the caret shows while the field has focus. Defaults to `true`,
+  /// or to `false` for a [readOnly] field. Turn it off for a value edited on
+  /// an own number pad, such as a `%` waste field.
+  ///
+  /// The caret takes 2px of room in the row only while it shows. A suffix,
+  /// unit or accessory after the value moves 2px right when the field gains
+  /// focus and back when it loses it. With `showCursor: false` nothing moves.
+  /// In right-to-left text the value itself moves 2px left when the caret
+  /// appears.
+  final bool? showCursor;
+
   /// Called when the user taps anywhere on the field except a tappable slot:
   /// the label, the value, the underline, the helper or error line, and any
   /// part of a slot that does not take the tap itself. A screen reader's
@@ -240,6 +251,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.readOnly = false,
     this.selectAllOnFocus = false,
     this.onTap,
+    this.showCursor,
   });
 
   @override
@@ -256,6 +268,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   FocusNode get _focusNode =>
       widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+
+  bool get _showsCaret =>
+      _focusNode.hasFocus &&
+      widget.enabled &&
+      (widget.showCursor ?? !widget.readOnly);
 
   bool get _isLarge => widget.size == CoreUnderlineTextFieldSize.large;
 
@@ -516,7 +533,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
               color: widget.enabled ? colors.textHeadline : colors.textDisable,
             ),
             cursorColor: colors.outlineFocus,
-            cursorWidth: UnderlineFieldMetrics.caretWidth,
+            showCursor: widget.showCursor,
+            cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
             cursorHeight: metrics.caretHeight,
             decoration: InputDecoration(
               isCollapsed: true,
