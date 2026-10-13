@@ -157,16 +157,27 @@ void main() {
       expect(dark.textWarningStrong, const Color(0xFFF7B999));
     });
 
-    test('copyWith replaces only the token it is given', () {
-      final changed = light.copyWith(lineOrange: const Color(0xFF000001))
-          as AppColorsExtension;
+    test('copyWith replaces each of the three tokens it is given', () {
+      final changed = light.copyWith(
+        lineOrange: const Color(0xFF000001),
+        textGrayMid: const Color(0xFF000002),
+        textWarningStrong: const Color(0xFF000003),
+      ) as AppColorsExtension;
 
       expect(changed.lineOrange, const Color(0xFF000001));
-      expect(changed.textGrayMid, light.textGrayMid);
-      expect(changed.textWarningStrong, light.textWarningStrong);
+      expect(changed.textGrayMid, const Color(0xFF000002));
+      expect(changed.textWarningStrong, const Color(0xFF000003));
     });
 
-    test('lerp blends both tokens between the two themes', () {
+    test('copyWith with no arguments keeps all three tokens', () {
+      final same = light.copyWith() as AppColorsExtension;
+
+      expect(same.lineOrange, light.lineOrange);
+      expect(same.textGrayMid, light.textGrayMid);
+      expect(same.textWarningStrong, light.textWarningStrong);
+    });
+
+    test('lerp blends all three tokens between the two themes', () {
       final halfway = light.lerp(dark, 0.5) as AppColorsExtension;
 
       expect(
@@ -176,6 +187,10 @@ void main() {
       expect(
         halfway.textGrayMid,
         Color.lerp(light.textGrayMid, dark.textGrayMid, 0.5),
+      );
+      expect(
+        halfway.textWarningStrong,
+        Color.lerp(light.textWarningStrong, dark.textWarningStrong, 0.5),
       );
     });
 

@@ -104,6 +104,9 @@ class CoreTextColors {
   static const Color link = _CoreColorPalette.orient800;
   static const Color info = _CoreColorPalette.blue600;
   static const Color warning = _CoreColorPalette.orange600;
+
+  /// Text colour for orange fills. Reaches 4.5:1 on them. [warning] stays for
+  /// older uses. Mirrors Figma `Text Color/Warning` (Orange/700).
   static const Color warningStrong = _CoreColorPalette.orange700;
   static const Color error = _CoreColorPalette.red600;
   static const Color success = _CoreColorPalette.green600;
@@ -137,6 +140,8 @@ class CoreBorderColors {
   static const Color outlineHover = _CoreColorPalette.orient900;
   static const Color outlineFocus = _CoreColorPalette.orient800;
   static const Color tabsHighlight = _CoreColorPalette.orient500;
+
+  /// Orange border. Mirrors Figma `Boarder Color/Warning`.
   static const Color lineOrange = _CoreColorPalette.orange200;
 }
 
@@ -251,6 +256,9 @@ class CoreDarkTextColors {
   static const Color link = _CoreColorPalette.orient300;
   static const Color info = _CoreColorPalette.blue300;
   static const Color warning = _CoreColorPalette.orange300;
+
+  /// Dark-mode text colour for orange fills. Reaches 4.5:1 on them. [warning]
+  /// stays for older uses. Mirrors Figma `Text Color/Warning`.
   static const Color warningStrong = _CoreColorPalette.orange200;
   static const Color error = _CoreColorPalette.red300;
   static const Color success = _CoreColorPalette.green300;
@@ -286,6 +294,8 @@ class CoreDarkBorderColors {
   static const Color outlineHover = _CoreColorPalette.orient300;
   static const Color outlineFocus = _CoreColorPalette.orient200;
   static const Color tabsHighlight = _CoreColorPalette.orient300;
+
+  /// Dark-mode orange border. Mirrors Figma `Boarder Color/Warning`.
   static const Color lineOrange = _CoreColorPalette.orange300;
 }
 
