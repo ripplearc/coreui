@@ -15,10 +15,12 @@ class CoreTheme {
       textDark: CoreTextColors.dark,
       textBody: CoreTextColors.body,
       textDisable: CoreTextColors.disable,
+      textGrayMid: CoreTextColors.grayMid,
       textInverse: CoreTextColors.inverse,
       textLink: CoreTextColors.link,
       textInfo: CoreTextColors.info,
       textWarning: CoreTextColors.warning,
+      textWarningStrong: CoreTextColors.warningStrong,
       textError: CoreTextColors.error,
       textSuccess: CoreTextColors.success,
 
@@ -47,6 +49,7 @@ class CoreTheme {
       outlineHover: CoreBorderColors.outlineHover,
       outlineFocus: CoreBorderColors.outlineFocus,
       tabsHighlight: CoreBorderColors.tabsHighlight,
+      lineOrange: CoreBorderColors.lineOrange,
 
       // Status Colors
       statusError: CoreStatusColors.error,
@@ -117,10 +120,12 @@ class CoreTheme {
       textDark: CoreDarkTextColors.dark,
       textBody: CoreDarkTextColors.body,
       textDisable: CoreDarkTextColors.disable,
+      textGrayMid: CoreDarkTextColors.grayMid,
       textInverse: CoreDarkTextColors.inverse,
       textLink: CoreDarkTextColors.link,
       textInfo: CoreDarkTextColors.info,
       textWarning: CoreDarkTextColors.warning,
+      textWarningStrong: CoreDarkTextColors.warningStrong,
       textError: CoreDarkTextColors.error,
       textSuccess: CoreDarkTextColors.success,
 
@@ -149,6 +154,7 @@ class CoreTheme {
       outlineHover: CoreDarkBorderColors.outlineHover,
       outlineFocus: CoreDarkBorderColors.outlineFocus,
       tabsHighlight: CoreDarkBorderColors.tabsHighlight,
+      lineOrange: CoreDarkBorderColors.lineOrange,
 
       // Status Colors
       statusError: CoreDarkStatusColors.error,
