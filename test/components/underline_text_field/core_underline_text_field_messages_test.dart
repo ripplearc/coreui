@@ -113,6 +113,87 @@ void main() {
       expect(tester.getSize(fieldFinder).width, 372);
     });
 
+    testWidgets('a helper alone has no error look', (tester) async {
+      final colors = CoreTheme.light().coreColors;
+      final handle = tester.ensureSemantics();
+      try {
+        await pumpField(
+          tester,
+          const CoreUnderlineTextField(label: 'Delivery', helperText: 'A hint'),
+        );
+
+        expect(
+          (tester.widget<Text>(find.text('Delivery')).style as TextStyle).color,
+          colors.textBody,
+        );
+        expect(underlineColor(tester), isNot(colors.statusError));
+        expect(icon(CoreIcons.error), findsNothing);
+        expect(
+          tester
+              .getSemantics(find.text('A hint'))
+              .getSemanticsData()
+              .flagsCollection
+              .isLiveRegion,
+          isFalse,
+        );
+
+        await tester.tap(find.byType(TextField));
+        await tester.pumpAndSettle();
+        expect(underlineColor(tester), isNot(colors.statusError));
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('an empty helperText draws no line and adds no row',
+        (tester) async {
+      await pumpField(tester, const CoreUnderlineTextField(label: 'Rate'));
+      final without = tester.getSize(fieldFinder).height;
+
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(label: 'Rate', helperText: ''),
+      );
+
+      expect(icon(CoreIcons.info), findsNothing);
+      expect(tester.getSize(fieldFinder).height, without);
+    });
+
+    for (final isError in [false, true]) {
+      testWidgets(
+          'keeps the icon beside the first line of a long '
+          '${isError ? 'error' : 'helper'} at 1.6 times text size',
+          (tester) async {
+        const message = 'The largest delivery fee is \$999,999.99. '
+            'Enter a smaller amount or split the fee across lines.';
+        await tester.pumpWidget(
+          buildTestApp(
+            MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.6)),
+              child: SizedBox(
+                width: 372,
+                child: CoreUnderlineTextField(
+                  label: 'Delivery',
+                  helperText: isError ? null : message,
+                  errorText: isError ? message : null,
+                ),
+              ),
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final text = tester.getRect(find.text(message));
+        final iconRect = tester.getRect(
+          icon(isError ? CoreIcons.error : CoreIcons.info),
+        );
+
+        expect(text.height, greaterThan(32));
+        expect(iconRect.top, text.top);
+      });
+    }
+
     testWidgets('is not announced as a live region', (tester) async {
       final handle = tester.ensureSemantics();
       try {

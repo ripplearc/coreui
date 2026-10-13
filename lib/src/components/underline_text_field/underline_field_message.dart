@@ -31,6 +31,7 @@ class UnderlineFieldMessage extends StatelessWidget {
           right: UnderlineFieldMetrics.horizontalInset,
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ExcludeSemantics(
               child: CoreIconWidget(

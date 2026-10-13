@@ -28,6 +28,13 @@ import 'underline_field_metrics.dart';
 /// While the field is empty, [hintText] shows in the value row in
 /// `textDisable`.
 ///
+/// ### Helper and error lines
+/// [helperText] draws a grey line with an info icon under the underline. It is
+/// a hint, not a warning: the label and the underline keep their normal
+/// colors and a screen reader does not announce it. [errorText] replaces it
+/// with a red line and turns the label and the underline red. The icon sits
+/// beside the first line when the message wraps.
+///
 /// ### Tap target
 /// The label, the value row and the underline all focus the field when
 /// tapped. The text field's own accessibility node is 48px tall, though the
@@ -55,7 +62,15 @@ import 'underline_field_metrics.dart';
 /// )
 /// ```
 ///
-/// ### 2) A single-question form
+/// ### 2) A helper line with no error
+/// ```dart
+/// CoreUnderlineTextField(
+///   label: 'Delivery',
+///   helperText: 'Leave empty if there is no delivery fee.',
+/// )
+/// ```
+///
+/// ### 3) A single-question form
 /// ```dart
 /// CoreUnderlineTextField(
 ///   size: CoreUnderlineTextFieldSize.large,
@@ -156,15 +171,15 @@ class CoreUnderlineTextField extends StatefulWidget {
   final Widget? trailing;
 
   /// A line under the field with an info icon, for a hint about what to type.
-  /// Replaced by [errorText] while there is one.
+  /// Replaced by [errorText] while there is one. An empty string draws no
+  /// line.
   final String? helperText;
 
   /// A line under the field with an error icon. While it is set, and not
-  /// empty, the label,
-  /// the underline and the line itself turn to the error colors, and the
-  /// underline stays in the error color on focus. It pushes whatever sits
-  /// below the field down by one line, and a screen reader announces it as it
-  /// appears.
+  /// empty, the label, the underline and the line itself turn to the error
+  /// colors, and the underline stays in the error color on focus. It pushes
+  /// whatever sits below the field down by one line, and a screen reader
+  /// announces it as it appears.
   ///
   /// The field never decides when a value is wrong. The caller sets this, for
   /// instance only once the user has left the field.
@@ -268,7 +283,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final metrics = UnderlineFieldMetrics.of(widget.size);
     final errorText = widget.errorText;
     final hasError = errorText != null && errorText.isNotEmpty;
-    final message = hasError ? errorText : widget.helperText;
+    final helperText = widget.helperText;
+    final hasHelper = helperText != null && helperText.isNotEmpty;
+    final message = hasError ? errorText : (hasHelper ? helperText : null);
     final restLineColor = _isLarge ? colors.lineMid : colors.lineDarkOutline;
     final lineColor = _focusNode.hasFocus ? colors.outlineHover : restLineColor;
 
