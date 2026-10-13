@@ -4,7 +4,7 @@
 class CoreIconSize {
   CoreIconSize._();
 
-  /// 14×14 dp — the info icon inside a status badge.
+  /// 14×14 dp — extra extra small icons (0.875rem).
   static const double size14 = 14.0;
 
   /// 16×16 dp — extra small icons (1rem).

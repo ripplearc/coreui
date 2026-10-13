@@ -43,6 +43,10 @@ void main() {
     );
   }
 
+  test('size14 is 14 dp', () {
+    expect(CoreIconSize.size14, 14.0);
+  });
+
   testWidgets('Core Icon Size Tokens Test', (tester) async {
     await tester.binding.setSurfaceSize(const Size(500, 440));
 

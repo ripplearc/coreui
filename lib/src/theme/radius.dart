@@ -1,4 +1,9 @@
 /// Core corner radius tokens for rounded surfaces.
+///
+/// A token is named by its dp value, so `radius8` is 8 dp. This differs from
+/// `CoreSpacing`, which names a token by a multiplier of 4 dp (`space8` is
+/// 32 dp). Do not swap a `CoreSpacing` radius for the `CoreRadius` token with
+/// the same number.
 class CoreRadius {
   CoreRadius._();
 
