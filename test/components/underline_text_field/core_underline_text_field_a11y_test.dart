@@ -42,7 +42,8 @@ void main() {
       });
     }
 
-    testWidgets('an empty field with its hint meets the text contrast rule',
+    testWidgets(
+        'an empty field meets the text contrast rule (the guideline does not check hint text)',
         (tester) async {
       await setupA11yTest(tester);
 

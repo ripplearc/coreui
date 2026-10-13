@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
@@ -11,7 +13,7 @@ import 'underline_field_metrics.dart';
 ///
 /// It is a sibling of [CoreTextField], not a replacement: [CoreTextField]
 /// draws an outlined box, this field draws no border at all. The only line is
-/// the underline, which is the field's whole focus affordance.
+/// the underline.
 ///
 /// ### Underline
 /// The underline is `lineDarkOutline` (`lineMid` for the
@@ -25,8 +27,14 @@ import 'underline_field_metrics.dart';
 ///
 /// ### Tap target
 /// The text field's accessibility node is 48px tall, though the value row is
-/// drawn 24px or 32px tall, so the field meets the minimum tap target without
-/// changing the design's spacing.
+/// drawn 24px or 32px tall, so a screen reader sees the minimum tap target
+/// without changing the design's spacing. Only the value row takes a tap. A
+/// tap on the label or on the underline does nothing.
+///
+/// ### Text size
+/// The label row and the value row are minimum heights. They grow when the
+/// user sets a larger text size, so the label is never cut or drawn over the
+/// value.
 ///
 /// ### Strings
 /// This field owns no user-facing strings. Every label and hint is passed in
@@ -76,6 +84,7 @@ class CoreUnderlineTextField extends StatefulWidget {
   @visibleForTesting
   static const Key underlineKey = Key('core_underline_text_field_underline');
 
+  /// Creates an underline text field.
   const CoreUnderlineTextField({
     super.key,
     this.label,
@@ -140,7 +149,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         _isLarge ? typography.bodyMediumRegular : typography.bodySmallRegular;
 
     return Container(
-      height: metrics.labelRowHeight,
+      constraints: BoxConstraints(minHeight: metrics.labelRowHeight),
       padding: EdgeInsets.symmetric(horizontal: metrics.labelInset),
       child: ExcludeSemantics(
         child: Text(
@@ -160,13 +169,18 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         ? typography.headlineMediumSemiBold
         : typography.bodyLargeRegular;
 
+    final textHeight = MediaQuery.textScalerOf(context)
+        .scale((style.fontSize ?? 0) * (style.height ?? 1));
+    final rowHeight = math.max(metrics.valueRowHeight, textHeight);
+    final fieldHeight = math.max(kMinInteractiveDimension, rowHeight);
+
     return Container(
-      height: metrics.valueRowHeight,
+      height: rowHeight,
       padding: const EdgeInsets.symmetric(
         horizontal: UnderlineFieldMetrics.horizontalInset,
       ),
       child: OverflowBox(
-        maxHeight: kMinInteractiveDimension,
+        maxHeight: fieldHeight,
         child: Semantics(
           label: widget.label,
           child: TextField(
@@ -179,8 +193,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
             decoration: InputDecoration(
               isCollapsed: true,
               contentPadding: EdgeInsets.symmetric(
-                vertical:
-                    (kMinInteractiveDimension - metrics.valueRowHeight) / 2,
+                vertical: (fieldHeight - rowHeight) / 2,
               ),
               hintText: widget.hintText,
               hintStyle: style.copyWith(color: colors.textDisable),

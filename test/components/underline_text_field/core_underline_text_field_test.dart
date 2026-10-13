@@ -31,6 +31,43 @@ void main() {
   TextField inner(WidgetTester tester) =>
       tester.widget<TextField>(find.byType(TextField));
 
+  group('CoreUnderlineTextField – text size', () {
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      testWidgets('$size rows grow so the label is not drawn over the value',
+          (tester) async {
+        Future<void> pumpAt(double scale) => tester.pumpWidget(
+              buildTestApp(
+                MediaQuery(
+                  data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+                  child: SizedBox(
+                    width: 372,
+                    child: CoreUnderlineTextField(
+                      label: 'Equipment',
+                      initialValue: 'Mini excavator',
+                      size: size,
+                    ),
+                  ),
+                ),
+                theme: CoreTheme.light(),
+              ),
+            );
+
+        await pumpAt(1);
+        final normalHeight =
+            tester.getSize(find.byType(CoreUnderlineTextField)).height;
+
+        await pumpAt(1.6);
+        final scaledHeight =
+            tester.getSize(find.byType(CoreUnderlineTextField)).height;
+        final label = tester.getRect(find.text('Equipment'));
+        final value = tester.getRect(find.byType(EditableText));
+
+        expect(scaledHeight, greaterThan(normalHeight));
+        expect(label.bottom, lessThanOrEqualTo(value.top));
+      });
+    }
+  });
+
   group('CoreUnderlineTextField – content', () {
     testWidgets('shows the label above the value', (tester) async {
       await pumpField(

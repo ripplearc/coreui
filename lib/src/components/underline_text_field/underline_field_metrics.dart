@@ -1,13 +1,28 @@
 import '../../theme/spacing.dart';
 import 'core_underline_text_field_size.dart';
 
+/// The measurements of a [CoreUnderlineTextField] at one size, in logical
+/// pixels.
 class UnderlineFieldMetrics {
+  /// The minimum height of the row holding the label.
   final double labelRowHeight;
+
+  /// The space either side of the label.
   final double labelInset;
+
+  /// The space between the label row and the value row.
   final double labelGap;
+
+  /// The minimum height of the row holding the value.
   final double valueRowHeight;
+
+  /// The space between the value row and the underline.
   final double lineGap;
+
+  /// The thickness of the underline.
   final double strokeWidth;
+
+  /// The height of the caret.
   final double caretHeight;
 
   const UnderlineFieldMetrics._({
@@ -20,7 +35,10 @@ class UnderlineFieldMetrics {
     required this.caretHeight,
   });
 
+  /// The space either side of the value, so the caret is not clipped.
   static const double horizontalInset = 2;
+
+  /// The width of the caret.
   static const double caretWidth = 2;
 
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
@@ -43,6 +61,7 @@ class UnderlineFieldMetrics {
     caretHeight: 24,
   );
 
+  /// The measurements for [size].
   factory UnderlineFieldMetrics.of(CoreUnderlineTextFieldSize size) {
     switch (size) {
       case CoreUnderlineTextFieldSize.regular:
