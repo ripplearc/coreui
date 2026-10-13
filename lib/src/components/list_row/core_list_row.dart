@@ -5,7 +5,9 @@ import '../../../ripplearc_coreui.dart';
 /// A tappable list row: a title, an optional subtitle under it, and an
 /// optional value at the end (e.g. `$145.00 /day`).
 ///
-/// Three looks share one geometry, so the titles of mixed rows line up:
+/// Three looks share one geometry. The action row and the selectable row
+/// share a leading icon slot, so their titles line up; the plain row has no
+/// slot:
 /// - [CoreListRow.new]: a plain row with no leading slot.
 /// - [CoreListRow.selectable]: a row in a pick-one list. It reserves a leading
 ///   check slot even when unselected, so rows don't shift when the pick moves.
@@ -123,13 +125,11 @@ class CoreListRow extends StatelessWidget {
     AppColorsExtension colors,
     AppTypographyExtension typography,
   ) {
-    final titleStyle =
-        _isAction ? typography.bodyMediumSemiBold : typography.bodyLargeSemiBold;
     final titleColor =
         _isAction || selected ? colors.textLink : colors.textHeadline;
     final titleText = Text(
       title,
-      style: titleStyle.copyWith(color: titleColor),
+      style: typography.bodyLargeSemiBold.copyWith(color: titleColor),
     );
     final subtitleValue = subtitle;
     if (subtitleValue == null || subtitleValue.isEmpty) {

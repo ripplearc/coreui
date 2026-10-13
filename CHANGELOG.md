@@ -4,12 +4,12 @@
 
 ### ✨ Features
 
-- **CoreListRow.action**: a leading `icon` and a `title`, both `textLink`, with the title in `bodyMediumSemiBold`, e.g. "+ New equipment cost" under a list of recent rates. The icon sits in the same 20 dp slot as `.selectable`'s check, so its title lines up with every selectable row's. Takes no subtitle or value, and `onTap` is required (CA-1204)
+- **CoreListRow.action**: a leading `icon` and a `title`, the icon in `iconDark` and the title in `textLink` at `bodyLargeSemiBold` (16 sp, as Figma's Action row), e.g. "+ New equipment cost" under a list of recent rates. The icon sits in the same 20 dp slot as `.selectable`'s check, so its title lines up with every selectable row's (the plain row has no slot). Takes no subtitle or value, and `onTap` is required (CA-1204)
 - List row showcase: the action row under the plain list
 
 ### 🧪 Tests
 
-- Action: the icon and title in the link colour, the title at the same x as a selectable row's, tap, and a screen reader hears a button with no selected state. A11y: tap target and label guidelines in both themes. Goldens: light and dark gain the action row
+- Action: the icon in `iconDark`, the title in the link colour at 16 sp, the title at the same x as a selectable row's, tap, and a screen reader hears a button with no selected state. A11y: tap target and label guidelines in both themes. Goldens: light and dark gain the action row
 
 ## [0.36.0] - CoreListRow.selectable
 

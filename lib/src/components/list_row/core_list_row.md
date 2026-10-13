@@ -1,12 +1,12 @@
 # CoreListRow Component
 
-`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). It has three looks that share one geometry, so the titles of mixed rows line up:
+`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). It has three looks that share one geometry. The action row and the selectable row share a leading icon slot, so their titles line up (storyboard frame `cuj6-equip-4-lookup`); the plain row has no slot:
 
 | Constructor | Leading slot | Use |
 |---|---|---|
 | `CoreListRow(...)` | none | A plain row, e.g. a recently used rate. |
 | `CoreListRow.selectable(...)` | a check, shown only when `selected`; the slot keeps its width when empty | A pick-one list, e.g. "Look up a rate". A selected row fills light blue and its title turns the link colour. |
-| `CoreListRow.action(...)` | `icon`, always shown | An action at the end of a list, e.g. "+ New equipment cost". Icon and title use the link colour. |
+| `CoreListRow.action(...)` | `icon`, always shown | An action at the end of a list, e.g. "+ New equipment cost". The icon uses `iconDark` and the title the link colour. |
 
 Design: Figma [List item set](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`). The plain row is its Recent row; `.selectable` is its Result row ([Selected, `66337:154975`](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154975)).
 
@@ -59,7 +59,7 @@ CoreListRow.action(
 
 | Part | Typography | Colour |
 |---|---|---|
-| Title | `bodyLargeSemiBold` (`.action`: `bodyMediumSemiBold`) | `textHeadline`; `textLink` when selected or on `.action` |
+| Title | `bodyLargeSemiBold` | `textHeadline`; `textLink` when selected or on `.action` |
 | Subtitle | `bodySmallRegular` | `textBody` |
 | Value | `bodyLargeSemiBold` | `textHeadline` |
 | Unit | `bodySmallRegular` | `textBody` |

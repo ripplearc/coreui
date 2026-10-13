@@ -349,8 +349,26 @@ void main() {
       final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
       expect(leadingOpacityOf(tester).opacity, 1);
       expect(icon.icon, CoreIcons.add);
-      expect(icon.color, colors.textLink);
+      expect(icon.color, colors.iconDark);
       expect(textColorOf(tester, 'New equipment cost'), colors.textLink);
+    });
+
+    testWidgets('sets the title in the 16 sp semibold style of every row',
+        (tester) async {
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      final typography = CoreTheme.light().coreTypography;
+      final style =
+          tester.widget<Text>(find.text('New equipment cost')).style!;
+      expect(style.fontSize, typography.bodyLargeSemiBold.fontSize);
+      expect(style.fontWeight, typography.bodyLargeSemiBold.fontWeight);
     });
 
     testWidgets('lines its title up with a selectable row', (tester) async {
