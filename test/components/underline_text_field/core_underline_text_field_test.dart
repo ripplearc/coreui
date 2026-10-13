@@ -197,6 +197,62 @@ void main() {
       expect(find.text('45'), findsOneWidget);
     });
 
+    testWidgets('keeps the text and the caret when a formatter refuses a key',
+        (tester) async {
+      final controller = TextEditingController(text: '12');
+      addTearDown(controller.dispose);
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          controller: controller,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+      );
+      await tester.showKeyboard(find.byType(TextField));
+      controller.selection = const TextSelection.collapsed(offset: 1);
+      await tester.pump();
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1a2',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.text, '12');
+      expect(controller.selection, const TextSelection.collapsed(offset: 1));
+    });
+
+    testWidgets('keeps the text and the caret when a key is typed at maxLength',
+        (tester) async {
+      final controller = TextEditingController(text: '123');
+      addTearDown(controller.dispose);
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          controller: controller,
+          maxLength: 3,
+        ),
+      );
+      await tester.showKeyboard(find.byType(TextField));
+      controller.selection = const TextSelection.collapsed(offset: 1);
+      await tester.pump();
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1423',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.text, '123');
+      expect(controller.selection, const TextSelection.collapsed(offset: 1));
+    });
+
     testWidgets('stops accepting characters at maxLength with no counter',
         (tester) async {
       await pumpField(

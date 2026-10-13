@@ -59,7 +59,7 @@ import 'underline_field_metrics.dart';
 /// CoreUnderlineTextField(
 ///   size: CoreUnderlineTextFieldSize.large,
 ///   label: 'Amount',
-///   keyboardType: TextInputType.number,
+///   keyboardType: const TextInputType.numberWithOptions(decimal: true),
 /// )
 /// ```
 class CoreUnderlineTextField extends StatefulWidget {
@@ -96,10 +96,19 @@ class CoreUnderlineTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
 
   /// Filters or reshapes what the user types.
+  ///
+  /// These run before the [maxLength] limit, so characters a formatter adds,
+  /// such as a thousands comma, count toward [maxLength]. Formatters run only
+  /// on typing and paste. A change made through [controller] skips them, so an
+  /// on-screen number pad that writes to the controller must apply its own
+  /// limit.
   final List<TextInputFormatter>? inputFormatters;
 
   /// The most characters the field accepts, with no counter drawn. Unlimited
   /// when `null`.
+  ///
+  /// The limit runs after the [inputFormatters], and only on typing and paste.
+  /// A change made through [controller] skips it.
   final int? maxLength;
 
   /// Whether the field takes focus when it is first built.
