@@ -29,8 +29,9 @@ void main() {
         home: Scaffold(
           backgroundColor: theme.coreColors.pageBackground,
           body: const Padding(
-            // The storyboard's sheets inset their lists by 12 dp.
-            padding: EdgeInsets.all(CoreSpacing.space3),
+            // The storyboard's sheets start their content at 20 dp; the row
+            // adds its own 8 dp, so the titles start at 28 dp.
+            padding: EdgeInsets.symmetric(horizontal: CoreSpacing.space5),
             child: Column(
               children: [
                 CoreListRow(

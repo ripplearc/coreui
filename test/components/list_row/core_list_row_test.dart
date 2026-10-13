@@ -107,6 +107,18 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('draws no blank line for an empty subtitle', (tester) async {
+      await pumpRow(
+        tester,
+        const CoreListRow(title: 'Dumpster — 30 yd', subtitle: ''),
+      );
+
+      expect(
+        tester.getSize(find.byType(CoreListRow)).height,
+        CoreSpacing.space12,
+      );
+    });
+
     testWidgets('leaves an empty subtitle out of what it reads',
         (tester) async {
       final handle = tester.ensureSemantics();

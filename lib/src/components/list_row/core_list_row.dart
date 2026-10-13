@@ -61,7 +61,7 @@ class CoreListRow extends StatelessWidget {
       ),
     );
     final subtitleValue = subtitle;
-    if (subtitleValue == null) {
+    if (subtitleValue == null || subtitleValue.isEmpty) {
       return titleText;
     }
     return Column(

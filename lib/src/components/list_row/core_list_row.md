@@ -1,6 +1,6 @@
 # CoreListRow Component
 
-`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). For example, a recently used rate.
+`CoreListRow` is a tappable list row: a title, an optional subtitle under it, and an optional value at the end (for example `$145.00 /day`). For example, a recently used rate. Design: Figma [List item set, Recent row](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`).
 
 The value takes at most half the row and shrinks rather than overflow; the title wraps. The row pads its content by `CoreSpacing.space2` (8 dp) on each side and is at least 48 dp tall. The list around it supplies the page inset.
 
@@ -26,7 +26,7 @@ CoreListRow(
 | `value` | `String?` | No | Value at the end of the row, already formatted, e.g. `$145.00`. |
 | `unit` | `String?` | No | Smaller text after `value`, e.g. `/day`. Ignored without `value`. |
 | `onTap` | `VoidCallback?` | No | Called when the row is tapped. Null disables the row. |
-| `semanticLabel` | `String?` | No | Screen-reader label. Defaults to the visible texts joined by `. `, e.g. `Scissor lift — 19ft. Used last week. $120.00 /day`. |
+| `semanticLabel` | `String?` | No | Screen-reader label. Defaults to the visible texts joined by `. `, e.g. `Scissor lift — 19ft. Used last week. $120.00 /day`. A screen reader may say "slash day"; pass e.g. `120 dollars per day` to avoid it. |
 
 ## Styling
 
