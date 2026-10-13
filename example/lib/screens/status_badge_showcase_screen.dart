@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+/// A showcase screen that shows every look of [CoreStatusBadge], with and
+/// without the info icon.
 class StatusBadgeShowcaseScreen extends StatelessWidget {
   const StatusBadgeShowcaseScreen({super.key});
 
