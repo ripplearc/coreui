@@ -25,6 +25,42 @@ void main() {
   final fieldFinder = find.byType(CoreUnderlineTextField);
 
   group('CoreUnderlineTextField – compact', () {
+    testWidgets('has the same caret height as regular', (tester) async {
+      Future<double?> caretHeight(CoreUnderlineTextFieldSize size) async {
+        await pumpField(
+          tester,
+          CoreUnderlineTextField(label: 'Note', size: size),
+        );
+        return tester.widget<TextField>(find.byType(TextField)).cursorHeight;
+      }
+
+      expect(
+        await caretHeight(compact),
+        await caretHeight(CoreUnderlineTextFieldSize.regular),
+      );
+    });
+
+    testWidgets('has the same gap before a unit as regular', (tester) async {
+      Future<double> gapBeforeUnit(CoreUnderlineTextFieldSize size) async {
+        await pumpField(
+          tester,
+          CoreUnderlineTextField(
+            label: 'Duration',
+            initialValue: '4',
+            unitText: 'days',
+            size: size,
+          ),
+        );
+        return tester.getRect(find.text('days')).left -
+            tester.getRect(find.byType(TextField)).right;
+      }
+
+      expect(
+        await gapBeforeUnit(compact),
+        await gapBeforeUnit(CoreUnderlineTextFieldSize.regular),
+      );
+    });
+
     testWidgets('is 52px tall, 2px shorter than regular', (tester) async {
       await pumpField(
         tester,
