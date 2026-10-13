@@ -10,6 +10,7 @@
 - **Slots**: `labelTrailing` (a badge beside the label, which keeps the field's height), `inlineAccessory` (a unit chip 12px after the value) and `trailing` (a lookup button at the far end of the row). The row grows to fit a taller widget and centers the value against it
 - **Helper and error lines**: `helperText` draws an info icon and a 12/16 line 8px under the underline, which adds 24px to the field. `errorText` (null or empty means no error) replaces it, turns the label, underline, icon and line to the error colors, keeps the underline red on focus, and is announced as a live region. The caller decides when to show it
 - **States**: `enabled: false` dims the field and stops focus and taps; `readOnly` keeps the normal look and refuses edits; `selectAllOnFocus` selects the value so the first digit typed replaces it; `showCursor` turns the caret off for a value on an own number pad. The caret takes 2px of room only while it shows
+- **Text size**: the label row and the value row are minimum heights, so they grow with the user's text size and the label is never cut or drawn over the value
 - Underline text field showcase screen in the example app and a component doc
 
 ### 📐 Design notes
@@ -18,9 +19,9 @@ The focus underline is `outlineHover` (`#003A54` in light mode), which is the va
 
 ### 🧪 Tests
 
-- Content, sizes and offsets against the design's numbers, colors in both themes, underline rest and focus, tap-to-focus on the label and underline, a replaced focus node, prefix, suffix, unit, hugging, slots, helper and error lines, disabled and read-only, select-all on focus, `onTap`, and caret room
-- A11y: tap target, label and contrast in both themes for both sizes, the announced label and value, error as a live region, disabled and read-only flags, and a 48px accessibility node
-- Goldens in light and dark: rest, focused (regular empty, regular filled, large filled, regular error), affixes and slots, helper and error lines, and disabled and read-only
+- Content, sizes and offsets against the design's numbers, growth at a large text size, colors in both themes, underline rest and focus, tap-to-focus on the label and underline, a replaced focus node, prefix, suffix, unit, hugging, slots, helper and error lines, disabled and read-only, select-all on focus, `onTap`, and caret room
+- A11y: tap target, label and contrast in both themes for all three sizes, the announced label and value, error as a live region, disabled and read-only flags, and a 48px accessibility node
+- Goldens in light and dark: rest, focused (12 states), affixes and slots, compact, helper and error lines, and disabled and read-only
 
 ## [0.40.0] - CoreNumberKeypad
 
