@@ -84,6 +84,13 @@ class Toast extends StatefulWidget {
 
   static const double _verticalPadding = CoreSpacing.space3;
 
+  static const double _acknowledgementHeight = 50;
+
+  static const double _acknowledgementRowMinHeight =
+      _acknowledgementHeight - Toast._verticalPadding * 2;
+
+  static const double _acknowledgementTickSize = 21.3;
+
   static const double _receiptVerticalPaddingAroundTheTapTarget =
       CoreSpacing.space1;
 
@@ -323,8 +330,6 @@ class _ToastState extends State<Toast> {
         return colors.alertGreen;
       case _ToastType.receipt:
         return colors.backgroundBlueLight;
-      // The dark theme's backgroundDarkGray is its page colour, so the
-      // acknowledgement steps up to the next grey to stay visible.
       case _ToastType.acknowledgement:
         return _isDark ? colors.backgroundGrayMid : colors.backgroundDarkGray;
     }
@@ -342,8 +347,6 @@ class _ToastState extends State<Toast> {
         return colors.iconGreen;
       case _ToastType.receipt:
         return colors.iconDark;
-      // White on the dark theme's lighter success green is 2.3:1, under the
-      // 3:1 a graphic needs; textInverse turns the tick dark there.
       case _ToastType.acknowledgement:
         return colors.textInverse;
     }
@@ -397,7 +400,11 @@ class _ToastState extends State<Toast> {
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: isReceipt ? CoreSpacing.space12 : 0,
+            minHeight: isReceipt
+                ? CoreSpacing.space12
+                : isAcknowledgement
+                    ? Toast._acknowledgementRowMinHeight
+                    : 0,
           ),
           // A Row hands a non-flex child unbounded width, so the width the
           // receipt's action has to fit into is measured above it. Only the
@@ -450,12 +457,15 @@ class _ToastState extends State<Toast> {
   }
 
   Widget _buildLeading(AppColorsExtension colors) {
+    final isAcknowledgement = widget._type == _ToastType.acknowledgement;
     final icon = CoreIconWidget(
       icon: _icon,
-      size: CoreIconSize.size24,
+      size: isAcknowledgement
+          ? Toast._acknowledgementTickSize
+          : CoreIconSize.size24,
       color: _getIconColor(colors),
     );
-    if (widget._type != _ToastType.acknowledgement) return icon;
+    if (!isAcknowledgement) return icon;
 
     return DecoratedBox(
       key: const Key('toast_tick_circle'),
@@ -463,7 +473,10 @@ class _ToastState extends State<Toast> {
         color: colors.statusSuccess,
         shape: BoxShape.circle,
       ),
-      child: icon,
+      child: SizedBox.square(
+        dimension: CoreIconSize.size24,
+        child: Center(child: icon),
+      ),
     );
   }
 

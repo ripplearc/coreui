@@ -152,8 +152,9 @@ Each toast type has specific styling:
 - **Acknowledgement Toast**
     - Background Color: `backgroundDarkGray` in the light theme, `backgroundGrayMid`
       in the dark theme
-    - Tick: `CoreIcons.checkMark` at 24 dp in `textInverse`, on a 24 dp
-      `statusSuccess` circle
+    - Tick: `CoreIcons.checkMark` at 21.3 dp (a 15.6 dp wide glyph, 62 % of the
+      circle) in `textInverse`, centred on a 24 dp `statusSuccess` circle
+    - Height: at least 50 dp
     - Text: `CoreTypography.bodyMediumSemiBold` in `textInverse` (light) or
       `textHeadline` (dark)
     - Shadow: `CoreShadows.floating`; a `CoreSpacing.space3` corner radius
@@ -318,16 +319,18 @@ their natural width on a phone. The order it gives ground in:
 
 The acknowledgement follows the Figma "Toast" component, node `65687:157849`
 (used on the Estimate V2 canvas at `66337:158841`). It differs from the frame in
-four places:
+three places:
 
 - **Dark theme.** Figma binds the frame to `Background/Dark Grey` and
   `Text/Inverse`. In the dark theme both resolve to gray900, which is also the
   dark page, so the toast and its text would vanish. The dark theme steps up to
   `backgroundGrayMid` (gray700) with `textHeadline` text instead.
-- **Tick colour in the dark theme.** See Accessibility: it turns dark to keep 3:1.
-- **Green.** Figma's `State Color/Success` is green500 (`#009E69`); the code's
-  `statusSuccess` token is green600 (`#007E57`). The token is used, so the circle
-  is one step darker than the frame.
+- **Tick colour in the dark theme.** White on the dark theme's lighter success
+  green is 2.3:1, under the 3:1 a graphic needs, so the tick uses `textInverse`,
+  which is dark there. See Accessibility.
 - **Spacing.** Figma draws 13/15 dp padding and an 11 dp gap. The nearest
-  `CoreSpacing` steps (12/16 and 12) are used, so the toast is 48 dp tall
-  against the frame's 50.
+  `CoreSpacing` steps (12/16 and 12) are used, and a 50 dp minimum height keeps
+  the frame's 384×50.
+
+The circle is `statusSuccess`, which is green500 (`#009E69`) like Figma's
+`State Color/Success`.

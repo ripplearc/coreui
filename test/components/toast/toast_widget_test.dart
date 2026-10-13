@@ -987,6 +987,35 @@ void main() {
         handle.dispose();
       });
 
+      testWidgets('is 50 dp high, like the frame', (WidgetTester tester) async {
+        await tester.pumpWidget(MaterialApp(
+          home: Stack(
+            children: [
+              Positioned(
+                bottom: 100,
+                width: 400,
+                child: Toast.acknowledgement(description: message),
+              ),
+            ],
+          ),
+        ));
+
+        expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
+            50);
+      });
+
+      testWidgets('draws its 15.6 dp tick (a 21.3 dp icon) centred in the circle',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAcknowledgement());
+
+        final circle = find.byKey(const Key('toast_tick_circle'));
+        final tick = find.byType(CoreIconWidget);
+
+        expect(tester.getSize(circle), const Size.square(24));
+        expect(tester.getSize(tick).width, closeTo(21.3, 0.01));
+        expect(tester.getCenter(tick), tester.getCenter(circle));
+      });
+
       for (final (name, theme) in [
         ('light', CoreTheme.light()),
         ('dark', CoreTheme.dark()),
