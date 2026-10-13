@@ -201,9 +201,11 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// replaces it. Use it for a value the app filled in as a suggestion.
   final bool selectAllOnFocus;
 
-  /// Called when the user taps anywhere on the field: the label, the value or
-  /// the underline. Use it to open an own number pad together with
-  /// `keyboardType: TextInputType.none`.
+  /// Called when the user taps anywhere on the field except a tappable slot:
+  /// the label, the value, the underline, the helper or error line, and any
+  /// part of a slot that does not take the tap itself. A screen reader's
+  /// double tap calls it too. A tap also focuses the field. Use it to open an
+  /// own number pad together with `keyboardType: TextInputType.none`.
   final VoidCallback? onTap;
 
   /// The key of the underline, for tests to read its color and weight.
@@ -493,6 +495,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         maxHeight: fieldHeight,
         child: Semantics(
           label: widget.label,
+          onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
           child: TextField(
             controller: _controller,
             focusNode: _focusNode,
