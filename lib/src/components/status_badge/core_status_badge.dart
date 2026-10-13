@@ -123,7 +123,7 @@ class CoreStatusBadge extends StatelessWidget {
           'A tappable info icon needs an infoSemanticLabel.',
         );
 
-  // TODO (CA-1238): CoreSpacing has no 10 or 11 step. Replace these with
+  // TODO (CA-1238): CoreSpacing has no 10, 11 or 22 step. Replace these with
   // tokens once they exist. https://ripplearc.youtrack.cloud/issue/CA-1238
   static const double _padding10 = 10;
   static const double _padding11 = 11;
