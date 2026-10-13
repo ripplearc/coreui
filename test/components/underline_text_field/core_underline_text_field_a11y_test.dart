@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -65,7 +66,8 @@ void main() {
       );
     });
 
-    testWidgets('the affix text is announced in reading order', (tester) async {
+    testWidgets('reads the prefix, then the field, then the unit',
+        (tester) async {
       await pumpWithSemantics(
         tester,
         const CoreUnderlineTextField(
@@ -75,9 +77,23 @@ void main() {
           unitText: '/day',
         ),
         () async {
-          expect(find.bySemanticsLabel(r'$'), findsOneWidget);
-          expect(find.bySemanticsLabel('/day'), findsOneWidget);
-          expect(find.bySemanticsLabel('Rate'), findsOneWidget);
+          final labels = <String>[];
+          void visit(SemanticsNode node) {
+            final label = node.getSemanticsData().label;
+            if (label.isNotEmpty) labels.add(label);
+            node.visitChildren((child) {
+              visit(child);
+              return true;
+            });
+          }
+
+          visit(
+              tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!);
+
+          expect(
+            labels.where((l) => [r'$', 'Rate', '/day'].contains(l)).toList(),
+            [r'$', 'Rate', '/day'],
+          );
         },
       );
     });

@@ -122,6 +122,11 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// Fixed text drawn before the value, such as `$`. It is part of the field,
   /// not of the typed text, so it shows while the field is empty and backspace
   /// never deletes it.
+  ///
+  /// A screen reader reads the prefix, the unit and any slot as separate
+  /// stops, in this order: prefix, the field (label and value), unit. There
+  /// is no spoken label for them yet, so a unit such as `/day` is read as
+  /// written.
   final String? prefixText;
 
   /// Fixed text drawn right after the value in the same size, such as `%`.
@@ -133,10 +138,20 @@ class CoreUnderlineTextField extends StatefulWidget {
 
   /// A widget right after the value and unit, such as a unit chip. The row
   /// grows to fit it and centers the value against it.
+  ///
+  /// The field gives a slot no tap area of its own, so the widget must size
+  /// its own. To keep a 36px look with a 48px target, put a 48px box around it
+  /// inside an `OverflowBox(maxHeight: 48)`. A plain 48px box makes the row
+  /// 12px taller. Keep it narrow: the value gets the width that is left.
   final Widget? inlineAccessory;
 
   /// A widget at the far end of the value row, such as a lookup button. The
   /// row grows to fit it and centers the value against it.
+  ///
+  /// The field gives a slot no tap area of its own, so the widget must size
+  /// its own. To keep a 36px look with a 48px target, put a 48px box around it
+  /// inside an `OverflowBox(maxHeight: 48)`. A plain 48px box makes the row
+  /// 12px taller. Keep it narrow: the value gets the width that is left.
   final Widget? trailing;
 
   /// The key of the underline, for tests to read its color and weight.

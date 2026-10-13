@@ -69,6 +69,34 @@ void main() {
     }
   });
 
+  group('CoreUnderlineTextField – text size with slots', () {
+    testWidgets('a rate row with a wide trailing widget builds at 1.6 times',
+        (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(1.6)),
+            child: const SizedBox(
+              width: 372,
+              child: CoreUnderlineTextField(
+                label: 'Rate applied',
+                prefixText: r'$',
+                initialValue: '145.00',
+                unitText: '/day',
+                trailing: SizedBox(width: 120, height: 36),
+              ),
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(EditableText)).width, greaterThan(0));
+    });
+  });
+
   group('CoreUnderlineTextField – content', () {
     testWidgets('shows the label above the value', (tester) async {
       await pumpField(
