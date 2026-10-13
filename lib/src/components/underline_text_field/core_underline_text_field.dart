@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_typography_extension.dart';
 import '../../theme/theme_extensions.dart';
@@ -152,6 +153,14 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   void _onFocusChanged() => setState(() {});
 
+  void _focusField() {
+    if (_focusNode.hasFocus) {
+      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    } else {
+      _focusNode.requestFocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -163,7 +172,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
-      onTap: _focusNode.requestFocus,
+      onTap: _focusField,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

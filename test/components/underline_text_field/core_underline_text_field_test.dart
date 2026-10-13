@@ -305,6 +305,96 @@ void main() {
     });
   });
 
+  group('CoreUnderlineTextField – focus node ownership', () {
+    FocusNode ownedNode(WidgetTester tester) =>
+        tester.widget<TextField>(find.byType(TextField)).focusNode!;
+
+    testWidgets('disposes its own focus node with the field', (tester) async {
+      await pumpField(tester, const CoreUnderlineTextField(label: 'Rate'));
+      final node = ownedNode(tester);
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(() => node.addListener(() {}), throwsFlutterError);
+    });
+
+    testWidgets('disposes its own focus node once a given one replaces it',
+        (tester) async {
+      final given = FocusNode();
+      addTearDown(given.dispose);
+      await pumpField(tester, const CoreUnderlineTextField(label: 'Rate'));
+      final owned = ownedNode(tester);
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(label: 'Rate', focusNode: given),
+      );
+      await tester.pump();
+
+      expect(() => owned.addListener(() {}), throwsFlutterError);
+    });
+
+    testWidgets('goes back to its own focus node when the given one is removed',
+        (tester) async {
+      final given = FocusNode();
+      addTearDown(given.dispose);
+      final colors = CoreTheme.light().coreColors;
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(label: 'Rate', focusNode: given),
+      );
+
+      await pumpField(tester, const CoreUnderlineTextField(label: 'Rate'));
+      given.requestFocus();
+      await tester.pumpAndSettle();
+      expect(underlineColor(tester), colors.lineDarkOutline);
+
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      expect(underlineColor(tester), colors.outlineHover);
+    });
+
+    testWidgets('leaves the focus node it was given alive after it is removed',
+        (tester) async {
+      final given = FocusNode();
+      addTearDown(given.dispose);
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(label: 'Rate', focusNode: given),
+      );
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(() => given.addListener(() {}), returnsNormally);
+    });
+  });
+
+  group('CoreUnderlineTextField – keyboard', () {
+    for (final target in ['label', 'underline']) {
+      testWidgets('a tap on the $target brings a hidden keyboard back',
+          (tester) async {
+        await pumpField(
+          tester,
+          const CoreUnderlineTextField(label: 'Rate'),
+        );
+        await tester.tap(find.byType(TextField));
+        await tester.pump();
+        expect(tester.testTextInput.isVisible, isTrue);
+
+        tester.testTextInput.hide();
+        expect(tester.testTextInput.isVisible, isFalse);
+
+        await tester.tap(
+          target == 'label' ? find.text('Rate') : underline,
+          warnIfMissed: false,
+        );
+        await tester.pump();
+
+        expect(tester.testTextInput.isVisible, isTrue);
+      });
+    }
+  });
+
   group('CoreUnderlineTextField – sizes', () {
     testWidgets('regular is 12/16 over 16/24 and 54px tall', (tester) async {
       await pumpField(
