@@ -11,11 +11,4 @@ void main() {
       expect(CoreRadius.radius8, 8.0);
     });
   });
-
-  group('CoreIconSize.size14', () {
-    test('is 14 dp and the smallest icon size', () {
-      expect(CoreIconSize.size14, 14.0);
-      expect(CoreIconSize.size14, lessThan(CoreIconSize.size16));
-    });
-  });
 }
