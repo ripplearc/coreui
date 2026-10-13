@@ -235,6 +235,7 @@ void main() {
       final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
       expect(leadingOpacityOf(tester).opacity, 1);
       expect(icon.icon, CoreIcons.checkMark);
+      expect(icon.color, colors.iconDark);
       expect(fillOf(tester), colors.backgroundBlueLight);
       expect(textColorOf(tester, 'Mini excavator — 1.5 ton'), colors.textLink);
     });

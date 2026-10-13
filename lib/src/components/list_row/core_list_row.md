@@ -54,8 +54,9 @@ CoreListRow.selectable(
 | Subtitle | `bodySmallRegular` | `textBody` |
 | Value | `bodyLargeSemiBold` | `textHeadline` |
 | Unit | `bodySmallRegular` | `textBody` |
-| Check | 20 dp, then a 12 dp gap | `textLink` |
+| Check | 20 dp, then a 12 dp gap | `iconDark` |
 | Selected fill | radius 12 dp | `backgroundBlueLight` |
+| Ink ripple | radius 12 dp | — |
 
 The 2 dp gap between title and subtitle comes from the storyboard; `CoreSpacing` has no step that small.
 

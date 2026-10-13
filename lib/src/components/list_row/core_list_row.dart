@@ -87,7 +87,7 @@ class CoreListRow extends StatelessWidget {
         child: CoreIconWidget(
           icon: CoreIcons.checkMark,
           size: CoreIconSize.size20,
-          color: colors.textLink,
+          color: colors.iconDark,
         ),
       ),
     );
