@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -150,6 +151,150 @@ void main() {
       await tester.enterText(find.byType(TextField), '45');
 
       expect(changes, ['4', '45']);
+    });
+
+    testWidgets('reports the action key to onSubmitted', (tester) async {
+      String? submitted;
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          onSubmitted: (value) => submitted = value,
+        ),
+      );
+      await tester.enterText(find.byType(TextField), '45');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+
+      expect(submitted, '45');
+    });
+
+    testWidgets('passes the keyboard type and action to the text field',
+        (tester) async {
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Rate',
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
+        ),
+      );
+
+      expect(inner(tester).keyboardType, TextInputType.number);
+      expect(inner(tester).textInputAction, TextInputAction.next);
+    });
+
+    testWidgets('applies the caller inputFormatters', (tester) async {
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+      );
+      await tester.enterText(find.byType(TextField), '4a5b');
+
+      expect(find.text('45'), findsOneWidget);
+    });
+
+    testWidgets('keeps the text and the caret when a formatter refuses a key',
+        (tester) async {
+      final controller = TextEditingController(text: '12');
+      addTearDown(controller.dispose);
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          controller: controller,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+      );
+      await tester.showKeyboard(find.byType(TextField));
+      controller.selection = const TextSelection.collapsed(offset: 1);
+      await tester.pump();
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1a2',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.text, '12');
+      expect(controller.selection, const TextSelection.collapsed(offset: 1));
+    });
+
+    testWidgets('keeps the text and the caret when a key is typed at maxLength',
+        (tester) async {
+      final controller = TextEditingController(text: '123');
+      addTearDown(controller.dispose);
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          controller: controller,
+          maxLength: 3,
+        ),
+      );
+      await tester.showKeyboard(find.byType(TextField));
+      controller.selection = const TextSelection.collapsed(offset: 1);
+      await tester.pump();
+
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1423',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.text, '123');
+      expect(controller.selection, const TextSelection.collapsed(offset: 1));
+    });
+
+    testWidgets('stops accepting characters at maxLength with no counter',
+        (tester) async {
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(label: 'Material', maxLength: 5),
+      );
+      await tester.enterText(find.byType(TextField), '1234567');
+
+      expect(find.text('12345'), findsOneWidget);
+      expect(find.text('5/5'), findsNothing);
+      expect(find.byType(Text), findsOneWidget);
+    });
+
+    testWidgets('combines the caller inputFormatters with maxLength',
+        (tester) async {
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          maxLength: 3,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
+      );
+      await tester.enterText(find.byType(TextField), '1a2b3c4d5');
+
+      expect(find.text('123'), findsOneWidget);
+    });
+
+    testWidgets('takes focus on build when autofocus is set', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+
+      await pumpField(
+        tester,
+        CoreUnderlineTextField(
+          label: 'Rate',
+          focusNode: focusNode,
+          autofocus: true,
+        ),
+      );
+
+      expect(focusNode.hasFocus, isTrue);
     });
   });
 

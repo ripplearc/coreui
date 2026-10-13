@@ -59,6 +59,7 @@ import 'underline_field_metrics.dart';
 /// CoreUnderlineTextField(
 ///   size: CoreUnderlineTextFieldSize.large,
 ///   label: 'Amount',
+///   keyboardType: const TextInputType.numberWithOptions(decimal: true),
 /// )
 /// ```
 class CoreUnderlineTextField extends StatefulWidget {
@@ -85,6 +86,34 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// Called whenever the text changes.
   final ValueChanged<String>? onChanged;
 
+  /// Called when the user finishes editing with the keyboard's action key.
+  final ValueChanged<String>? onSubmitted;
+
+  /// The keyboard to show for this field.
+  final TextInputType? keyboardType;
+
+  /// The action key to show on the keyboard.
+  final TextInputAction? textInputAction;
+
+  /// Filters or reshapes what the user types.
+  ///
+  /// These run before the [maxLength] limit, so characters a formatter adds,
+  /// such as a thousands comma, count toward [maxLength]. Formatters run only
+  /// on typing and paste. A change made through [controller] skips them, so an
+  /// on-screen number pad that writes to the controller must apply its own
+  /// limit.
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// The most characters the field accepts, with no counter drawn. Unlimited
+  /// when `null`.
+  ///
+  /// The limit runs after the [inputFormatters], and only on typing and paste.
+  /// A change made through [controller] skips it.
+  final int? maxLength;
+
+  /// Whether the field takes focus when it is first built.
+  final bool autofocus;
+
   /// The key of the underline, for tests to read its color and weight.
   @visibleForTesting
   static const Key underlineKey = Key('core_underline_text_field_underline');
@@ -99,6 +128,12 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.focusNode,
     this.size = CoreUnderlineTextFieldSize.regular,
     this.onChanged,
+    this.onSubmitted,
+    this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
+    this.maxLength,
+    this.autofocus = false,
   });
 
   @override
@@ -240,6 +275,15 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
             controller: _controller,
             focusNode: _focusNode,
             onChanged: widget.onChanged,
+            onSubmitted: widget.onSubmitted,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            autofocus: widget.autofocus,
+            inputFormatters: [
+              ...?widget.inputFormatters,
+              if (widget.maxLength != null)
+                LengthLimitingTextInputFormatter(widget.maxLength),
+            ],
             style: style.copyWith(color: colors.textHeadline),
             cursorColor: colors.outlineFocus,
             cursorWidth: UnderlineFieldMetrics.caretWidth,
