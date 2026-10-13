@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -44,9 +45,62 @@ void main() {
       });
     }
 
-    testWidgets(
-        'an empty field meets the text contrast rule (the guideline does not check hint text)',
+    testWidgets('prefix, unit and a trailing button meet the guidelines',
         (tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreUnderlineTextField(
+          label: 'Rate',
+          prefixText: r'$',
+          initialValue: '145.00',
+          unitText: '/day',
+          trailing: IconButton(
+            tooltip: 'Look up a rate',
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          ),
+        ),
+        find.byType(CoreUnderlineTextField),
+      );
+    });
+
+    testWidgets('reads the prefix, then the field, then the unit',
+        (tester) async {
+      await pumpWithSemantics(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Rate',
+          prefixText: r'$',
+          initialValue: '145.00',
+          unitText: '/day',
+        ),
+        () async {
+          final labels = <String>[];
+          void visit(SemanticsNode node) {
+            final label = node.getSemanticsData().label;
+            if (label.isNotEmpty) labels.add(label);
+            node.visitChildren((child) {
+              visit(child);
+              return true;
+            });
+          }
+
+          visit(
+              tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!);
+
+          expect(
+            labels.where((l) => [r'$', 'Rate', '/day'].contains(l)).toList(),
+            [r'$', 'Rate', '/day'],
+          );
+        },
+      );
+    });
+
+    testWidgets(
+        'an empty field meets the text contrast rule '
+        '(the guideline does not check hint text)', (tester) async {
       await setupA11yTest(tester);
 
       await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(

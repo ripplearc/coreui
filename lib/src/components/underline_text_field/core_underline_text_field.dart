@@ -114,6 +114,46 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// Whether the field takes focus when it is first built.
   final bool autofocus;
 
+  /// A widget beside the label, such as a badge. It makes the label row 20px
+  /// tall and takes that height back from the gap above the underline, so the
+  /// field keeps its height.
+  final Widget? labelTrailing;
+
+  /// Fixed text drawn before the value, such as `$`. It is part of the field,
+  /// not of the typed text, so it shows while the field is empty and backspace
+  /// never deletes it.
+  ///
+  /// A screen reader reads the prefix, the unit and any slot as separate
+  /// stops, in this order: prefix, the field (label and value), unit. There
+  /// is no spoken label for them yet, so a unit such as `/day` is read as
+  /// written.
+  final String? prefixText;
+
+  /// Fixed text drawn right after the value in the same size, such as `%`.
+  final String? suffixText;
+
+  /// Fixed text drawn right after the value in a smaller size, such as `days`
+  /// or `/gal`. Pass it only once there is a value to put it beside.
+  final String? unitText;
+
+  /// A widget right after the value and unit, such as a unit chip. The row
+  /// grows to fit it and centers the value against it.
+  ///
+  /// The field gives a slot no tap area of its own, so the widget must size
+  /// its own. To keep a 36px look with a 48px target, put a 48px box around it
+  /// inside an `OverflowBox(maxHeight: 48)`. A plain 48px box makes the row
+  /// 12px taller. Keep it narrow: the value gets the width that is left.
+  final Widget? inlineAccessory;
+
+  /// A widget at the far end of the value row, such as a lookup button. The
+  /// row grows to fit it and centers the value against it.
+  ///
+  /// The field gives a slot no tap area of its own, so the widget must size
+  /// its own. To keep a 36px look with a 48px target, put a 48px box around it
+  /// inside an `OverflowBox(maxHeight: 48)`. A plain 48px box makes the row
+  /// 12px taller. Keep it narrow: the value gets the width that is left.
+  final Widget? trailing;
+
   /// The key of the underline, for tests to read its color and weight.
   @visibleForTesting
   static const Key underlineKey = Key('core_underline_text_field_underline');
@@ -134,6 +174,12 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.inputFormatters,
     this.maxLength,
     this.autofocus = false,
+    this.labelTrailing,
+    this.prefixText,
+    this.suffixText,
+    this.unitText,
+    this.inlineAccessory,
+    this.trailing,
   });
 
   @override
@@ -204,6 +250,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final metrics = UnderlineFieldMetrics.of(widget.size);
     final restLineColor = _isLarge ? colors.lineMid : colors.lineDarkOutline;
 
+    final hasLabelTrailing = widget.labelTrailing != null;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
@@ -212,12 +260,12 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.label != null) ...[
+          if (widget.label != null || hasLabelTrailing) ...[
             _buildLabel(metrics, typography, colors),
             SizedBox(height: metrics.labelGap),
           ],
           _buildValueRow(metrics, typography, colors),
-          SizedBox(height: metrics.lineGap),
+          SizedBox(height: metrics.lineGapFor(hasTrailing: hasLabelTrailing)),
           Container(
             key: CoreUnderlineTextField.underlineKey,
             height: metrics.strokeWidth,
@@ -236,14 +284,29 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final style =
         _isLarge ? typography.bodyMediumRegular : typography.bodySmallRegular;
 
+    final labelTrailing = widget.labelTrailing;
+
     return Container(
-      constraints: BoxConstraints(minHeight: metrics.labelRowHeight),
+      constraints: BoxConstraints(
+        minHeight:
+            metrics.labelRowHeightFor(hasTrailing: labelTrailing != null),
+      ),
       padding: EdgeInsets.symmetric(horizontal: metrics.labelInset),
-      child: ExcludeSemantics(
-        child: Text(
-          widget.label ?? '',
-          style: style.copyWith(color: colors.textBody),
-        ),
+      child: Row(
+        children: [
+          Flexible(
+            child: ExcludeSemantics(
+              child: Text(
+                widget.label ?? '',
+                style: style.copyWith(color: colors.textBody),
+              ),
+            ),
+          ),
+          if (labelTrailing != null) ...[
+            const SizedBox(width: UnderlineFieldMetrics.labelTrailingGap),
+            labelTrailing,
+          ],
+        ],
       ),
     );
   }
@@ -257,16 +320,84 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         ? typography.headlineMediumSemiBold
         : typography.bodyLargeRegular;
 
+    final softStyle = style.copyWith(color: colors.textBody);
+    final unitStyle =
+        (_isLarge ? typography.bodyLargeRegular : typography.bodySmallRegular)
+            .copyWith(color: colors.textBody);
+    final prefixText = widget.prefixText;
+    final suffixText = widget.suffixText;
+    final unitText = widget.unitText;
+    final inlineAccessory = widget.inlineAccessory;
+    final trailing = widget.trailing;
+    final input = _buildInput(metrics, style, colors);
+    final hugsValue =
+        suffixText != null || unitText != null || inlineAccessory != null;
+
+    final valueGroup = Row(
+      mainAxisSize: hugsValue ? MainAxisSize.min : MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        if (prefixText != null) ...[
+          Text(prefixText, style: softStyle),
+          const SizedBox(width: UnderlineFieldMetrics.prefixGap),
+        ],
+        if (hugsValue)
+          Flexible(child: IntrinsicWidth(child: input))
+        else
+          Expanded(child: input),
+        if (suffixText != null) Text(suffixText, style: softStyle),
+        if (unitText != null) ...[
+          SizedBox(width: metrics.unitGap),
+          Text(unitText, style: unitStyle),
+        ],
+      ],
+    );
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: metrics.valueRowHeight),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: UnderlineFieldMetrics.horizontalInset,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  if (hugsValue)
+                    Flexible(child: valueGroup)
+                  else
+                    Expanded(child: valueGroup),
+                  if (inlineAccessory != null) ...[
+                    const SizedBox(
+                      width: UnderlineFieldMetrics.inlineAccessoryGap,
+                    ),
+                    inlineAccessory,
+                  ],
+                ],
+              ),
+            ),
+            if (trailing != null) trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInput(
+    UnderlineFieldMetrics metrics,
+    TextStyle style,
+    AppColorsExtension colors,
+  ) {
     final textHeight = MediaQuery.textScalerOf(context)
         .scale((style.fontSize ?? 0) * (style.height ?? 1));
     final rowHeight = math.max(metrics.valueRowHeight, textHeight);
     final fieldHeight = math.max(kMinInteractiveDimension, rowHeight);
 
-    return Container(
+    return SizedBox(
       height: rowHeight,
-      padding: const EdgeInsets.symmetric(
-        horizontal: UnderlineFieldMetrics.horizontalInset,
-      ),
       child: OverflowBox(
         maxHeight: fieldHeight,
         child: Semantics(
