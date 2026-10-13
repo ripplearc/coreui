@@ -43,8 +43,12 @@ void main() {
     );
   }
 
+  test('size14 is 14 dp', () {
+    expect(CoreIconSize.size14, 14.0);
+  });
+
   testWidgets('Core Icon Size Tokens Test', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(500, 400));
+    await tester.binding.setSurfaceSize(const Size(500, 440));
 
     final widget = MaterialApp(
       theme: ThemeData(
@@ -110,6 +114,7 @@ void main() {
                   ],
                 ),
               ),
+              buildIconSizeRow('size14', '14px', CoreIconSize.size14),
               buildIconSizeRow('size16', '16px', CoreIconSize.size16),
               buildIconSizeRow('size20', '20px', CoreIconSize.size20),
               buildIconSizeRow('size24', '24px', CoreIconSize.size24),
