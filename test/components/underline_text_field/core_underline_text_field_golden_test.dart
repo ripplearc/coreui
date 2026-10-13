@@ -528,12 +528,15 @@ void main() {
       ),
     ];
 
+    const focusedCanvasHeights = {'large_error': 176.0};
+
     for (final (id, caption, build) in focusedCases) {
       testWidgets('CoreUnderlineTextField $id focused - $name', (tester) async {
         final focusNode = FocusNode();
         addTearDown(focusNode.dispose);
 
-        await pumpScenarios(tester, theme, const Size(404, 176), [
+        await pumpScenarios(
+            tester, theme, Size(404, focusedCanvasHeights[id] ?? 164), [
           (caption, build(focusNode)),
         ]);
         focusNode.requestFocus();

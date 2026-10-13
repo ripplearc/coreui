@@ -29,6 +29,9 @@ void main() {
   double gapAfterInput(WidgetTester tester, Finder next) =>
       tester.getRect(next).left - tester.getRect(input).right;
 
+  double leftOf(WidgetTester tester, Finder finder) =>
+      tester.getRect(finder).left;
+
   TextField inner(WidgetTester tester) => tester.widget<TextField>(input);
 
   group('CoreUnderlineTextField – caret room', () {
@@ -57,10 +60,12 @@ void main() {
           unitText: 'days',
         ),
       );
+      final restLeft = leftOf(tester, find.text('days'));
       await focus(tester);
 
       expect(inner(tester).cursorWidth, 2);
-      expect(gapAfterInput(tester, find.text('days')), 5 + 2);
+      expect(leftOf(tester, find.text('days')), restLeft + 2);
+      expect(gapAfterInput(tester, find.text('days')), 5);
     });
 
     testWidgets('the large unit moves by the same 2px', (tester) async {
@@ -74,9 +79,11 @@ void main() {
         ),
       );
       expect(gapAfterInput(tester, find.text('days')), 8);
+      final restLeft = leftOf(tester, find.text('days'));
 
       await focus(tester);
-      expect(gapAfterInput(tester, find.text('days')), 8 + 2);
+      expect(leftOf(tester, find.text('days')), restLeft + 2);
+      expect(gapAfterInput(tester, find.text('days')), 8);
     });
 
     testWidgets('a suffix touches the value at rest and clears the caret',
@@ -90,9 +97,11 @@ void main() {
         ),
       );
       expect(gapAfterInput(tester, find.text('%')), 0);
+      final restLeft = leftOf(tester, find.text('%'));
 
       await focus(tester);
-      expect(gapAfterInput(tester, find.text('%')), 2);
+      expect(gapAfterInput(tester, find.text('%')), 0);
+      expect(leftOf(tester, find.text('%')), restLeft + 2);
     });
 
     testWidgets('an accessory right after the value follows the caret',
@@ -106,9 +115,11 @@ void main() {
         ),
       );
       expect(gapAfterInput(tester, find.byKey(chipKey)), 12);
+      final restLeft = leftOf(tester, find.byKey(chipKey));
 
       await focus(tester);
-      expect(gapAfterInput(tester, find.byKey(chipKey)), 12 + 2);
+      expect(gapAfterInput(tester, find.byKey(chipKey)), 12);
+      expect(leftOf(tester, find.byKey(chipKey)), restLeft + 2);
     });
 
     testWidgets('an accessory after a unit keeps its 12px from the unit',
@@ -142,11 +153,13 @@ void main() {
           showCursor: false,
         ),
       );
+      final restLeft = leftOf(tester, find.text('%'));
       await focus(tester);
 
       expect(inner(tester).showCursor, isFalse);
       expect(inner(tester).cursorWidth, 0);
       expect(gapAfterInput(tester, find.text('%')), 0);
+      expect(leftOf(tester, find.text('%')), restLeft);
     });
 
     testWidgets('showCursor true brings the caret to a read-only field',
@@ -195,13 +208,14 @@ void main() {
           focusNode: focusNode,
         ),
       );
+      final restLeft = leftOf(tester, find.text('days'));
       focusNode.requestFocus();
       await tester.pumpAndSettle();
-      expect(gapAfterInput(tester, find.text('days')), 7);
+      expect(leftOf(tester, find.text('days')), restLeft + 2);
 
       focusNode.unfocus();
       await tester.pumpAndSettle();
-      expect(gapAfterInput(tester, find.text('days')), 5);
+      expect(leftOf(tester, find.text('days')), restLeft);
     });
   });
 }

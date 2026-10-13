@@ -204,9 +204,11 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// or to `false` for a [readOnly] field. Turn it off for a value edited on
   /// an own number pad, such as a `%` waste field.
   ///
-  /// The caret takes 2px of room in the row only while it shows, so the
-  /// suffix, unit or accessory after the value keeps the design's gap whether
-  /// or not the caret is there.
+  /// The caret takes 2px of room in the row only while it shows. A suffix,
+  /// unit or accessory after the value moves 2px right when the field gains
+  /// focus and back when it loses it. With `showCursor: false` nothing moves.
+  /// In right-to-left text the value itself moves 2px left when the caret
+  /// appears.
   final bool? showCursor;
 
   /// Called when the user taps anywhere on the field except a tappable slot:
@@ -437,7 +439,6 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final inlineAccessory = widget.inlineAccessory;
     final trailing = widget.trailing;
     final input = _buildInput(metrics, style, colors);
-    final caretGap = _showsCaret ? UnderlineFieldMetrics.caretGap : 0.0;
     final hugsValue =
         suffixText != null || unitText != null || inlineAccessory != null;
 
@@ -454,14 +455,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
           Flexible(child: IntrinsicWidth(child: input))
         else
           Expanded(child: input),
-        if (suffixText != null) ...[
-          SizedBox(width: caretGap),
-          Text(suffixText, style: softStyle),
-        ],
+        if (suffixText != null) Text(suffixText, style: softStyle),
         if (unitText != null) ...[
-          SizedBox(
-            width: metrics.unitGap + (suffixText == null ? caretGap : 0),
-          ),
+          SizedBox(width: metrics.unitGap),
           Text(unitText, style: unitStyle),
         ],
       ],
@@ -484,11 +480,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
                   else
                     Expanded(child: valueGroup),
                   if (inlineAccessory != null) ...[
-                    SizedBox(
-                      width: UnderlineFieldMetrics.inlineAccessoryGap +
-                          (suffixText == null && unitText == null
-                              ? caretGap
-                              : 0),
+                    const SizedBox(
+                      width: UnderlineFieldMetrics.inlineAccessoryGap,
                     ),
                     inlineAccessory,
                   ],
