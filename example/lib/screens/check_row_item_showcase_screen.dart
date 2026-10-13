@@ -76,7 +76,7 @@ class _CheckRowItemShowcaseScreenState
               title: 'Leslie Alexander',
               avatarBackgroundColor:
                   Theme.of(context).coreColors.backgroundGreenLight,
-              avatarTextColor: Theme.of(context).coreColors.iconGreen,
+              avatarTextColor: Theme.of(context).coreColors.textSuccess,
               selected: _customAvatarColorsSelected,
               onChanged: (value) =>
                   setState(() => _customAvatarColorsSelected = value),

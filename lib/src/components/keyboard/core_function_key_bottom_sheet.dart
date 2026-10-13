@@ -454,7 +454,7 @@ class _UnitSystemToggleState extends State<_UnitSystemToggle> {
           child: Text(
             'Imperial',
             style: typography.bodySmallRegular.copyWith(
-              color: colors.iconGreen,
+              color: colors.textSuccess,
             ),
           ),
         ),

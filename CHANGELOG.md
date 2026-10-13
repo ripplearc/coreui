@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.33.1] - Light success green matches Figma
+
+### 🐛 Fixes
+
+- **CoreStatusColors.success** and **CoreIconColors.green** (light theme) are green500 (`#009E69`), not green600. Figma draws `State Color/Success` and `Icon Color/Green` as Green/500, and the dark values already matched. These two tokens draw graphics only (a tick, a switch track, an icon), where green500 on white is 3.4:1 against the 3:1 a graphic needs (CA-1256)
+- **CoreFunctionKeyBottomSheet**: the `Imperial` label is text, so it uses `textSuccess` (green600, 4.5:1 or better on white) instead of `iconGreen`, which would fail 4.5:1 now. Its colour does not change
+- `CoreCheckRowItem` docs and showcase: the avatar initials use `textSuccess` for the same reason
+
+### 🧪 Tests
+
+- Goldens regenerated where the light green shows: color tokens, avatar, check row item, function key sheet, preferences sheet, switch and toast
+
 ## [0.33.0] - The empty estimate summary card, and long names
 
 ### ✨ Features
