@@ -84,7 +84,7 @@ void main() {
 
       final decoration = decorationOf(tester);
       final colors = CoreTheme.light().coreColors;
-      expect(decoration.color, colors.backgroundOrangeMid);
+      expect(decoration.color, colors.chipOrange);
       expect(decoration.borderRadius, BorderRadius.circular(8));
       final border = decoration.border! as Border;
       expect(border.top.color, colors.lineOrange);
@@ -139,7 +139,7 @@ void main() {
         colors.textWarningStrong,
       );
       final decoration = decorationOf(tester);
-      expect(decoration.color, colors.backgroundOrangeMid);
+      expect(decoration.color, colors.chipOrange);
       expect((decoration.border! as Border).top.color, colors.lineOrange);
     });
 
@@ -240,6 +240,45 @@ void main() {
       final target = tester.getRect(find.byType(GestureDetector));
       expect(target.height, badge.height - 2);
       expect(target.right, badge.right - 1);
+    });
+
+    testWidgets(
+        'a tap in the right padding, 5 dp from the edge, opens the info',
+        (tester) async {
+      var taps = 0;
+      await pumpBadge(
+        tester,
+        CoreStatusBadge(
+          label: 'Sample rate',
+          showInfoIcon: true,
+          onInfoTap: () => taps++,
+          infoSemanticLabel: 'About sample rates',
+        ),
+      );
+
+      final badge = tester.getRect(find.byType(CoreStatusBadge));
+      await tester.tapAt(Offset(badge.right - 5, badge.center.dy));
+
+      expect(taps, 1);
+    });
+
+    testWidgets('grows with the text size so the label is not cut',
+        (tester) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: buildTestApp(
+            const CoreStatusBadge(label: 'Sample rate'),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final badge = tester.getRect(find.byType(CoreStatusBadge));
+      final label = tester.getRect(find.text('Sample rate'));
+      expect(badge.height, greaterThan(24));
+      expect(label.top, greaterThanOrEqualTo(badge.top + 1));
+      expect(label.bottom, lessThanOrEqualTo(badge.bottom - 1));
     });
 
     test('refuses onInfoTap without the icon', () {

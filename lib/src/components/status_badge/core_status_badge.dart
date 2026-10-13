@@ -6,8 +6,9 @@ import '../../../ripplearc_coreui.dart';
 /// "Sample rate" tag on a looked-up rate (Figma Rate Status, component set
 /// `65685:147068`).
 ///
-/// The badge is 24 dp tall and as wide as its [label]. It draws a 1 dp
-/// `lineOrange` outline over a `backgroundOrangeMid` fill, with the label in
+/// The badge is at least 24 dp tall and as wide as its [label]. It grows
+/// taller when the user sets a larger text size. It draws a 1 dp
+/// `lineOrange` outline over a `chipOrange` fill, with the label in
 /// the 12/16 semibold body-small style and the `textWarningStrong` colour.
 ///
 /// A [label] wider than the space it is given is cut with an ellipsis.
@@ -96,14 +97,15 @@ class CoreStatusBadge extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: SizedBox(
-          height: _height - 2 * _borderWidth,
+        child: ConstrainedBox(
+          constraints:
+              const BoxConstraints(minHeight: _height - 2 * _borderWidth),
           child: Padding(
             padding: const EdgeInsets.only(
               left: CoreSpacing.space1,
               right: _horizontalPadding,
             ),
-            child: Center(child: icon),
+            child: Center(heightFactor: 1, child: icon),
           ),
         ),
       ),
@@ -118,13 +120,13 @@ class CoreStatusBadge extends StatelessWidget {
     final rightPadding = onInfoTap == null ? _horizontalPadding : 0.0;
 
     return Container(
-      constraints: const BoxConstraints.tightFor(height: _height),
+      constraints: const BoxConstraints(minHeight: _height),
       padding: EdgeInsets.only(
         left: _horizontalPadding,
         right: rightPadding,
       ),
       decoration: BoxDecoration(
-        color: colors.backgroundOrangeMid,
+        color: colors.chipOrange,
         borderRadius: BorderRadius.circular(CoreRadius.radius8),
         border: Border.all(color: colors.lineOrange, width: _borderWidth),
       ),

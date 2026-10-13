@@ -84,7 +84,7 @@ void main() {
       await tester.pumpWidget(buildTestApp(badge, theme: theme));
       await tester.pumpAndSettle();
 
-      final fill = theme.coreColors.backgroundOrangeMid;
+      final fill = theme.coreColors.chipOrange;
       final label = tester.widget<Text>(find.text('Sample rate')).style!.color!;
       final icon =
           tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color!;
