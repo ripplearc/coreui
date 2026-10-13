@@ -10,8 +10,10 @@ class EstimateSummaryCardShowcaseScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Estimate Summary Card',
-            style: typography.bodyLargeSemiBold),
+        title: Text(
+          'Estimate Summary Card',
+          style: typography.bodyLargeSemiBold,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(CoreSpacing.space5),

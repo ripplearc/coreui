@@ -46,13 +46,19 @@ class CoreEstimateSummaryCard extends StatelessWidget {
   /// The caption, e.g. "Adds to this estimate".
   final String title;
 
+  /// What the line adds to the estimate, e.g. "$605.00".
   final String lineTotal;
+
+  /// A charge already counted in [lineTotal], shown in its own row.
   final CoreEstimateSummaryCharge? extraCharge;
+
+  /// The estimate the line is added to, e.g. "Bedroom 2".
   final String estimateName;
 
   /// The text after [estimateName], e.g. " total  $2,993.62 →".
   final String totalBeforeSuffix;
 
+  /// The estimate's total once the line is added, e.g. "$3,598.62".
   final String totalAfter;
 
   const CoreEstimateSummaryCard({
