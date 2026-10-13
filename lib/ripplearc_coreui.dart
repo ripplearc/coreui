@@ -36,6 +36,7 @@ export 'src/components/search/core_search_box.dart';
 export 'src/components/search/core_search_row_item.dart';
 export 'src/components/select_button/core_select_button.dart';
 export 'src/components/selects/single_item_selector.dart';
+export 'src/components/status_badge/core_status_badge.dart';
 export 'src/components/suggestion_area/core_suggestion_area.dart';
 export 'src/components/switches/switch.dart';
 export 'src/components/tabs/core_tabs.dart';
