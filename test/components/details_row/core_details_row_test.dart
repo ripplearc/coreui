@@ -145,6 +145,28 @@ void main() {
       expect(rowRight - tester.getCenter(chevron()).dx, 24);
     });
 
+    testWidgets('the label starts 16 dp in from the right edge in RTL',
+        (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: CoreDetailsRow(
+              label: 'Delivery',
+              value: r'$150',
+              expanded: false,
+              onToggle: () {},
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final summary = find.text(r'Delivery $150', findRichText: true);
+      final rowRight = tester.getTopRight(find.byType(CoreDetailsRow)).dx;
+      expect(rowRight - tester.getTopRight(summary).dx, 16);
+    });
+
     testWidgets('a long value ends in an ellipsis rather than overflow',
         (tester) async {
       await tester.pumpWidget(

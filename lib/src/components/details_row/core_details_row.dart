@@ -33,6 +33,9 @@ class CoreDetailsRow extends StatelessWidget {
   /// Screen-reader label for the toggle. Defaults to [label] then [value].
   final String? semanticLabel;
 
+  static const _indent = EdgeInsetsDirectional.only(start: CoreSpacing.space4);
+  static const Duration _chevronTurnDuration = Duration(milliseconds: 150);
+
   /// Creates a details row.
   const CoreDetailsRow({
     super.key,
@@ -120,10 +123,9 @@ class CoreDetailsRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // No right inset: the chevron's 48 dp zone ends at the card's edge,
-          // which centres the icon 24 dp in, as in the storyboard.
+          // No end inset: the chevron's 48 dp zone centres it 24 dp in.
           Padding(
-            padding: const EdgeInsets.only(left: CoreSpacing.space4),
+            padding: _indent,
             child: Row(
               children: [
                 Expanded(
@@ -172,7 +174,7 @@ class CoreDetailsRow extends StatelessWidget {
                   onTap: onToggle,
                   child: AnimatedRotation(
                     turns: expanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 150),
+                    duration: _chevronTurnDuration,
                     child: CoreIconWidget(
                       icon: CoreIcons.arrowDown,
                       size: CoreIconSize.size20,
