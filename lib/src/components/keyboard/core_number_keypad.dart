@@ -43,6 +43,8 @@ class CoreNumberKeypad extends StatelessWidget {
   static const double height =
       5 * keyHeight + 3 * CoreSpacing.space1 + CoreSpacing.space4;
 
+  static const _columnCount = 3;
+
   static const _digitRows = [
     [DigitType.seven, DigitType.eight, DigitType.nine],
     [DigitType.four, DigitType.five, DigitType.six],
@@ -76,7 +78,8 @@ class CoreNumberKeypad extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final keyWidth = (constraints.maxWidth - 2 * CoreSpacing.space1) / 3;
+          final gaps = (_columnCount - 1) * CoreSpacing.space1;
+          final keyWidth = (constraints.maxWidth - gaps) / _columnCount;
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -320,6 +320,23 @@ void main() {
   });
 
   group('CoreControlButton', () {
+    List<(Color?, BoxBorder?)> keyFill(Key key) {
+      return find
+          .descendant(
+            of: find.byKey(key),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Container && widget.decoration is BoxDecoration,
+            ),
+          )
+          .evaluate()
+          .map((element) => (element.widget as Container).decoration)
+          .whereType<BoxDecoration>()
+          .where((decoration) => decoration.color != null)
+          .map((decoration) => (decoration.color, decoration.border))
+          .toList();
+    }
+
     testWidgets('renders clear all action correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -564,14 +581,13 @@ void main() {
           ),
         );
 
-        final decoration = tester
-            .widget<Container>(find.descendant(
-              of: find.byType(CoreControlButton),
-              matching: find.byType(Container),
-            ).first)
-            .decoration! as BoxDecoration;
-        expect(decoration.color, theme.coreColors.keyboardNumbers);
-        expect(decoration.border, isNull);
+        expect(
+          keyFill(ControlAction.delete.testKey),
+          allOf(
+            contains((theme.coreColors.keyboardNumbers, null)),
+            isNot(contains((theme.coreColors.keyboardMain, null))),
+          ),
+        );
         expect(
           tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color,
           theme.coreColors.iconGrayDark,
@@ -596,13 +612,13 @@ void main() {
         ),
       );
 
-      final decoration = tester
-          .widget<Container>(find.descendant(
-            of: find.byType(CoreControlButton),
-            matching: find.byType(Container),
-          ).first)
-          .decoration! as BoxDecoration;
-      expect(decoration.color, theme.coreColors.keyboardMain);
+      expect(
+        keyFill(ControlAction.delete.testKey),
+        allOf(
+          contains((theme.coreColors.keyboardMain, null)),
+          isNot(contains((theme.coreColors.keyboardNumbers, null))),
+        ),
+      );
       expect(
         tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color,
         theme.coreColors.textInverse,
