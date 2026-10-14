@@ -9,6 +9,24 @@ void main() {
     return tester.pumpWidget(buildTestApp(row, theme: CoreTheme.light()));
   }
 
+  // iconDark and textLink share a value in both themes, so an icon colour
+  // check needs a theme that tells them apart.
+  const distinctIconDark = Color(0xFF00FF00);
+  Future<void> pumpRowWithDistinctIconDark(WidgetTester tester, Widget row) {
+    final theme = CoreTheme.light();
+    return tester.pumpWidget(
+      buildTestApp(
+        row,
+        theme: theme.copyWith(
+          extensions: [
+            theme.coreColors.copyWith(iconDark: distinctIconDark),
+            theme.coreTypography,
+          ],
+        ),
+      ),
+    );
+  }
+
   Color fillOf(WidgetTester tester) {
     final material = tester.widget<Material>(
       find.descendant(
@@ -223,7 +241,7 @@ void main() {
 
     testWidgets('shows the check and the light blue fill when selected',
         (tester) async {
-      await pumpRow(
+      await pumpRowWithDistinctIconDark(
         tester,
         const CoreListRow.selectable(
           title: 'Mini excavator — 1.5 ton',
@@ -235,7 +253,7 @@ void main() {
       final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
       expect(leadingOpacityOf(tester).opacity, 1);
       expect(icon.icon, CoreIcons.checkMark);
-      expect(icon.color, colors.iconDark);
+      expect(icon.color, distinctIconDark);
       expect(fillOf(tester), colors.backgroundBlueLight);
       expect(textColorOf(tester, 'Mini excavator — 1.5 ton'), colors.textLink);
     });
