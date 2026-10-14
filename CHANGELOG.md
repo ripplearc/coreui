@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.40.0] - CoreNumberKeypad
+
+### ✨ Features
+
+- **CoreNumberKeypad**: the app's own number pad for a plain number field. Four rows of pill keys (`7 8 9`, `4 5 6`, `1 2 3`, `. 0 ⌫`) and, under them, an outlined put-back button and a filled confirm button whose labels the caller sets (`Clear` or `Back to 10%`, and `Add to estimate`). Each key and button has its own callback (`onDigitPressed` with the digit, `onDecimalPressed`, `onBackspacePressed`, `onClearPressed`, `onConfirmPressed`), so the keypad knows nothing about the field. `isConfirmEnabled` greys out the confirm button. `CoreNumberKeypad.height` (368 dp) is there for a sheet that reserves room for the keypad (CA-1253)
+- **CoreDigitInput.textStyle** replaces the label style, which by default is `titleLargeRegular` scaled to the key's height. The colour stays `textHeadline`
+- **CoreControlButton.isNeutral** draws the key on the digits' grey with a dark grey face, so it does not compete with a filled button beside it
+- Number keypad showcase: a value typed with the keypad, cleared and added
+
+### 📐 Design notes
+
+Built from the storyboard's number pad (CUJ 4 "Keys up", `cuj456_screen.css` `.kbd`), which is newer than Figma and has no Figma variant yet. Keys are 68 dp tall with 4 dp gaps and a 16 dp side inset, and the buttons sit 16 dp below the keys. The backspace key is grey like the digits, not the calculator's dark blue, so the confirm button is the only filled key (storyboard, approved by the owner 2026-10-03). The ticket and Figma show it dark blue. The digits use `titleLargeMedium` (20 dp), not the calculator's height-scaled 23.8 dp. The keys reuse the calculator's `CoreDigitInput` and `CoreControlButton`, so they press and give haptic feedback the same way.
+
+### 🧪 Tests
+
+- Keypad: each digit, the decimal point, backspace, both buttons, a disabled confirm button that ignores taps and reads disabled while the other keys still work, the key order, 124 x 68 keys and 188 x 68 buttons on a 412 dp phone, narrower keys on a 320 dp phone, and no overflow at 200 % text with a long put-back label. Keys: `textStyle` replaces the scaled style and keeps the colour, the default still scales, `isNeutral` colours in both themes, and delete stays dark blue without it. A11y: tap target, label and contrast guidelines in both themes, confirm enabled and disabled. Goldens: light and dark
+
 ## [0.39.0] - CoreDetailsRow
 
 ### ✨ Features
