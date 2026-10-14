@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.36.0] - CoreListRow.selectable
+
+### ✨ Features
+
+- **CoreListRow.selectable**: a row in a pick-one list. It keeps a 20 dp check slot even when unselected, so rows don't shift when the pick moves. A selected row fills `backgroundBlueLight`, turns its title `textLink`, shows the check and reports its selected state to a screen reader (CA-1204)
+- List row showcase: a pick-one list from the Equipment "Look up a rate" screen
+
+### 📐 Design notes
+
+Built from the storyboard's Equipment "Look up a rate" frame (`cuj6-equip-4-lookup`). It shares the plain row's geometry.
+
+### 🧪 Tests
+
+- Selectable: the empty check slot keeps its width so selected and unselected titles start at the same x, the selected fill, check and title colour, and the selected state, picked or not. A11y: a selected row meets the tap target and label guidelines in both themes, and every text colour holds 4.5:1 on the selected fill in both themes. Goldens: light and dark gain selected and unselected rows
+
 ## [0.35.0] - CoreListRow
 
 ### ✨ Features

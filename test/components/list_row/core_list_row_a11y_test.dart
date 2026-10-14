@@ -20,6 +20,14 @@ void main() {
         unit: '/day',
         onTap: () {},
       ),
+      'selected': CoreListRow.selectable(
+        title: 'Mini excavator — 1.5 ton',
+        subtitle: 'Compact, tight-access digging',
+        value: r'$145.00',
+        unit: '/day',
+        selected: true,
+        onTap: () {},
+      ),
     };
 
     for (final entry in rows.entries) {
@@ -45,6 +53,7 @@ void main() {
       final name = theme.brightness.name;
       final fills = {
         'page': colors.pageBackground,
+        'selected': colors.backgroundBlueLight,
       };
       final texts = {
         'textHeadline': colors.textHeadline,
