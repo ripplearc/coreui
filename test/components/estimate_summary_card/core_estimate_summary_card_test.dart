@@ -218,9 +218,8 @@ void main() {
     testWidgets('centres the dash in the 40 px amount space', (tester) async {
       await pump(tester, emptyCard, theme: CoreTheme.light());
 
-      final dashCentre = tester
-          .getCenter(find.text(CoreEstimateSummaryCard.emptyAmount))
-          .dy;
+      final dashCentre =
+          tester.getCenter(find.text(CoreEstimateSummaryCard.emptyAmount)).dy;
       expect(
         dashCentre - tester.getTopLeft(find.byKey(cardKey)).dy,
         closeTo(50, 1),
