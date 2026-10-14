@@ -4,7 +4,7 @@
 
 ### 🐛 Fixes
 
-- **CoreStatusColors.success** and **CoreIconColors.green** (light theme) are green500 (`#009E69`), not green600. Figma draws `State Color/Success` and `Icon Color/Green` as Green/500, and the dark values already matched. These two tokens draw graphics only (a tick, a switch track, an icon), where green500 on white is 3.4:1 against the 3:1 a graphic needs (CA-1256)
+- **CoreStatusColors.success** and **CoreIconColors.green** (light theme) are green500 (`#009E69`), not green600. Figma draws `State Color/Success` and `Icon Color/Green` as Green/500, and the dark values already matched. These two tokens draw graphics only (a tick, a switch track, an icon), where green500 on white is 3.4:1 against the 3:1 a graphic needs (CA-1256). One use falls short: the light success toast draws its tick on `alertGreen` (green100), which is 2.75:1 (it was 4.06:1). The tokens still follow Figma
 - **CoreFunctionKeyBottomSheet**: the `Imperial` label is text, so it uses `textSuccess` (green600, 4.5:1 or better on white) instead of `iconGreen`, which would fail 4.5:1 now. Its colour does not change
 - `CoreCheckRowItem` docs and showcase: the avatar initials use `textSuccess` for the same reason
 - **CoreAvatar** centres its child. The fixed-size `Container` had no `alignment`, so it stretched a `Text` child to the full circle and drew the letter at the top left; every default `CoreCheckRowItem` avatar showed this. A child that centred itself, such as an icon, does not move
