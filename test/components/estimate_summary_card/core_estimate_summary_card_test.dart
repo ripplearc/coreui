@@ -10,17 +10,24 @@ void main() {
 
   CoreEstimateSummaryCard totalsCard({
     CoreEstimateSummaryCharge? extraCharge,
+    String estimateName = 'Bedroom 2',
   }) {
     return CoreEstimateSummaryCard(
       key: cardKey,
       title: 'Adds to this estimate',
       lineTotal: r'$520.00',
       extraCharge: extraCharge,
-      estimateName: 'Bedroom 2',
+      estimateName: estimateName,
       totalBeforeSuffix: r' total  $2,993.62 →',
       totalAfter: r'$3,513.62',
     );
   }
+
+  const emptyCard = CoreEstimateSummaryCard.empty(
+    key: cardKey,
+    title: 'Adds to this estimate',
+    note: 'Needs a rate before it can total',
+  );
 
   Future<void> pump(
     WidgetTester tester,
@@ -42,8 +49,10 @@ void main() {
 
       expect(find.text('Adds to this estimate'), findsOneWidget);
       expect(find.text(r'$520.00'), findsOneWidget);
-      expect(find.text(r'Bedroom 2 total  $2,993.62 →'), findsOneWidget);
+      expect(find.text('Bedroom 2'), findsOneWidget);
+      expect(find.text(r' total  $2,993.62 →'), findsOneWidget);
       expect(find.text(r'$3,513.62'), findsOneWidget);
+      expect(find.text(CoreEstimateSummaryCard.emptyAmount), findsNothing);
     });
 
     testWidgets('is 125 tall without an extra charge, as in Figma',
@@ -82,6 +91,75 @@ void main() {
       expect(
         tester.getTopRight(find.text(r'$3,513.62')).dx,
         tester.getTopRight(find.byKey(cardKey)).dx - 15,
+      );
+    });
+
+    testWidgets('ellipsises a long estimate name and keeps both totals whole',
+        (tester) async {
+      const name = 'Primary bedroom and walk-in closet suite';
+      const suffix = r' total  $2,993.62 →';
+      Size suffixSize() => tester.getSize(
+            find.ancestor(
+              of: find.text(suffix),
+              matching: find.byType(FittedBox),
+            ),
+          );
+      await pump(tester, totalsCard(), theme: CoreTheme.light());
+      final shortNameSuffixWidth = suffixSize().width;
+      await pump(
+        tester,
+        totalsCard(estimateName: name),
+        theme: CoreTheme.light(),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.widget<Text>(find.text(name)).overflow,
+        TextOverflow.ellipsis,
+      );
+      final cardRight = tester.getTopRight(find.byKey(cardKey)).dx - 15;
+      expect(
+        tester.getTopRight(find.text(r' total  $2,993.62 →')).dx,
+        lessThan(tester.getTopLeft(find.text(r'$3,513.62')).dx),
+      );
+      expect(tester.getTopRight(find.text(r'$3,513.62')).dx, cardRight);
+      expect(suffixSize().width, shortNameSuffixWidth);
+      expect(
+        suffixSize().width,
+        greaterThan(tester.getSize(find.text(suffix)).width / 2),
+      );
+    });
+
+    testWidgets('shrinks the totals rather than clip them on a narrow card',
+        (tester) async {
+      // Pumped directly: pump() would force the card back to 372 wide.
+      await tester.pumpWidget(
+        buildTestApp(
+          const SizedBox(
+            width: 200,
+            child: CoreEstimateSummaryCard(
+              key: cardKey,
+              title: 'Adds to this estimate',
+              lineTotal: r'$1,234,567.89',
+              estimateName: 'Bedroom 2',
+              totalBeforeSuffix: r' total  $9,876,543.21 →',
+              totalAfter: r'$11,111,111.10',
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      expect(tester.getSize(find.byKey(cardKey)).width, 200);
+      expect(tester.takeException(), isNull);
+      final contentRight = tester.getTopRight(find.byKey(cardKey)).dx - 15;
+      final amount = tester.getRect(find.text(r'$1,234,567.89'));
+      // Scaled down to one line; a wrapped amount would fill its 40 dp slot.
+      expect(amount.height, lessThan(40));
+      expect(amount.right, lessThanOrEqualTo(contentRight));
+      expect(
+        tester.getTopRight(find.text(r'$11,111,111.10')).dx,
+        lessThanOrEqualTo(contentRight),
       );
     });
 
@@ -126,6 +204,46 @@ void main() {
     });
   });
 
+  group('CoreEstimateSummaryCard.empty', () {
+    testWidgets('shows a dash and the note in place of the numbers',
+        (tester) async {
+      await pump(tester, emptyCard, theme: CoreTheme.light());
+
+      expect(find.text(CoreEstimateSummaryCard.emptyAmount), findsOneWidget);
+      expect(find.text('Needs a rate before it can total'), findsOneWidget);
+      expect(find.text(r' total  $2,993.62 →'), findsNothing);
+      expect(find.byType(CoreDivider), findsOneWidget);
+    });
+
+    testWidgets('centres the dash in the 40 px amount space', (tester) async {
+      await pump(tester, emptyCard, theme: CoreTheme.light());
+
+      final dashCentre =
+          tester.getCenter(find.text(CoreEstimateSummaryCard.emptyAmount)).dy;
+      expect(
+        dashCentre - tester.getTopLeft(find.byKey(cardKey)).dy,
+        closeTo(50, 1),
+      );
+    });
+
+    testWidgets('is as tall as the storyboard frame: four parts, no totals row',
+        (tester) async {
+      // Short enough to stay on one line in the test font.
+      await pump(
+        tester,
+        const CoreEstimateSummaryCard.empty(
+          key: cardKey,
+          title: 'Adds to',
+          note: 'Needs a rate',
+        ),
+        theme: CoreTheme.light(),
+      );
+
+      // 13 + 16 + 1 + 40 + 1 + 17 + 1 + 16 + 12: the note is one 16 dp line.
+      expect(tester.getSize(find.byKey(cardKey)).height, 117);
+    });
+  });
+
   group('CoreEstimateSummaryCard – theme', () {
     for (final (name, theme) in [
       ('light', CoreTheme.light()),
@@ -150,10 +268,7 @@ void main() {
           colors.lineBlue,
         );
         expect(
-          tester
-              .widget<Text>(find.text(r'Bedroom 2 total  $2,993.62 →'))
-              .style!
-              .color,
+          tester.widget<Text>(find.text('Bedroom 2')).style!.color,
           colors.textBody,
         );
       });
