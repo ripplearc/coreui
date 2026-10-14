@@ -152,7 +152,7 @@ Each toast type has specific styling:
 - **Acknowledgement Toast**
     - Background Color: `backgroundDarkGray` in the light theme, `backgroundGrayMid`
       in the dark theme
-    - Tick: `CoreIcons.checkMark` at 21.3 dp (a 15.6 dp wide glyph, 62 % of the
+    - Tick: `CoreIcons.checkMark` at 21.3 dp (a 15.6 dp wide glyph, 65 % of the
       circle) in `textInverse`, centred on a 24 dp `statusSuccess` circle
     - Height: at least 50 dp
     - Text: `CoreTypography.bodyMediumSemiBold` in `textInverse` (light) or

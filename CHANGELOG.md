@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-- **Toast.acknowledgement**: the dark toast that reports a finished task — "Added to Bedroom 2". A 24 dp `statusSuccess` circle with a 15.6 dp wide white tick (62 % of the circle) and one line of `bodyMediumSemiBold` text on `backgroundDarkGray`, with a 12 dp corner radius and the new `CoreShadows.floating`. It has no action and no close button, and it is a live region, so a screen reader reads it when it appears (Figma component `65687:157849`, CA-1256)
+- **Toast.acknowledgement**: the dark toast that reports a finished task — "Added to Bedroom 2". A 24 dp `statusSuccess` circle with a 15.6 dp wide white tick (65 % of the circle) and one line of `bodyMediumSemiBold` text on `backgroundDarkGray`, with a 12 dp corner radius and the new `CoreShadows.floating`. It has no action and no close button, and it is a live region, so a screen reader reads it when it appears (Figma component `65687:157849`, CA-1256)
 - **CoreToast.showAcknowledgement**: shows it in the overlay and removes it after `duration`, 4 s by default
 - **CoreShadows.floating** (0/8/24, `CoreShadowColors.shadowGrey28`): the shadow that lifts a dark surface off the page
 - Toast showcase: an acknowledgement preview and a button that shows a live one
