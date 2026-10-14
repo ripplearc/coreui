@@ -11,7 +11,7 @@ void main() {
 
   // iconDark and textLink share a value in both themes, so an icon colour
   // check needs a theme that tells them apart.
-  const distinctIconDark = Color(0xFF00FF00);
+  final distinctIconDark = CoreTheme.light().coreColors.textError;
   Future<void> pumpRowWithDistinctIconDark(WidgetTester tester, Widget row) {
     final theme = CoreTheme.light();
     return tester.pumpWidget(
