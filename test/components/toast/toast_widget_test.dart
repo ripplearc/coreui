@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -924,6 +926,123 @@ void main() {
         // asks its content for one.
         expect(tester.takeException(), isNull);
       });
+    });
+
+    group('Acknowledgement Toast', () {
+      const message = 'Added to Bedroom 2';
+
+      Widget buildAcknowledgement({ThemeData? theme}) {
+        return MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: Toast.acknowledgement(description: message),
+          ),
+        );
+      }
+
+      Color surfaceOf(WidgetTester tester) {
+        final container = tester.widget<Container>(
+          find.byKey(const Key('toast_surface')),
+        );
+        return (container.decoration! as BoxDecoration).color!;
+      }
+
+      double contrast(Color a, Color b) {
+        final la = a.computeLuminance();
+        final lb = b.computeLuminance();
+        return (max(la, lb) + 0.05) / (min(la, lb) + 0.05);
+      }
+
+      testWidgets('shows the message with no close button and no action',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(buildAcknowledgement());
+
+        expect(find.text(message), findsOneWidget);
+        expect(find.byKey(const Key('toast_close_button')), findsNothing);
+        expect(find.byKey(const Key('toast_action_button')), findsNothing);
+
+        final tappable = <SemanticsNode>[];
+        bool collectTappable(SemanticsNode node) {
+          if (node.getSemanticsData().hasAction(SemanticsAction.tap)) {
+            tappable.add(node);
+          }
+          node.visitChildren(collectTappable);
+          return true;
+        }
+
+        collectTappable(tester.getSemantics(find.byType(Toast)));
+        expect(tappable, isEmpty);
+        handle.dispose();
+      });
+
+      testWidgets('announces its message once, as a live region',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(buildAcknowledgement());
+
+        final semantics = tester.getSemantics(find.byType(Toast));
+        expect(semantics.flagsCollection.isLiveRegion, isTrue);
+        expect(message.allMatches(semantics.label).length, 1);
+        handle.dispose();
+      });
+
+      testWidgets('is 50 dp high, like the frame', (WidgetTester tester) async {
+        await tester.pumpWidget(MaterialApp(
+          home: Stack(
+            children: [
+              Positioned(
+                bottom: 100,
+                width: 400,
+                child: Toast.acknowledgement(description: message),
+              ),
+            ],
+          ),
+        ));
+
+        expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
+            50);
+      });
+
+      testWidgets('draws its 15.6 dp tick (a 21.3 dp icon) centred in the circle',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAcknowledgement());
+
+        final circle = find.byKey(const Key('toast_tick_circle'));
+        final tick = find.byType(CoreIconWidget);
+
+        expect(tester.getSize(circle), const Size.square(24));
+        expect(tester.getSize(tick).width, closeTo(21.3, 0.01));
+        expect(tester.getCenter(tick), tester.getCenter(circle));
+      });
+
+      for (final (name, theme) in [
+        ('light', CoreTheme.light()),
+        ('dark', CoreTheme.dark()),
+      ]) {
+        testWidgets('stands off the page in the $name theme',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(buildAcknowledgement(theme: theme));
+
+          // The dark theme's backgroundDarkGray is its page colour, so a
+          // toast drawn in it would vanish there.
+          expect(surfaceOf(tester), isNot(theme.scaffoldBackgroundColor));
+        });
+
+        testWidgets('the tick keeps 3:1 against its circle in the $name theme',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(buildAcknowledgement(theme: theme));
+
+          final tick = find.byType(CoreIconWidget);
+          final circle = tester.widget<DecoratedBox>(
+            find.byKey(const Key('toast_tick_circle')),
+          );
+          final circleColor = (circle.decoration as BoxDecoration).color!;
+          final tickColor = tester.widget<CoreIconWidget>(tick).color!;
+
+          expect(contrast(tickColor, circleColor), greaterThanOrEqualTo(3));
+        });
+      }
     });
   });
 }

@@ -12,7 +12,7 @@ void main() {
   final colors = AppColorsExtension.create();
   testWidgets('Toast Component Visual Regression Test',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(1050, 600));
+    await tester.binding.setSurfaceSize(const Size(1050, 660));
 
     final toasts = <Widget>[
       Toast.error(
@@ -94,6 +94,7 @@ void main() {
         onClose: () {},
         duration: null,
       ),
+      Toast.acknowledgement(description: 'Added to Bedroom 2'),
     ];
 
     final widget = MaterialApp(

@@ -9,6 +9,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [showError] shows an error toast.
 /// [showSuccess] shows a success toast.
 /// [showWarning] shows a warning toast.
+/// [showAcknowledgement] shows the dark toast that reports a finished task.
 /// [showReceipt] shows the receipt toast with its own action.
 /// [showCustomToast] shows a custom toast.
 /// example:
@@ -74,6 +75,22 @@ class CoreToast {
         title: title,
         onClose: dismiss,
       ),
+    );
+  }
+
+  /// Shows the dark acknowledgement toast that reports a finished task.
+  ///
+  /// It has no close button, so [duration] — 4 s by default — is the only way
+  /// it leaves on its own; another toast or [cleanup] removes it sooner.
+  static void showAcknowledgement(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    showCustomToast(
+      context,
+      (_) => Toast.acknowledgement(description: message),
+      duration: duration,
     );
   }
 
