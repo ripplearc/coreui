@@ -9,6 +9,7 @@ import 'package:example/screens/date_picker_showcase_screen.dart';
 import 'package:example/screens/date_range_sheet_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/divider_showcase_screen.dart';
+import 'package:example/screens/estimate_summary_card_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
@@ -229,6 +230,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Divider Component',
                 const DividerShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Estimate Summary Card Component',
+                const EstimateSummaryCardShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],

@@ -34,6 +34,7 @@ Map<String, Color> fieldMap(AppColorsExtension colors) {
     'lineMid': colors.lineMid,
     'lineDarkOutline': colors.lineDarkOutline,
     'lineHighlight': colors.lineHighlight,
+    'lineBlue': colors.lineBlue,
     'outlineHover': colors.outlineHover,
     'outlineFocus': colors.outlineFocus,
     'tabsHighlight': colors.tabsHighlight,
