@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.35.0] - CoreListRow
+
+### ✨ Features
+
+- **CoreListRow**: a tappable list row with a title, an optional subtitle under it, and an optional value at the end (`value` plus a smaller `unit`, e.g. `$145.00 /day`). The row pads its content by `CoreSpacing.space2` and is at least 48 dp tall; the list around it supplies the page inset. The default screen-reader label is the visible texts in order, or `semanticLabel`. The value takes at most half the row and shrinks rather than overflow at large text sizes; the title wraps (CA-1204)
+- List row showcase: plain rows from the Equipment rate screens
+
+### 📐 Design notes
+
+Built from the storyboard's Equipment "Your recents" frame (`cuj6-equip-1-recents`), which the app built as one-off rows in CA-1151. The 2 dp gap between title and subtitle is the storyboard's; `CoreSpacing` has no step that small.
+
+### 🧪 Tests
+
+- Row: texts, no leading slot and no fill on a plain row, a unit without a value is dropped from the row and its screen-reader label, an empty subtitle is left out of the label, tap, 48 dp minimum height, default and custom screen-reader labels with the tap action kept, and a wide value at 200 % text on a 320 dp row shrinks instead of overflowing. A11y: tap target and label guidelines in both themes, and every text colour at 4.5:1 on the page in both themes. Goldens: light and dark
+
 ## [0.34.0] - The acknowledgement toast
 
 ### ✨ Features

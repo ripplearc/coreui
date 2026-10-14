@@ -1,0 +1,162 @@
+import 'package:flutter/material.dart';
+
+import '../../../ripplearc_coreui.dart';
+
+/// A tappable list row: a title, an optional subtitle under it, and an
+/// optional value at the end (e.g. `$145.00 /day`).
+///
+/// The value takes at most half the row and shrinks rather than overflow;
+/// the title wraps.
+///
+/// The row pads its content by [CoreSpacing.space2] on each side; the list
+/// around it supplies the page inset.
+class CoreListRow extends StatelessWidget {
+  /// Primary text, e.g. an item name.
+  final String title;
+
+  /// Optional secondary line under [title], e.g. "Used last week".
+  final String? subtitle;
+
+  /// Optional value shown at the end of the row, e.g. `$145.00`.
+  final String? value;
+
+  /// Optional smaller text after [value], e.g. `/day`. Ignored without [value].
+  final String? unit;
+
+  /// Called when the row is tapped. Null disables the row.
+  final VoidCallback? onTap;
+
+  /// Accessibility label for the row. Defaults to the visible texts, in order.
+  final String? semanticLabel;
+
+  /// Creates a plain row with no leading slot.
+  const CoreListRow({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.value,
+    this.unit,
+    this.onTap,
+    this.semanticLabel,
+  });
+
+  static const _valueMaxWidthFactor = 0.5;
+
+  String get _defaultSemanticLabel {
+    final valueText = [value, if (value != null) unit].nonNulls.join(' ');
+    return [title, subtitle, valueText]
+        .nonNulls
+        .where((text) => text.isNotEmpty)
+        .join('. ');
+  }
+
+  Widget _buildText(
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
+    final titleText = Text(
+      title,
+      style: typography.bodyLargeSemiBold.copyWith(
+        color: colors.textHeadline,
+      ),
+    );
+    final subtitleValue = subtitle;
+    if (subtitleValue == null || subtitleValue.isEmpty) {
+      return titleText;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        titleText,
+        // 2 dp is the storyboard's gap; CoreSpacing's smallest step is 4.
+        const SizedBox(height: 2),
+        Text(
+          subtitleValue,
+          style: typography.bodySmallRegular.copyWith(color: colors.textBody),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildValue(
+    String value,
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
+    final unitValue = unit;
+    return Padding(
+      padding: const EdgeInsets.only(left: CoreSpacing.space3),
+      child: Text.rich(
+        TextSpan(
+          text: value,
+          style: typography.bodyLargeSemiBold.copyWith(
+            color: colors.textHeadline,
+          ),
+          children: [
+            if (unitValue != null)
+              TextSpan(
+                text: ' $unitValue',
+                style: typography.bodySmallRegular.copyWith(
+                  color: colors.textBody,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+    final valueText = value;
+    final borderRadius = BorderRadius.circular(CoreSpacing.space3);
+
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: semanticLabel ?? _defaultSemanticLabel,
+      child: Material(
+        color: colors.transparent,
+        borderRadius: borderRadius,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: borderRadius,
+          // Excluded inside the InkWell so its tap action stays on the row.
+          child: ExcludeSemantics(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: CoreSpacing.space12,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoreSpacing.space2,
+                  vertical: CoreSpacing.space3,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, row) => Row(
+                    children: [
+                      Expanded(child: _buildText(colors, typography)),
+                      if (valueText != null)
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: row.maxWidth * _valueMaxWidthFactor,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: _buildValue(valueText, colors, typography),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
