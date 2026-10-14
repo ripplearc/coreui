@@ -7,6 +7,7 @@ import 'package:example/screens/chip_showcase_screen.dart';
 import 'package:example/screens/date_filter_chip_showcase_screen.dart';
 import 'package:example/screens/date_picker_showcase_screen.dart';
 import 'package:example/screens/date_range_sheet_showcase_screen.dart';
+import 'package:example/screens/details_row_showcase_screen.dart';
 import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/divider_showcase_screen.dart';
 import 'package:example/screens/estimate_summary_card_showcase_screen.dart';
@@ -243,6 +244,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Estimate Summary Card Component',
                 const EstimateSummaryCardShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Details Row Component',
+                const DetailsRowShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
