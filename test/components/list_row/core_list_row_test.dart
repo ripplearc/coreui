@@ -332,4 +332,109 @@ void main() {
       handle.dispose();
     });
   });
+
+  group('CoreListRow.action', () {
+    testWidgets('shows the icon and the title in the link colour',
+        (tester) async {
+      await pumpRowWithDistinctIconDark(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      final colors = CoreTheme.light().coreColors;
+      final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+      expect(leadingOpacityOf(tester).opacity, 1);
+      expect(icon.icon, CoreIcons.add);
+      expect(icon.color, distinctIconDark);
+      expect(textColorOf(tester, 'New equipment cost'), colors.textLink);
+    });
+
+    testWidgets('sets the title in the 16 sp semibold style of every row',
+        (tester) async {
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      final typography = CoreTheme.light().coreTypography;
+      final style =
+          tester.widget<Text>(find.text('New equipment cost')).style!;
+      expect(style.fontSize, typography.bodyLargeSemiBold.fontSize);
+      expect(style.fontWeight, typography.bodyLargeSemiBold.fontWeight);
+    });
+
+    testWidgets('lines its title up with a selectable row', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CoreListRow.selectable(title: 'Picked', selected: false),
+              CoreListRow.action(
+                icon: CoreIcons.add,
+                title: 'New equipment cost',
+                onTap: () {},
+              ),
+            ],
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      expect(
+        titleLeftOf(tester, 'New equipment cost'),
+        titleLeftOf(tester, 'Picked'),
+      );
+    });
+
+    testWidgets('calls onTap when tapped', (tester) async {
+      var taps = 0;
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () => taps++,
+        ),
+      );
+
+      await tester.tap(find.text('New equipment cost'));
+
+      expect(taps, 1);
+    });
+
+    testWidgets('reads as a button with no selected state', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpRow(
+        tester,
+        CoreListRow.action(
+          icon: CoreIcons.add,
+          title: 'New equipment cost',
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreListRow)),
+        matchesSemantics(
+          label: 'New equipment cost',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+          hasFocusAction: true,
+        ),
+      );
+      handle.dispose();
+    });
+  });
 }

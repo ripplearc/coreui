@@ -5,10 +5,14 @@ import '../../../ripplearc_coreui.dart';
 /// A tappable list row: a title, an optional subtitle under it, and an
 /// optional value at the end (e.g. `$145.00 /day`).
 ///
-/// Two looks share one geometry:
+/// Three looks share one geometry. The action row and the selectable row
+/// share a leading icon slot, so their titles line up; the plain row has no
+/// slot:
 /// - [CoreListRow.new]: a plain row with no leading slot.
 /// - [CoreListRow.selectable]: a row in a pick-one list. It reserves a leading
 ///   check slot even when unselected, so rows don't shift when the pick moves.
+/// - [CoreListRow.action]: a leading icon and a label in the link colour,
+///   e.g. "+ New equipment cost".
 ///
 /// The value takes at most half the row and shrinks rather than overflow;
 /// the title wraps.
@@ -39,6 +43,7 @@ class CoreListRow extends StatelessWidget {
   final String? semanticLabel;
 
   final _CoreListRowKind _kind;
+  final CoreIconData? _actionIcon;
 
   /// Creates a plain row with no leading slot.
   const CoreListRow({
@@ -50,7 +55,8 @@ class CoreListRow extends StatelessWidget {
     this.onTap,
     this.semanticLabel,
   })  : selected = false,
-        _kind = _CoreListRowKind.plain;
+        _kind = _CoreListRowKind.plain,
+        _actionIcon = null;
 
   /// Creates a row in a pick-one list. When [selected], the row fills light
   /// blue, its title turns the link colour and a check shows in the leading
@@ -64,7 +70,24 @@ class CoreListRow extends StatelessWidget {
     this.unit,
     this.onTap,
     this.semanticLabel,
-  })  : _kind = _CoreListRowKind.selectable;
+  })  : _kind = _CoreListRowKind.selectable,
+        _actionIcon = null;
+
+  /// Creates an action row: [icon] then [title], both in the link colour.
+  const CoreListRow.action({
+    super.key,
+    required CoreIconData icon,
+    required this.title,
+    required VoidCallback this.onTap,
+    this.semanticLabel,
+  })  : subtitle = null,
+        value = null,
+        unit = null,
+        selected = false,
+        _kind = _CoreListRowKind.action,
+        _actionIcon = icon;
+
+  bool get _isAction => _kind == _CoreListRowKind.action;
 
   static const _valueMaxWidthFactor = 0.5;
 
@@ -77,15 +100,20 @@ class CoreListRow extends StatelessWidget {
   }
 
   Widget _buildLeading(AppColorsExtension colors) {
-    if (_kind != _CoreListRowKind.selectable) {
+    final (icon, visible) = switch (_kind) {
+      _CoreListRowKind.plain => (null, false),
+      _CoreListRowKind.selectable => (CoreIcons.checkMark, selected),
+      _CoreListRowKind.action => (_actionIcon, true),
+    };
+    if (icon == null) {
       return const SizedBox.shrink();
     }
     return Padding(
       padding: const EdgeInsets.only(right: CoreSpacing.space3),
       child: Opacity(
-        opacity: selected ? 1 : 0,
+        opacity: visible ? 1 : 0,
         child: CoreIconWidget(
-          icon: CoreIcons.checkMark,
+          icon: icon,
           size: CoreIconSize.size20,
           color: colors.iconDark,
         ),
@@ -97,7 +125,8 @@ class CoreListRow extends StatelessWidget {
     AppColorsExtension colors,
     AppTypographyExtension typography,
   ) {
-    final titleColor = selected ? colors.textLink : colors.textHeadline;
+    final titleColor =
+        _isAction || selected ? colors.textLink : colors.textHeadline;
     final titleText = Text(
       title,
       style: typography.bodyLargeSemiBold.copyWith(color: titleColor),
@@ -205,4 +234,4 @@ class CoreListRow extends StatelessWidget {
   }
 }
 
-enum _CoreListRowKind { plain, selectable }
+enum _CoreListRowKind { plain, selectable, action }

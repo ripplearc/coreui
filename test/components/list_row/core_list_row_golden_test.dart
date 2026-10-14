@@ -17,8 +17,8 @@ void main() {
   });
 
   Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
-    // 824x880 @ 2.0 => a 412 dp wide phone, tall enough for every row.
-    tester.view.physicalSize = const Size(824, 880);
+    // 824x1160 @ 2.0 => a 412 dp wide phone, tall enough for every row.
+    tester.view.physicalSize = const Size(824, 1160);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
@@ -28,49 +28,60 @@ void main() {
         theme: theme,
         home: Scaffold(
           backgroundColor: theme.coreColors.pageBackground,
-          body: const Padding(
+          body: Padding(
             // The storyboard's sheets start their content at 20 dp; the row
             // adds its own 8 dp, so the titles start at 28 dp.
-            padding: EdgeInsets.symmetric(horizontal: CoreSpacing.space5),
+            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space5),
             child: Column(
               children: [
-                CoreListRow(
+                const CoreListRow(
                   title: 'Scissor lift — 19ft',
                   subtitle: 'Used last week',
                   value: r'$120.00',
                   unit: '/day',
                 ),
-                CoreListRow(
+                const CoreListRow(
                   title: 'Dumpster — 30 yd',
                   value: r'$400.00',
                   unit: 'job',
                 ),
-                CoreListRow.selectable(
+                CoreListRow.action(
+                  icon: CoreIcons.add,
+                  title: 'New equipment cost',
+                  onTap: () {},
+                ),
+                const CoreListRow.selectable(
                   title: 'Mini excavator — 1.5 ton',
                   subtitle: 'Compact, tight-access digging',
                   value: r'$145.00',
                   unit: '/day',
                   selected: true,
                 ),
-                CoreListRow.selectable(
+                const CoreListRow.selectable(
                   title: 'Skid steer — track',
                   subtitle: 'Loader attachment ready',
                   value: r'$165.00',
                   unit: '/day',
                   selected: false,
                 ),
-                CoreListRow(
+                const CoreListRow(
                   title: 'Compact track loader with a very long model name '
                       'that wraps',
                   value: r'$1,250.00',
                   unit: '/week',
                 ),
-                CoreListRow.selectable(
+                const CoreListRow.selectable(
                   title: 'Telehandler with a very long model name that '
                       'wraps',
                   value: r'$1,450.00',
                   unit: '/week',
                   selected: false,
+                ),
+                CoreListRow.action(
+                  icon: CoreIcons.add,
+                  title: 'New equipment cost for a very long model name '
+                      'that wraps',
+                  onTap: () {},
                 ),
               ],
             ),

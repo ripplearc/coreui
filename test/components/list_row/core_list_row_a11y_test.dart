@@ -28,6 +28,11 @@ void main() {
         selected: true,
         onTap: () {},
       ),
+      'action': CoreListRow.action(
+        icon: CoreIcons.add,
+        title: 'New equipment cost',
+        onTap: () {},
+      ),
     };
 
     for (final entry in rows.entries) {
