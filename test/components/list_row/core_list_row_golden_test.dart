@@ -17,8 +17,8 @@ void main() {
   });
 
   Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
-    // 824x1000 @ 2.0 => a 412 dp wide phone, tall enough for every row.
-    tester.view.physicalSize = const Size(824, 1000);
+    // 824x1160 @ 2.0 => a 412 dp wide phone, tall enough for every row.
+    tester.view.physicalSize = const Size(824, 1160);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
@@ -76,6 +76,12 @@ void main() {
                   value: r'$1,450.00',
                   unit: '/week',
                   selected: false,
+                ),
+                CoreListRow.action(
+                  icon: CoreIcons.add,
+                  title: 'New equipment cost for a very long model name '
+                      'that wraps',
+                  onTap: () {},
                 ),
               ],
             ),

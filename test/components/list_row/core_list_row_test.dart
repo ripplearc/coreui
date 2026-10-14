@@ -336,7 +336,7 @@ void main() {
   group('CoreListRow.action', () {
     testWidgets('shows the icon and the title in the link colour',
         (tester) async {
-      await pumpRow(
+      await pumpRowWithDistinctIconDark(
         tester,
         CoreListRow.action(
           icon: CoreIcons.add,
@@ -349,7 +349,7 @@ void main() {
       final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
       expect(leadingOpacityOf(tester).opacity, 1);
       expect(icon.icon, CoreIcons.add);
-      expect(icon.color, colors.iconDark);
+      expect(icon.color, distinctIconDark);
       expect(textColorOf(tester, 'New equipment cost'), colors.textLink);
     });
 

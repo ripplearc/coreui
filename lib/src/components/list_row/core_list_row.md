@@ -8,7 +8,7 @@
 | `CoreListRow.selectable(...)` | a check, shown only when `selected`; the slot keeps its width when empty | A pick-one list, e.g. "Look up a rate". A selected row fills light blue and its title turns the link colour. |
 | `CoreListRow.action(...)` | `icon`, always shown | An action at the end of a list, e.g. "+ New equipment cost". The icon uses `iconDark` and the title the link colour. |
 
-Design: Figma [List item set](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`). The plain row is its Recent row; `.selectable` is its Result row ([Selected, `66337:154975`](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154975)).
+Design: Figma [List item set](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=62505-74872) (`62505:74872`). The plain row is its Recent row; `.selectable` is its Result row ([Selected, `66337:154975`](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154975)); `.action` is its [Action row](https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/?node-id=66337-154216) (`66337:154216`).
 
 The value takes at most half the row and shrinks rather than overflow; the title wraps. The row pads its content by `CoreSpacing.space2` (8 dp) on each side and is at least 48 dp tall. The list around it supplies the page inset.
 
