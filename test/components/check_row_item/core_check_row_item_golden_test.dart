@@ -55,7 +55,7 @@ void main() {
                 selected: false,
                 onChanged: _noop,
                 avatarBackgroundColor: colors.backgroundGreenLight,
-                avatarTextColor: colors.iconGreen,
+                avatarTextColor: colors.textSuccess,
               ),
             ],
           ),

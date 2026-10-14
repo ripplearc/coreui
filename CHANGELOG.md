@@ -7,10 +7,12 @@
 - **CoreStatusColors.success** and **CoreIconColors.green** (light theme) are green500 (`#009E69`), not green600. Figma draws `State Color/Success` and `Icon Color/Green` as Green/500, and the dark values already matched. These two tokens draw graphics only (a tick, a switch track, an icon), where green500 on white is 3.4:1 against the 3:1 a graphic needs (CA-1256)
 - **CoreFunctionKeyBottomSheet**: the `Imperial` label is text, so it uses `textSuccess` (green600, 4.5:1 or better on white) instead of `iconGreen`, which would fail 4.5:1 now. Its colour does not change
 - `CoreCheckRowItem` docs and showcase: the avatar initials use `textSuccess` for the same reason
+- **CoreAvatar** centres its child. The fixed-size `Container` had no `alignment`, so it stretched a `Text` child to the full circle and drew the letter at the top left; every default `CoreCheckRowItem` avatar showed this. A child that centred itself, such as an icon, does not move
 
 ### 🧪 Tests
 
 - Goldens regenerated where the light green shows: color tokens, avatar, check row item, function key sheet, preferences sheet, switch and toast
+- The check row golden draws the initials in `textSuccess`, as the docs say, and its light and dark goldens are regenerated for the centred letter
 
 ## [0.33.0] - The empty estimate summary card, and long names
 
