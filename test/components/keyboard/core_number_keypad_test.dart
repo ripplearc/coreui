@@ -178,7 +178,6 @@ void main() {
     });
 
     testWidgets('long labels at 200 % text do not overflow', (tester) async {
-      pressed = [];
       tester.view.physicalSize = const Size(320, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());

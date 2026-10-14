@@ -21,6 +21,7 @@ void main() {
     tester.view.physicalSize = const Size(824, 1600);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() => tester.view.resetPhysicalSize());
+    addTearDown(() => tester.view.resetDevicePixelRatio());
 
     Widget keypad({required String clearLabel, bool isConfirmEnabled = true}) {
       return CoreNumberKeypad(
