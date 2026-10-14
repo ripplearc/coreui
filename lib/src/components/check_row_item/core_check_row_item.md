@@ -24,7 +24,7 @@ CoreCheckRowItem(
 CoreCheckRowItem(
   title: 'Esther Howard',
   avatarBackgroundColor: CoreBackgroundColors.backgroundGreenLight,
-  avatarTextColor: CoreIconColors.green,
+  avatarTextColor: CoreTextColors.success,
   selected: isSelected,
   onChanged: onChanged,
 )

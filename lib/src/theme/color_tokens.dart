@@ -142,7 +142,7 @@ class CoreBorderColors {
 // Status-related color tokens
 class CoreStatusColors {
   static const Color error = _CoreColorPalette.red500;
-  static const Color success = _CoreColorPalette.green600;
+  static const Color success = _CoreColorPalette.green500;
 }
 
 // Keyboard-related color tokens
@@ -164,7 +164,7 @@ class CoreIconColors {
   static const Color grayLight = _CoreColorPalette.gray300;
   static const Color white = _CoreColorPalette.gray25;
   static const Color red = _CoreColorPalette.red600;
-  static const Color green = _CoreColorPalette.green600;
+  static const Color green = _CoreColorPalette.green500;
   static const Color orange = _CoreColorPalette.orange500;
   static const Color blue = _CoreColorPalette.blue600;
   static const Color orient = _CoreColorPalette.orient600;

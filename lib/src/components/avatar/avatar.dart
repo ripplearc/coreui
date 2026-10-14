@@ -94,6 +94,7 @@ class CoreAvatar extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
+        alignment: Alignment.center,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
