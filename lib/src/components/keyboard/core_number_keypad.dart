@@ -92,6 +92,8 @@ class CoreNumberKeypad extends StatelessWidget {
               _row([
                 _digitKey(context, DigitType.decimal, keyWidth),
                 _digitKey(context, DigitType.zero, keyWidth),
+                // TODO: [CA-1198] https://ripplearc.youtrack.cloud/issue/CA-1198
+                // Pass the app's screen-reader labels to every keypad key.
                 CoreControlButton(
                   action: ControlAction.delete,
                   onControlAction: (_) => onBackspacePressed(),
@@ -137,7 +139,7 @@ class CoreNumberKeypad extends StatelessWidget {
   Widget _digitKey(BuildContext context, DigitType digit, double width) {
     return CoreDigitInput(
       digit: digit,
-      onDigitPressed: (digit) => digit == DigitType.decimal
+      onDigitPressed: (_) => digit == DigitType.decimal
           ? onDecimalPressed()
           : onDigitPressed(int.parse(digit.label)),
       width: width,
