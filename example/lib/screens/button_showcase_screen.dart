@@ -147,12 +147,6 @@ class _ButtonShowcaseScreenState extends State<ButtonShowcaseScreen> {
               ),
             ),
             const SizedBox(height: CoreSpacing.space4),
-            CoreOutlinedIconButton(
-              icon: CoreIcons.search,
-              semanticLabel: 'Look up a rate',
-              onTap: () {},
-            ),
-            const SizedBox(height: CoreSpacing.space4),
             Switch(
                 value: _isDisabled,
                 onChanged: (state) {
