@@ -183,7 +183,7 @@ void main() {
       expect(tester.getSize(find.byType(CoreDetailsRow)).height, 48);
     });
 
-    testWidgets('an action label without onAction is refused', (tester) async {
+    test('an action label without onAction is refused', () {
       expect(
         () => CoreDetailsRow(
           label: 'Delivery',

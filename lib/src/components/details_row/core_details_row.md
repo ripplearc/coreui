@@ -42,7 +42,7 @@ CoreDetailsRow(
 | Value | `bodyMediumSemiBold` | `textHeadline` |
 | Dot | `bodySmallRegular`, 4 dp each side | `textDisable` |
 | Action | `bodyMediumSemiBold` | `textLink` |
-| Chevron | 20 dp, centred 24 dp in from the right edge; turns in 150 ms | `iconGrayMid` |
+| Chevron | 20 dp, centred 24 dp in from the end edge; turns in 150 ms | `iconGrayMid` |
 
 The row is 48 dp tall, the label starts 16 dp in, and each tap zone (toggle, action, chevron) is at least 48 dp wide. The panel is inset 16 dp at the sides and 12 dp above and below.
 
