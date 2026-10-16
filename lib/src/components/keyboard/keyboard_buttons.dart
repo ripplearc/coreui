@@ -8,6 +8,9 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [onDigitPressed] is called when the button is pressed.
 /// [isEmphasized] determines if the button uses emphasized styling.
 /// [size] is the width and height of the button (defaults to 64px).
+/// [textStyle] replaces the label style, which by default is
+/// `titleLargeRegular` scaled to the button's height. The colour stays
+/// `textHeadline` either way.
 ///
 /// The rendered button carries [DigitTypeX.testKey] (`calc_key_seven`) for
 /// Patrol and widget tests.
@@ -18,6 +21,7 @@ class CoreDigitInput extends StatelessWidget {
   final double? size;
   final double? width;
   final double? height;
+  final TextStyle? textStyle;
 
   const CoreDigitInput({
     super.key,
@@ -27,6 +31,7 @@ class CoreDigitInput extends StatelessWidget {
     this.size,
     this.width,
     this.height,
+    this.textStyle,
   });
 
   @override
@@ -49,10 +54,12 @@ class CoreDigitInput extends StatelessWidget {
         label: digit.label,
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
-        textStyle: typography.titleLargeRegular.copyWith(
-          color: textColor,
-          fontSize: effectiveHeight * _KeyboardButton._largeFontSizeRatio,
-        ),
+        textStyle: (textStyle ??
+                typography.titleLargeRegular.copyWith(
+                  fontSize:
+                      effectiveHeight * _KeyboardButton._largeFontSizeRatio,
+                ))
+            .copyWith(color: textColor),
         width: effectiveWidth,
         height: effectiveHeight,
         borderRadius:
@@ -187,6 +194,9 @@ class CoreUnitButton extends StatelessWidget {
 /// [onControlAction] is called when the button is pressed.
 /// [enabled] is whether the button answers taps; `false` dims it, drops its
 /// tap action and reports it disabled to a screen reader.
+/// [isNeutral] draws the button on the digit keys' grey with a dark grey
+/// face, in place of its action's colour, so it does not compete with a
+/// filled commit button beside it.
 /// [semanticLabel] replaces the English screen-reader label built for
 /// [action] with the app's localised one.
 /// [semanticHint] does the same for the hint, and is withheld while the
@@ -200,6 +210,7 @@ class CoreControlButton extends StatelessWidget {
   final ControlAction action;
   final ValueChanged<ControlAction> onControlAction;
   final bool enabled;
+  final bool isNeutral;
   final String? semanticLabel;
   final String? semanticHint;
   final double? width;
@@ -210,6 +221,7 @@ class CoreControlButton extends StatelessWidget {
     required this.action,
     required this.onControlAction,
     this.enabled = true,
+    this.isNeutral = false,
     this.semanticLabel,
     this.semanticHint,
     this.width,
@@ -221,6 +233,7 @@ class CoreControlButton extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final (backgroundColor, isOutlined) = switch (action) {
+      _ when isNeutral => (colors.keyboardNumbers, false),
       ControlAction.clearAll => (colors.keyboardActions, false),
       ControlAction.delete => (colors.keyboardMain, false),
       ControlAction.moreOptions || ControlAction.paren => (
@@ -228,7 +241,11 @@ class CoreControlButton extends StatelessWidget {
           true
         ),
     };
-    final textColor = isOutlined ? colors.keyboardActions : colors.textInverse;
+    final textColor = isNeutral
+        ? colors.iconGrayDark
+        : isOutlined
+            ? colors.keyboardActions
+            : colors.textInverse;
     final borderColor = isOutlined ? colors.keyboardActions : null;
     final label = action.label;
 

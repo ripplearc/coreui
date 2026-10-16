@@ -16,6 +16,7 @@ import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/list_row_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
 import 'package:example/screens/multi_select_sheet_showcase_screen.dart';
+import 'package:example/screens/number_keypad_showcase_screen.dart';
 import 'package:example/screens/preferences_sheet_showcase_screen.dart';
 import 'package:example/screens/quick_sheet_showcase_screen.dart';
 import 'package:example/screens/search/search_row_item_screen.dart';
@@ -148,6 +149,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Keyboard Components',
                 const KeyboardShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Number Keypad Component',
+                const NumberKeypadShowcaseScreen(),
               ),
               const SizedBox(height: CoreSpacing.space4),
               _buildShowcaseButton(

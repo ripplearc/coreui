@@ -142,6 +142,53 @@ void main() {
       final semantics = tester.getSemantics(find.byType(CoreDigitInput));
       expect(semantics.label, contains('7 button'));
     });
+
+    testWidgets('textStyle replaces the scaled label style, colour kept',
+        (tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreDigitInput(
+              digit: DigitType.seven,
+              onDigitPressed: (_) {},
+              width: 124.0,
+              height: 68.0,
+              textStyle: theme.coreTypography.titleLargeMedium,
+            ),
+          ),
+        ),
+      );
+
+      final style = tester.widget<Text>(find.text('7')).style!;
+      expect(style.fontSize, theme.coreTypography.titleLargeMedium.fontSize);
+      expect(
+        style.fontWeight,
+        theme.coreTypography.titleLargeMedium.fontWeight,
+      );
+      expect(style.color, theme.coreColors.textHeadline);
+    });
+
+    testWidgets('without textStyle the label scales with the height',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDigitInput(
+              digit: DigitType.seven,
+              onDigitPressed: (_) {},
+              width: 100.0,
+              height: 100.0,
+            ),
+          ),
+        ),
+      );
+
+      final style = tester.widget<Text>(find.text('7')).style!;
+      expect(style.fontSize, closeTo(35.0, 0.001));
+    });
   });
 
   group('CoreOperatorButton', () {
@@ -273,6 +320,23 @@ void main() {
   });
 
   group('CoreControlButton', () {
+    List<(Color?, BoxBorder?)> keyFill(Key key) {
+      return find
+          .descendant(
+            of: find.byKey(key),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Container && widget.decoration is BoxDecoration,
+            ),
+          )
+          .evaluate()
+          .map((element) => (element.widget as Container).decoration)
+          .whereType<BoxDecoration>()
+          .where((decoration) => decoration.color != null)
+          .map((decoration) => (decoration.color, decoration.border))
+          .toList();
+    }
+
     testWidgets('renders clear all action correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -496,6 +560,69 @@ void main() {
           .getSemanticsData();
       expect(data.flagsCollection.isEnabled, ui.Tristate.isTrue);
       expect(data.hasAction(SemanticsAction.tap), isTrue);
+    });
+
+    for (final theme in [CoreTheme.light(), CoreTheme.dark()]) {
+      testWidgets(
+          'isNeutral draws the digit grey with a dark grey icon '
+          '- ${theme.brightness.name}', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              body: CoreControlButton(
+                action: ControlAction.delete,
+                onControlAction: (_) {},
+                isNeutral: true,
+                height: 68.0,
+                width: 124.0,
+              ),
+            ),
+          ),
+        );
+
+        expect(
+          keyFill(ControlAction.delete.testKey),
+          allOf(
+            contains((theme.coreColors.keyboardNumbers, null)),
+            isNot(contains((theme.coreColors.keyboardMain, null))),
+          ),
+        );
+        expect(
+          tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color,
+          theme.coreColors.iconGrayDark,
+        );
+      });
+    }
+
+    testWidgets('delete is the dark main key unless isNeutral',
+        (tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreControlButton(
+              action: ControlAction.delete,
+              onControlAction: (_) {},
+              height: 68.0,
+              width: 124.0,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        keyFill(ControlAction.delete.testKey),
+        allOf(
+          contains((theme.coreColors.keyboardMain, null)),
+          isNot(contains((theme.coreColors.keyboardNumbers, null))),
+        ),
+      );
+      expect(
+        tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color,
+        theme.coreColors.textInverse,
+      );
     });
   });
 
