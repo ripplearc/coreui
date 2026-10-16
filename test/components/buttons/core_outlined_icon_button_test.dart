@@ -29,7 +29,7 @@ void main() {
       expect(icon.color, CoreTheme.light().coreColors.iconGrayMid);
     });
 
-    testWidgets('draws a 36 dp box with a 1 dp lineMid edge and 9 dp corners',
+    testWidgets('draws a 36 dp box with a 1 dp lineMid edge and 8 dp corners',
         (tester) async {
       await tester.pumpWidget(buildButton(onTap: () {}));
 
@@ -42,7 +42,7 @@ void main() {
           tester.widget<Material>(box).shape as RoundedRectangleBorder;
       expect(shape.side.color, CoreTheme.light().coreColors.lineMid);
       expect(shape.side.width, 1);
-      expect(shape.borderRadius, BorderRadius.circular(9));
+      expect(shape.borderRadius, BorderRadius.circular(8));
     });
 
     testWidgets('takes taps on a 48 dp square', (tester) async {

@@ -28,9 +28,9 @@ CoreOutlinedIconButton(
 |---|---|
 | Box | 36 dp (`boxSize`), no fill, so it takes the colour of the surface under it |
 | Edge | 1 dp, `lineMid` |
-| Corners | 9 dp (`borderRadius`); `CoreSpacing` has no 9 dp step |
+| Corners | 8 dp (`borderRadius`) |
 | Icon | 20 dp, `iconGrayMid` |
-| Tap area | 48 dp (`tapTargetSize`) |
+| Tap area | 48 dp (`tapTargetSize`). The part takes 48 × 48 dp of layout, so a row that holds it is at least 48 dp tall. |
 | Ink ripple | inside the box |
 
 ## Accessibility

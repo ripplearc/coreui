@@ -25,8 +25,7 @@ class CoreOutlinedIconButton extends StatelessWidget {
   static const double tapTargetSize = CoreSpacing.space12;
 
   /// The corner radius of the box, from the storyboard's `.iconbtn`.
-  /// [CoreSpacing] has no 9 dp step.
-  static const double borderRadius = 9;
+  static const double borderRadius = CoreSpacing.space2;
 
   /// Creates an outlined icon button.
   const CoreOutlinedIconButton({
