@@ -8,15 +8,19 @@ The keypad knows nothing about the field it types into. It reports each key, and
 
 ```dart
 CoreNumberKeypad(
-  onDigitPressed: (digit) => field.append('$digit'),
-  onDecimalPressed: () => field.append('.'),
-  onBackspacePressed: field.deleteLast,
+  onDigitPressed: (digit) => field.insertAtSelection('$digit'),
+  onDecimalPressed: () => field.insertAtSelection('.'),
+  onBackspacePressed: field.deleteBeforeSelection,
   onClearPressed: field.putBack,
   onConfirmPressed: addToEstimate,
   clearLabel: 'Back to 10%',
   confirmLabel: 'Add to estimate',
 )
 ```
+
+To hide the phone's keyboard, give the field `keyboardType: TextInputType.none`.
+Do not use `readOnly: true`. That removes Paste and the cursor.
+Insert each key at the field's selection, so a selected value is replaced.
 
 ## Properties
 
