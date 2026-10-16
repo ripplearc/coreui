@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.39.0] - CoreDetailsRow
+
+### ✨ Features
+
+- **CoreDetailsRow**: a rounded grey row that folds a detail of a form away — a label, a bold value, an optional link-style action after a dot, and a chevron. A tap anywhere on the row but the action calls `onToggle`; while `expanded`, `child` shows under the row inside the same card. The caller owns `expanded`, so the action can open the row too. `actionLabel` and `onAction` come together (asserted). It replaces the Delivery row the app draws by hand in the equipment form (CA-1252)
+- Details row showcase: a Delivery row with an action and a Waste row without one
+
+### 📐 Design notes
+
+Built from the storyboard's `.mod` / `.modx` (`cuj456_screen.css`) and the Figma "Details Row" set `65708:169539`: a 48 dp row, 12 dp corners, a 1 dp `lineLight` edge on `backgroundGrayLight`. The label starts 16 dp in, as in Figma; the chevron's 48 dp square ends at the card's edge, which centres the icon 24 dp in, as in the storyboard. The dot sits in an 18 dp slot (Figma's 10 dp box with 4 dp each side). The whole row is the toggle's tap zone; the action's zone is at least 48 dp wide. The storyboard's Estimated tag on a folded row (round 18, Q33) is not part of this row yet.
+
+### 🧪 Tests
+
+- Row: label and value in one line, the action after a dot and no dot without one, a tap on the value, the chevron or the empty middle toggles, the dot's 18 dp slot, a tap on the action calls `onAction` and does not toggle, the panel hidden while folded and under the row while expanded, the chevron's turn, a 48 dp row with the chevron 24 dp in, a long value that ends in an ellipsis and keeps the action, the action assert, and the toggle and action semantics with the expanded state. A11y: tap target, label and contrast guidelines folded and expanded in both themes; each text colour holds 4.5:1 and the chevron 3:1 on the card. Goldens: light and dark
+
 ## [0.38.0] - CoreOutlinedIconButton
 
 ### ✨ Features
