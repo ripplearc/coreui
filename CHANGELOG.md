@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.38.0] - CoreOutlinedIconButton
+
+### ✨ Features
+
+- **CoreOutlinedIconButton**: a square icon button, a 36 dp box with a 1 dp `lineMid` edge, 8 dp corners and a 20 dp `iconGrayMid` icon, centred in a 48 dp square that takes the taps. It replaces the look-up button the app draws by hand beside the Rate and Amount fields of the equipment form. `icon`, `onTap` and `semanticLabel` are required: the button has no visible text, so the label is its only name (CA-1252)
+- Button showcase: the look-up button
+
+### 📐 Design notes
+
+Built from the storyboard's `.iconbtn` (`cuj456_screen.css`): 36 dp, 8 dp corners (`CoreSpacing.space2`), a 1 dp `--line-mid` edge and a 20 dp magnifier. The box has no fill, so it takes the colour of the sheet under it. The button takes 48 × 48 dp of layout, so a row that holds it is at least 48 dp tall.
+
+### 🧪 Tests
+
+- Button: the icon's size and colour, the 36 dp box with its edge and corners, the 48 dp tap square, a tap on the box and a tap on the margin each call `onTap` once, and one button node named by the label. A11y: tap target, label and contrast guidelines in both themes; the icon holds 3:1 on the page in both themes. Goldens: light and dark
+
 ## [0.37.0] - CoreListRow.action
 
 ### ✨ Features
