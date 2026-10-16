@@ -57,6 +57,14 @@ void main() {
       expect(find.text('Add note'), findsOneWidget);
     });
 
+    testWidgets('the dot sits in an 18 dp slot', (tester) async {
+      await tester.pumpWidget(
+        buildRow(onToggle: () {}, actionLabel: 'Add note', onAction: () {}),
+      );
+
+      expect(tester.getSize(find.text('·')).width, 18);
+    });
+
     testWidgets('draws no dot without an action', (tester) async {
       await tester.pumpWidget(buildRow(onToggle: () {}));
 
@@ -77,6 +85,22 @@ void main() {
       await tester.pumpWidget(buildRow(onToggle: () => toggles++));
 
       await tester.tapAt(chevronZone(tester));
+
+      expect(toggles, 1);
+    });
+
+    testWidgets('a tap on the empty middle of the row calls onToggle',
+        (tester) async {
+      var toggles = 0;
+      await tester.pumpWidget(buildRow(onToggle: () => toggles++));
+
+      final row = find.byKey(rowKey);
+      await tester.tapAt(
+        Offset(
+          tester.getTopLeft(row).dx + tester.getSize(row).width * 0.6,
+          tester.getCenter(row).dy,
+        ),
+      );
 
       expect(toggles, 1);
     });
