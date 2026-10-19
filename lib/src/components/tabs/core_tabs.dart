@@ -109,10 +109,16 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
         enableFeedback: false,
         controller: _controller,
         isScrollable: true,
-        indicatorSize: TabBarIndicatorSize.tab,
+        // Sized to the label so the indicator stops short of the gap between
+        // tabs, which lives in labelPadding.
+        indicatorSize: TabBarIndicatorSize.label,
         tabAlignment: TabAlignment.start,
         indicatorColor: colors.tabsHighlight,
         indicatorWeight: CoreSpacing.space1,
+        dividerColor: colors.lineDarkOutline,
+        // Replaces Flutter's 16 a side with the 4px gap between tabs; the 12
+        // side padding below is the tab's own.
+        labelPadding: const EdgeInsetsDirectional.only(end: CoreSpacing.space1),
         labelColor: colors.textHeadline,
         unselectedLabelColor: colors.textBody,
         labelStyle: typography.bodyMediumSemiBold,

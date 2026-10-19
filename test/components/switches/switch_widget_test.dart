@@ -168,6 +168,57 @@ void main() {
       expect(find.text('Private'), findsNothing);
     });
 
+    Color offKnobColor(WidgetTester tester) {
+      final knob = tester.widget<Container>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration! as BoxDecoration).shape == BoxShape.circle,
+        ),
+      );
+      return (knob.decoration! as BoxDecoration).color!;
+    }
+
+    Color offBorderColor(WidgetTester tester) {
+      final track = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      final border = (track.decoration! as BoxDecoration).border! as Border;
+      return border.top.color;
+    }
+
+    // Each type's expected (knob, border) colours when off.
+    final offColors = <CoreSwitchType,
+        (
+          Color Function(AppColorsExtension),
+          Color Function(AppColorsExtension),
+        )>{
+      CoreSwitchType.normal: ((c) => c.lineDarkOutline, (c) => c.iconGrayMid),
+      CoreSwitchType.lock: ((c) => c.statusError, (c) => c.iconRed),
+      CoreSwitchType.imperial: ((c) => c.iconGreen, (c) => c.iconGreen),
+    };
+
+    offColors.forEach((type, expected) {
+      testWidgets('${type.name} off knob and border use their own colours',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        final (knob, border) = expected;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreSwitch(type: type, value: false, onChanged: (_) {}),
+            ),
+          ),
+        );
+
+        expect(offKnobColor(tester), knob(colors));
+        expect(offBorderColor(tester), border(colors));
+      });
+    });
+
     testWidgets('switch respects custom inactive color',
         (WidgetTester tester) async {
       final colors = AppColorsExtension.create();
