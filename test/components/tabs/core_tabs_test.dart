@@ -201,6 +201,36 @@ void main() {
         equals(typography.bodyMediumRegular),
       );
     });
+
+    testWidgets('uses the library divider colour and a 4px gap',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: const Scaffold(
+            body: CoreTabs(tabs: ['Tab 1', 'Tab 2'], selectedIndex: 0),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+      expect(tabBar.dividerColor, theme.coreColors.lineDarkOutline);
+      expect(
+        tabBar.labelPadding,
+        const EdgeInsetsDirectional.only(end: CoreSpacing.space1),
+      );
+      expect(tabBar.indicatorSize, TabBarIndicatorSize.label);
+
+      final first = tester.getRect(find.widgetWithText(Tab, 'Tab 1'));
+      final second = tester.getRect(find.widgetWithText(Tab, 'Tab 2'));
+      // 12 side padding on each tab plus the 4 gap.
+      expect(
+        second.left - first.right,
+        CoreSpacing.space3 * 2 + CoreSpacing.space1,
+      );
+    });
   });
 
   // ---------------------------------------------------------------------------

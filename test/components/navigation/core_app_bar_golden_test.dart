@@ -62,8 +62,8 @@ CoreAppBar _customTitleRowBar() => CoreAppBar(
 /// glyph, giving it a 48x48 tap target.
 CoreAppBar _backWithTitleBar() => CoreAppBar(
       titleText: 'Riverside Tower',
+      height: CoreSpacing.space12,
       titleSpacing: CoreSpacing.space1,
-      padding: const EdgeInsets.only(right: CoreSpacing.space4),
       leading: CoreIconWidget(
         icon: CoreIcons.arrowLeft,
         size: CoreIconSize.size24,
