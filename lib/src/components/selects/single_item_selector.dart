@@ -48,44 +48,33 @@ class SingleItemSelector<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
-    return InkWell(
-      onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          enabled: !isDisabled,
-          labelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          hintStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          border: const OutlineInputBorder(),
-          suffixIcon: suffixIcon ?? const Icon(Icons.arrow_drop_down),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 16,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                _getDisplayText(),
-                style: typography.bodyLargeRegular.copyWith(
-                  color: (selectedItem == null || isDisabled)
-                      ? Theme.of(context).hintColor
-                      : null,
-                ),
-              ),
+    final displayText = selectedItem == null ? null : _getDisplayText();
+    return Semantics(
+      button: true,
+      label: labelText,
+      value: displayText ?? hintText,
+      child: InkWell(
+        onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
+        // The field only shows the selection; the InkWell owns the tap, so
+        // the inner text field never takes focus or opens the keyboard.
+        child: ExcludeSemantics(
+          child: IgnorePointer(
+            child: CoreTextField(
+              // A new key per selection rebuilds the field with the new text.
+              key: ValueKey(displayText),
+              label: labelText,
+              hintText: hintText,
+              initialValue: displayText,
+              enabled: !isDisabled,
+              suffix: suffixIcon ??
+                  CoreIconWidget(
+                    icon: CoreIcons.arrowDown,
+                    size: CoreIconSize.size24,
+                    color: colors.iconGrayMid,
+                  ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -127,7 +116,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                   children: [
                     Text(
                       modalTitle,
-                      style: typography.headlineMediumSemiBold
+                      style: typography.titleMediumSemiBold
                           .copyWith(color: colors.textHeadline),
                     ),
                   ],

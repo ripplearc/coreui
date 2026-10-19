@@ -121,6 +121,7 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
   // Caps the item list so the sheet's title, search field, and action
   // buttons stay visible while the list scrolls internally.
   static const double _listMaxHeight = 300;
+  static const double _rowRadius = CoreSpacing.space12;
 
   @override
   void initState() {
@@ -135,6 +136,7 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
     return Padding(
@@ -147,7 +149,7 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
         children: [
           _buildTitle(typography),
           _buildSearchField(),
-          Flexible(child: _buildItemList(typography)),
+          Flexible(child: _buildItemList(colors, typography)),
           _buildActionButtons(context),
         ],
       ),
@@ -160,7 +162,7 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
         horizontal: CoreSpacing.space4,
         vertical: CoreSpacing.space3,
       ),
-      child: Text(widget.title, style: typography.bodyLargeSemiBold),
+      child: Text(widget.title, style: typography.titleMediumSemiBold),
     );
   }
 
@@ -170,25 +172,28 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
         horizontal: CoreSpacing.space4,
         vertical: CoreSpacing.space2,
       ),
-      child: CoreTextField(
+      child: CoreSearchBox(
+        type: CoreSearchBoxType.sheet,
         hintText: widget.searchHint,
         onChanged: widget.onSearchQueryChanged,
-        prefix: const CoreIconWidget(
-          icon: CoreIcons.search,
-          size: CoreSpacing.space5,
-        ),
       ),
     );
   }
 
-  Widget _buildItemList(AppTypographyExtension typography) {
+  Widget _buildItemList(
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: _listMaxHeight),
-      child: _buildListContent(typography),
+      child: _buildListContent(colors, typography),
     );
   }
 
-  Widget _buildListContent(AppTypographyExtension typography) {
+  Widget _buildListContent(
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
     final listData = widget.listData;
     if (listData == null) {
       return const SizedBox.shrink();
@@ -214,7 +219,7 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
         ),
       );
     }
-    // The transparent Material gives the CheckboxListTiles a surface to paint
+    // The transparent Material gives the rows' InkWells a surface to paint
     // ink on: inside CoreQuickSheet's color-decorated container the nearest
     // Material is behind the sheet background, so without this the splashes
     // are invisible (and Flutter asserts in debug builds).
@@ -222,28 +227,57 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
       type: MaterialType.transparency,
       child: ListView.builder(
         shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space2),
         itemCount: items.length,
-        itemBuilder: (_, index) {
-          final item = items[index];
-          final isSelected = _localSelected.contains(item.id);
-          return CheckboxListTile(
-            key: widget.itemKeyOf?.call(item.id),
-            value: isSelected,
-            title: Text(item.label, style: typography.bodyLargeRegular),
-            // Ignore the nullable bool parameter; use the pre-captured
-            // isSelected to avoid null-unwrapping and keep the toggle readable.
-            // _localSelected is privately owned and snapshotted via
-            // Set.unmodifiable at apply time, so in-place mutation is safe.
-            onChanged: (_) => setState(() {
-              if (isSelected) {
-                _localSelected.remove(item.id);
-              } else {
-                _localSelected.add(item.id);
-              }
-            }),
-            controlAffinity: ListTileControlAffinity.leading,
-          );
-        },
+        itemBuilder: (_, index) =>
+            _buildItemRow(items[index], colors, typography),
+      ),
+    );
+  }
+
+  Widget _buildItemRow(
+    CoreMultiSelectItem item,
+    AppColorsExtension colors,
+    AppTypographyExtension typography,
+  ) {
+    final isSelected = _localSelected.contains(item.id);
+    return MergeSemantics(
+      key: widget.itemKeyOf?.call(item.id),
+      child: Semantics(
+        checked: isSelected,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(_rowRadius),
+          // _localSelected is privately owned and snapshotted via
+          // Set.unmodifiable at apply time, so in-place mutation is safe.
+          onTap: () => setState(() {
+            if (isSelected) {
+              _localSelected.remove(item.id);
+            } else {
+              _localSelected.add(item.id);
+            }
+          }),
+          child: Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space3),
+            child: Row(
+              children: [
+                CoreIconWidget(
+                  icon: isSelected ? CoreIcons.check : CoreIcons.checkBlank,
+                  size: CoreIconSize.size24,
+                  color: isSelected ? colors.iconDark : colors.iconGrayMid,
+                ),
+                const SizedBox(width: CoreSpacing.space2),
+                Expanded(
+                  child: Text(
+                    item.label,
+                    style: typography.bodyMediumRegular.copyWith(
+                      color: colors.textHeadline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
