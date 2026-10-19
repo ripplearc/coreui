@@ -98,7 +98,7 @@ class CoreTextField extends StatelessWidget {
     final colors = Theme.of(context).coreColors;
     final focusedBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide(color: colors.textDark),
+      borderSide: BorderSide(color: colors.outlineHover),
     );
 
     return TextFormField(
@@ -116,8 +116,8 @@ class CoreTextField extends StatelessWidget {
         color: isDisabled ? colors.textDisable : colors.textDark,
       ),
       decoration: InputDecoration(
-        floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
-          color: isDisabled ? colors.textDisable : colors.outlineFocus,
+        floatingLabelStyle: typography.bodySmallRegular.copyWith(
+          color: isDisabled ? colors.textDisable : colors.textDark,
         ),
         hoverColor: isDisabled
             ? colors.backgroundGrayMid

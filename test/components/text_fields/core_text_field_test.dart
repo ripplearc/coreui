@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -101,6 +103,53 @@ void main() {
           tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.enabled, false);
     });
+
+    testWidgets('floats the label in bodySmallRegular textDark',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Email',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      final style = decoration.floatingLabelStyle!;
+      final bodySmall = theme.coreTypography.bodySmallRegular;
+      expect(style.fontSize, bodySmall.fontSize);
+      expect(style.fontWeight, bodySmall.fontWeight);
+      expect(style.color, theme.coreColors.textDark);
+    });
+
+    testWidgets('draws the focus border in outlineHover',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Email',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      expect(
+        (decoration.focusedBorder! as OutlineInputBorder).borderSide.color,
+        theme.coreColors.outlineHover,
+      );
+    });
   });
 
   group('CoreTextField – accessibility tests', () {
@@ -121,5 +170,34 @@ void main() {
         find.byType(CoreTextField),
       );
     });
+
+    // The field is one merged semantics node, so Flutter's
+    // textContrastGuideline samples the whole field, value text included, and
+    // passes whatever the label colour is. The label is checked against the
+    // fill instead.
+    for (final theme in kA11yTestThemes) {
+      testWidgets(
+          'the floating label is at least 4.5:1 on the fill '
+          '(${theme.brightness.name})', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              body: CoreTextField(
+                label: 'Email address',
+                controller: TextEditingController(),
+              ),
+            ),
+          ),
+        );
+
+        final decoration =
+            tester.widget<TextField>(find.byType(TextField)).decoration!;
+        final label = decoration.floatingLabelStyle!.color!.computeLuminance();
+        final fill = decoration.fillColor!.computeLuminance();
+        final ratio = (max(label, fill) + 0.05) / (min(label, fill) + 0.05);
+        expect(ratio, greaterThanOrEqualTo(4.5));
+      });
+    }
   });
 }

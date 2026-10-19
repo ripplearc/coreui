@@ -61,16 +61,16 @@ void main() {
       );
     });
 
-    testWidgets('is 52px tall, 2px shorter than regular', (tester) async {
+    testWidgets('is 51px tall, 2px shorter than regular', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Note', size: compact),
       );
 
-      expect(tester.getSize(fieldFinder).height, 52);
+      expect(tester.getSize(fieldFinder).height, 51);
     });
 
-    testWidgets('the underline sits 8px under the value row', (tester) async {
+    testWidgets('the underline sits 6px under the value row', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(
@@ -83,10 +83,10 @@ void main() {
       final valueBottom = tester.getBottomLeft(find.byType(EditableText)).dy;
       final underlineTop = tester.getTopLeft(underline).dy;
 
-      expect(underlineTop - valueBottom, 8);
+      expect(underlineTop - valueBottom, 6);
     });
 
-    testWidgets('the regular underline stays 10px under the value row',
+    testWidgets('the regular underline stays 8px under the value row',
         (tester) async {
       await pumpField(
         tester,
@@ -95,7 +95,7 @@ void main() {
 
       final valueBottom = tester.getBottomLeft(find.byType(EditableText)).dy;
 
-      expect(tester.getTopLeft(underline).dy - valueBottom, 10);
+      expect(tester.getTopLeft(underline).dy - valueBottom, 8);
     });
 
     testWidgets('keeps the regular label, value, weight and colors',
@@ -126,7 +126,7 @@ void main() {
         expect(
             tester.getTopLeft(find.text('Note')).dx -
                 tester.getTopLeft(fieldFinder).dx,
-            2);
+            0);
       }
     });
 
@@ -153,7 +153,7 @@ void main() {
       expect(tester.widget<Container>(underline).color, colors.statusError);
     });
 
-    testWidgets('a label badge keeps the field 52px tall', (tester) async {
+    testWidgets('a label badge keeps the field 51px tall', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(
@@ -163,7 +163,7 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 52);
+      expect(tester.getSize(fieldFinder).height, 51);
     });
 
     testWidgets('a helper or error line adds the same 24px', (tester) async {
@@ -176,7 +176,7 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 52 + 24);
+      expect(tester.getSize(fieldFinder).height, 51 + 24);
     });
 
     testWidgets('takes prefix, unit and suffix like regular', (tester) async {
@@ -195,7 +195,7 @@ void main() {
       expect(find.text(r'$'), findsOneWidget);
       expect(find.text('%'), findsOneWidget);
       expect(find.text('/day'), findsOneWidget);
-      expect(tester.getSize(fieldFinder).height, 52);
+      expect(tester.getSize(fieldFinder).height, 51);
     });
 
     testWidgets('meets the accessibility guidelines in both themes',
