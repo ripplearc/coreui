@@ -53,6 +53,28 @@ void main() {
     return (container.decoration! as BoxDecoration).color!;
   }
 
+  testWidgets('a row has 12 dp padding and a Line Light bottom line',
+      (tester) async {
+    await pumpTile(tester);
+
+    final container = tester.widget<AnimatedContainer>(
+      find.byType(AnimatedContainer),
+    );
+    expect(container.padding, const EdgeInsets.all(CoreSpacing.space3));
+    final border = (container.decoration! as BoxDecoration).border! as Border;
+    expect(border.bottom, BorderSide(color: colors.lineLight));
+    expect(border.top, BorderSide.none);
+  });
+
+  testWidgets('the label is Text Dark', (tester) async {
+    await pumpTile(tester);
+
+    expect(
+      tester.widget<Text>(find.text('Fractional resolution')).style!.color,
+      colors.textDark,
+    );
+  });
+
   testWidgets('the label and the current value are both rendered',
       (tester) async {
     await pumpTile(tester);
