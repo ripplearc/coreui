@@ -76,7 +76,7 @@ void main() {
       expect(find.text(r'$'), findsOneWidget);
     });
 
-    testWidgets('sits 2px before the value in the soft value style',
+    testWidgets('sits right before the value in the soft value style',
         (tester) async {
       await pumpField(
         tester,
@@ -90,7 +90,7 @@ void main() {
 
       expect(
         rectOf(tester, input).left - rectOf(tester, find.text(r'$')).right,
-        2,
+        0,
       );
       expect(styleOf(tester, r'$').color, colors.textBody);
       expect(styleOf(tester, r'$').fontSize, 16);
@@ -131,7 +131,7 @@ void main() {
       expect(styleOf(tester, '%').color, CoreTheme.light().coreColors.textBody);
     });
 
-    testWidgets('unitText sits 5px after the value at 12/16 on regular',
+    testWidgets('unitText sits 4px after the value at 12/16 on regular',
         (tester) async {
       await pumpField(
         tester,
@@ -144,7 +144,7 @@ void main() {
 
       expect(
         rectOf(tester, find.text('days')).left - rectOf(tester, input).right,
-        moreOrLessEquals(5),
+        moreOrLessEquals(4),
       );
       expect(styleOf(tester, 'days').fontSize, 12);
       expect(styleOf(tester, 'days').height, 16 / 12);
@@ -199,8 +199,7 @@ void main() {
         ),
       );
 
-      expect(
-          rectOf(tester, input).right, rectOf(tester, fieldFinder).right - 2);
+      expect(rectOf(tester, input).right, rectOf(tester, fieldFinder).right);
     });
 
     testWidgets('a long value shrinks to the row instead of overflowing',
@@ -217,7 +216,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(
         rectOf(tester, find.text('gal')).right,
-        lessThanOrEqualTo(rectOf(tester, fieldFinder).right - 2),
+        lessThanOrEqualTo(rectOf(tester, fieldFinder).right),
       );
     });
   });
@@ -295,7 +294,7 @@ void main() {
       expect(
         tester.getRect(find.byKey(chipKey)).center.dy,
         moreOrLessEquals(
-          tester.getRect(find.byType(CoreUnderlineTextField)).top + 12 + 3 + 16,
+          tester.getRect(find.byType(CoreUnderlineTextField)).top + 12 + 4 + 16,
           epsilon: 20,
         ),
       );
@@ -402,7 +401,7 @@ void main() {
       );
     });
 
-    testWidgets('a 32px accessory makes a 62px field and centers the value',
+    testWidgets('a 32px accessory makes a 61px field and centers the value',
         (tester) async {
       await pumpField(
         tester,
@@ -413,14 +412,14 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 62);
+      expect(tester.getSize(fieldFinder).height, 61);
       expect(
         rectOf(tester, find.byType(EditableText)).center.dy,
         moreOrLessEquals(rectOf(tester, find.byKey(chipKey)).center.dy),
       );
     });
 
-    testWidgets('trailing sits at the far end and makes a 66px field',
+    testWidgets('trailing sits at the far end and makes a 65px field',
         (tester) async {
       await pumpField(
         tester,
@@ -433,9 +432,9 @@ void main() {
 
       expect(
         rectOf(tester, find.byKey(lookupKey)).right,
-        rectOf(tester, fieldFinder).right - 2,
+        rectOf(tester, fieldFinder).right,
       );
-      expect(tester.getSize(fieldFinder).height, 66);
+      expect(tester.getSize(fieldFinder).height, 65);
       expect(
         rectOf(tester, find.byType(EditableText)).center.dy,
         moreOrLessEquals(rectOf(tester, find.byKey(lookupKey)).center.dy),
