@@ -64,6 +64,8 @@ class CoreCheckRowItem extends StatelessWidget {
     this.semanticLabel,
   });
 
+  static const double _rowRadius = CoreSpacing.space12;
+
   /// Derives the displayed initial: first character of the first
   /// whitespace-delimited token, uppercased. Blank names yield an empty string.
   static String initialFor(String name) {
@@ -79,7 +81,7 @@ class CoreCheckRowItem extends StatelessWidget {
     AppTypographyExtension typography,
   ) {
     final effectiveBackground = avatarBackgroundColor ?? colors.backgroundBlueMid;
-    final effectiveTextColor = avatarTextColor ?? colors.iconOrient;
+    final effectiveTextColor = avatarTextColor ?? colors.textHeadline;
     final effectiveStyle = (avatarTextStyle ?? typography.bodySmallMedium)
         .copyWith(color: effectiveTextColor);
     final initial = initialFor(title);
@@ -99,7 +101,7 @@ class CoreCheckRowItem extends StatelessWidget {
   ) {
     final titleText = Text(
       title,
-      style: typography.bodyLargeRegular.copyWith(color: colors.textDark),
+      style: typography.bodyMediumRegular.copyWith(color: colors.textDark),
     );
 
     final subtitleValue = subtitle;
@@ -132,38 +134,30 @@ class CoreCheckRowItem extends StatelessWidget {
       button: true,
       checked: selected,
       child: Material(
-        color: colors.transparent,
+        color: selected ? colors.backgroundBlueLight : colors.transparent,
+        borderRadius: BorderRadius.circular(_rowRadius),
         child: InkWell(
           onTap: () => onChanged(!selected),
+          borderRadius: BorderRadius.circular(_rowRadius),
           splashFactory: NoSplash.splashFactory,
+          // The whole row is the tap target: 12 dp padding around the 24 dp
+          // check box keeps it at least 48 dp high.
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space4,
-              vertical: CoreSpacing.space3,
-            ),
+            padding: const EdgeInsets.all(CoreSpacing.space3),
             child: Row(
               children: [
                 ExcludeSemantics(child: effectiveLeading),
-                const SizedBox(width: CoreSpacing.space3),
+                const SizedBox(width: CoreSpacing.space2),
                 Expanded(
                   child: ExcludeSemantics(
                     child: _buildText(colors, typography),
                   ),
                 ),
                 ExcludeSemantics(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: CoreSpacing.space12,
-                      minHeight: CoreSpacing.space12,
-                    ),
-                    child: Center(
-                      child: CoreIconWidget(
-                        icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
-                        size: CoreIconSize.size24,
-                        color:
-                            selected ? colors.outlineFocus : colors.iconGrayMid,
-                      ),
-                    ),
+                  child: CoreIconWidget(
+                    icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
+                    size: CoreIconSize.size24,
+                    color: selected ? colors.outlineFocus : colors.iconGrayMid,
                   ),
                 ),
               ],
