@@ -15,7 +15,7 @@
 
 ### 📐 Design notes
 
-The focus underline is `outlineHover` (`#003A54` in light mode), which is the value the design draws; `outlineFocus` is the caret. The design draws no disabled variant, so the disabled colors follow `CoreTextField`. The design draws the `%` of a waste field as part of the value; the storyboard calls it a soft fixed suffix with no cursor, so `suffixText` is soft and a waste field passes `showCursor: false`. The placeholder is `textDisable` as drawn, about 2.5:1 on a white page, below the 4.5:1 WCAG asks of text; it is the token `CoreTextField` already uses for its hint. The text field's accessibility node is 48px tall though the value row is drawn 24px or 32px tall, so the field meets the minimum tap target without changing the design's spacing.
+The focus underline is `outlineHover` (`#003A54` in light mode), which is the value the design draws; `outlineFocus` is the caret. The disabled colors follow the Figma Text Field `Line Disable` variant. The design draws the `%` of a waste field as part of the value; the storyboard calls it a soft fixed suffix with no cursor, so `suffixText` is soft and a waste field passes `showCursor: false`. The placeholder is `textDisable` as drawn, about 2.5:1 on a white page, below the 4.5:1 WCAG asks of text; it is the token `CoreTextField` already uses for its hint. The text field's accessibility node is 48px tall though the value row is drawn 24px or 32px tall, so the field meets the minimum tap target without changing the design's spacing.
 
 ### 🧪 Tests
 
