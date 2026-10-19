@@ -43,7 +43,7 @@ void main() {
 
       // Check that the success toast is displayed
       expect(find.text('Request Successful'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showSuccess displays success toast with title',
@@ -72,7 +72,7 @@ void main() {
       expect(find.text('Success'), findsOneWidget);
       expect(find.text('Your changes have been saved successfully'),
           findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showSuccess displays no separate title when title is omitted',
@@ -99,7 +99,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Request Successful'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
       expect(find.byType(Toast), findsOneWidget);
     });
 
@@ -123,7 +123,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Custom error message'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showError displays error toast with title', (tester) async {
@@ -151,7 +151,7 @@ void main() {
       expect(find.text('Error'), findsOneWidget);
       expect(find.text('Something went wrong processing your request'),
           findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showError displays no separate title when title is omitted',
@@ -178,7 +178,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Custom error message'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
       expect(find.byType(Toast), findsOneWidget);
     });
 
@@ -202,7 +202,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Custom warning message'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showWarning displays warning toast with title',
@@ -231,7 +231,7 @@ void main() {
       expect(find.text('Warning'), findsOneWidget);
       expect(find.text('Please review your settings before continuing'),
           findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
     });
 
     testWidgets('showWarning displays no separate title when title is omitted',
@@ -258,7 +258,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Custom warning message'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.byKey(const Key('toast_close_button')), findsOneWidget);
       expect(find.byType(Toast), findsOneWidget);
     });
 
@@ -348,7 +348,7 @@ void main() {
       expect(find.text('Test toast'), findsOneWidget);
 
       // Close the toast
-      await tester.tap(find.text('Close'));
+      await tester.tap(find.byKey(const Key('toast_close_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Test toast'), findsNothing);
@@ -797,7 +797,7 @@ void main() {
         // tapped. That tap carries the entry it was built with, not whichever
         // entry is current.
         await tester.tap(find.text('Show Second'));
-        await tester.tap(find.text('Close'), warnIfMissed: false);
+        await tester.tap(find.byKey(const Key('toast_close_button')), warnIfMissed: false);
         await tester.pumpAndSettle();
 
         expect(find.text('Second toast'), findsOneWidget);
@@ -810,7 +810,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Something went wrong'), findsOneWidget);
 
-        await tester.tap(find.text('Close'));
+        await tester.tap(find.byKey(const Key('toast_close_button')));
         await tester.pumpAndSettle();
 
         expect(find.text('Something went wrong'), findsNothing);
@@ -836,7 +836,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Check the input'), findsOneWidget);
 
-        await tester.tap(find.text('Close'));
+        await tester.tap(find.byKey(const Key('toast_close_button')));
         await tester.pumpAndSettle();
 
         expect(find.text('Check the input'), findsNothing);
