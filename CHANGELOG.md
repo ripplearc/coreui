@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.46.0] - CoreCheckRowItem matches the library Dropdown cell
+
+### 🐛 Fixes
+
+- **CoreCheckRowItem**: rows are 48 dp high with 12 dp padding on every side (were 72 dp, with 16 dp at the sides). A selected row is filled Background Blue Light with a 48 dp radius; it had no fill. The check box is a bare 24 dp icon 12 dp from the end edge (it sat in a 48 × 48 box, 28 dp from the edge), and the whole row is still the 48 dp tap target. The name is Body Medium Regular (was Body Large), the default avatar initial is Text Headline (was Icon Orient) and the avatar sits 8 dp before the text (was 12) (CA-1318)
+
+### 🧪 Tests
+
+- Row height, check box size and end inset, avatar inset and gap, selected fill and radius, unselected row without fill, name style and initial colour. Goldens regenerated, light and dark
+
 ## [0.45.0] - Selection sheets match the library Dropdown list
 
 ### 🐛 Fixes
