@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.52.0] - Date filter chip keeps focus after a clear
+
+### 🔧 Fixes
+
+- **CoreDateFilterChip**: after the x clears the filter, focus moves to the inactive chip instead of being lost with the active pill (CA-1322)
+- **CoreFilterChip**: takes an optional `focusNode`, so a parent can move focus to it (CA-1322)
+
+### 🧪 Tests
+
+- Date chip: a tap on the x focuses the inactive chip once the caller rebuilds without a range. Filter chip: focus through `focusNode`
+
 ## [0.51.0] - Active date filter chip matches the design library
 
 ### 🔧 Fixes
