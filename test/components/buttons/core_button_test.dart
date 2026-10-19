@@ -275,4 +275,264 @@ void main() {
       expect(side.width, CoreButton.hairlineBorderWidth);
     });
   });
+
+  group('CoreButton design library looks', () {
+    final colors = AppColorsExtension.create();
+    final typography = AppTypographyExtension.create();
+
+    BoxDecoration fillOf(WidgetTester tester) {
+      final decoratedBoxes = tester.widgetList<DecoratedBox>(
+        find.descendant(
+          of: find.byType(CoreButton),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      return decoratedBoxes.elementAt(1).decoration as BoxDecoration;
+    }
+
+    Finder focusRing() => find.descendant(
+          of: find.byType(CoreButton),
+          matching: find.byWidgetPredicate((widget) {
+            if (widget is! DecoratedBox) return false;
+            final decoration = widget.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            return border is Border &&
+                border.top ==
+                    BorderSide(
+                      color: colors.outlineFocus,
+                      width: CoreButton.focusRingWidth,
+                    );
+          }),
+        );
+
+    TextStyle labelStyleOf(WidgetTester tester, String label) =>
+        tester.widget<Text>(find.text(label)).style!;
+
+    testWidgets('a pressed primary button fills with buttonPress',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(CoreButton(label: 'Primary', onPressed: () {})),
+      );
+
+      final gesture =
+          await tester.startGesture(tester.getCenter(find.byType(CoreButton)));
+      await tester.pump();
+
+      expect(fillOf(tester).color, colors.buttonPress);
+      await gesture.up();
+    });
+
+    testWidgets(
+        'a focused primary button keeps its surface fill and draws the '
+        'focus ring 5px outside', (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          Center(
+            child: CoreButton(
+              label: 'Primary',
+              onPressed: () {},
+              autofocus: true,
+              fullWidth: false,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(fillOf(tester).color, colors.buttonSurface);
+      expect(focusRing(), findsOneWidget);
+
+      final buttonRect = tester.getRect(find.byType(CoreButton));
+      final ringRect = tester.getRect(focusRing());
+      expect(
+        ringRect,
+        buttonRect.inflate(CoreButton.focusRingOffset),
+      );
+      final ringBorder = (tester.widget<DecoratedBox>(focusRing()).decoration
+              as BoxDecoration)
+          .border as Border;
+      expect(ringBorder.top.width, CoreButton.focusRingWidth);
+    });
+
+    testWidgets('fills the height its parent forces on it', (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          Center(
+            child: SizedBox(
+              height: 68,
+              child: CoreButton(label: 'Tall', onPressed: () {}),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getCenter(find.text('Tall')).dy,
+        moreOrLessEquals(tester.getCenter(find.byType(CoreButton)).dy),
+      );
+    });
+
+    testWidgets('an unfocused primary button draws no focus ring',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(CoreButton(label: 'Primary', onPressed: () {})),
+      );
+
+      expect(focusRing(), findsNothing);
+    });
+
+    testWidgets('a focused secondary button draws no focus ring',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          CoreButton(
+            label: 'Secondary',
+            variant: CoreButtonVariant.secondary,
+            onPressed: () {},
+            autofocus: true,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(focusRing(), findsNothing);
+    });
+
+    testWidgets('a large button has 20px side padding', (tester) async {
+      const iconKey = Key('icon');
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          Center(
+            child: CoreButton(
+              label: 'Primary',
+              onPressed: () {},
+              fullWidth: false,
+              icon: const CoreIconWidget(key: iconKey, icon: CoreIcons.add),
+            ),
+          ),
+        ),
+      );
+
+      final buttonLeft = tester.getTopLeft(find.byType(CoreButton)).dx;
+      final iconLeft = tester.getTopLeft(find.byKey(iconKey)).dx;
+      expect(iconLeft - buttonLeft, CoreSpacing.space5);
+    });
+
+    testWidgets('a small button uses Body Medium Semibold', (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(
+          CoreButton(
+            label: 'Small',
+            size: CoreButtonSize.small,
+            onPressed: () {},
+          ),
+        ),
+      );
+
+      final style = labelStyleOf(tester, 'Small');
+      expect(style.fontSize, typography.bodyMediumSemiBold.fontSize);
+      expect(style.fontWeight, typography.bodyMediumSemiBold.fontWeight);
+    });
+
+    testWidgets('a large button keeps Body Large Semibold', (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTheme(CoreButton(label: 'Large', onPressed: () {})),
+      );
+
+      final style = labelStyleOf(tester, 'Large');
+      expect(style.fontSize, typography.bodyLargeSemiBold.fontSize);
+      expect(style.fontWeight, typography.bodyLargeSemiBold.fontWeight);
+    });
+
+    group('social variant', () {
+      const iconKey = Key('logo');
+      const label = 'Continue with Google';
+
+      Widget social({bool isDisabled = false}) => _wrapWithTheme(
+            CoreButton(
+              label: label,
+              variant: CoreButtonVariant.social,
+              onPressed: () {},
+              isDisabled: isDisabled,
+              icon: const CoreIconWidget(
+                key: iconKey,
+                icon: CoreIcons.google,
+                size: CoreSpacing.space6,
+              ),
+            ),
+          );
+
+      testWidgets('is 48px tall in a column', (tester) async {
+        await tester.pumpWidget(
+          _wrapWithTheme(
+            Column(
+              children: [
+                CoreButton(
+                  label: label,
+                  variant: CoreButtonVariant.social,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        );
+
+        expect(tester.getSize(find.byType(CoreButton)).height, 48);
+      });
+
+      testWidgets('puts the logo 20px from the left edge', (tester) async {
+        await tester.pumpWidget(social());
+
+        final buttonLeft = tester.getTopLeft(find.byType(CoreButton)).dx;
+        final iconLeft = tester.getTopLeft(find.byKey(iconKey)).dx;
+        expect(iconLeft - buttonLeft, CoreSpacing.space5);
+      });
+
+      testWidgets('centres the text on the button', (tester) async {
+        await tester.pumpWidget(social());
+
+        expect(
+          tester.getCenter(find.text(label)).dx,
+          moreOrLessEquals(tester.getCenter(find.byType(CoreButton)).dx),
+        );
+      });
+
+      testWidgets('uses Body Large Medium', (tester) async {
+        await tester.pumpWidget(social());
+
+        final style = labelStyleOf(tester, label);
+        expect(style.fontSize, typography.bodyLargeMedium.fontSize);
+        expect(style.fontWeight, typography.bodyLargeMedium.fontWeight);
+      });
+
+      testWidgets('draws a 1px Line Mid border', (tester) async {
+        await tester.pumpWidget(social());
+
+        final side = (fillOf(tester).border as Border).top;
+        expect(side.color, colors.lineMid);
+        expect(side.width, 1);
+      });
+
+      testWidgets('fills Grey Mid and keeps the Line Mid border when pressed',
+          (tester) async {
+        await tester.pumpWidget(social());
+
+        final gesture = await tester
+            .startGesture(tester.getCenter(find.byType(CoreButton)));
+        await tester.pump();
+
+        final decoration = fillOf(tester);
+        expect(decoration.color, colors.backgroundGrayMid);
+        expect((decoration.border as Border).top.color, colors.lineMid);
+        await gesture.up();
+      });
+
+      testWidgets('uses Text Color/Disable when disabled', (tester) async {
+        await tester.pumpWidget(social(isDisabled: true));
+
+        expect(labelStyleOf(tester, label).color, colors.textDisable);
+      });
+    });
+  });
 }
