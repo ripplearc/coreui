@@ -4,8 +4,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
-ThemeData _createTestTheme() {
-  return CoreTheme.light().copyWith(
+ThemeData _createTestTheme({bool dark = false}) {
+  return (dark ? CoreTheme.dark() : CoreTheme.light()).copyWith(
     textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
   );
 }
@@ -24,10 +24,11 @@ void main() {
       required WidgetTester tester,
       required String label,
       VoidCallback? onTap,
+      bool dark = false,
     }) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: _createTestTheme(),
+          theme: _createTestTheme(dark: dark),
           home: Material(
             child: Center(
               child: CoreFilterChip(
@@ -55,6 +56,24 @@ void main() {
       await expectLater(
         find.byType(CoreFilterChip),
         matchesGoldenFile('goldens/core_filter_chip_default.png'),
+      );
+    });
+
+    testWidgets('renders chip correctly in dark theme', (tester) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await pumpFilterChip(
+        tester: tester,
+        label: 'Tags',
+        onTap: () {},
+        dark: true,
+      );
+
+      await expectLater(
+        find.byType(CoreFilterChip),
+        matchesGoldenFile('goldens/core_filter_chip_default_dark.png'),
       );
     });
 

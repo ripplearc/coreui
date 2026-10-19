@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -56,6 +57,26 @@ void main() {
 
       expect(tapCount, 1);
       handle.dispose();
+    });
+
+    testWidgets('draws a 32 dp pill inside a 48 dp touch area', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () {}),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final chipSize = tester.getSize(find.byType(CoreFilterChip));
+      final pill = find.descendant(
+        of: find.byType(CoreFilterChip),
+        matching: find.byType(Container),
+      );
+      expect(chipSize.height, CoreSpacing.space12);
+      expect(chipSize.width, greaterThanOrEqualTo(CoreSpacing.space12));
+      expect(tester.getSize(pill).height, CoreSpacing.space8);
     });
   });
 }
