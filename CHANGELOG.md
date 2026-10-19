@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.44.0] - CoreSearchBox matches the library Search Bar
+
+### 🐛 Fixes
+
+- **CoreSearchBox**: draws the library Search Bar. It had no border and no search icon, and its fill matched the page, so the field could not be seen. It now has a 1 px Line Mid border (Outline Focus when focused), a search icon 8 dp before the text, a plain x clear icon in place of the circled one, and a Text Body hint (was Text Disable) (CA-1318)
+- **CoreSearchBoxType**: `pill` (the default, for pages) has a pill radius, 24 dp icons in Icon Dark, Body Medium text and the xs shadow. `sheet` (for bottom sheets) has 12 dp corners, 20 dp icons in Icon Grey and Body Large text. The app's two search pages keep the default, so they get the Pill look with no change
+
+### 📐 Design notes
+
+The ticket text gives the Pill a 12 dp gap between the search icon and the text. The Figma Pill node (345:9195) draws 8 dp, the same as the Sheet, so both use 8 dp.
+
+### 🧪 Tests
+
+- Pill and Sheet icon sizes and colours, shadow, corner radius, border, focus border and hint colour. Goldens: light and dark, both types in default, filled and disabled states, and the focused Pill
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
