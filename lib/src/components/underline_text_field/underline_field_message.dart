@@ -7,8 +7,14 @@ import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 import 'underline_field_metrics.dart';
 
+/// The helper or error line under a [CoreUnderlineTextField], with an icon
+/// beside the first line of the text.
 class UnderlineFieldMessage extends StatelessWidget {
+  /// The message shown beside the icon.
   final String text;
+
+  /// Whether the line is an error. An error uses the red icon and text colours
+  /// and is announced by screen readers when it appears.
   final bool isError;
 
   const UnderlineFieldMessage({
