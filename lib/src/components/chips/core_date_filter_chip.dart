@@ -14,7 +14,7 @@ import 'core_chip_theme.dart';
 /// Callers that intend to widget-test the chip should supply both
 /// [inactiveChipKey] and [activeChipKey]; without them the two chip variants
 /// have no stable finder targets.
-class CoreDateFilterChip extends StatelessWidget {
+class CoreDateFilterChip extends StatefulWidget {
   /// The currently selected date range, or `null` if no filter is active.
   final DateRange? selectedDateRange;
 
@@ -22,7 +22,7 @@ class CoreDateFilterChip extends StatelessWidget {
   final ValueChanged<DateRange> onApply;
 
   /// Called when the user taps the active pill's × to clear the filter.
-  /// Tapping the pill itself reopens the sheet.
+  /// Focus then moves to the inactive chip; tapping the pill reopens the sheet.
   final VoidCallback onClear;
 
   /// Label shown on the chip when no range is selected.
@@ -113,25 +113,46 @@ class CoreDateFilterChip extends StatelessWidget {
     this.activeChipKey,
   });
 
-  Future<void> _showSheet(BuildContext context) async {
+  @override
+  State<CoreDateFilterChip> createState() => _CoreDateFilterChipState();
+}
+
+class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
+  final FocusNode _inactiveChipFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _inactiveChipFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _showSheet() async {
     final range = await CoreDateRangeSheet.show(
       context: context,
-      initialRange: selectedDateRange,
-      title: sheetTitle,
-      todayLabel: todayLabel,
-      last7DaysLabel: last7DaysLabel,
-      last30DaysLabel: last30DaysLabel,
-      thisMonthLabel: thisMonthLabel,
-      customRangeLabel: customRangeLabel,
-      startDateLabel: startDateLabel,
-      endDateLabel: endDateLabel,
-      cancelLabel: cancelLabel,
-      applyLabel: applyLabel,
-      confirmLabel: confirmLabel,
+      initialRange: widget.selectedDateRange,
+      title: widget.sheetTitle,
+      todayLabel: widget.todayLabel,
+      last7DaysLabel: widget.last7DaysLabel,
+      last30DaysLabel: widget.last30DaysLabel,
+      thisMonthLabel: widget.thisMonthLabel,
+      customRangeLabel: widget.customRangeLabel,
+      startDateLabel: widget.startDateLabel,
+      endDateLabel: widget.endDateLabel,
+      cancelLabel: widget.cancelLabel,
+      applyLabel: widget.applyLabel,
+      confirmLabel: widget.confirmLabel,
     );
     if (range != null) {
-      onApply(range);
+      widget.onApply(range);
     }
+  }
+
+  void _clear() {
+    widget.onClear();
+    // The inactive chip exists only once the parent rebuilds without a range.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _inactiveChipFocusNode.requestFocus();
+    });
   }
 
   // English-only default; callers localise via [dateLabelBuilder].
@@ -156,7 +177,7 @@ class CoreDateFilterChip extends StatelessWidget {
   }
 
   String _formatRange(DateRange range) {
-    final formatDate = dateLabelBuilder ?? _defaultDateLabel;
+    final formatDate = widget.dateLabelBuilder ?? _defaultDateLabel;
     final start = formatDate(range.start);
     if (range.start == range.end) return start;
     final end = formatDate(range.end);
@@ -165,24 +186,25 @@ class CoreDateFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final range = selectedDateRange;
+    final range = widget.selectedDateRange;
 
     if (range == null) {
       return CoreFilterChip(
-        key: inactiveChipKey,
-        label: label,
-        semanticLabel: semanticLabel,
-        onTap: () => _showSheet(context),
+        key: widget.inactiveChipKey,
+        label: widget.label,
+        semanticLabel: widget.semanticLabel,
+        focusNode: _inactiveChipFocusNode,
+        onTap: _showSheet,
       );
     }
 
     return _ActiveDateChip(
-      key: activeChipKey,
+      key: widget.activeChipKey,
       label: _formatRange(range),
-      clearSemanticLabel: clearSemanticLabel,
-      rangeSemanticHint: rangeSemanticHint,
-      onTap: () => _showSheet(context),
-      onClear: onClear,
+      clearSemanticLabel: widget.clearSemanticLabel,
+      rangeSemanticHint: widget.rangeSemanticHint,
+      onTap: _showSheet,
+      onClear: _clear,
     );
   }
 }

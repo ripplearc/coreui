@@ -190,5 +190,21 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(tapCount, 1);
     });
+
+    testWidgets('takes focus through the given focusNode', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () {}, focusNode: focusNode),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      focusNode.requestFocus();
+      await tester.pump();
+
+      expect(focusNode.hasFocus, isTrue);
+    });
   });
 }

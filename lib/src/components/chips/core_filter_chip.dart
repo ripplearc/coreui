@@ -19,6 +19,7 @@ class CoreFilterChip extends StatefulWidget {
     required this.label,
     this.onTap,
     this.semanticLabel,
+    this.focusNode,
   });
 
   /// The text label displayed inside the chip.
@@ -29,6 +30,9 @@ class CoreFilterChip extends StatefulWidget {
 
   /// Accessibility label for the chip. Defaults to [label].
   final String? semanticLabel;
+
+  /// Optional focus node, so a parent can move focus to the chip.
+  final FocusNode? focusNode;
 
   @override
   State<CoreFilterChip> createState() => _CoreFilterChipState();
@@ -54,6 +58,7 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
         type: MaterialType.transparency,
         child: InkWell(
           onTap: widget.onTap,
+          focusNode: widget.focusNode,
           onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
           onHighlightChanged: (isPressed) =>
               setState(() => _isPressed = isPressed),
