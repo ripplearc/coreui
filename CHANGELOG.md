@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.43.0] - CoreButton matches the design library
+
+### 🔧 Fixes
+
+- **Primary pressed fill**: `buttonPress` is now Orient/700 (`#006D8F`) in the light theme, as the Figma library draws it. It was Orient/600 (`#0089B4`), on which white text reaches only 4.0:1. The dark theme is unchanged (CA-1319)
+- **Primary focus**: a focused primary button keeps its `buttonSurface` fill and draws a 3 px `outlineFocus` ring 5 px outside the button, with a 2 px transparent gap. It used to switch to the hover fill, which looked the same as pressed. The ring does not change the button's size or its touch area. `CoreButton.focusRingWidth` and `CoreButton.focusRingOffset` hold the two values (CA-1319)
+- **Large padding**: 20 px on each side (`space5`). It was 24 px (CA-1319)
+- **Small text**: Small buttons use Body Medium Semibold. Every size used Body Large Semibold (CA-1319)
+- **Social login button**: the logo sits at the left edge, 20 px in, and the label is centred on its own. The label is Body Large Medium (was Semibold), the side padding 20 px (was 24), the border 1 px `lineMid` (was 2 px). Pressed, it fills `backgroundGrayMid` and keeps the `lineMid` border (the border used to turn `outlineHover`). Disabled, the label is `textDisable` (was `textBody`) (CA-1319)
+
+### 📐 Design notes
+
+The ticket and the Figma library give the pressed colour for the light theme only, so the dark `buttonPress` (`orient200`) stays. Only the primary button draws the focus ring; secondary and social focus looks are unchanged. A wider large button changes the Undo button of the toast and the large custom-child button by 8 px.
+
+### 🧪 Tests
+
+- Pressed primary fill, focused primary fill and ring (position, width, none when unfocused or on a secondary button), a forced parent height still filling the button, Large padding, Small and Large label styles. A11y: contrast for the small primary and focused primary buttons in both themes, the focus ring keeps the 48 px touch area, and white text reaches 4.5:1 on the light pressed fill. Social: 48 px height, logo 20 px from the left edge, centred label, label style, 1 px border, pressed fill and border, disabled label colour
+- Goldens: new focused primary (light and dark), social pressed and social disabled (light and dark). Updated: large, medium, small, custom child, social (Google and Apple, light and dark), toast, colour tokens
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
