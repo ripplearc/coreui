@@ -41,14 +41,14 @@ Notes:
 
 ## Sizes
 
-`CoreChipSize.small` and `CoreChipSize.medium` share the same overall visual style (grey surface, no shadow). `CoreChipSize.large` uses a page background surface with a drop shadow. `CoreChipSize.mini` is the large chip's secondary form: the same page-background surface and `lineMid` outline at the medium padding, no shadow, and a semibold value in place of the heavy unit — the value-only chips on the conversions row of a two-row `CoreSuggestionArea` (calculator prototype `sc-mini`).
+`CoreChipSize.small` and `CoreChipSize.medium` share the same overall visual style (grey surface). `CoreChipSize.large` is the Figma Suggestion Strip Chip: 48 high on a page background surface, a Body Medium Regular `textDark` label 8 px before a heavy value. `CoreChipSize.mini` is the large chip's secondary form: the same page-background surface and `lineMid` outline at the medium padding, and a semibold value in place of the heavy unit — the value-only chips on the conversions row of a two-row `CoreSuggestionArea` (calculator prototype `sc-mini`).
 
-| Size | Padding | Surface | Shadow |
-|---|---|---|---|
-| `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | `chipGrey` | None |
-| `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `chipGrey` | None |
-| `large` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space3)` | `pageBackground`, `lineMid` outline | `CoreShadows.small` |
-| `mini` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `pageBackground`, `lineMid` outline | None |
+| Size | Padding | Surface |
+|---|---|---|
+| `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | `chipGrey` |
+| `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `chipGrey` |
+| `large` | `EdgeInsetsDirectional.fromSTEB(CoreSpacing.space4, 13, CoreSpacing.space2, 13)` (the label row adds `space2` at its end) | `pageBackground`, `lineMid` outline |
+| `mini` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `pageBackground`, `lineMid` outline |
 
 ## States
 
@@ -95,7 +95,7 @@ CoreChip(
 );
 ```
 
-### Large chip with shadow
+### Large chip
 
 ```dart
 final isSelected = ValueNotifier<bool>(false);
@@ -185,7 +185,7 @@ CoreChip(
 
 The component uses theme-aware tokens from `AppColorsExtension` and `AppTypographyExtension`:
 
-- **Text style** (`CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle`): label `typography.bodyMediumMedium` in `colors.textBody`; value `bodyMediumMedium` and unit `bodyMediumSemiBold` at `CoreChipTheme.unitFontWeight` (w800) in `colors.textDark`. A `mini` chip reads its value and unit in plain `bodyMediumSemiBold` instead, so the whole value is one semibold run
+- **Text style** (`CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle`): label `typography.bodyMediumMedium` in `colors.textBody`; value `bodyMediumMedium` and unit `bodyMediumSemiBold` at `CoreChipTheme.unitFontWeight` (w800) in `colors.textDark`. A `mini` chip reads its value and unit in plain `bodyMediumSemiBold` instead, so the whole value is one semibold run. A `large` chip (the suggestion strip) reads its label in `bodyMediumRegular` `colors.textDark`, 8 px before a value as heavy as its unit
 - **Corner radius**: `BorderRadius.circular(CoreSpacing.space6)`
 - **Animation**: `CoreChipTheme.animationDuration` (`120ms`)
 - **Icons**:
@@ -225,7 +225,7 @@ Priority: selected → pressed → focused → default.
 
 - Background: unchanged — the chip's usual fill for its size (Figma Suggestion Strip Chip `Bind`)
 - Solid border: `colors.transparent` at the normal width, so the chip measures the same
-- Outline: `CoreDashedBorderDecoration` in `colors.outlineFocus`, `CoreChipTheme.dashLength` / `gapLength` (`4px` / `4px`), stroke following `borderWidthFor` so a focused chip thickens like a solid one
+- Outline: `CoreDashedBorderDecoration` in `colors.outlineFocus`, `CoreChipTheme.dashLength` / `gapLength` (`4px` / `4px`), stroke `CoreChipTheme.dashedStrokeWidth` (`1.5px`) at rest and `borderWidthFor(isFocused: true)` when focused, so a focused chip thickens like a solid one
 
 The dashes are the chip's `foregroundDecoration`, so the solid border and its animation are untouched.
 

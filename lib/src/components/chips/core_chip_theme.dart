@@ -7,21 +7,29 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// colors or spacing — swap this class to re-theme the entire chip family.
 abstract final class CoreChipTheme {
   static const double _smallVerticalPadding = 2.0;
+  static const double _largeVerticalPadding = 13.0;
 
   /// Returns the padding for a chip of a given [size]. [CoreChipSize.mini]
   /// shares the medium padding: it is the large surface at the medium height.
-  static EdgeInsets padding(CoreChipSize size) => switch (size) {
-        CoreChipSize.small => const EdgeInsets.symmetric(
+  /// [CoreChipSize.large] is the Figma Suggestion Strip Chip: 48 high with
+  /// its 1 px border, and 16 px at each side once the label row's trailing
+  /// [CoreSpacing.space2] is counted.
+  static EdgeInsetsDirectional padding(CoreChipSize size) => switch (size) {
+        CoreChipSize.small => const EdgeInsetsDirectional.symmetric(
             horizontal: CoreSpacing.space2,
             vertical: _smallVerticalPadding,
           ),
-        CoreChipSize.medium || CoreChipSize.mini => const EdgeInsets.symmetric(
+        CoreChipSize.medium ||
+        CoreChipSize.mini =>
+          const EdgeInsetsDirectional.symmetric(
             horizontal: CoreSpacing.space3,
             vertical: CoreSpacing.space2,
           ),
-        CoreChipSize.large => const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space3,
-            vertical: CoreSpacing.space3,
+        CoreChipSize.large => const EdgeInsetsDirectional.fromSTEB(
+            CoreSpacing.space4,
+            _largeVerticalPadding,
+            CoreSpacing.space2,
+            _largeVerticalPadding,
           ),
       };
 
@@ -97,25 +105,41 @@ abstract final class CoreChipTheme {
     return onPageSurface(size) ? colors.lineMid : colors.chipGrey;
   }
 
-  /// The label's text style: `bodyMediumMedium` in [colors.textBody] for
-  /// every size.
+  /// The label's text style: `bodyMediumRegular` in [colors.textDark] for
+  /// [CoreChipSize.large] (Figma Suggestion Strip Chip), otherwise
+  /// `bodyMediumMedium` in [colors.textBody].
   static TextStyle labelStyle({
+    required CoreChipSize size,
     required AppTypographyExtension typography,
     required AppColorsExtension colors,
   }) =>
-      typography.bodyMediumMedium.copyWith(color: colors.textBody);
+      size == CoreChipSize.large
+          ? typography.bodyMediumRegular.copyWith(color: colors.textDark)
+          : typography.bodyMediumMedium.copyWith(color: colors.textBody);
 
-  /// The value's text style in [colors.textDark]: `bodyMediumMedium`, or
+  /// The gap between the label and the value: [CoreSpacing.space2] for
+  /// [CoreChipSize.large], [CoreSpacing.space1] otherwise.
+  static double labelGap(CoreChipSize size) =>
+      size == CoreChipSize.large ? CoreSpacing.space2 : CoreSpacing.space1;
+
+  /// The value's text style in [colors.textDark]: `bodyMediumMedium`;
   /// `bodyMediumSemiBold` for [CoreChipSize.mini], whose whole value reads
-  /// semibold instead of ending in a heavy unit.
+  /// semibold instead of ending in a heavy unit; and `bodyMediumSemiBold` at
+  /// [unitFontWeight] for [CoreChipSize.large], whose whole value is heavy.
   static TextStyle valueStyle({
     required CoreChipSize size,
     required AppTypographyExtension typography,
     required AppColorsExtension colors,
   }) =>
-      (size == CoreChipSize.mini
-              ? typography.bodyMediumSemiBold
-              : typography.bodyMediumMedium)
+      switch (size) {
+        CoreChipSize.mini => typography.bodyMediumSemiBold,
+        CoreChipSize.large => typography.bodyMediumSemiBold.copyWith(
+            fontWeight: unitFontWeight,
+          ),
+        CoreChipSize.small ||
+        CoreChipSize.medium =>
+          typography.bodyMediumMedium,
+      }
           .copyWith(color: colors.textDark);
 
   /// The unit's text style in [colors.textDark]: `bodyMediumSemiBold` at
@@ -152,8 +176,9 @@ abstract final class CoreChipTheme {
 
   /// Returns the dashed outline for a chip with the given [outline], or
   /// `null` for [CoreChipOutline.solid]. The stroke follows [borderWidthFor]
-  /// so a focused dashed chip thickens like a solid one; [CoreChip] applies
-  /// it as its `foregroundDecoration`.
+  /// when focused, so a focused dashed chip thickens like a solid one, and is
+  /// [dashedStrokeWidth] at rest; [CoreChip] applies it as its
+  /// `foregroundDecoration`.
   static CoreDashedBorderDecoration? dashedOutline({
     required CoreChipOutline outline,
     required bool isFocused,
@@ -162,23 +187,24 @@ abstract final class CoreChipTheme {
     if (outline != CoreChipOutline.dashed) return null;
     return CoreDashedBorderDecoration(
       color: colors.outlineFocus,
-      strokeWidth: borderWidthFor(isFocused: isFocused),
+      strokeWidth: isFocused
+          ? borderWidthFor(isFocused: isFocused)
+          : dashedStrokeWidth,
       radius: CoreSpacing.space6,
       dashLength: dashLength,
       gapLength: gapLength,
     );
   }
 
+  /// Resting stroke width of the [CoreChipOutline.dashed] outline (Figma
+  /// Suggestion Strip Chip, Bind).
+  static const double dashedStrokeWidth = 1.5;
+
   /// Dash length of the [CoreChipOutline.dashed] outline.
   static const double dashLength = CoreSpacing.space1;
 
   /// Gap length between dashes of the [CoreChipOutline.dashed] outline.
   static const double gapLength = CoreSpacing.space1;
-
-  /// Returns the shadow list for a chip of a given [size].
-  /// Only [CoreChipSize.large] has a shadow; others return null.
-  static List<BoxShadow>? shadow(CoreChipSize size) =>
-      size == CoreChipSize.large ? CoreShadows.small : null;
 
   /// The default animation duration for pressed/selected transitions.
   static const Duration animationDuration = Duration(milliseconds: 120);
