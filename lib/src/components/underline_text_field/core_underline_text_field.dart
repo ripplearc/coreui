@@ -189,12 +189,11 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// affixes and placeholder to `textDisable`, rests its underline on
   /// `lineMid`, and neither takes focus nor reports taps.
   ///
-  /// The design has no disabled variant. The colors follow [CoreTextField]'s
-  /// disabled state.
+  /// The colors follow the Figma Text Field `Line Disable` variant.
   final bool enabled;
 
   /// Whether the value can be read but not edited. A read-only field keeps its
-  /// normal look, as the recalled rate on the cost form does.
+  /// normal look.
   final bool readOnly;
 
   /// Whether gaining focus selects the whole value, so the first digit typed

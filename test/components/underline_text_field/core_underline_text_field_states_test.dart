@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -545,6 +546,67 @@ void main() {
       } finally {
         handle.dispose();
       }
+    });
+
+    testWidgets(
+        'tapping a focused read-only field does not ask the system '
+        'keyboard to show', (tester) async {
+      final calls = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.textInput,
+        (call) async {
+          calls.add(call.method);
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.textInput, null),
+      );
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          readOnly: true,
+          label: 'Rate',
+          initialValue: '145',
+        ),
+      );
+
+      await tester.tap(find.text('Rate'));
+      await tester.pump();
+      await tester.tap(find.text('Rate'));
+      await tester.pump();
+
+      expect(calls, isNot(contains('TextInput.show')));
+    });
+
+    testWidgets(
+        'tapping a focused editable field asks the system keyboard '
+        'to show', (tester) async {
+      final calls = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.textInput,
+        (call) async {
+          calls.add(call.method);
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.textInput, null),
+      );
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(label: 'Rate', initialValue: '145'),
+      );
+
+      await tester.tap(find.text('Rate'));
+      await tester.pump();
+      calls.clear();
+      await tester.tap(find.text('Rate'));
+      await tester.pump();
+
+      expect(calls, contains('TextInput.show'));
     });
 
     testWidgets('a read-only field is announced as read-only', (tester) async {
