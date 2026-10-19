@@ -139,7 +139,7 @@ void main() {
       expect(clearCalled, isFalse);
     });
 
-    testWidgets('calls onClear and shows the inactive chip when × is tapped',
+    testWidgets('calls onClear and focuses the inactive chip when × is tapped',
         (tester) async {
       DateRange? range = DateRange(
         start: DateTime(2024, 3, 1),
@@ -164,6 +164,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(Focus.of(tester.element(find.text('Modified'))).hasFocus, isTrue);
     });
 
     testWidgets('keeps both active pill targets at least 48 dp high', (

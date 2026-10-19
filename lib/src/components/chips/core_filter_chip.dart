@@ -19,6 +19,7 @@ class CoreFilterChip extends StatelessWidget {
     required this.label,
     this.onTap,
     this.semanticLabel,
+    this.focusNode,
   });
 
   /// The text label displayed inside the chip.
@@ -29,6 +30,9 @@ class CoreFilterChip extends StatelessWidget {
 
   /// Accessibility label for the chip. Defaults to [label].
   final String? semanticLabel;
+
+  /// Optional focus node, so a parent can move focus to the chip.
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class CoreFilterChip extends StatelessWidget {
       enabled: isEnabled,
       child: InkWell(
         onTap: onTap,
+        focusNode: focusNode,
         splashFactory: NoSplash.splashFactory,
         overlayColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.focused)

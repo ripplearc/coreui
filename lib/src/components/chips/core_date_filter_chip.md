@@ -33,7 +33,7 @@ The chip also forwards `CoreDateRangeSheet`'s label parameters (`sheetTitle`, `t
 ## Behavior
 
 - No selection → plain `CoreFilterChip`; tapping it opens `CoreDateRangeSheet.show` seeded with `selectedDateRange`. If the sheet resolves with a range, `onApply` fires; cancelling fires nothing.
-- Selection present → active pill with the formatted range (a single date when `start == end`). Tapping the pill reopens the sheet; tapping the × (`CoreDateFilterChip.clearButtonKey`) fires `onClear`.
+- Selection present → active pill with the formatted range (a single date when `start == end`). Tapping the pill reopens the sheet; tapping the × (`CoreDateFilterChip.clearButtonKey`) fires `onClear` and moves focus to the inactive chip once the caller rebuilds without a range.
 - The caller owns the selection state; the chip never stores a range itself.
 
 ## Accessibility
