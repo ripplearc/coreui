@@ -20,7 +20,7 @@ void main() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(width: 120, child: Text(title, style: style)),
+        SizedBox(width: 140, child: Text(title, style: style)),
         badge,
       ],
     );
@@ -32,9 +32,9 @@ void main() {
         theme.coreTypography.bodySmallRegular.copyWith(color: colors.textBody);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 560x200 @ 2.0 => 280x100 logical: two captioned badges with space4
-    // padding and a space3 gap.
-    tester.view.physicalSize = const Size(560, 200);
+    // 640x336 @ 2.0 => 320x168 logical: four captioned badges (24, 24, 20 and
+    // 22 dp tall) with space4 padding and space3 gaps.
+    tester.view.physicalSize = const Size(640, 336);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -54,17 +54,35 @@ void main() {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 captioned(
-                  'Label only',
+                  'Warning',
                   caption,
                   const CoreStatusBadge(label: 'Sample rate'),
                 ),
                 const SizedBox(height: CoreSpacing.space3),
                 captioned(
-                  'With info icon',
+                  'Warning + icon',
                   caption,
                   const CoreStatusBadge(
                     label: 'Sample rate',
                     showInfoIcon: true,
+                  ),
+                ),
+                const SizedBox(height: CoreSpacing.space3),
+                captioned(
+                  'Warning compact',
+                  caption,
+                  const CoreStatusBadge(
+                    label: 'Sample rate',
+                    size: CoreStatusBadgeSize.compact,
+                  ),
+                ),
+                const SizedBox(height: CoreSpacing.space3),
+                captioned(
+                  'Neutral',
+                  caption,
+                  const CoreStatusBadge(
+                    label: 'After first send',
+                    variant: CoreStatusBadgeVariant.neutral,
                   ),
                 ),
               ],
