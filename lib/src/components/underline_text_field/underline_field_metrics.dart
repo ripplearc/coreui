@@ -70,6 +70,17 @@ class UnderlineFieldMetrics {
     unitGap: 5,
   );
 
+  static const UnderlineFieldMetrics _compact = UnderlineFieldMetrics._(
+    labelRowHeight: CoreSpacing.space4,
+    labelInset: horizontalInset,
+    labelGap: 3,
+    valueRowHeight: CoreSpacing.space6,
+    lineGap: CoreSpacing.space2,
+    strokeWidth: 1,
+    caretHeight: 17,
+    unitGap: 5,
+  );
+
   static const UnderlineFieldMetrics _large = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space5,
     labelInset: 0,
@@ -97,6 +108,8 @@ class UnderlineFieldMetrics {
     switch (size) {
       case CoreUnderlineTextFieldSize.regular:
         return _regular;
+      case CoreUnderlineTextFieldSize.compact:
+        return _compact;
       case CoreUnderlineTextFieldSize.large:
         return _large;
     }

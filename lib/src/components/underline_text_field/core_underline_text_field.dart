@@ -22,7 +22,14 @@ import 'underline_field_metrics.dart';
 /// [CoreUnderlineTextFieldSize.large] size). While the field has focus it
 /// turns `outlineHover`, and the caret is `outlineFocus`. The weight does not
 /// change with focus: it is 1px for [CoreUnderlineTextFieldSize.regular] and
-/// 2px for [CoreUnderlineTextFieldSize.large].
+/// [CoreUnderlineTextFieldSize.compact], and 2px for
+/// [CoreUnderlineTextFieldSize.large].
+///
+/// ### Sizes
+/// [CoreUnderlineTextFieldSize.compact] has the same text, caret and unit gap
+/// as [CoreUnderlineTextFieldSize.regular]. It only moves the underline 2px
+/// closer to the value, so a caller does not get smaller text.
+/// [CoreUnderlineTextFieldSize.large] enlarges the label and the value.
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
@@ -95,7 +102,9 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// Owns focus for the field. When omitted the field keeps its own.
   final FocusNode? focusNode;
 
-  /// The size of the label and value. Defaults to
+  /// The size of the field. [CoreUnderlineTextFieldSize.large] enlarges the
+  /// label and value. [CoreUnderlineTextFieldSize.compact] keeps the regular
+  /// text and only moves the underline closer. Defaults to
   /// [CoreUnderlineTextFieldSize.regular].
   final CoreUnderlineTextFieldSize size;
 
