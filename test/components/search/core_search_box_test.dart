@@ -201,5 +201,95 @@ void main() {
       await tester.pump();
       expect(find.byKey(CoreSearchBox.clearButtonKey), findsNothing);
     });
+    group('type', () {
+      Future<void> pumpType(
+        WidgetTester tester,
+        CoreSearchBoxType type,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreSearchBox(
+              type: type,
+              hintText: 'Search',
+              controller: TextEditingController(text: 'Roof'),
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+        await tester.pump();
+      }
+
+      List<double?> iconSizes(WidgetTester tester) => tester
+          .widgetList<CoreIconWidget>(find.byType(CoreIconWidget))
+          .map((icon) => icon.size)
+          .toList();
+
+      InputDecoration decorationOf(WidgetTester tester) => tester
+          .widget<TextField>(find.byType(TextField))
+          .decoration!;
+
+      test('defaults to pill', () {
+        expect(const CoreSearchBox().type, CoreSearchBoxType.pill);
+      });
+
+      testWidgets('pill draws 24 dp dark icons, a shadow and a pill border',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.pill);
+        final colors = AppColorsExtension.create();
+
+        expect(iconSizes(tester), [CoreSpacing.space6, CoreSpacing.space6]);
+        final icons =
+            tester.widgetList<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(icons.map((icon) => icon.color), everyElement(colors.iconDark));
+        final box = tester.widget<DecoratedBox>(
+          find.ancestor(
+            of: find.byKey(CoreSearchBox.textFieldKey),
+            matching: find.byType(DecoratedBox),
+          ).first,
+        );
+        expect((box.decoration as BoxDecoration).boxShadow,
+            CoreShadows.extraSmall);
+        final border =
+            decorationOf(tester).enabledBorder! as OutlineInputBorder;
+        expect(border.borderRadius,
+            BorderRadius.circular(CoreSpacing.space12));
+        expect(border.borderSide.color, colors.lineMid);
+      });
+
+      testWidgets('sheet draws 20 dp grey icons, no shadow and 12 dp corners',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.sheet);
+        final colors = AppColorsExtension.create();
+
+        expect(iconSizes(tester), [CoreSpacing.space5, CoreSpacing.space5]);
+        final icons =
+            tester.widgetList<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(
+            icons.map((icon) => icon.color), everyElement(colors.iconGrayMid));
+        final box = tester.widget<DecoratedBox>(
+          find.ancestor(
+            of: find.byKey(CoreSearchBox.textFieldKey),
+            matching: find.byType(DecoratedBox),
+          ).first,
+        );
+        expect((box.decoration as BoxDecoration).boxShadow, isNull);
+        final border =
+            decorationOf(tester).enabledBorder! as OutlineInputBorder;
+        expect(border.borderRadius, BorderRadius.circular(CoreSpacing.space3));
+      });
+
+      testWidgets('focus border uses outlineFocus and hint uses textBody',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.sheet);
+        final colors = AppColorsExtension.create();
+        final decoration = decorationOf(tester);
+
+        expect(
+          (decoration.focusedBorder! as OutlineInputBorder).borderSide.color,
+          colors.outlineFocus,
+        );
+        expect(decoration.hintStyle!.color, colors.textBody);
+      });
+    });
   });
 }

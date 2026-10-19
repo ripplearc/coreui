@@ -2,14 +2,26 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
 import '../../theme/icons/core_icons.dart';
+import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
 import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
-/// A borderless search input field with a clear button.
+/// Where a [CoreSearchBox] sits, which sets its shape and sizes.
+enum CoreSearchBoxType {
+  /// On a page: pill shape, 24 dp dark icons, Body Medium text and a light
+  /// shadow.
+  pill,
+
+  /// Inside a bottom sheet: 12 dp corners, 20 dp grey icons and Body Large
+  /// text.
+  sheet,
+}
+
+/// A search input field with a search icon and a clear button, matching the
+/// design library's Search Bar.
 ///
-/// Unlike [CoreTextField], [CoreSearchBox] has no visible border — it is intended
-/// for use as a global or in-page search bar where a flat appearance is preferred.
+/// [type] picks the Pill look for pages or the Sheet look for bottom sheets.
 class CoreSearchBox extends StatefulWidget {
   /// The placeholder text shown when the field is empty.
   final String? hintText;
@@ -35,6 +47,9 @@ class CoreSearchBox extends StatefulWidget {
   /// Semantic label for the clear button. Defaults to 'Clear search'.
   final String clearSemanticLabel;
 
+  /// The library variant to draw. Defaults to [CoreSearchBoxType.pill].
+  final CoreSearchBoxType type;
+
   const CoreSearchBox({
     super.key,
     this.hintText,
@@ -45,6 +60,7 @@ class CoreSearchBox extends StatefulWidget {
     this.enabled = true,
     this.focusNode,
     this.clearSemanticLabel = 'Clear search',
+    this.type = CoreSearchBoxType.pill,
   });
 
   /// Key on the inner text field.
@@ -68,8 +84,11 @@ class CoreSearchBox extends StatefulWidget {
 }
 
 class _CoreSearchBoxState extends State<CoreSearchBox> {
-  static const double _iconConstraintSize = CoreSpacing.space12;
-  static const double _iconSize = CoreSpacing.space5;
+  static const double _tapTargetSize = CoreSpacing.space12;
+  static const double _sheetIconSize = CoreSpacing.space5;
+  static const double _pillIconSize = CoreSpacing.space6;
+  static const double _sheetRadius = CoreSpacing.space3;
+  static const double _pillRadius = CoreSpacing.space12;
   late TextEditingController _controller;
   late FocusNode _focusNode;
   bool _hasText = false;
@@ -157,57 +176,96 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
     final colors = Theme.of(context).coreColors;
     final typography = Theme.of(context).coreTypography;
     final isDisabled = !widget.enabled;
+    final isPill = widget.type == CoreSearchBoxType.pill;
+    final iconSize = isPill ? _pillIconSize : _sheetIconSize;
+    final iconColor = isPill ? colors.iconDark : colors.iconGrayMid;
+    final textStyle =
+        isPill ? typography.bodyMediumRegular : typography.bodyLargeRegular;
+    final radius =
+        BorderRadius.circular(isPill ? _pillRadius : _sheetRadius);
+    // The clear button keeps a 48 dp tap square; this end inset puts its
+    // icon 16 dp from the field's edge, as in the library.
+    final clearEndInset = CoreSpacing.space4 - (_tapTargetSize - iconSize) / 2;
+    OutlineInputBorder outline(Color color) => OutlineInputBorder(
+          borderRadius: radius,
+          borderSide: BorderSide(color: color),
+        );
 
-    return TextFormField(
-      key: CoreSearchBox.textFieldKey,
-      controller: _controller,
-      focusNode: _focusNode,
-      enabled: widget.enabled,
-      onChanged: widget.onChanged,
-      onFieldSubmitted: (_) => widget.onSearch?.call(),
-      textInputAction: TextInputAction.search,
-      cursorColor: colors.outlineFocus,
-      style: typography.bodyLargeRegular.copyWith(
-        color: isDisabled ? colors.textDisable : colors.textDark,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        boxShadow: isPill ? CoreShadows.extraSmall : null,
       ),
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: typography.bodyLargeRegular.copyWith(
-          color: colors.textDisable,
+      child: TextFormField(
+        key: CoreSearchBox.textFieldKey,
+        controller: _controller,
+        focusNode: _focusNode,
+        enabled: widget.enabled,
+        onChanged: widget.onChanged,
+        onFieldSubmitted: (_) => widget.onSearch?.call(),
+        textInputAction: TextInputAction.search,
+        cursorColor: colors.outlineFocus,
+        style: textStyle.copyWith(
+          color: isDisabled ? colors.textDisable : colors.textDark,
         ),
-        fillColor: isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
-        filled: true,
-        suffixIcon: _hasText && !isDisabled
-            ? Semantics(
-                button: true,
-                label: widget.clearSemanticLabel,
-                child: InkWell(
-                  key: CoreSearchBox.clearButtonKey,
-                  onTap: _handleClear,
-                  borderRadius: BorderRadius.circular(CoreSpacing.space5),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoreSpacing.space3,
-                    ),
-                    child: CoreIconWidget(
-                      icon: CoreIcons.close,
-                      size: _iconSize,
-                      color: colors.iconGrayMid,
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: textStyle.copyWith(color: colors.textBody),
+          fillColor:
+              isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
+          filled: true,
+          // The decorator adds 4 dp after a prefix icon, so this end inset
+          // makes the library's 8 dp gap between the icon and the text.
+          prefixIcon: Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: CoreSpacing.space4,
+              end: CoreSpacing.space1,
+            ),
+            child: CoreIconWidget(
+              icon: CoreIcons.search,
+              size: iconSize,
+              color: iconColor,
+            ),
+          ),
+          prefixIconConstraints:
+              const BoxConstraints(minHeight: _tapTargetSize),
+          suffixIcon: _hasText && !isDisabled
+              ? Padding(
+                  padding: EdgeInsetsDirectional.only(end: clearEndInset),
+                  child: Semantics(
+                    button: true,
+                    label: widget.clearSemanticLabel,
+                    child: InkWell(
+                      key: CoreSearchBox.clearButtonKey,
+                      onTap: _handleClear,
+                      customBorder: const CircleBorder(),
+                      child: SizedBox.square(
+                        dimension: _tapTargetSize,
+                        child: Center(
+                          child: CoreIconWidget(
+                            icon: CoreIcons.cross,
+                            size: iconSize,
+                            color: iconColor,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              )
-            : null,
-        suffixIconConstraints: const BoxConstraints(minWidth: _iconConstraintSize, minHeight: _iconConstraintSize),
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        focusedErrorBorder: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: CoreSpacing.space3,
-          horizontal: CoreSpacing.space4,
+                )
+              : null,
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: _tapTargetSize,
+            minHeight: _tapTargetSize,
+          ),
+          border: outline(colors.lineMid),
+          enabledBorder: outline(colors.lineMid),
+          disabledBorder: outline(colors.lineMid),
+          focusedBorder: outline(colors.outlineFocus),
+          contentPadding: const EdgeInsetsDirectional.only(
+            end: CoreSpacing.space4,
+            top: CoreSpacing.space3,
+            bottom: CoreSpacing.space3,
+          ),
         ),
       ),
     );
