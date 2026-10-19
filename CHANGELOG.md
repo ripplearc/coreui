@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.49.0] - Toast and alerts match the design library
+
+### 🔧 Fixes
+
+- **Toast.acknowledgement**: 48 high, like the library Toast (was 50). The tick and `CoreShadows.floating` do not change (CA-1321)
+- **Toast alerts without a title**: the library's Small alert. The surface is drawn 40 high (was about 70) with 12 px at the sides, and the text is Body Medium Medium (14 px, was 16). The close x and the text button keep 48 x 48 targets (CA-1321)
+- **Toast close control**: a plain `CoreIcons.cross` in `iconDark`, labelled `closeLabel` for screen readers. The word `Close` and the circled x are gone. `Toast.error`, `warning`, `info` and `success` take an optional `actionLabel` with `onAction`, a text button in `textLink` beside the x; taking it fires `onAction`, then `onClose`. With a title, the text keeps the Large alert styles (CA-1321)
+
+### 📐 Design notes
+
+The library toast shadow has no token yet, so the acknowledgement keeps `CoreShadows.floating`. The light 'Saved to history' card (the receipt) is not changed here.
+
+### 🧪 Tests
+
+- Acknowledgement height. Alerts: the plain x and its label, no text button without `actionLabel`, `onAction` then `onClose`, a tap at the corner of the x's target, the 40 px surface with 48 px targets, and the text styles with and without a title. A11y: the text button's target and label in both themes. `CoreToast` tests find the close button by key. Goldens: the toast sheet in light and, new, dark; the preference sheet's info card (light and dark) shows the plain x
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
