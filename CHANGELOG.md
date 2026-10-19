@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.53.0] - Suggestion strip chips match the design library
+
+### 🔧 Fixes
+
+- **CoreChipSize.large** (the suggestion strip chips): the library Suggestion Strip Chip. 48 high with its 1 px border (was 46), 16 px at each side (was 12 on the left, 20 on the right) and no shadow (was `CoreShadows.small`). The label is Body Medium Regular in `textDark` (was Medium in `textBody`), 8 px before the value (was 4), and the whole value is heavy, not only the unit. Small, medium and mini chips do not change (CA-1322)
+- **Bind suggestion chip**: the dashed outline is 1.5 px at rest (was 1), `CoreChipTheme.dashedStrokeWidth`; focused it still thickens to 2. Deterministic (2 px `lineHighlight`) and the other kinds (1 px `lineMid`) already matched (CA-1322)
+
+### 💥 Breaking changes
+
+- `CoreChipTheme.padding` returns `EdgeInsetsDirectional` for every size, `CoreChipTheme.labelStyle` takes a required `size`, and `CoreChipTheme.shadow` is removed. `CoreChipTheme.labelGap` and `CoreChipTheme.dashedStrokeWidth` are new (CA-1322)
+
+### 🧪 Tests
+
+- Large chip: 48 high, the label and value insets and gap, no shadow, and the label and value styles in both themes. The dashed outline's resting stroke. Goldens: the chip component and outline sheets (light and dark), and every suggestion area golden. The outline and two-rows goldens grow a little to fit the wider and taller chips
+
 ## [0.52.0] - Date filter chip keeps focus after a clear
 
 ### 🔧 Fixes
