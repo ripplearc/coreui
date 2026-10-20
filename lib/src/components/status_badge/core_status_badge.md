@@ -55,7 +55,6 @@ Sources: Figma Rate Status (component set `65685:147068`), the Text Field label 
 - The tap area is 28 × 22 dp: a 4 dp gap, the 14 dp icon and the 10 dp right padding, inside the 24 dp badge less its 1 dp outline on each side. A 24 dp badge cannot reach a 44 to 48 dp tap target, so place it where a missed tap is harmless.
 - The asserts that refuse other pairings are skipped by a release build. The pairing then falls back to the regular look. An info icon is still drawn if you ask for it.
 - Figma also draws "Estimated" and "Your rate", but no screen uses them. Do not add them until the product manager names a screen.
-- The 10 and 11 dp padding steps and the 22 dp neutral height are constants until CoreSpacing has them (CA-1238).
 
 ## Accessibility
 
