@@ -28,4 +28,15 @@ class CoreSpacing {
   static const double space56 = 224.0; // 14rem = 224px
   static const double space57 = 228.0; // 14.25rem = 228px
   static const double space64 = 256.0; // 16rem = 256px
+
+  // Off-grid steps that Figma uses where no 4px multiple fits. Named in
+  // logical pixels, so px10 is 10px while space10 is 40px.
+  static const double px2 = 2.0;
+  static const double px3 = 3.0;
+  static const double px5 = 5.0;
+  static const double px6 = 6.0;
+  static const double px10 = 10.0;
+  static const double px11 = 11.0;
+  static const double px15 = 15.0;
+  static const double px17 = 17.0;
 }

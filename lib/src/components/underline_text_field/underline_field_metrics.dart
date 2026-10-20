@@ -41,30 +41,20 @@ class UnderlineFieldMetrics {
     required this.unitGap,
   });
 
-  // TODO: [CA-1238] https://ripplearc.youtrack.cloud/issue/CA-1238
-  // CoreSpacing has no 2, 3, 5, 6, 10 or 17 step. Replace these with tokens
-  // once they exist.
-  static const double _px2 = 2;
-  static const double _px3 = 3;
-  static const double _px5 = 5;
-  static const double _px6 = 6;
-  static const double _px10 = 10;
-  static const double _px17 = 17;
-
   /// The space either side of the value, so the caret is not clipped.
-  static const double horizontalInset = _px2;
+  static const double horizontalInset = CoreSpacing.px2;
 
   /// The width of the caret.
-  static const double caretWidth = _px2;
+  static const double caretWidth = CoreSpacing.px2;
 
   /// The space between the label and the widget after it.
-  static const double labelTrailingGap = _px5;
+  static const double labelTrailingGap = CoreSpacing.px5;
 
   /// The space between the value and the inline accessory.
   static const double inlineAccessoryGap = CoreSpacing.space3;
 
   /// The space between the prefix text and the value.
-  static const double prefixGap = _px2;
+  static const double prefixGap = CoreSpacing.px2;
 
   /// The space between the underline and the helper or error line.
   static const double messageTopGap = CoreSpacing.space2;
@@ -72,31 +62,31 @@ class UnderlineFieldMetrics {
   static const UnderlineFieldMetrics _regular = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,
     labelInset: horizontalInset,
-    labelGap: _px3,
+    labelGap: CoreSpacing.px3,
     valueRowHeight: CoreSpacing.space6,
-    lineGap: _px10,
+    lineGap: CoreSpacing.px10,
     strokeWidth: 1,
-    caretHeight: _px17,
-    unitGap: _px5,
+    caretHeight: CoreSpacing.px17,
+    unitGap: CoreSpacing.px5,
   );
 
   static const UnderlineFieldMetrics _compact = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space4,
     labelInset: horizontalInset,
-    labelGap: _px3,
+    labelGap: CoreSpacing.px3,
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
     strokeWidth: 1,
-    caretHeight: _px17,
-    unitGap: _px5,
+    caretHeight: CoreSpacing.px17,
+    unitGap: CoreSpacing.px5,
   );
 
   static const UnderlineFieldMetrics _large = UnderlineFieldMetrics._(
     labelRowHeight: CoreSpacing.space5,
     labelInset: 0,
-    labelGap: _px6,
+    labelGap: CoreSpacing.px6,
     valueRowHeight: CoreSpacing.space8,
-    lineGap: _px6,
+    lineGap: CoreSpacing.px6,
     strokeWidth: 2,
     caretHeight: CoreSpacing.space6,
     unitGap: CoreSpacing.space2,
