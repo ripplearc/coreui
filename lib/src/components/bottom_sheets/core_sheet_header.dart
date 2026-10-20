@@ -47,9 +47,7 @@ class CoreSheetHeader extends StatelessWidget {
     required this.backSemanticLabel,
   });
 
-  // Figma draws 1 dp above the 24 dp arrow, which centres it on the 26 dp
-  // title line that starts at the same 11 dp top padding.
-  static const double _arrowTop = CoreSpacing.px11 + 1;
+  static const double _arrowTopCentredOnTitleLine = CoreSpacing.px11 + 1;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +68,7 @@ class CoreSheetHeader extends StatelessWidget {
           // the Android minimum.
           padding: const EdgeInsets.fromLTRB(
             CoreSpacing.space3,
-            _arrowTop,
+            _arrowTopCentredOnTitleLine,
             CoreSpacing.space3,
             CoreSpacing.space3,
           ),
