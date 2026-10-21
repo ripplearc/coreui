@@ -22,6 +22,7 @@ void main() {
     ThemeData theme, {
     required String label,
     required CoreIconData icon,
+    bool isDisabled = false,
   }) async {
     final colors = theme.coreColors;
 
@@ -44,6 +45,7 @@ void main() {
                 variant: CoreButtonVariant.social,
                 size: CoreButtonSize.large,
                 onPressed: () {},
+                isDisabled: isDisabled,
                 icon: CoreIconWidget(
                   icon: icon,
                   size: CoreSpacing.space6,
@@ -112,6 +114,78 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_button_social_apple_dark.png'),
+    );
+  });
+
+  testWidgets('CoreButton social variant Google pressed — light theme',
+      (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.light()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+    );
+
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.byType(CoreButton)));
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_pressed_light.png'),
+    );
+    await gesture.up();
+  });
+
+  testWidgets('CoreButton social variant Google disabled — light theme',
+      (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.light()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+      isDisabled: true,
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_disabled_light.png'),
+    );
+  });
+
+  testWidgets('CoreButton social variant Google pressed — dark theme',
+      (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.dark()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+    );
+
+    final gesture =
+        await tester.startGesture(tester.getCenter(find.byType(CoreButton)));
+    await tester.pump();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_pressed_dark.png'),
+    );
+    await gesture.up();
+  });
+
+  testWidgets('CoreButton social variant Google disabled — dark theme',
+      (tester) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.dark()),
+      label: 'Continue with Google',
+      icon: CoreIcons.google,
+      isDisabled: true,
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_disabled_dark.png'),
     );
   });
 }
