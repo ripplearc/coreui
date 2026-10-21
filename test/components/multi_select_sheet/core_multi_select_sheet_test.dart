@@ -65,11 +65,17 @@ void main() {
     return recorder;
   }
 
-  bool isItemChecked(WidgetTester tester, String id) {
-    final tile = tester.widget<CheckboxListTile>(
-      find.byKey(Key('sheet_item_$id')),
+  CoreIconWidget itemCheckbox(WidgetTester tester, String id) {
+    return tester.widget<CoreIconWidget>(
+      find.descendant(
+        of: find.byKey(Key('sheet_item_$id')),
+        matching: find.byType(CoreIconWidget),
+      ),
     );
-    return tile.value == true;
+  }
+
+  bool isItemChecked(WidgetTester tester, String id) {
+    return itemCheckbox(tester, id).icon == CoreIcons.check;
   }
 
   group('CoreMultiSelectSheet', () {
@@ -82,6 +88,44 @@ void main() {
       expect(find.text('Search tags'), findsOneWidget);
       expect(find.byKey(const Key('sheet_item_roofing')), findsOneWidget);
       expect(find.byKey(const Key('sheet_item_wall')), findsOneWidget);
+    });
+
+    testWidgets('draws the library title, Sheet search bar and row style', (
+      tester,
+    ) async {
+      await pumpAndShow(tester);
+      final colors = AppColorsExtension.create();
+      final typography = AppTypographyExtension.create();
+
+      expect(
+        tester.widget<Text>(find.text('Filter by tag')).style,
+        typography.titleMediumSemiBold,
+      );
+      expect(
+        tester.widget<CoreSearchBox>(find.byType(CoreSearchBox)).type,
+        CoreSearchBoxType.sheet,
+      );
+      expect(
+        tester.widget<Text>(find.text('Wall')).style,
+        typography.bodyMediumRegular.copyWith(color: colors.textHeadline),
+      );
+      expect(
+        tester.getSize(find.byKey(const Key('sheet_item_wall'))).height,
+        CoreSpacing.space12,
+      );
+    });
+
+    testWidgets('colours a checked box Icon Dark and an empty one Icon Grey', (
+      tester,
+    ) async {
+      await pumpAndShow(tester);
+      await tester.tap(find.byKey(const Key('sheet_item_roofing')));
+      await tester.pump();
+      final colors = AppColorsExtension.create();
+
+      expect(itemCheckbox(tester, 'roofing').color, colors.iconDark);
+      expect(itemCheckbox(tester, 'wall').icon, CoreIcons.checkBlank);
+      expect(itemCheckbox(tester, 'wall').color, colors.iconGrayMid);
     });
 
     testWidgets('shows the default Clear all and Apply button labels', (
@@ -102,7 +146,7 @@ void main() {
       );
 
       expect(find.byKey(const Key('sheet_loading_indicator')), findsOneWidget);
-      expect(find.byType(CheckboxListTile), findsNothing);
+      expect(find.byKey(const Key('sheet_item_roofing')), findsNothing);
     });
 
     testWidgets('shows the empty label when there are no items',
@@ -114,7 +158,7 @@ void main() {
 
       expect(find.byKey(const Key('sheet_empty_label')), findsOneWidget);
       expect(find.text('No tags found'), findsOneWidget);
-      expect(find.byType(CheckboxListTile), findsNothing);
+      expect(find.byKey(const Key('sheet_item_roofing')), findsNothing);
     });
 
     testWidgets(
@@ -125,7 +169,7 @@ void main() {
 
         expect(find.text('Filter by tag'), findsOneWidget);
         expect(find.byKey(const Key('sheet_apply_button')), findsOneWidget);
-        expect(find.byType(CheckboxListTile), findsNothing);
+        expect(find.byKey(const Key('sheet_item_roofing')), findsNothing);
         expect(find.byKey(const Key('sheet_empty_label')), findsNothing);
         expect(find.byKey(const Key('sheet_loading_indicator')), findsNothing);
       },
@@ -242,7 +286,7 @@ void main() {
 
         const keyboardTop = 844.0 - 300.0;
         expect(
-          tester.getRect(find.byType(CoreTextField)).bottom,
+          tester.getRect(find.byType(CoreSearchBox)).bottom,
           lessThanOrEqualTo(keyboardTop),
         );
         expect(
