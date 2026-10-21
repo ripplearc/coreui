@@ -202,6 +202,38 @@ void main() {
         expect(calls, ['action', 'close']);
       });
 
+      testWidgets('the text button pops the route when there is no onClose',
+          (WidgetTester tester) async {
+        var acted = false;
+        await tester.pumpWidget(MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => Scaffold(
+                    body: Toast.error(
+                      description: 'Upload failed',
+                      closeLabel: 'Close',
+                      actionLabel: 'View',
+                      onAction: () => acted = true,
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ));
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        await tester.tap(actionFinder);
+        await tester.pumpAndSettle();
+
+        expect(acted, isTrue);
+        expect(find.byType(Toast), findsNothing);
+      });
+
       testWidgets('the close x answers a tap at the corner of its target',
           (WidgetTester tester) async {
         var closed = false;

@@ -329,7 +329,16 @@ class _ToastState extends State<Toast> {
     try {
       callback?.call();
     } finally {
-      widget.onClose?.call();
+      _close();
+    }
+  }
+
+  void _close() {
+    final onClose = widget.onClose;
+    if (onClose != null) {
+      onClose();
+    } else {
+      Navigator.of(context).pop();
     }
   }
 
@@ -786,7 +795,7 @@ class _ToastState extends State<Toast> {
       child: GestureDetector(
         key: const Key('toast_close_button'),
         behavior: HitTestBehavior.opaque,
-        onTap: widget.onClose ?? () => Navigator.of(context).pop(),
+        onTap: _close,
         child: Semantics(
           button: true,
           label: closeLabel,

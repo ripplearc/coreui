@@ -797,7 +797,10 @@ void main() {
         // tapped. That tap carries the entry it was built with, not whichever
         // entry is current.
         await tester.tap(find.text('Show Second'));
-        await tester.tap(find.byKey(const Key('toast_close_button')), warnIfMissed: false);
+        await tester.tap(
+          find.byKey(const Key('toast_close_button')),
+          warnIfMissed: false,
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Second toast'), findsOneWidget);
