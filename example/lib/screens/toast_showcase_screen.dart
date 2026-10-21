@@ -78,9 +78,11 @@ class ToastShowcaseScreen extends StatelessWidget {
             _buildToastSection(
               context,
               title: 'Toast Without Title',
-              toast: Toast.info(
-                description: 'This description appears with title styling',
+              toast: Toast.error(
+                description: 'Upload failed',
                 closeLabel: 'Close',
+                actionLabel: 'View',
+                onAction: () {},
                 onClose: () {},
               ),
             ),
