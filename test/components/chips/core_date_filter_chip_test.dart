@@ -164,7 +164,73 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
-      expect(Focus.of(tester.element(find.text('Modified'))).hasFocus, isTrue);
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
+    testWidgets('focuses the inactive chip when the caller clears later', (
+      tester,
+    ) async {
+      DateRange? range = DateRange(
+        start: DateTime(2024, 3, 1),
+        end: DateTime(2024, 3, 31),
+      );
+      late StateSetter rebuild;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CoreDateFilterChip(
+                selectedDateRange: range,
+                label: 'Modified',
+                inactiveChipKey: const Key('date_filter_chip'),
+                onApply: (_) {},
+                onClear: () {},
+              );
+            },
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pumpAndSettle();
+      rebuild(() => range = null);
+      await tester.pumpAndSettle();
+
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
+    testWidgets('does not take focus when the range clears without the ×', (
+      tester,
+    ) async {
+      DateRange? range = DateRange(
+        start: DateTime(2024, 3, 1),
+        end: DateTime(2024, 3, 31),
+      );
+      late StateSetter rebuild;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CoreDateFilterChip(
+                selectedDateRange: range,
+                label: 'Modified',
+                inactiveChipKey: const Key('date_filter_chip'),
+                onApply: (_) {},
+                onClear: () {},
+              );
+            },
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      rebuild(() => range = null);
+      await tester.pumpAndSettle();
+
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isFalse);
     });
 
     testWidgets('keeps both active pill targets at least 48 dp high', (
@@ -188,4 +254,17 @@ void main() {
       );
     });
   });
+}
+
+bool _hasPrimaryFocus(Key chipKey) {
+  final focusedContext = FocusManager.instance.primaryFocus?.context;
+  return find
+      .descendant(
+        of: find.byKey(chipKey),
+        matching: find.byElementPredicate(
+          (element) => element == focusedContext,
+        ),
+      )
+      .evaluate()
+      .isNotEmpty;
 }
