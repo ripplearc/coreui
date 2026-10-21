@@ -7,7 +7,13 @@ import '../../../ripplearc_coreui.dart';
 /// Renders as the Figma Filter chip: a 32 dp outlined pill with a label and
 /// trailing dropdown arrow, centred in a 48 x 48 dp minimum touch area.
 /// When [onTap] is null the chip is rendered in a non-interactive state.
+/// Must be placed under a [Material] (any `Scaffold` provides one).
 class CoreFilterChip extends StatelessWidget {
+  /// Key of the outlined pill, for widget-test finders.
+  static const Key pillKey = Key('core_filter_chip_pill');
+
+  static const double _focusOverlayAlpha = 0.12;
+
   const CoreFilterChip({
     super.key,
     required this.label,
@@ -38,7 +44,11 @@ class CoreFilterChip extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         splashFactory: NoSplash.splashFactory,
-        overlayColor: WidgetStateProperty.all(colors.transparent),
+        overlayColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.focused)
+              ? colors.outlineFocus.withValues(alpha: _focusOverlayAlpha)
+              : colors.transparent,
+        ),
         borderRadius: pillRadius,
         child: ConstrainedBox(
           constraints: const BoxConstraints(
@@ -48,7 +58,8 @@ class CoreFilterChip extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: Container(
+            child: Ink(
+              key: pillKey,
               height: CoreSpacing.space8,
               padding: const EdgeInsets.symmetric(
                 horizontal: CoreSpacing.space3,

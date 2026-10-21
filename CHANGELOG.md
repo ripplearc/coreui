@@ -4,7 +4,7 @@
 
 ### 🔧 Fixes
 
-- **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too (CA-1322)
+- **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too. A focused chip shows a faint `outlineFocus` overlay on the pill, and the chip needs a `Material` ancestor (CA-1322)
 
 ### 🧪 Tests
 
