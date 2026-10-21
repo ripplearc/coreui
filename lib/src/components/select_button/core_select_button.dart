@@ -64,6 +64,7 @@ class CoreSelectButton extends StatelessWidget {
               final tabIndex = index ~/ 2;
               return _buildTab(
                 context,
+                index: tabIndex,
                 label: tabs[tabIndex],
                 selected: tabIndex == selectedIndex,
                 onTap: () {
@@ -85,6 +86,7 @@ class CoreSelectButton extends StatelessWidget {
 
   Widget _buildTab(
     BuildContext context, {
+    required int index,
     required String label,
     required bool selected,
     required VoidCallback onTap,
@@ -105,6 +107,7 @@ class CoreSelectButton extends StatelessWidget {
           ),
           onTap: onTap,
           child: AnimatedContainer(
+            key: Key('core_select_button_segment_$index'),
             duration: _kTabTransitionDuration,
             curve: Curves.easeOut,
             padding: const EdgeInsets.symmetric(

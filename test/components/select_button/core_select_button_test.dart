@@ -211,14 +211,11 @@ void main() {
       final track = find.byKey(const Key('core_select_button_outer'));
       expect(tester.getSize(track).height, CoreSpacing.space10);
 
-      Finder segment(String label) => find.ancestor(
-            of: find.text(label),
-            matching: find.byType(AnimatedContainer),
-          );
-      expect(tester.getSize(segment('Tab 1')).height, CoreSpacing.space8);
+      Finder segment(int index) =>
+          find.byKey(Key('core_select_button_segment_$index'));
+      expect(tester.getSize(segment(0)).height, CoreSpacing.space8);
       expect(
-        tester.getTopLeft(segment('Tab 2')).dx -
-            tester.getTopRight(segment('Tab 1')).dx,
+        tester.getTopLeft(segment(1)).dx - tester.getTopRight(segment(0)).dx,
         CoreSpacing.space1,
       );
     });

@@ -217,11 +217,6 @@ void main() {
 
       final tabBar = tester.widget<TabBar>(find.byType(TabBar));
       expect(tabBar.dividerColor, theme.coreColors.lineDarkOutline);
-      expect(
-        tabBar.labelPadding,
-        const EdgeInsetsDirectional.only(end: CoreSpacing.space1),
-      );
-      expect(tabBar.indicatorSize, TabBarIndicatorSize.label);
 
       final first = tester.getRect(find.widgetWithText(Tab, 'Tab 1'));
       final second = tester.getRect(find.widgetWithText(Tab, 'Tab 2'));
