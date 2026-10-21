@@ -23,6 +23,7 @@ CoreDateFilterChip(
 | `label`             | `String`                     | Yes      | Label shown on the inactive chip.                                              |
 | `semanticLabel`     | `String?`                    | No       | Accessibility label for the inactive chip. Defaults to `label`.                |
 | `clearSemanticLabel`| `String`                     | No       | Accessibility label for the ×. Defaults to `'Clear date filter'`.              |
+| `rangeSemanticHint` | `String`                     | No       | Accessibility hint for the active pill. Defaults to `'Opens the date range sheet'`. |
 | `dateLabelBuilder`  | `String Function(DateTime)?` | No       | Formats the pill dates. Defaults to a `"Jan 05, 2026"`-style English format.   |
 | `inactiveChipKey`   | `Key?`                       | No       | Key applied to the inactive chip, for widget-test finders.                     |
 | `activeChipKey`     | `Key?`                       | No       | Key applied to the active pill, for widget-test finders.                       |

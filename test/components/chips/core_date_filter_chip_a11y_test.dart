@@ -72,6 +72,7 @@ void main() {
         tester.getSemantics(find.bySemanticsLabel(rangeLabel)),
         matchesSemantics(
           label: rangeLabel,
+          hint: 'Opens the date range sheet',
           isButton: true,
           hasTapAction: true,
           hasFocusAction: true,
