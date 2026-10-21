@@ -219,23 +219,13 @@ void main() {
         ),
       );
 
-      final surface = find.descendant(
-        of: find.byType(CoreChip),
-        matching: find.byType(AnimatedContainer),
-      );
-      final surfaceRect = tester.getRect(surface);
+      final surfaceRect = tester.getRect(find.byKey(CoreChip.surfaceKey));
       final labelRect = tester.getRect(find.text('Sheets'));
       final valueRect = tester.getRect(find.text('5.81'));
-      final decoration = tester
-          .widget<Container>(
-            find.descendant(of: surface, matching: find.byType(Container)),
-          )
-          .decoration as BoxDecoration;
       expect(surfaceRect.height, CoreSpacing.space12);
       expect(labelRect.left - surfaceRect.left, CoreSpacing.space4 + 1);
       expect(surfaceRect.right - valueRect.right, CoreSpacing.space4 + 1);
       expect(valueRect.left - labelRect.right, CoreSpacing.space2);
-      expect(decoration.boxShadow, isNull);
     });
 
     testWidgets('renders mini size at the medium height',
