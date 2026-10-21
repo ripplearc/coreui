@@ -192,6 +192,34 @@ void main() {
       );
     });
 
+    testWidgets('track is 40 high with a 32 high segment',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: CoreSelectButton(
+                tabs: ['Tab 1', 'Tab 2'],
+                selectedIndex: 0,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final track = find.byKey(const Key('core_select_button_outer'));
+      expect(tester.getSize(track).height, CoreSpacing.space10);
+
+      Finder segment(int index) =>
+          find.byKey(Key('core_select_button_segment_$index'));
+      expect(tester.getSize(segment(0)).height, CoreSpacing.space8);
+      expect(
+        tester.getTopLeft(segment(1)).dx - tester.getTopRight(segment(0)).dx,
+        CoreSpacing.space1,
+      );
+    });
+
     testWidgets('handles null onChanged callback', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(

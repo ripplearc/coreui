@@ -79,8 +79,16 @@ enum CoreAppBarElevation {
 ///
 /// ### Theming
 /// Colors come from [AppColorsExtension] (`pageBackground`, `textHeadline`) and
-/// typography from [AppTypographyExtension] (`titleMediumSemiBold`), so the bar
-/// tracks both [CoreTheme.light] and [CoreTheme.dark] without per-site work.
+/// typography from [AppTypographyExtension], so the bar tracks both
+/// [CoreTheme.light] and [CoreTheme.dark] without per-site work. A [titleText]
+/// next to a [leading] widget is `titleLargeSemiBold`, the Figma "Back with
+/// Headline" bar; without a leading widget it is `titleMediumSemiBold`, as on
+/// the landing page bar.
+///
+/// The Figma "Back with Headline" bar is 48 high in total: pass
+/// `height: CoreSpacing.space12` and no vertical [padding]. The centred-title
+/// layout has no Figma library type; ask design before using it on a new
+/// screen.
 ///
 /// The bar sets an `iconTheme` of `iconDark`, which reaches material-glyph
 /// [CoreIconWidget]s that were given no explicit `color`. SVG-backed icons are
@@ -161,7 +169,8 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// custom cluster. Mutually exclusive with [titleText].
   final Widget? title;
 
-  /// Convenience title rendered with `titleMediumSemiBold` in `textHeadline`.
+  /// Convenience title rendered in `textHeadline`: `titleLargeSemiBold` when
+  /// [leading] is set, `titleMediumSemiBold` otherwise.
   ///
   /// Mutually exclusive with [title]; supply the widget form when you need
   /// control over styling or layout.
@@ -263,7 +272,9 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
             ? null
             : Text(
                 label,
-                style: typography.titleMediumSemiBold
+                style: (leading == null
+                        ? typography.titleMediumSemiBold
+                        : typography.titleLargeSemiBold)
                     .copyWith(color: colors.textHeadline),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,

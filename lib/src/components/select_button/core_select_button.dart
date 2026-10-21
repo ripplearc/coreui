@@ -51,7 +51,7 @@ class CoreSelectButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoreSpacing.space12),
         boxShadow: CoreShadows.small,
       ),
-      padding: const EdgeInsets.all(CoreSpacing.space2),
+      padding: const EdgeInsets.all(CoreSpacing.space1),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -59,11 +59,12 @@ class CoreSelectButton extends StatelessWidget {
             tabs.isEmpty ? 0 : tabs.length * 2 - 1,
             (index) {
               if (index.isOdd) {
-                return const SizedBox(width: CoreSpacing.space2);
+                return const SizedBox(width: CoreSpacing.space1);
               }
               final tabIndex = index ~/ 2;
               return _buildTab(
                 context,
+                index: tabIndex,
                 label: tabs[tabIndex],
                 selected: tabIndex == selectedIndex,
                 onTap: () {
@@ -81,8 +82,11 @@ class CoreSelectButton extends StatelessWidget {
 
   static const Duration _kTabTransitionDuration = Duration(milliseconds: 200);
 
+  static const double _kSegmentVerticalPadding = 6;
+
   Widget _buildTab(
     BuildContext context, {
+    required int index,
     required String label,
     required bool selected,
     required VoidCallback onTap,
@@ -103,11 +107,12 @@ class CoreSelectButton extends StatelessWidget {
           ),
           onTap: onTap,
           child: AnimatedContainer(
+            key: Key('core_select_button_segment_$index'),
             duration: _kTabTransitionDuration,
             curve: Curves.easeOut,
             padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space5,
-              vertical: CoreSpacing.space2,
+              horizontal: CoreSpacing.space4,
+              vertical: _kSegmentVerticalPadding,
             ),
             decoration: BoxDecoration(
               color: selected ? colors.tabsHighlight : colors.transparent,
