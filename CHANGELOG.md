@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.55.0] - px spacing tokens for the off-grid Figma steps
+
+### ✨ Features
+
+- **CoreSpacing px tokens**: `px2`, `px3`, `px5`, `px6`, `px10`, `px11`, `px15` and `px17`, for the gaps Figma uses that are not a multiple of 4. They are named in logical pixels, so `px10` is 10 while `space10` stays 40 (CA-1238)
+
+### 📐 Design notes
+
+- **CoreUnderlineTextField** and **CoreStatusBadge** use the new tokens in place of the local constants that waited on CA-1238. No value changes, and their goldens are unchanged. The badge's 22 dp neutral height is a height, not a spacing step, and stays a named constant
+
+### 🧪 Tests
+
+- The spacing token golden gains the eight px tokens, and a unit test checks their values
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
