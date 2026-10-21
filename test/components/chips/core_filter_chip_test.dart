@@ -70,13 +70,30 @@ void main() {
       );
 
       final chipSize = tester.getSize(find.byType(CoreFilterChip));
-      final pill = find.descendant(
-        of: find.byType(CoreFilterChip),
-        matching: find.byType(Container),
-      );
+      final pill = find.byKey(CoreFilterChip.pillKey);
       expect(chipSize.height, CoreSpacing.space12);
       expect(chipSize.width, greaterThanOrEqualTo(CoreSpacing.space12));
       expect(tester.getSize(pill).height, CoreSpacing.space8);
+    });
+
+    testWidgets('shows a focus overlay on the pill when focused', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () {}),
+          theme: CoreTheme.light(),
+        ),
+      );
+      final inkWell = find.descendant(
+        of: find.byType(CoreFilterChip),
+        matching: find.byType(InkWell),
+      );
+
+      final overlay = tester.widget<InkWell>(inkWell).overlayColor!;
+
+      expect(overlay.resolve({})?.a, 0);
+      expect(overlay.resolve({WidgetState.focused})?.a, greaterThan(0));
     });
   });
 }
