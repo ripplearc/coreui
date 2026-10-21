@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.56.0] - CoreSheetHeader
+
+### ✨ Features
+
+- **CoreSheetHeader**: the header at the top of a bottom sheet, with a back arrow, a title and an optional subtitle, as every equipment sheet in Estimate V2 draws it (Figma `66337:158600`). Tapping the arrow calls `onBack`; the header pops nothing itself. `backSemanticLabel` is what a screen reader announces for the arrow, and the title is marked as a heading. The title is `titleMediumSemiBold` in `textHeadline`, the subtitle `bodyMediumRegular` in `textBody`, and each is cut with an ellipsis on one line. The arrow is 24 dp in `textLink`. The header is 72 dp tall with a subtitle and 52 dp without (CA-1238)
+- Showcase: a Sheet Header screen in the example app, with the header also opened inside a `CoreQuickSheet`, and a component doc
+
+### 📐 Design notes
+
+Figma puts 10 dp between the arrow and the text. The header uses 12, so the arrow's tap area is 48 × 48 dp, the Android minimum. The text starts 2 dp further right than in Figma. The arrow sits 1 dp below the 11 dp text padding, which centres it on the 26 dp title line as Figma draws it.
+
+### 🧪 Tests
+
+- The arrow's tap, its 48 × 48 dp tap area, its 24 dp size and 12 dp offset; the text offset and 20 dp right inset; the height with and without a subtitle; the one-line ellipsis; colours in both themes and text styles. A11y: tap target, label and text contrast guidelines in both themes, the arrow announced as a labelled button and the title as a heading. Goldens: light and dark, with a subtitle, without one and with a long title
+
 ## [0.55.0] - px spacing tokens for the off-grid Figma steps
 
 ### ✨ Features
