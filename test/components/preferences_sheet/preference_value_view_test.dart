@@ -32,14 +32,23 @@ void main() {
       expect(colorOf(tester, '1/16'), colors.textLink);
     });
 
-    testWidgets('a value the app cannot act on yet reads as disabled',
+    testWidgets('a read-only value reads as body text, not disabled',
         (tester) async {
       await pumpValue(
         tester,
         const CorePreferenceTextValue('std', isMuted: true),
       );
 
-      expect(colorOf(tester, 'std'), colors.textDisable);
+      expect(colorOf(tester, 'std'), colors.textBody);
+    });
+
+    testWidgets('a text value is Body Medium Semibold', (tester) async {
+      await pumpValue(tester, const CorePreferenceTextValue('1/16'));
+
+      final style = tester.widget<Text>(find.text('1/16')).style!;
+      final expected = AppTypographyExtension.create().bodyMediumSemiBold;
+      expect(style.fontSize, expected.fontSize);
+      expect(style.fontWeight, expected.fontWeight);
     });
   });
 

@@ -24,8 +24,8 @@ class PreferenceValueView extends StatelessWidget {
       case CorePreferenceTextValue(:final label, :final isMuted):
         return Text(
           label,
-          style: typography.bodyLargeSemiBold.copyWith(
-            color: isMuted ? colors.textDisable : colors.textLink,
+          style: typography.bodyMediumSemiBold.copyWith(
+            color: isMuted ? colors.textBody : colors.textLink,
           ),
         );
       case CorePreferencePillValue(:final label, :final isOn):

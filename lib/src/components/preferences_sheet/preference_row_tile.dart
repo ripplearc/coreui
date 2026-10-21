@@ -61,18 +61,16 @@ class PreferenceRowTile extends StatelessWidget {
               ? colors.backgroundBlueLight
               : colors.backgroundGrayMid,
           borderRadius: BorderRadius.circular(CoreSpacing.space2),
+          border: Border(bottom: BorderSide(color: colors.lineLight)),
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: CoreSpacing.space4,
-          vertical: CoreSpacing.space3,
-        ),
+        padding: const EdgeInsets.all(CoreSpacing.space3),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 row.label,
                 style: typography.bodyLargeRegular.copyWith(
-                  color: colors.textHeadline,
+                  color: colors.textDark,
                 ),
               ),
             ),
