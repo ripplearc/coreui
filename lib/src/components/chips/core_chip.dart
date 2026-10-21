@@ -79,6 +79,9 @@ enum CoreChipOutline {
 /// )
 /// ```
 class CoreChip extends StatefulWidget {
+  /// Key of the chip's outlined surface, for widget-test finders.
+  static const Key surfaceKey = Key('core_chip_surface');
+
   const CoreChip({
     super.key,
     this.label,
@@ -243,6 +246,7 @@ class _CoreChipState extends State<CoreChip> {
                                   vertical: CoreSpacing.space2,
                                 ),
                                 child: AnimatedContainer(
+                                  key: CoreChip.surfaceKey,
                                   duration: CoreChipTheme.animationDuration,
                                   foregroundDecoration:
                                       CoreChipTheme.dashedOutline(
