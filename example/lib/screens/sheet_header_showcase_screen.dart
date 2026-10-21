@@ -73,7 +73,9 @@ class SheetHeaderShowcaseScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: CoreSpacing.space4,
+              ),
               child: CoreButton(
                 label: 'Open in a sheet',
                 onPressed: () => CoreQuickSheet.show(

@@ -47,7 +47,15 @@ class CoreSheetHeader extends StatelessWidget {
     required this.backSemanticLabel,
   });
 
-  static const double _arrowTopCentredOnTitleLine = CoreSpacing.px11 + 1;
+  /// The key of the back arrow, for widget tests.
+  static const Key backButtonKey = Key('core_sheet_header_back_button');
+
+  /// The key of the column holding the title and subtitle, for widget tests.
+  static const Key textColumnKey = Key('core_sheet_header_text_column');
+
+  static const double _arrowNudgeDown = 1;
+  static const double _arrowTopCentredOnTitleLine =
+      CoreSpacing.px11 + _arrowNudgeDown;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +67,7 @@ class CoreSheetHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CoreIconWidget(
+          key: backButtonKey,
           icon: CoreIcons.arrowLeft,
           size: CoreIconSize.size24,
           color: colors.textLink,
@@ -81,6 +90,7 @@ class CoreSheetHeader extends StatelessWidget {
               bottom: CoreSpacing.px15,
             ),
             child: Column(
+              key: textColumnKey,
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

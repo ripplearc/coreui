@@ -33,10 +33,7 @@ void main() {
     );
   }
 
-  Finder backButton() => find.descendant(
-        of: find.byType(CoreSheetHeader),
-        matching: find.byType(IconButton),
-      );
+  Finder backButton() => find.byKey(CoreSheetHeader.backButtonKey);
 
   Offset offsetInHeader(WidgetTester tester, Finder finder) =>
       tester.getTopLeft(finder) -
@@ -53,13 +50,8 @@ void main() {
     testWidgets('draws no second line without a subtitle', (tester) async {
       await pumpHeader(tester);
 
-      expect(
-        find.descendant(
-          of: find.byType(CoreSheetHeader),
-          matching: find.byType(Text),
-        ),
-        findsOneWidget,
-      );
+      expect(find.text(title), findsOneWidget);
+      expect(find.text(subtitle), findsNothing);
     });
 
     testWidgets('calls onBack once when the arrow is tapped', (tester) async {
@@ -99,10 +91,7 @@ void main() {
     testWidgets('leaves 20 dp right of the text', (tester) async {
       await pumpHeader(tester);
 
-      final textColumn = find.descendant(
-        of: find.byType(CoreSheetHeader),
-        matching: find.byType(Column),
-      );
+      final textColumn = find.byKey(CoreSheetHeader.textColumnKey);
       expect(
         tester.getTopRight(find.byType(CoreSheetHeader)).dx -
             tester.getTopRight(textColumn).dx,
