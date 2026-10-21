@@ -9,7 +9,7 @@
 
 ### 💥 Breaking changes
 
-- `CoreChipTheme.padding` returns `EdgeInsetsDirectional` for every size, `CoreChipTheme.labelStyle` takes a required `size`, and `CoreChipTheme.shadow` is removed. `CoreChipTheme.labelGap` and `CoreChipTheme.dashedStrokeWidth` are new (CA-1322)
+- Visual only: a large chip is 48 high (was 46), loses its shadow and changes its label and value styles, so any golden that shows a suggestion strip chip changes. `CoreChipTheme` is internal (not exported from `ripplearc_coreui.dart`), so its new signatures, `labelGap` / `dashedStrokeWidth` and the removed `shadow()` affect no consumer. `CoreChip.surfaceKey` is new, for test finders (CA-1322)
 
 ### 🧪 Tests
 

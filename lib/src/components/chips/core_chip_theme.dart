@@ -187,9 +187,8 @@ abstract final class CoreChipTheme {
     if (outline != CoreChipOutline.dashed) return null;
     return CoreDashedBorderDecoration(
       color: colors.outlineFocus,
-      strokeWidth: isFocused
-          ? borderWidthFor(isFocused: isFocused)
-          : dashedStrokeWidth,
+      strokeWidth:
+          isFocused ? borderWidthFor(isFocused: true) : dashedStrokeWidth,
       radius: CoreSpacing.space6,
       dashLength: dashLength,
       gapLength: gapLength,
