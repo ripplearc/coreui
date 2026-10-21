@@ -181,7 +181,9 @@ class _CoreButtonState extends State<CoreButton> {
                 ? colors.buttonHover
                 : colors.buttonSurface;
       case CoreButtonVariant.social:
-        return isFocused && !isPressed ? colors.lineDarkOutline : colors.lineMid;
+        return isFocused && !isPressed
+            ? colors.lineDarkOutline
+            : colors.lineMid;
     }
   }
 

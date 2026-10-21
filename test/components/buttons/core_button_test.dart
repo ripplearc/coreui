@@ -489,6 +489,31 @@ void main() {
         expect(iconLeft - buttonLeft, CoreSpacing.space5);
       });
 
+      testWidgets('keeps the logo clear of the text when not full width',
+          (tester) async {
+        await tester.pumpWidget(
+          _wrapWithTheme(
+            Center(
+              child: CoreButton(
+                label: label,
+                variant: CoreButtonVariant.social,
+                fullWidth: false,
+                onPressed: () {},
+                icon: const CoreIconWidget(
+                  key: iconKey,
+                  icon: CoreIcons.google,
+                  size: CoreSpacing.space6,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final iconRect = tester.getRect(find.byKey(iconKey));
+        final textRect = tester.getRect(find.text(label));
+        expect(iconRect.overlaps(textRect), isFalse);
+      });
+
       testWidgets('centres the text on the button', (tester) async {
         await tester.pumpWidget(social());
 
