@@ -34,6 +34,9 @@ class CoreDateFilterChip extends StatelessWidget {
   /// Accessibility label for the × that clears the filter.
   final String clearSemanticLabel;
 
+  /// Accessibility hint for the active pill, which reopens the date sheet.
+  final String rangeSemanticHint;
+
   /// Formats the dates shown on the active pill. Defaults to a
   /// `"Jan 05, 2026"`-style English format.
   final String Function(DateTime date)? dateLabelBuilder;
@@ -89,6 +92,7 @@ class CoreDateFilterChip extends StatelessWidget {
     required this.label,
     this.semanticLabel,
     this.clearSemanticLabel = 'Clear date filter',
+    this.rangeSemanticHint = 'Opens the date range sheet',
     this.dateLabelBuilder,
     this.sheetTitle = 'Date range',
     this.todayLabel = 'Today',
@@ -172,6 +176,7 @@ class CoreDateFilterChip extends StatelessWidget {
       key: activeChipKey,
       label: _formatRange(range),
       clearSemanticLabel: clearSemanticLabel,
+      rangeSemanticHint: rangeSemanticHint,
       onTap: () => _showSheet(context),
       onClear: onClear,
     );
@@ -183,12 +188,14 @@ class _ActiveDateChip extends StatelessWidget {
     super.key,
     required this.label,
     required this.clearSemanticLabel,
+    required this.rangeSemanticHint,
     required this.onTap,
     required this.onClear,
   });
 
   final String label;
   final String clearSemanticLabel;
+  final String rangeSemanticHint;
   final VoidCallback onTap;
   final VoidCallback onClear;
 
@@ -209,7 +216,7 @@ class _ActiveDateChip extends StatelessWidget {
           top: pillInset,
           bottom: pillInset,
           right: clearTargetOverhang,
-          child: DecoratedBox(
+          child: Ink(
             decoration: BoxDecoration(
               color: colors.chipGrey,
               borderRadius: pillRadius,
@@ -222,6 +229,7 @@ class _ActiveDateChip extends StatelessWidget {
             Flexible(
               child: Semantics(
                 label: label,
+                hint: rangeSemanticHint,
                 button: true,
                 container: true,
                 child: InkWell(
