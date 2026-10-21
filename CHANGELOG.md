@@ -4,7 +4,7 @@
 
 ### 🔧 Fixes
 
-- **CoreDateFilterChip**: after the x clears the filter, focus moves to the inactive chip instead of being lost with the active pill (CA-1322)
+- **CoreDateFilterChip**: after the x clears the filter, focus moves to the inactive chip instead of being lost with the active pill. It moves whenever the caller rebuilds without a range after the ×, however late, not only in the same frame (CA-1322)
 - **CoreFilterChip**: takes an optional `focusNode`, so a parent can move focus to it (CA-1322)
 
 ### 🧪 Tests

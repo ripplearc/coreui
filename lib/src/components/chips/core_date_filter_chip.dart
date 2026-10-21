@@ -119,6 +119,19 @@ class CoreDateFilterChip extends StatefulWidget {
 
 class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
   final FocusNode _inactiveChipFocusNode = FocusNode();
+  bool _focusInactiveChipOnceCleared = false;
+
+  @override
+  void didUpdateWidget(CoreDateFilterChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final wasCleared = oldWidget.selectedDateRange != null &&
+        widget.selectedDateRange == null;
+    if (!wasCleared || !_focusInactiveChipOnceCleared) return;
+    _focusInactiveChipOnceCleared = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _inactiveChipFocusNode.requestFocus();
+    });
+  }
 
   @override
   void dispose() {
@@ -127,6 +140,7 @@ class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
   }
 
   Future<void> _showSheet() async {
+    _focusInactiveChipOnceCleared = false;
     final range = await CoreDateRangeSheet.show(
       context: context,
       initialRange: widget.selectedDateRange,
@@ -148,11 +162,8 @@ class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
   }
 
   void _clear() {
+    _focusInactiveChipOnceCleared = true;
     widget.onClear();
-    // The inactive chip exists only once the parent rebuilds without a range.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _inactiveChipFocusNode.requestFocus();
-    });
   }
 
   // English-only default; callers localise via [dateLabelBuilder].
