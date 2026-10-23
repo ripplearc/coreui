@@ -36,8 +36,9 @@ import 'underline_field_metrics.dart';
 /// [maxLines] above 1 lets the text wrap. The value row grows with the text
 /// up to [maxLines] lines, then the text scrolls inside the field. The
 /// underline sits 8px under the last line of text at the regular size, as it
-/// does at the compact size, and the return key adds a new line. The default,
-/// 1, keeps one line that scrolls sideways.
+/// does at the compact size, and the return key adds a new line, so
+/// [onSubmitted] does not fire on return unless [textInputAction] says so.
+/// The default, 1, keeps one line that scrolls sideways.
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in

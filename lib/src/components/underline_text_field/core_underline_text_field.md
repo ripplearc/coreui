@@ -96,7 +96,8 @@ CoreUnderlineTextField(
   lines. Past that the text scrolls inside the field.
 - The underline sits 8px under the last line of text, so a regular field draws
   the compact gap when `maxLines` is above 1. A `large` field keeps its own.
-- The return key adds a new line. Pass `textInputAction` to change that.
+- The return key adds a new line, so `onSubmitted` does not fire on it. Pass
+  `textInputAction` to change that.
 - A hint or error line sits under the underline as usual and replaces nothing
   but the hint.
 - The text area of a multi-line field is as tall as its lines and is not given

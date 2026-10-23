@@ -28,7 +28,8 @@ void main() {
       tester.state<EditableTextState>(editable);
 
   group('CoreUnderlineTextField – maxLines', () {
-    testWidgets('wraps long text and grows the field with it', (tester) async {
+    testWidgets('grows the field by one line for each new line',
+        (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(
@@ -108,30 +109,67 @@ void main() {
         ),
       );
 
-      expect(
-        tester.getSize(editable).height,
-        greaterThanOrEqualTo(48),
-      );
+      expect(tester.getSize(editable).height, 96);
     });
 
     testWidgets('return adds a new line', (tester) async {
       final changes = <String>[];
+      var submitted = false;
       await pumpField(
         tester,
         CoreUnderlineTextField(
           label: 'Scope of work',
           maxLines: 4,
+          initialValue: 'First',
           onChanged: changes.add,
+          onSubmitted: (_) => submitted = true,
         ),
       );
 
-      await tester.enterText(editable, 'First\nSecond');
+      await tester.tap(editable);
+      await tester.pump();
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: 'First\n',
+          selection: TextSelection.collapsed(offset: 6),
+        ),
+      );
+      await tester.pump();
+      await tester.testTextInput.receiveAction(TextInputAction.newline);
+      await tester.pump();
 
-      expect(changes.last, 'First\nSecond');
+      expect(changes.last, 'First\n');
+      expect(submitted, isFalse);
       expect(
         tester.widget<EditableText>(editable).keyboardType,
         TextInputType.multiline,
       );
+    });
+
+    testWidgets('a tap on the label or the underline focuses the field',
+        (tester) async {
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Scope of work',
+          maxLines: 4,
+          initialValue: shortText,
+        ),
+      );
+      bool focused() =>
+          tester.widget<EditableText>(editable).focusNode.hasFocus;
+
+      await tester.tap(find.text('Scope of work'));
+      await tester.pump();
+      expect(focused(), isTrue);
+
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+      expect(focused(), isFalse);
+
+      await tester.tap(underline);
+      await tester.pump();
+      expect(focused(), isTrue);
     });
 
     testWidgets('keeps a 24px minimum for an empty field', (tester) async {
@@ -216,7 +254,10 @@ void main() {
         (tester) async {
       await pumpField(
         tester,
-        const CoreUnderlineTextField(label: 'Equipment', initialValue: longText),
+        const CoreUnderlineTextField(
+          label: 'Equipment',
+          initialValue: longText,
+        ),
       );
 
       expect(tester.getSize(fieldFinder).height, 54);
