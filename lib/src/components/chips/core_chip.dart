@@ -6,9 +6,10 @@ import 'core_chip_theme.dart';
 /// The size variant of a [CoreChip].
 ///
 /// [small] and [medium] share the same visual appearance (light grey
-/// background, no shadow). [large] uses a white/inverse background with a
-/// drop shadow. [mini] is the large chip's secondary form: the same surface
-/// and outline at the medium chip's height, with no shadow.
+/// background). [large] is the Figma Suggestion Strip Chip: 48 high on a
+/// white/inverse background with a `lineMid` outline. [mini] is the large
+/// chip's secondary form: the same surface and outline at the medium height.
+/// No size has a shadow.
 enum CoreChipSize {
   /// Small size variant.
   small,
@@ -52,9 +53,9 @@ enum CoreChipOutline {
 ///
 /// ## Sizes
 /// [CoreChipSize.small] and [CoreChipSize.medium] share the same visual.
-/// [CoreChipSize.large] uses a white surface with a drop shadow, and
-/// [CoreChipSize.mini] keeps that surface at the medium height without the
-/// shadow. Text styles are resolved per size by [CoreChipTheme].
+/// [CoreChipSize.large] uses a white surface, 48 high, and
+/// [CoreChipSize.mini] keeps that surface at the medium height. No size has
+/// a shadow. Text styles are resolved per size by [CoreChipTheme].
 ///
 /// ## Outline
 /// [CoreChipOutline.dashed] swaps the solid border for a dashed offer outline
@@ -78,6 +79,9 @@ enum CoreChipOutline {
 /// )
 /// ```
 class CoreChip extends StatefulWidget {
+  /// Key of the chip's outlined surface, for widget-test finders.
+  static const Key surfaceKey = Key('core_chip_surface');
+
   const CoreChip({
     super.key,
     this.label,
@@ -242,6 +246,7 @@ class _CoreChipState extends State<CoreChip> {
                                   vertical: CoreSpacing.space2,
                                 ),
                                 child: AnimatedContainer(
+                                  key: CoreChip.surfaceKey,
                                   duration: CoreChipTheme.animationDuration,
                                   foregroundDecoration:
                                       CoreChipTheme.dashedOutline(
@@ -250,13 +255,13 @@ class _CoreChipState extends State<CoreChip> {
                                     colors: colors,
                                   ),
                                   padding: CoreChipTheme.padding(widget.size) -
-                                      EdgeInsets.all(
+                                      EdgeInsetsDirectional.all(
                                         CoreChipTheme.borderWidthFor(
                                               isFocused: activeFocused,
                                               outline: widget.outline,
                                             ) -
                                             CoreChipTheme.borderWidth,
-                                      ) as EdgeInsetsGeometry,
+                                      ),
                                   decoration: BoxDecoration(
                                     color: CoreChipTheme.background(
                                       size: widget.size,
@@ -283,8 +288,6 @@ class _CoreChipState extends State<CoreChip> {
                                         ),
                                       ),
                                     ),
-                                    boxShadow:
-                                        CoreChipTheme.shadow(widget.size),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -315,6 +318,7 @@ class _CoreChipState extends State<CoreChip> {
                                                       label,
                                                       style: CoreChipTheme
                                                           .labelStyle(
+                                                        size: widget.size,
                                                         typography: typography,
                                                         colors: colors,
                                                       ),
@@ -325,9 +329,10 @@ class _CoreChipState extends State<CoreChip> {
                                                 if (widget.label != null &&
                                                     (widget.value != null ||
                                                         widget.unit != null))
-                                                  const SizedBox(
-                                                      width:
-                                                          CoreSpacing.space1),
+                                                  SizedBox(
+                                                      width: CoreChipTheme
+                                                          .labelGap(
+                                                              widget.size)),
                                                 if (widget.value
                                                     case final value?)
                                                   Flexible(
