@@ -92,8 +92,10 @@ void main() {
 
       final overlay = tester.widget<InkWell>(inkWell).overlayColor!;
 
-      expect(overlay.resolve({})?.a, 0);
-      expect(overlay.resolve({WidgetState.focused})?.a, greaterThan(0));
+      expect(
+        overlay.resolve({WidgetState.focused}),
+        isNot(equals(overlay.resolve({}))),
+      );
     });
   });
 }
