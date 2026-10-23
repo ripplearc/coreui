@@ -48,7 +48,7 @@ void main() {
       );
     });
 
-    testWidgets('draws the icon 16px at a 2px inset, then 8px before the text',
+    testWidgets('draws the icon 16px flush left, then 8px before the text',
         (tester) async {
       await pumpField(
         tester,
@@ -60,7 +60,7 @@ void main() {
       final field = tester.getTopLeft(fieldFinder).dx;
       final iconRect = tester.getRect(icon(CoreIcons.info));
 
-      expect(iconRect.left - field, 2);
+      expect(iconRect.left - field, 0);
       expect(iconRect.width, 16);
       expect(
         tester.getTopLeft(find.text('Never priced this?')).dx - iconRect.right,
