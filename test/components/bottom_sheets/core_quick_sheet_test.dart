@@ -263,6 +263,12 @@ void main() {
   });
 
   group('CoreQuickSheet fixed height', () {
+    const maxHeightRatio = 0.9;
+    const footerHeight = 48.0;
+
+    double screenHeight(WidgetTester tester) =>
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+
     Future<void> openSheet(
       WidgetTester tester, {
       required Widget child,
@@ -289,7 +295,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    double sheetHeight(WidgetTester tester) =>
+    double contentHeight(WidgetTester tester) =>
         tester.getSize(find.byKey(const Key('content'))).height;
 
     testWidgets('is 90% of the screen for short content',
@@ -301,14 +307,13 @@ void main() {
         ),
       );
 
-      final screenHeight = tester.view.physicalSize.height /
-          tester.view.devicePixelRatio;
-      final contentHeight = sheetHeight(tester);
-      // The content sits below the drag handle, so it is shorter than the sheet.
-      expect(contentHeight, lessThan(screenHeight * 0.9));
+      expect(
+        contentHeight(tester),
+        lessThan(screenHeight(tester) * maxHeightRatio),
+      );
       expect(
         tester.getRect(find.byType(BottomSheet)).height,
-        closeTo(screenHeight * 0.9, 0.01),
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
       );
     });
 
@@ -344,7 +349,7 @@ void main() {
         child: const Column(
           children: [
             Expanded(child: SizedBox(key: Key('content'))),
-            SizedBox(height: 48, child: Text('Footer')),
+            SizedBox(height: footerHeight, child: Text('Footer')),
           ],
         ),
       );
@@ -353,8 +358,8 @@ void main() {
       expect(tester.getRect(find.text('Footer')).bottom,
           lessThanOrEqualTo(sheet.bottom));
       expect(tester.getRect(find.byKey(const Key('content'))).bottom,
-          closeTo(sheet.bottom - 48, 0.01));
-      expect(sheetHeight(tester), greaterThan(300));
+          closeTo(sheet.bottom - footerHeight, 0.01));
+      expect(contentHeight(tester), greaterThan(300));
     });
 
     testWidgets('long content scrolls inside the sheet',
@@ -362,6 +367,7 @@ void main() {
       await openSheet(
         tester,
         child: ListView.builder(
+          key: const Key('long_list'),
           itemCount: 100,
           itemBuilder: (context, index) => SizedBox(
             height: 56,
@@ -373,7 +379,7 @@ void main() {
       final sheetBefore = tester.getRect(find.byType(BottomSheet));
       expect(find.text('Item 60'), findsNothing);
 
-      await tester.drag(find.byType(ListView), const Offset(0, -2000));
+      await tester.drag(find.byKey(const Key('long_list')), const Offset(0, -2000));
       await tester.pumpAndSettle();
 
       expect(find.text('Item 0'), findsNothing);
@@ -392,11 +398,9 @@ void main() {
         ),
       );
 
-      final screenHeight = tester.view.physicalSize.height /
-          tester.view.devicePixelRatio;
       expect(
         tester.getRect(find.byType(BottomSheet)).height,
-        lessThan(screenHeight * 0.5),
+        lessThan(screenHeight(tester) * maxHeightRatio / 2),
       );
     });
   });
