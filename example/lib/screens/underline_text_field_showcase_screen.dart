@@ -157,6 +157,15 @@ class _UnderlineTextFieldShowcaseScreenState
               unitText: 'job',
               keyboardType: TextInputType.numberWithOptions(decimal: true),
             ),
+            _section('Several lines'),
+            const CoreUnderlineTextField(
+              label: 'Scope of work',
+              maxLines: 4,
+              initialValue: 'Demolition of the existing kitchen, removal of '
+                  'all cabinets and appliances, new subfloor and new tile '
+                  'flooring.',
+              helperText: 'Grows to four lines, then scrolls.',
+            ),
             _section('Error'),
             const CoreUnderlineTextField(
               label: 'Quantity',
