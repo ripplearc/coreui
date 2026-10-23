@@ -45,7 +45,8 @@ class CoreCheckRowItem extends StatelessWidget {
   /// Whether the row reacts to taps.
   ///
   /// When false the row ignores taps, reads as disabled to a screen reader, and
-  /// the title, subtitle and default initials use `textDisable`.
+  /// the title, subtitle and default initials use `textDisable`. A custom
+  /// [leading] or [avatarTextColor] is not dimmed.
   final bool enabled;
 
   /// Whether a divider is drawn on the bottom edge of the row.

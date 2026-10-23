@@ -78,7 +78,7 @@ Matches the Check row of the Figma List item set.
 | Box | 24 dp, `iconDark` when ticked, `iconGrayMid` when not |
 | Divider | 1 dp `lineLight`, inset 20 from each edge, on the bottom edge of the row |
 | Pressed | row filled with `backgroundGrayLight` |
-| Disabled (`enabled: false`) | name, second line and initials in `textDisable`; the box keeps its look; taps ignored |
+| Disabled (`enabled: false`) | name, second line and default initials in `textDisable`; a custom `leading` or `avatarTextColor` is not dimmed; the box keeps its look; taps ignored |
 
 The row is at least 48 dp high. The API for the Disabled state is the `enabled` flag.
 

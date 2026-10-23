@@ -317,6 +317,29 @@ void main() {
       expect(icon.color, theme.coreColors.iconDark);
     });
 
+    testWidgets('disabled row keeps a custom avatar text colour',
+        (tester) async {
+      final theme = CoreTheme.light();
+
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreCheckRowItem(
+            title: 'John Doe',
+            selected: false,
+            enabled: false,
+            avatarTextColor: theme.coreColors.textSuccess,
+            onChanged: (_) {},
+          ),
+          theme: theme,
+        ),
+      );
+
+      expect(
+        tester.widget<Text>(find.text('J')).style!.color,
+        theme.coreColors.textSuccess,
+      );
+    });
+
     testWidgets('enabled row uses the Figma text styles and colours',
         (tester) async {
       final theme = CoreTheme.light();

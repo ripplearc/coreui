@@ -1,10 +1,10 @@
 # Changelog
 
-## [0.43.0] - CoreCheckRowItem matches the Figma Check row
+## [0.58.0] - CoreCheckRowItem matches the Figma Check row
 
 ### ✨ Features
 
-- **CoreCheckRowItem.enabled**: Figma's Disabled state. A disabled row ignores taps, reads as disabled to a screen reader, and paints the name, second line and initials in `textDisable`; the box keeps its look (CA-1344)
+- **CoreCheckRowItem.enabled**: Figma's Disabled state. A disabled row ignores taps, reads as disabled to a screen reader, and paints the name, second line and default initials in `textDisable` (a custom `leading` or `avatarTextColor` is not dimmed); the box keeps its look (CA-1344)
 - **CoreCheckRowItem.showDivider**: the 1 dp `lineLight` divider, inset 20 dp from each edge, drawn on the bottom edge of the row. Pass `false` on the last row
 
 ### 🔧 Changes
