@@ -13,6 +13,7 @@ class _SwitchShowcaseScreenState extends State<SwitchShowcaseScreen> {
   bool isPrivate = false;
   bool isMetric = false;
   bool normalCompact = true;
+  bool isShown = false;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +111,67 @@ class _SwitchShowcaseScreenState extends State<SwitchShowcaseScreen> {
                   onChanged: (v) => setState(() => isMetric = v),
                   activeLabel: 'Metric',
                   inactiveLabel: 'Imperial',
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            // Show Hide Type Section
+            Text(
+              'Show Hide Type (72 x 32px)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Hide/Show switch (label names the state):'),
+                const SizedBox(height: 5),
+                CoreSwitch(
+                  type: CoreSwitchType.showHide,
+                  value: isShown,
+                  onChanged: (v) => setState(() => isShown = v),
+                  semanticLabel: 'Markup to client',
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            // Disabled Section
+            Text(
+              'Disabled (onChanged: null, ignores taps)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            const Wrap(
+              runSpacing: 10,
+              spacing: 10,
+              children: [
+                CoreSwitch(
+                  type: CoreSwitchType.showHide,
+                  value: false,
+                  onChanged: null,
+                ),
+                CoreSwitch(
+                  type: CoreSwitchType.showHide,
+                  value: true,
+                  onChanged: null,
+                ),
+                CoreSwitch(
+                  type: CoreSwitchType.normal,
+                  value: false,
+                  onChanged: null,
+                  activeLabel: 'Public',
+                  inactiveLabel: 'Private',
+                ),
+                CoreSwitch(
+                  type: CoreSwitchType.lock,
+                  value: true,
+                  onChanged: null,
+                  activeLabel: 'Lock',
+                  inactiveLabel: 'Unlock',
                 ),
               ],
             ),
