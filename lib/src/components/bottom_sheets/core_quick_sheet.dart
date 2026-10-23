@@ -6,6 +6,7 @@ import 'package:ripplearc_coreui/src/theme/theme_extensions.dart';
 ///
 /// [CoreQuickSheet] provides a reusable bottom sheet with:
 /// - Automatic height sizing based on content (up to 90% of screen height)
+/// - Optional fixed height that does not change with the content
 /// - Custom drag handle with consistent styling
 /// - Configurable dismiss behavior
 /// - Theme-aware background color
@@ -40,6 +41,15 @@ class CoreQuickSheet {
   /// - [enableDrag]: Whether dragging down closes the sheet (default: true)
   /// - [useSafeArea]: Whether to respect safe area insets (default: false)
   /// - [backgroundColor]: Optional custom background color (defaults to theme's pageBackground)
+  /// - [isFixedHeight]: Whether the sheet keeps one height (default: false).
+  ///   When true the sheet is always 90% of the screen height, so it does not
+  ///   grow or shrink when the content changes and the controls at the top
+  ///   stay where they are. The [child] gets the full height below the drag
+  ///   handle as tight constraints, so a caller can wrap a part in [Expanded]
+  ///   to fill the spare height and keep a footer at the bottom. Content that
+  ///   does not fit does not scroll by itself: put the scrollable part in an
+  ///   [Expanded], for example `Column(children: [Expanded(child: ListView()),
+  ///   footer])`. When false the sheet sizes to its content as before.
   ///
   /// Returns a [Future] that resolves when the bottom sheet is dismissed.
   static Future<T?> show<T>({
@@ -49,6 +59,7 @@ class CoreQuickSheet {
     bool enableDrag = true,
     bool useSafeArea = false,
     Color? backgroundColor,
+    bool isFixedHeight = false,
   }) {
     final colorTheme = AppColorsExtension.of(context);
 
@@ -60,6 +71,7 @@ class CoreQuickSheet {
       backgroundColor: colorTheme.transparent,
       builder: (context) => _CoreQuickSheetContent(
         useSafeArea: useSafeArea,
+        isFixedHeight: isFixedHeight,
         backgroundColor: backgroundColor ?? colorTheme.pageBackground,
         child: child,
       ),
@@ -73,17 +85,21 @@ class _CoreQuickSheetContent extends StatelessWidget {
     required this.child,
     required this.useSafeArea,
     required this.backgroundColor,
+    required this.isFixedHeight,
   });
 
   final Widget child;
   final bool useSafeArea;
   final Color backgroundColor;
+  final bool isFixedHeight;
 
   @override
   Widget build(BuildContext context) {
     final colorTheme = AppColorsExtension.of(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final maxHeight = screenHeight * CoreQuickSheet._maxHeightRatio;
+    final bottomInset =
+        useSafeArea ? MediaQuery.of(context).padding.bottom : 0.0;
 
     Widget content = Container(
       decoration: BoxDecoration(
@@ -93,7 +109,7 @@ class _CoreQuickSheetContent extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: isFixedHeight ? MainAxisSize.max : MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -108,19 +124,22 @@ class _CoreQuickSheetContent extends StatelessWidget {
               ),
             ),
           ),
-          Flexible(
-            child: child,
-          ),
+          if (isFixedHeight)
+            Expanded(child: child)
+          else
+            Flexible(child: child),
         ],
       ),
     );
 
-    content = ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: maxHeight,
-      ),
-      child: content,
-    );
+    content = isFixedHeight
+        ? SizedBox(height: maxHeight - bottomInset, child: content)
+        : ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: maxHeight,
+            ),
+            child: content,
+          );
 
     if (useSafeArea) {
       content = ClipRRect(

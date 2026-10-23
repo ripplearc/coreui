@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.57.0] - CoreQuickSheet fixed height
+
+### ✨ Features
+
+- **CoreQuickSheet**: `isFixedHeight` (default `false`) keeps the sheet at one height, 90% of the screen, so it no longer grows or shrinks when its content changes and the controls at the top stay under the thumb. The child gets the full height below the drag handle, so a caller can wrap one part in `Expanded` to fill the spare height and keep a footer at the bottom. Content that does not fit scrolls inside that `Expanded` part. The 90% limit is kept, and with the option off the sheet sizes to its content exactly as before (CA-1343)
+- Showcase: a Fixed Height Sheet demo in the quick sheet screen
+
+### 🧪 Tests
+
+- Widget tests: height is 90% of the screen, unchanged when the content changes, filling part and footer, long content scrolls, default still wraps its content
+- Goldens: fixed height with short content (filled, footer at the bottom) and with long content
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
