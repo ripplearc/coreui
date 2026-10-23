@@ -261,4 +261,143 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('CoreQuickSheet fixed height', () {
+    Future<void> openSheet(
+      WidgetTester tester, {
+      required Widget child,
+      bool isFixedHeight = true,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreQuickSheet.show(
+                  context: context,
+                  isFixedHeight: isFixedHeight,
+                  child: child,
+                ),
+                child: const Text('Open Sheet'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open Sheet'));
+      await tester.pumpAndSettle();
+    }
+
+    double sheetHeight(WidgetTester tester) =>
+        tester.getSize(find.byKey(const Key('content'))).height;
+
+    testWidgets('is 90% of the screen for short content',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      final screenHeight = tester.view.physicalSize.height /
+          tester.view.devicePixelRatio;
+      final contentHeight = sheetHeight(tester);
+      // The content sits below the drag handle, so it is shorter than the sheet.
+      expect(contentHeight, lessThan(screenHeight * 0.9));
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight * 0.9, 0.01),
+      );
+    });
+
+    testWidgets('keeps its height when the content changes',
+        (WidgetTester tester) async {
+      final showMore = ValueNotifier<bool>(false);
+      await openSheet(
+        tester,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: showMore,
+          builder: (context, more, _) => Column(
+            children: [
+              if (more) const SizedBox(height: 200, child: Text('More')),
+              const Expanded(child: SizedBox(key: Key('content'))),
+              const Text('Footer'),
+            ],
+          ),
+        ),
+      );
+
+      final before = tester.getRect(find.byType(BottomSheet));
+      showMore.value = true;
+      await tester.pumpAndSettle();
+
+      expect(find.text('More'), findsOneWidget);
+      expect(tester.getRect(find.byType(BottomSheet)), before);
+    });
+
+    testWidgets('a filling part grows and the footer stays at the bottom',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        child: const Column(
+          children: [
+            Expanded(child: SizedBox(key: Key('content'))),
+            SizedBox(height: 48, child: Text('Footer')),
+          ],
+        ),
+      );
+
+      final sheet = tester.getRect(find.byType(BottomSheet));
+      expect(tester.getRect(find.text('Footer')).bottom,
+          lessThanOrEqualTo(sheet.bottom));
+      expect(tester.getRect(find.byKey(const Key('content'))).bottom,
+          closeTo(sheet.bottom - 48, 0.01));
+      expect(sheetHeight(tester), greaterThan(300));
+    });
+
+    testWidgets('long content scrolls inside the sheet',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        child: ListView.builder(
+          itemCount: 100,
+          itemBuilder: (context, index) => SizedBox(
+            height: 56,
+            child: Text('Item $index'),
+          ),
+        ),
+      );
+
+      final sheetBefore = tester.getRect(find.byType(BottomSheet));
+      expect(find.text('Item 60'), findsNothing);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -2000));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Item 0'), findsNothing);
+      expect(tester.getRect(find.byType(BottomSheet)), sheetBefore);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('without the option the sheet still wraps its content',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        isFixedHeight: false,
+        child: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [SizedBox(key: Key('content'), height: 100)],
+        ),
+      );
+
+      final screenHeight = tester.view.physicalSize.height /
+          tester.view.devicePixelRatio;
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        lessThan(screenHeight * 0.5),
+      );
+    });
+  });
 }
