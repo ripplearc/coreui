@@ -3,12 +3,29 @@ import 'package:flutter/material.dart';
 import '../../../ripplearc_coreui.dart';
 
 /// A selectable list row with a leading widget, a title (and optional
-/// subtitle), and a trailing checkbox.
+/// subtitle), and a trailing checkbox. Matches the Check row of the Figma List
+/// item set.
 ///
 /// Tapping anywhere on the row toggles [selected] via [onChanged]. The leading
-/// area defaults to a 24×24 [CoreAvatar] showing the first initial of [title],
+/// area defaults to a 40×40 [CoreAvatar] showing the first initial of [title],
 /// but any widget can be supplied via [leading]. Designed for multi-select
-/// sheets such as an owner / assignee filter.
+/// sheets such as an owner / assignee filter or the "Send to" sheet.
+///
+/// ### Sizes
+/// 12 dp padding above and below, 20 dp left and right, 12 dp between the
+/// avatar, the text and the checkbox. The row is at least 48 dp high.
+///
+/// ### States
+/// - Default and Selected: [selected] is false or true. The box is `iconGrayMid`
+///   when empty and `iconDark` when ticked.
+/// - Pressed: the row is filled with `backgroundGrayLight` while held.
+/// - Disabled: set [enabled] to false. The row ignores taps, is announced as
+///   disabled, and the title, subtitle and initials use `textDisable`. The box
+///   keeps its look.
+///
+/// ### Divider
+/// A 1 dp `lineLight` rule inset 20 dp from each edge sits on the bottom edge of
+/// the row. Pass `showDivider: false` on the last row of a list.
 class CoreCheckRowItem extends StatelessWidget {
   /// Primary text for the row (e.g. an owner name).
   ///
@@ -25,9 +42,20 @@ class CoreCheckRowItem extends StatelessWidget {
   /// Called with the toggled value when the row or checkbox is activated.
   final ValueChanged<bool> onChanged;
 
+  /// Whether the row reacts to taps.
+  ///
+  /// When false the row ignores taps, reads as disabled to a screen reader, and
+  /// the title, subtitle and default initials use `textDisable`.
+  final bool enabled;
+
+  /// Whether a divider is drawn on the bottom edge of the row.
+  ///
+  /// Pass false on the last row of a list.
+  final bool showDivider;
+
   /// Leading widget shown before the text.
   ///
-  /// Defaults to a 24×24 circle showing the first initial of [title]. When
+  /// Defaults to a 40×40 circle showing the first initial of [title]. When
   /// provided, [avatarBackgroundColor] and [avatarTextColor] are ignored.
   final Widget? leading;
 
@@ -43,12 +71,14 @@ class CoreCheckRowItem extends StatelessWidget {
 
   /// Full override of the default leading avatar's initial text style.
   ///
-  /// Ignored when [leading] is supplied. Null uses the theme's `bodySmallMedium`.
+  /// Ignored when [leading] is supplied. Null uses the theme's `bodyLargeSemiBold`.
   /// The effective [avatarTextColor] is always applied on top of this style.
   final TextStyle? avatarTextStyle;
 
   /// Accessibility label for the row. Defaults to [title].
   final String? semanticLabel;
+
+  static const double _avatarRadius = 20;
 
   /// Creates a selectable checkbox row.
   const CoreCheckRowItem({
@@ -56,6 +86,8 @@ class CoreCheckRowItem extends StatelessWidget {
     required this.title,
     required this.selected,
     required this.onChanged,
+    this.enabled = true,
+    this.showDivider = true,
     this.subtitle,
     this.leading,
     this.avatarBackgroundColor,
@@ -78,14 +110,16 @@ class CoreCheckRowItem extends StatelessWidget {
     AppColorsExtension colors,
     AppTypographyExtension typography,
   ) {
-    final effectiveBackground = avatarBackgroundColor ?? colors.backgroundBlueMid;
-    final effectiveTextColor = avatarTextColor ?? colors.iconOrient;
-    final effectiveStyle = (avatarTextStyle ?? typography.bodySmallMedium)
+    final effectiveBackground =
+        avatarBackgroundColor ?? colors.backgroundBlueLight;
+    final effectiveTextColor = avatarTextColor ??
+        (enabled ? colors.textLink : colors.textDisable);
+    final effectiveStyle = (avatarTextStyle ?? typography.bodyLargeSemiBold)
         .copyWith(color: effectiveTextColor);
     final initial = initialFor(title);
 
     return CoreAvatar(
-      radius: 12,
+      radius: _avatarRadius,
       backgroundColor: effectiveBackground,
       child: initial.isEmpty
           ? null
@@ -99,7 +133,9 @@ class CoreCheckRowItem extends StatelessWidget {
   ) {
     final titleText = Text(
       title,
-      style: typography.bodyLargeRegular.copyWith(color: colors.textDark),
+      style: typography.bodyLargeMedium.copyWith(
+        color: enabled ? colors.textHeadline : colors.textDisable,
+      ),
     );
 
     final subtitleValue = subtitle;
@@ -114,7 +150,9 @@ class CoreCheckRowItem extends StatelessWidget {
         titleText,
         Text(
           subtitleValue,
-          style: typography.bodySmallRegular.copyWith(color: colors.textBody),
+          style: typography.bodyMediumRegular.copyWith(
+            color: enabled ? colors.textBody : colors.textDisable,
+          ),
         ),
       ],
     );
@@ -130,42 +168,55 @@ class CoreCheckRowItem extends StatelessWidget {
     return Semantics(
       label: semanticLabel ?? title,
       button: true,
+      enabled: enabled,
       checked: selected,
       child: Material(
         color: colors.transparent,
         child: InkWell(
-          onTap: () => onChanged(!selected),
+          onTap: enabled ? () => onChanged(!selected) : null,
           splashFactory: NoSplash.splashFactory,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space4,
-              vertical: CoreSpacing.space3,
-            ),
-            child: Row(
+          highlightColor: colors.backgroundGrayLight,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
+            child: Stack(
               children: [
-                ExcludeSemantics(child: effectiveLeading),
-                const SizedBox(width: CoreSpacing.space3),
-                Expanded(
-                  child: ExcludeSemantics(
-                    child: _buildText(colors, typography),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space5,
+                    vertical: CoreSpacing.space3,
                   ),
-                ),
-                ExcludeSemantics(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: CoreSpacing.space12,
-                      minHeight: CoreSpacing.space12,
-                    ),
-                    child: Center(
-                      child: CoreIconWidget(
-                        icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
-                        size: CoreIconSize.size24,
-                        color:
-                            selected ? colors.outlineFocus : colors.iconGrayMid,
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(child: effectiveLeading),
+                      const SizedBox(width: CoreSpacing.space3),
+                      Expanded(
+                        child: ExcludeSemantics(
+                          child: _buildText(colors, typography),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: CoreSpacing.space3),
+                      ExcludeSemantics(
+                        child: CoreIconWidget(
+                          icon:
+                              selected ? CoreIcons.check : CoreIcons.checkBlank,
+                          size: CoreIconSize.size24,
+                          color:
+                              selected ? colors.iconDark : colors.iconGrayMid,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                if (showDivider)
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: CoreDivider(
+                      indent: CoreSpacing.space5,
+                      endIndent: CoreSpacing.space5,
+                    ),
+                  ),
               ],
             ),
           ),

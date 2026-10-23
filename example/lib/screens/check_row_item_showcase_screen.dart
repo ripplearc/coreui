@@ -41,6 +41,7 @@ class _CheckRowItemShowcaseScreenState
             for (final owner in _owners)
               CoreCheckRowItem(
                 title: owner,
+                showDivider: owner != _owners.last,
                 selected: _selectedOwners.contains(owner),
                 onChanged: (value) {
                   setState(() {
@@ -70,6 +71,17 @@ class _CheckRowItemShowcaseScreenState
               },
             ),
             const SizedBox(height: CoreSpacing.space6),
+            Text('Disabled', style: typography.bodyLargeSemiBold),
+            const SizedBox(height: CoreSpacing.space2),
+            CoreCheckRowItem(
+              title: 'Wade Warren',
+              subtitle: 'wade@acme.com',
+              enabled: false,
+              showDivider: false,
+              selected: false,
+              onChanged: (_) {},
+            ),
+            const SizedBox(height: CoreSpacing.space6),
             Text('Custom avatar colors', style: typography.bodyLargeSemiBold),
             const SizedBox(height: CoreSpacing.space2),
             CoreCheckRowItem(
@@ -87,7 +99,7 @@ class _CheckRowItemShowcaseScreenState
             CoreCheckRowItem(
               title: 'Darrell Steward',
               leading: CoreAvatar(
-                radius: 12,
+                radius: 20,
                 backgroundColor: Theme.of(context).coreColors.iconBlue,
                 child: CoreIconWidget(
                   icon: CoreIcons.person,
