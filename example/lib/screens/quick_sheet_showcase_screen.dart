@@ -46,6 +46,11 @@ class QuickSheetShowcaseScreen extends StatelessWidget {
               onPressed: () => _showSafeAreaSheet(context),
               child: const Text('Safe Area Sheet'),
             ),
+            const SizedBox(height: CoreSpacing.space4),
+            ElevatedButton(
+              onPressed: () => _showFixedHeightSheet(context),
+              child: const Text('Fixed Height Sheet'),
+            ),
           ],
         ),
       ),
@@ -293,6 +298,62 @@ class QuickSheetShowcaseScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showFixedHeightSheet(BuildContext context) {
+    CoreQuickSheet.show(
+      context: context,
+      isFixedHeight: true,
+      child: const _FixedHeightDemo(),
+    );
+  }
+}
+
+class _FixedHeightDemo extends StatefulWidget {
+  const _FixedHeightDemo();
+
+  @override
+  State<_FixedHeightDemo> createState() => _FixedHeightDemoState();
+}
+
+class _FixedHeightDemoState extends State<_FixedHeightDemo> {
+  bool _more = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(CoreSpacing.space4),
+      child: Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Show more content'),
+            value: _more,
+            onChanged: (value) => setState(() => _more = value),
+          ),
+          Expanded(
+            child: ColoredBox(
+              color: colors.orientMid,
+              child: ListView(
+                children: [
+                  for (var i = 0; i < (_more ? 30 : 3); i++)
+                    ListTile(title: Text('Row ${i + 1}')),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: CoreSpacing.space4),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ),
+        ],
       ),
     );
   }
