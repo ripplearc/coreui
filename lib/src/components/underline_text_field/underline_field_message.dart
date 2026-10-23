@@ -33,8 +33,6 @@ class UnderlineFieldMessage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(
           top: UnderlineFieldMetrics.messageTopGap,
-          left: UnderlineFieldMetrics.horizontalInset,
-          right: UnderlineFieldMetrics.horizontalInset,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
