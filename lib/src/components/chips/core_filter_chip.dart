@@ -4,9 +4,16 @@ import '../../../ripplearc_coreui.dart';
 
 /// A dropdown-style filter chip used in filter rows.
 ///
-/// Renders as a filled pill with a label and trailing dropdown arrow.
+/// Renders as the Figma Filter chip: a 32 dp outlined pill with a label and
+/// trailing dropdown arrow, centred in a 48 x 48 dp minimum touch area.
 /// When [onTap] is null the chip is rendered in a non-interactive state.
+/// Must be placed under a [Material] (any `Scaffold` provides one).
 class CoreFilterChip extends StatelessWidget {
+  /// Key of the outlined pill, for widget-test finders.
+  static const Key pillKey = Key('core_filter_chip_pill');
+
+  static const double _focusOverlayAlpha = 0.12;
+
   const CoreFilterChip({
     super.key,
     required this.label,
@@ -28,47 +35,61 @@ class CoreFilterChip extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final isEnabled = onTap != null;
+    final pillRadius = BorderRadius.circular(CoreSpacing.space5);
 
     return Semantics(
       label: semanticLabel ?? label,
       button: isEnabled,
       enabled: isEnabled,
-      child: GestureDetector(
+      child: InkWell(
         onTap: onTap,
+        splashFactory: NoSplash.splashFactory,
+        overlayColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.focused)
+              ? colors.outlineFocus.withValues(alpha: _focusOverlayAlpha)
+              : colors.transparent,
+        ),
+        borderRadius: pillRadius,
         child: ConstrainedBox(
           constraints: const BoxConstraints(
             minHeight: CoreSpacing.space12,
             minWidth: CoreSpacing.space12,
           ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space4,
-              vertical: CoreSpacing.space2,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(CoreSpacing.space3),
-              color: colors.backgroundGrayMid,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ExcludeSemantics(
-                  child: Text(
-                    label,
-                    style: typography.bodyMediumRegular.copyWith(
-                      color: colors.textDark,
+          child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Ink(
+              key: pillKey,
+              height: CoreSpacing.space8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: CoreSpacing.space3,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: pillRadius,
+                color: colors.pageBackground,
+                border: Border.all(color: colors.lineDarkOutline),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ExcludeSemantics(
+                    child: Text(
+                      label,
+                      style: typography.bodyMediumRegular.copyWith(
+                        color: colors.textDark,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: CoreSpacing.space2),
-                ExcludeSemantics(
-                  child: CoreIconWidget(
-                    icon: CoreIcons.arrowDropDown,
-                    color: colors.iconDark,
-                    size: CoreSpacing.space4,
+                  const SizedBox(width: CoreSpacing.space2),
+                  ExcludeSemantics(
+                    child: CoreIconWidget(
+                      icon: CoreIcons.arrowDropDown,
+                      color: colors.iconDark,
+                      size: CoreSpacing.space4,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

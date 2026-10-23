@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.50.0] - Filter chip matches the design library
+
+### 🔧 Fixes
+
+- **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too. A focused chip shows a faint `outlineFocus` overlay on the pill, and the chip needs a `Material` ancestor (CA-1322)
+
+### 🧪 Tests
+
+- Filter chip: the 32 high pill inside a 48 high touch area. Goldens: the filter chip states and, new, the filter chip in dark; the date chip in light and dark
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
