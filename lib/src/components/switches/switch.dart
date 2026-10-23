@@ -6,6 +6,7 @@ import '../../../ripplearc_coreui.dart';
 /// - [normal]: Standard switch with grey colors (width: 71px with labels, 32px compact).
 /// - [lock]: Security-focused switch with red colors for lock/unlock states (width: 71px).
 /// - [imperial]: Unit system switch with green colors for imperial/metric toggle (width: 77px).
+/// - [showHide]: Visibility switch labelled "Hide" / "Show" (72 x 32px).
 enum CoreSwitchType {
   /// Standard switch with grey colors.
   normal,
@@ -15,6 +16,10 @@ enum CoreSwitchType {
 
   /// Unit system switch with green colors for imperial/metric toggle.
   imperial,
+
+  /// Visibility switch: a light "Hide" track when off, a filled "Show" track
+  /// when on. The label always names the current state.
+  showHide,
 }
 
 /// Internal constants for switch component dimensions and sizing.
@@ -25,6 +30,10 @@ class _SwitchConstants {
   static const double widthCompact = 32.0; // Compact switch width (no labels)
   static const double heightLabeled = 24.0; // Labeled switch height
   static const double heightCompact = 18.0; // Compact switch height
+  static const double widthShowHide = 72.0; // Show Hide switch width
+  static const double heightShowHide = 32.0; // Show Hide switch height
+  static const double thumbSizeShowHide = 14.0; // Show Hide thumb, both states
+  static const double thumbPaddingShowHide = 9.0; // Show Hide thumb padding
   static const double thumbSizeLargeActive = 18.0; // Large thumb when active
   static const double thumbSizeLargeInactive =
       14.0; // Large thumb when inactive
@@ -43,10 +52,12 @@ class _SwitchConstants {
 
 /// A customizable switch widget that supports different types, labels, and colors.
 ///
-/// The CoreSwitch provides three distinct types:
+/// The CoreSwitch provides four distinct types:
 /// - Normal: Standard toggle switch with grey styling
 /// - Lock: Security switch with red styling for lock/unlock states
 /// - Imperial: Unit system switch with green styling for imperial/metric toggle
+/// - Show Hide: Visibility switch, "Hide" on a light track and "Show" on a
+///   filled track
 ///
 /// ## Basic Usage
 ///
@@ -97,6 +108,31 @@ class _SwitchConstants {
 /// )
 /// ```
 ///
+/// ## Show Hide Switch
+///
+/// ```dart
+/// // Labels default to "Hide" (off) and "Show" (on)
+/// CoreSwitch(
+///   type: CoreSwitchType.showHide,
+///   value: isShown,
+///   onChanged: (value) => setState(() => isShown = value),
+/// )
+/// ```
+///
+/// ## Disabled Switch
+///
+/// Pass a null [onChanged] to disable the switch. It ignores taps, is read
+/// as disabled by screen readers and draws the same disabled colours for
+/// every type. The thumb keeps the side and size of its On or Off state.
+///
+/// ```dart
+/// CoreSwitch(
+///   type: CoreSwitchType.showHide,
+///   value: false,
+///   onChanged: null,
+/// )
+/// ```
+///
 /// ## Custom Colors
 ///
 /// ```dart
@@ -109,20 +145,24 @@ class _SwitchConstants {
 /// ```
 ///
 /// [value] is the current state of the switch (true = active/on, false = inactive/off).
-/// [onChanged] is the callback function when the switch is toggled.
+/// [onChanged] is the callback function when the switch is toggled. Null
+/// disables the switch.
 /// [type] determines the switch's visual style and default colors.
 /// [activeLabel] is the text displayed when the switch is in the active state.
 /// [inactiveLabel] is the text displayed when the switch is in the inactive state.
 /// [inactiveColor] overrides the default inactive color for the switch type.
+/// [semanticLabel] is the name a screen reader reads; without it a labelled
+/// switch reads its current label and a compact switch has no name.
 class CoreSwitch extends StatelessWidget {
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
   final CoreSwitchType type;
 
   final String? activeLabel;
   final String? inactiveLabel;
 
   final Color? inactiveColor;
+  final String? semanticLabel;
 
   const CoreSwitch({
     super.key,
@@ -132,12 +172,23 @@ class CoreSwitch extends StatelessWidget {
     this.activeLabel,
     this.inactiveLabel,
     this.inactiveColor,
+    this.semanticLabel,
   });
+
+  bool get _isEnabled => onChanged != null;
+
+  bool get _isShowHide => type == CoreSwitchType.showHide;
+
+  String? get _activeLabel =>
+      activeLabel ?? (_isShowHide ? 'Show' : null);
+
+  String? get _inactiveLabel =>
+      inactiveLabel ?? (_isShowHide ? 'Hide' : null);
 
   /// Returns true if the switch has any labels (active or inactive).
   bool get _hasLabels =>
-      (activeLabel?.isNotEmpty ?? false) ||
-      (inactiveLabel?.isNotEmpty ?? false);
+      (_activeLabel?.isNotEmpty ?? false) ||
+      (_inactiveLabel?.isNotEmpty ?? false);
 
   Color _getInactiveThumbColor(AppColorsExtension colors) {
     return inactiveColor ??
@@ -145,6 +196,7 @@ class CoreSwitch extends StatelessWidget {
           CoreSwitchType.lock => colors.statusError,
           CoreSwitchType.imperial => colors.iconGreen,
           CoreSwitchType.normal => colors.lineDarkOutline,
+          CoreSwitchType.showHide => colors.iconGrayLight,
         });
   }
 
@@ -154,6 +206,7 @@ class CoreSwitch extends StatelessWidget {
           CoreSwitchType.lock => colors.textError,
           CoreSwitchType.imperial => colors.textSuccess,
           CoreSwitchType.normal => colors.textBody,
+          CoreSwitchType.showHide => colors.textDark,
         });
   }
 
@@ -163,12 +216,14 @@ class CoreSwitch extends StatelessWidget {
           CoreSwitchType.lock => colors.iconRed,
           CoreSwitchType.imperial => colors.iconGreen,
           CoreSwitchType.normal => colors.iconGrayMid,
+          CoreSwitchType.showHide => colors.lineMid,
         });
   }
 
   /// Gets the switch width based on type and label presence.
   /// Returns 32px for compact (no labels), 71px for normal/lock, 77px for imperial.
   double get _getSwitchWidth {
+    if (_isShowHide) return _SwitchConstants.widthShowHide;
     if (!_hasLabels) return _SwitchConstants.widthCompact;
     switch (type) {
       case CoreSwitchType.lock:
@@ -176,12 +231,15 @@ class CoreSwitch extends StatelessWidget {
         return _SwitchConstants.widthNormal;
       case CoreSwitchType.imperial:
         return _SwitchConstants.widthImperial;
+      case CoreSwitchType.showHide:
+        return _SwitchConstants.widthShowHide;
     }
   }
 
   /// Gets the switch height based on label presence.
   /// Returns 24px for labeled switches, 18px for compact switches.
   double get _getSwitchHeight {
+    if (_isShowHide) return _SwitchConstants.heightShowHide;
     return _hasLabels
         ? _SwitchConstants.heightLabeled
         : _SwitchConstants.heightCompact;
@@ -191,14 +249,18 @@ class CoreSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final double switchHeight = _getSwitchHeight;
     final double switchWidth = _getSwitchWidth;
-    final double thumbSize = _hasLabels
+    final double thumbSize = _isShowHide
+        ? _SwitchConstants.thumbSizeShowHide
+        : _hasLabels
         ? value
             ? _SwitchConstants.thumbSizeLargeActive
             : _SwitchConstants.thumbSizeLargeInactive
         : value
             ? _SwitchConstants.thumbSizeSmallActive
             : _SwitchConstants.thumbSizeSmallInactive;
-    final double thumbPadding = _hasLabels
+    final double thumbPadding = _isShowHide
+        ? _SwitchConstants.thumbPaddingShowHide
+        : _hasLabels
         ? value
             ? _SwitchConstants.thumbPaddingLargeActive
             : _SwitchConstants.thumbPaddingLargeInactive
@@ -208,76 +270,105 @@ class CoreSwitch extends StatelessWidget {
 
     final colors = Theme.of(context).coreColors;
 
-    final Color effectiveActiveColor = colors.iconDark;
+    final Color effectiveActiveColor =
+        _isShowHide ? colors.buttonSurface : colors.iconDark;
     final Color effectiveInactiveThumbColor = _getInactiveThumbColor(colors);
     final Color effectiveInactiveTextColor = _getInactiveTextColor(colors);
 
-    // Background and border colors based on state
+    // Background and border colors based on state. A disabled switch uses one
+    // set of colours for every type and keeps its border in both states.
     final typography = Theme.of(context).coreTypography;
-    final backgroundColor =
-        value ? effectiveActiveColor : colors.backgroundGrayLight;
-    final borderColor = value ? effectiveActiveColor : _getBorderColor(colors);
+    final labelStyle = _isShowHide
+        ? typography.bodySmallSemiBold
+        : typography.bodySmallRegular;
+    final Color backgroundColor = !_isEnabled
+        ? colors.pageBackground
+        : value
+            ? effectiveActiveColor
+            : colors.backgroundGrayLight;
+    final Color borderColor = !_isEnabled
+        ? colors.lineMid
+        : value
+            ? effectiveActiveColor
+            : _getBorderColor(colors);
+    final bool showBorder = !_isEnabled || !value;
+    final Color labelColor = !_isEnabled
+        ? colors.textDisable
+        : value
+            ? colors.textInverse
+            : effectiveInactiveTextColor;
+    final Color thumbColor = !_isEnabled
+        ? colors.iconGrayLight
+        : value
+            ? (_isShowHide ? colors.iconWhite : colors.textInverse)
+            : effectiveInactiveThumbColor;
 
     final double effectiveWidth = switchWidth < 48.0 ? 48.0 : switchWidth;
     final double effectiveHeight = switchHeight < 48.0 ? 48.0 : switchHeight;
 
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      behavior: HitTestBehavior.translucent,
-      child: Container(
-        width: effectiveWidth,
-        height: effectiveHeight,
-        alignment: Alignment.centerLeft,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: switchHeight,
-          width: switchWidth,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            border: value ? null : Border.all(color: borderColor, width: 1),
-            borderRadius: BorderRadius.circular(CoreSpacing.space6),
-          ),
-          child: Stack(
-            children: [
-              if (_hasLabels)
-                Positioned(
-                    right:
-                        value ? thumbSize + thumbPadding * 1.4 : thumbPadding,
-                    left: value ? thumbPadding : thumbSize + thumbPadding * 1.4,
-                    top: 0,
-                    bottom: 0,
-                    child: Center(
-                      child: Text(
-                        value ? (activeLabel ?? '') : (inactiveLabel ?? ''),
-                        style: typography.bodySmallRegular.copyWith(
-                          color: value
-                              ? colors.textInverse
-                              : effectiveInactiveTextColor,
+    final onChanged = this.onChanged;
+    final String currentLabel =
+        value ? (_activeLabel ?? '') : (_inactiveLabel ?? '');
+    return Semantics(
+      label: semanticLabel ?? (_hasLabels ? currentLabel : null),
+      toggled: value,
+      enabled: _isEnabled,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onChanged == null ? null : () => onChanged(!value),
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+          width: effectiveWidth,
+          height: effectiveHeight,
+          alignment: Alignment.centerLeft,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: switchHeight,
+            width: switchWidth,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              border:
+                  showBorder ? Border.all(color: borderColor, width: 1) : null,
+              borderRadius: BorderRadius.circular(CoreSpacing.space6),
+            ),
+            child: Stack(
+              children: [
+                if (_hasLabels)
+                  Positioned(
+                      right:
+                          value ? thumbSize + thumbPadding * 1.4 : thumbPadding,
+                      left: value
+                          ? thumbPadding
+                          : thumbSize + thumbPadding * 1.4,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Text(
+                          currentLabel,
+                          style: labelStyle.copyWith(color: labelColor),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    )),
+                      )),
 
-              // Animated thumb
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                left: value
-                    ? switchWidth - thumbSize - thumbPadding
-                    : thumbPadding,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: thumbSize,
-                  decoration: BoxDecoration(
-                    color: value
-                        ? colors.textInverse
-                        : effectiveInactiveThumbColor,
-                    shape: BoxShape.circle,
+                // Animated thumb
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  left: value
+                      ? switchWidth - thumbSize - thumbPadding
+                      : thumbPadding,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: thumbSize,
+                    decoration: BoxDecoration(
+                      color: thumbColor,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
