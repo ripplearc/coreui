@@ -163,7 +163,7 @@ void main() {
       await tester.pump();
       expect(focused(), isTrue);
 
-      FocusManager.instance.primaryFocus?.unfocus();
+      tester.widget<EditableText>(editable).focusNode.unfocus();
       await tester.pump();
       expect(focused(), isFalse);
 
