@@ -32,6 +32,14 @@ import 'underline_field_metrics.dart';
 /// closer to the value, so a caller does not get smaller text.
 /// [CoreUnderlineTextFieldSize.large] enlarges the label and the value.
 ///
+/// ### Several lines
+/// [maxLines] above 1 lets the text wrap. The value row grows with the text
+/// up to [maxLines] lines, then the text scrolls inside the field. The
+/// underline sits 8px under the last line of text at the regular size, as it
+/// does at the compact size, and the return key adds a new line, so
+/// [onSubmitted] does not fire on return unless [textInputAction] says so.
+/// The default, 1, keeps one line that scrolls sideways.
+///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
 /// `textDisable`.
@@ -112,7 +120,16 @@ import 'underline_field_metrics.dart';
 /// )
 /// ```
 ///
-/// ### 5) An error the caller decides to show
+/// ### 5) Text that wraps
+/// ```dart
+/// CoreUnderlineTextField(
+///   label: 'Scope of work',
+///   maxLines: 4,
+///   initialValue: 'Demolition of the existing kitchen and new flooring.',
+/// )
+/// ```
+///
+/// ### 6) An error the caller decides to show
 /// ```dart
 /// CoreUnderlineTextField(
 ///   label: 'Quantity',
@@ -170,6 +187,16 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// The limit runs after the [inputFormatters], and only on typing and paste.
   /// A change made through [controller] skips it.
   final int? maxLength;
+
+  /// The most lines the value shows before it scrolls. Above 1 the text wraps
+  /// and the field grows with it, one line at a time, up to this many lines;
+  /// the return key adds a new line and the underline sits 8px under the last
+  /// line. Defaults to 1, a single line that does not wrap.
+  ///
+  /// A multi-line field is not given the 48px tap target of a single-line one:
+  /// its text area is as tall as its lines. A tap anywhere on the field still
+  /// focuses it.
+  final int maxLines;
 
   /// Whether the field takes focus when it is first built.
   final bool autofocus;
@@ -281,6 +308,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.textInputAction,
     this.inputFormatters,
     this.maxLength,
+    this.maxLines = 1,
     this.autofocus = false,
     this.labelTrailing,
     this.prefixText,
@@ -295,7 +323,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.selectAllOnFocus = false,
     this.onTap,
     this.showCursor,
-  });
+  }) : assert(maxLines > 0, 'maxLines must be at least 1');
 
   @override
   State<CoreUnderlineTextField> createState() => _CoreUnderlineTextFieldState();
@@ -318,6 +346,13 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
       (widget.showCursor ?? !widget.readOnly);
 
   bool get _isLarge => widget.size == CoreUnderlineTextFieldSize.large;
+
+  bool get _isMultiLine => widget.maxLines > 1;
+
+  CoreUnderlineTextFieldSize get _metricsSize =>
+      _isMultiLine && widget.size == CoreUnderlineTextFieldSize.regular
+          ? CoreUnderlineTextFieldSize.compact
+          : widget.size;
 
   @override
   void initState() {
@@ -385,7 +420,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final theme = Theme.of(context);
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
-    final metrics = UnderlineFieldMetrics.of(widget.size);
+    final metrics = UnderlineFieldMetrics.of(_metricsSize);
     final errorText = widget.errorText;
     final hasError = errorText != null && errorText.isNotEmpty;
     final helperText = widget.helperText;
@@ -549,51 +584,61 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final rowHeight = math.max(metrics.valueRowHeight, textHeight);
     final fieldHeight = math.max(kMinInteractiveDimension, rowHeight);
 
-    return SizedBox(
-      height: rowHeight,
-      child: OverflowBox(
-        maxHeight: fieldHeight,
-        child: Semantics(
-          label: widget.label,
-          onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            onChanged: widget.onChanged,
-            onSubmitted: widget.onSubmitted,
-            keyboardType: widget.keyboardType,
-            textInputAction: widget.textInputAction,
-            autofocus: widget.autofocus,
-            inputFormatters: [
-              ...?widget.inputFormatters,
-              if (widget.maxLength != null)
-                LengthLimitingTextInputFormatter(widget.maxLength),
-            ],
-            enabled: widget.enabled,
-            readOnly: widget.readOnly,
-            onTap: widget.onTap,
-            style: style.copyWith(
-              color: widget.enabled ? colors.textHeadline : colors.textDisable,
-            ),
-            cursorColor: colors.outlineFocus,
-            showCursor: widget.showCursor,
-            cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
-            cursorHeight: metrics.caretHeight,
-            decoration: InputDecoration(
-              isCollapsed: true,
-              contentPadding: EdgeInsets.symmetric(
-                vertical: (fieldHeight - rowHeight) / 2,
-              ),
-              hintText: widget.hintText,
-              hintStyle: style.copyWith(color: colors.textDisable),
-              filled: false,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-            ),
-          ),
+    final field = Semantics(
+      label: widget.label,
+      onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
+      child: TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        autofocus: widget.autofocus,
+        minLines: 1,
+        maxLines: widget.maxLines,
+        inputFormatters: [
+          ...?widget.inputFormatters,
+          if (widget.maxLength != null)
+            LengthLimitingTextInputFormatter(widget.maxLength),
+        ],
+        enabled: widget.enabled,
+        readOnly: widget.readOnly,
+        onTap: widget.onTap,
+        style: style.copyWith(
+          color: widget.enabled ? colors.textHeadline : colors.textDisable,
+        ),
+        cursorColor: colors.outlineFocus,
+        showCursor: widget.showCursor,
+        cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
+        cursorHeight: metrics.caretHeight,
+        decoration: InputDecoration(
+          isCollapsed: true,
+          contentPadding: _isMultiLine
+              ? EdgeInsets.zero
+              : EdgeInsets.symmetric(
+                  vertical: (fieldHeight - rowHeight) / 2,
+                ),
+          hintText: widget.hintText,
+          hintStyle: style.copyWith(color: colors.textDisable),
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
         ),
       ),
+    );
+
+    if (_isMultiLine) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(minHeight: rowHeight),
+        child: field,
+      );
+    }
+
+    return SizedBox(
+      height: rowHeight,
+      child: OverflowBox(maxHeight: fieldHeight, child: field),
     );
   }
 }
