@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.43.0] - CoreCheckRowItem matches the Figma Check row
+
+### ✨ Features
+
+- **CoreCheckRowItem.enabled**: Figma's Disabled state. A disabled row ignores taps, reads as disabled to a screen reader, and paints the name, second line and initials in `textDisable`; the box keeps its look (CA-1344)
+- **CoreCheckRowItem.showDivider**: the 1 dp `lineLight` divider, inset 20 dp from each edge, drawn on the bottom edge of the row. Pass `false` on the last row
+
+### 🔧 Changes
+
+- **CoreCheckRowItem** sizes, text styles and colours follow the Figma Check row: 40 dp avatar (was 24), 20 dp side padding (was 16), name `bodyLargeMedium` in `textHeadline`, second line `bodyMediumRegular`, initials `bodyLargeSemiBold` in `textLink` on `backgroundBlueLight`, ticked box `iconDark` (was `outlineFocus`). The row is at least 48 dp high. Existing callers get a bigger avatar, new text styles and a divider; pass `showDivider: false` on the last row
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
