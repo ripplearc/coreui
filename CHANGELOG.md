@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.51.0] - Active date filter chip matches the design library
+
+### 🔧 Fixes
+
+- **CoreDateFilterChip, in use**: the library Chips Type=Tags With Remove. A 32 high `chipGrey` pill, radius 20, 12 px at the sides, the range in Body Medium Regular `textDark` (was SemiBold) and a 20 px circled x in `iconGrayMid`. The range and the x are separate 48 high targets. Tapping the range reopens the date sheet; only the x (`CoreDateFilterChip.clearButtonKey`) fires `onClear`. Before, a tap anywhere on the pill cleared the filter (CA-1322)
+
+### 💥 Breaking changes
+
+- Tapping the active pill no longer clears the filter; it reopens the date sheet. To clear, tap `CoreDateFilterChip.clearButtonKey`. Callers and tests that tap the pill to clear must change (CA-1322)
+
+### ✨ Features
+
+- **CoreDateFilterChip**: `rangeSemanticHint` (default `'Opens the date range sheet'`) is read after the range by screen readers (CA-1322)
+
+### 📐 Design notes
+
+`CoreInputChip` is not changed, so email tokens keep their look; the date chip no longer uses it.
+
+### 🧪 Tests
+
+- Date chip: a tap on the pill opens the sheet and does not clear, a tap on the x clears, and both targets are 48 high. A11y: the range and the x announce as separate labelled buttons. Goldens: the date chip in light and dark
+
 ## [0.50.0] - Filter chip matches the design library
 
 ### 🔧 Fixes

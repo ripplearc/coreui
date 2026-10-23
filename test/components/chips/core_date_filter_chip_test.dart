@@ -120,9 +120,8 @@ void main() {
       expect(find.text('1/3/2024 - 31/3/2024'), findsOneWidget);
     });
 
-    testWidgets('calls onClear when the active pill is tapped', (
-      tester,
-    ) async {
+    testWidgets('opens the sheet, not onClear, when the active pill is tapped',
+        (tester) async {
       var clearCalled = false;
       await pumpChip(
         tester,
@@ -133,10 +132,59 @@ void main() {
         onClear: () => clearCalled = true,
       );
 
-      await tester.tap(find.byKey(const Key('active_date_filter_chip')));
+      await tester.tap(find.text('Mar 01, 2024 - Mar 31, 2024'));
       await tester.pumpAndSettle();
 
-      expect(clearCalled, isTrue);
+      expect(find.text('Date range'), findsOneWidget);
+      expect(clearCalled, isFalse);
+    });
+
+    testWidgets('calls onClear and shows the inactive chip when × is tapped',
+        (tester) async {
+      DateRange? range = DateRange(
+        start: DateTime(2024, 3, 1),
+        end: DateTime(2024, 3, 31),
+      );
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) => CoreDateFilterChip(
+              selectedDateRange: range,
+              label: 'Modified',
+              inactiveChipKey: const Key('date_filter_chip'),
+              onApply: (_) {},
+              onClear: () => setState(() => range = null),
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+    });
+
+    testWidgets('keeps both active pill targets at least 48 dp high', (
+      tester,
+    ) async {
+      await pumpChip(
+        tester,
+        selectedDateRange: DateRange(
+          start: DateTime(2024, 3, 1),
+          end: DateTime(2024, 3, 31),
+        ),
+      );
+
+      final clearSize =
+          tester.getSize(find.byKey(CoreDateFilterChip.clearButtonKey));
+      expect(clearSize.width, CoreSpacing.space12);
+      expect(clearSize.height, CoreSpacing.space12);
+      expect(
+        tester.getSize(find.byKey(const Key('active_date_filter_chip'))).height,
+        CoreSpacing.space12,
+      );
     });
   });
 }
