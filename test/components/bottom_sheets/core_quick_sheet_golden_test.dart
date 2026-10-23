@@ -202,15 +202,15 @@ void main() {
                           ),
                         ),
                         Padding(
-                      padding: const EdgeInsets.all(CoreSpacing.space4),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Footer'),
+                          padding: const EdgeInsets.all(CoreSpacing.space4),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Footer'),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                       ],
                     ),
                   );
@@ -261,15 +261,15 @@ void main() {
                           ),
                         ),
                         Padding(
-                      padding: const EdgeInsets.all(CoreSpacing.space4),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Footer'),
+                          padding: const EdgeInsets.all(CoreSpacing.space4),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Footer'),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                       ],
                     ),
                   );
