@@ -422,6 +422,7 @@ void main() {
           isEnabled: false,
           hasToggledState: true,
           isToggled: false,
+          hasTapAction: false,
         ),
       );
       handle.dispose();
@@ -445,6 +446,7 @@ void main() {
           isEnabled: true,
           hasToggledState: true,
           isToggled: true,
+          hasTapAction: true,
         ),
       );
       handle.dispose();

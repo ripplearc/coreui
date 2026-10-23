@@ -154,6 +154,8 @@ class _SwitchConstants {
 /// [activeLabel] is the text displayed when the switch is in the active state.
 /// [inactiveLabel] is the text displayed when the switch is in the inactive state.
 /// [inactiveColor] overrides the default inactive color for the switch type.
+/// The Show Hide defaults ("Hide" and "Show") are English; pass localized
+/// [activeLabel] and [inactiveLabel] in a localized app.
 /// [semanticLabel] is the name a screen reader reads; without it a labelled
 /// switch reads its current label and a compact switch has no name.
 class CoreSwitch extends StatelessWidget {
@@ -226,8 +228,7 @@ class CoreSwitch extends StatelessWidget {
   /// Gets the switch width based on type and label presence.
   /// Returns 32px for compact (no labels), 71px for normal/lock, 77px for imperial.
   double get _getSwitchWidth {
-    if (_isShowHide) return _SwitchConstants.widthShowHide;
-    if (!_hasLabels) return _SwitchConstants.widthCompact;
+    if (!_hasLabels && !_isShowHide) return _SwitchConstants.widthCompact;
     switch (type) {
       case CoreSwitchType.lock:
       case CoreSwitchType.normal:
@@ -309,16 +310,21 @@ class CoreSwitch extends StatelessWidget {
     final double effectiveWidth = switchWidth < 48.0 ? 48.0 : switchWidth;
     final double effectiveHeight = switchHeight < 48.0 ? 48.0 : switchHeight;
 
-    final onChanged = this.onChanged;
+    final onChangedCallback = onChanged;
     final String currentLabel =
         value ? (_activeLabel ?? '') : (_inactiveLabel ?? '');
     final control = Semantics(
       label: semanticLabel ?? (_hasLabels ? currentLabel : null),
       toggled: value,
       enabled: _isEnabled,
+      onTap: onChangedCallback == null
+          ? null
+          : () => onChangedCallback(!value),
       excludeSemantics: true,
       child: GestureDetector(
-        onTap: onChanged == null ? null : () => onChanged(!value),
+        onTap: onChangedCallback == null
+            ? null
+            : () => onChangedCallback(!value),
         behavior: HitTestBehavior.translucent,
         child: Container(
           width: effectiveWidth,
@@ -379,7 +385,9 @@ class CoreSwitch extends StatelessWidget {
 
     return _SwitchFocus(
       trackSize: Size(switchWidth, switchHeight),
-      onActivate: onChanged == null ? null : () => onChanged(!value),
+      onActivate: onChangedCallback == null
+          ? null
+          : () => onChangedCallback(!value),
       child: control,
     );
   }
