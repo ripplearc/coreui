@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.43.0] - CoreQuickSheet fixed height
+## [0.57.0] - CoreQuickSheet fixed height
 
 ### ✨ Features
 
