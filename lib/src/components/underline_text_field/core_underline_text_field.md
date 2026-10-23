@@ -99,7 +99,7 @@ typed text, never inside it:
 
 While the field has focus the caret takes 2px of room, and the suffix, unit or
 accessory after the value moves 2px right with it. At rest nothing is reserved,
-so `10%` touches and `4 days` sits 5px from the number. With `showCursor: false`
+so `10%` touches and `4 days` sits 4px from the number. With `showCursor: false`
 the caret and its room are both gone, as on the `%` waste editors, which the
 design draws with no cursor. A read-only field draws no caret by default.
 
@@ -115,7 +115,7 @@ owns their position and spacing, not their look.
   and takes the 4px back from the gap above the underline, so the field keeps
   its height.
 - `inlineAccessory` sits 12px after the value and unit.
-- `trailing` sits at the far end, 2px inside the field's edge.
+- `trailing` sits at the far end, flush with the field's edge.
 
 The widgets you pass are responsible for their own tap targets and semantics.
 
