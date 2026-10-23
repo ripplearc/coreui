@@ -6,7 +6,7 @@
 
 - **CoreSwitch disabled state**: pass a null `onChanged` to disable the switch (it is now `ValueChanged<bool>?`; enabled switches do not change). A disabled switch ignores taps and uses one set of colours for every type, as Figma draws it: `pageBackground` track with a `lineMid` border in both On and Off, `textDisable` label and an `iconGrayLight` thumb without a shadow. The thumb keeps the size and side of its own On or Off state (CA-1342)
 - **CoreSwitchType.showHide**: the Show Hide look of the share sheet, 72 x 32. Off is a `backgroundGrayLight` track with a `lineMid` border, "Hide" in `textDark` and an `iconGrayLight` thumb on the left. On is a `buttonSurface` track, "Show" in `textInverse` and an `iconWhite` thumb on the right. Both labels are Body Small Semibold and default to "Hide" and "Show"; the label always names the current state (CA-1342)
-- **CoreSwitch semantics**: the switch reads as toggled or not and as enabled or disabled. The new optional `semanticLabel` is the name a screen reader reads first (CA-1342)
+- **CoreSwitch semantics**: the switch reads as toggled or not and as enabled or disabled. The new optional `semanticLabel` is the name a screen reader reads first. The default "Show" and "Hide" labels are English; pass localized labels in a localized app (CA-1342)
 
 ### 📐 Design notes
 
@@ -14,7 +14,7 @@ Show Hide is 32 high; the other labelled types stay 24 high. The Show Hide thumb
 
 ### 🧪 Tests
 
-- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; the semantics of an enabled and a disabled switch. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark)
+- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; the semantics of an enabled and a disabled switch. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action
 
 ## [0.58.0] - CoreTabs press and focus looks, CoreSwitch keyboard focus
 
