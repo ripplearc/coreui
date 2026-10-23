@@ -273,6 +273,7 @@ void main() {
       WidgetTester tester, {
       required Widget child,
       bool isFixedHeight = true,
+      bool useSafeArea = false,
     }) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -283,6 +284,7 @@ void main() {
                 onPressed: () => CoreQuickSheet.show(
                   context: context,
                   isFixedHeight: isFixedHeight,
+                  useSafeArea: useSafeArea,
                   child: child,
                 ),
                 child: const Text('Open Sheet'),
@@ -308,9 +310,24 @@ void main() {
       );
 
       expect(
-        contentHeight(tester),
-        lessThan(screenHeight(tester) * maxHeightRatio),
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
       );
+    });
+
+    testWidgets('stays 90% of the screen when the safe area has a bottom inset',
+        (WidgetTester tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+
+      await openSheet(
+        tester,
+        useSafeArea: true,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
       expect(
         tester.getRect(find.byType(BottomSheet)).height,
         closeTo(screenHeight(tester) * maxHeightRatio, 0.01),

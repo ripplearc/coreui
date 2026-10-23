@@ -98,6 +98,8 @@ class _CoreQuickSheetContent extends StatelessWidget {
     final colorTheme = AppColorsExtension.of(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final maxHeight = screenHeight * CoreQuickSheet._maxHeightRatio;
+    final bottomInset =
+        useSafeArea ? MediaQuery.of(context).padding.bottom : 0.0;
 
     Widget content = Container(
       decoration: BoxDecoration(
@@ -131,7 +133,7 @@ class _CoreQuickSheetContent extends StatelessWidget {
     );
 
     content = isFixedHeight
-        ? SizedBox(height: maxHeight, child: content)
+        ? SizedBox(height: maxHeight - bottomInset, child: content)
         : ConstrainedBox(
             constraints: BoxConstraints(
               maxHeight: maxHeight,
