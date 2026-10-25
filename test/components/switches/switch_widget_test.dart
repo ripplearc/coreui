@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
+import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
 
 void main() {
@@ -278,5 +280,95 @@ void main() {
       }
     });
   });
-}
 
+  group('CoreSwitch – keyboard focus', () {
+    const boundaryKey = Key('switch_boundary');
+    const switchKey = Key('focus_test_switch');
+    final theme = CoreTheme.light();
+    final colors = theme.coreColors;
+
+    Future<List<bool>> pumpSwitch(WidgetTester tester) async {
+      final changes = <bool>[];
+      var value = false;
+      await tester.pumpWidget(
+        buildTestApp(
+          RepaintBoundary(
+            key: boundaryKey,
+            child: Padding(
+              padding: const EdgeInsets.all(CoreSpacing.space2),
+              child: StatefulBuilder(
+                builder: (context, setState) => CoreSwitch(
+                  key: switchKey,
+                  value: value,
+                  onChanged: (newValue) {
+                    changes.add(newValue);
+                    setState(() => value = newValue);
+                  },
+                ),
+              ),
+            ),
+          ),
+          theme: theme,
+        ),
+      );
+      await tester.pumpAndSettle();
+      return changes;
+    }
+
+    Future<Color> pixel(WidgetTester tester, Offset point) =>
+        pixelAt(tester, find.byKey(boundaryKey), point);
+
+    Rect trackOf(WidgetTester tester) =>
+        tester.getRect(find.byType(AnimatedContainer));
+
+    testWidgets('Tab reaches the switch, then Enter and Space toggle it',
+        (WidgetTester tester) async {
+      final changes = await pumpSwitch(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(changes, [true, false, true]);
+    });
+
+    testWidgets('Tab draws a 2 dp outlineFocus ring outside the track',
+        (WidgetTester tester) async {
+      await pumpSwitch(tester);
+      final restingTrack = trackOf(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      // The top and bottom of the ring are straight, so no anti-aliasing.
+      final track = trackOf(tester);
+      final x = track.center.dx;
+      expect(track, restingTrack);
+      expect(await pixel(tester, Offset(x, track.top - 1)),
+          colors.outlineFocus);
+      expect(await pixel(tester, Offset(x, track.bottom + 1)),
+          colors.outlineFocus);
+      expect(await pixel(tester, Offset(x, track.top - 3)),
+          isNot(colors.outlineFocus));
+    });
+
+    testWidgets('a touch tap toggles each time and draws no ring',
+        (WidgetTester tester) async {
+      final changes = await pumpSwitch(tester);
+
+      await tester.tap(find.byKey(switchKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(switchKey));
+      await tester.pumpAndSettle();
+
+      final track = trackOf(tester);
+      expect(changes, [true, false]);
+      expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
+          isNot(colors.outlineFocus));
+    });
+  });
+}
