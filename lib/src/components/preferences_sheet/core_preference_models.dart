@@ -143,6 +143,10 @@ class CorePreferenceRow {
   /// preference that needs none.
   final CorePreferenceInfo? info;
 
+  /// Draws the label and value in `textDisable` and ignores taps, as the
+  /// library Value row Disabled state does.
+  final bool isDisabled;
+
   /// Creates a preference row.
   const CorePreferenceRow({
     required this.key,
@@ -151,10 +155,11 @@ class CorePreferenceRow {
     this.options = const [],
     this.selectedOptionId,
     this.info,
+    this.isDisabled = false,
   });
 
   /// Whether tapping this row opens an option sub-sheet.
-  bool get isSelectable => options.length > 1;
+  bool get isSelectable => !isDisabled && options.length > 1;
 
   @override
   bool operator ==(Object other) =>
@@ -164,7 +169,8 @@ class CorePreferenceRow {
       other.value == value &&
       listEquals(other.options, options) &&
       other.selectedOptionId == selectedOptionId &&
-      other.info == info;
+      other.info == info &&
+      other.isDisabled == isDisabled;
 
   @override
   int get hashCode => Object.hash(
@@ -174,6 +180,7 @@ class CorePreferenceRow {
         Object.hashAll(options),
         selectedOptionId,
         info,
+        isDisabled,
       );
 }
 

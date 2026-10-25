@@ -85,5 +85,18 @@ void main() {
       expect(accentOf(tester), colors.iconGrayMid);
       expect(colorOf(tester, 'Off'), colors.textBody);
     });
+
+    testWidgets('pill text is Body Small Regular, as the library draws it',
+        (tester) async {
+      await pumpValue(
+        tester,
+        const CorePreferencePillValue('Imperial', isOn: true),
+      );
+
+      final style = tester.widget<Text>(find.text('Imperial')).style!;
+      final expected = AppTypographyExtension.create().bodySmallRegular;
+      expect(style.fontSize, expected.fontSize);
+      expect(style.fontWeight, expected.fontWeight);
+    });
   });
 }

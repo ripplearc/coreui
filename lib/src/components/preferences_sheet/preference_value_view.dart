@@ -10,8 +10,15 @@ class PreferenceValueView extends StatelessWidget {
   /// The value to render.
   final CorePreferenceValue value;
 
+  /// Draws the value in `textDisable`, for a disabled row.
+  final bool isDisabled;
+
   /// Creates a value view.
-  const PreferenceValueView({super.key, required this.value});
+  const PreferenceValueView({
+    super.key,
+    required this.value,
+    this.isDisabled = false,
+  });
 
   static const double _dotSize = CoreSpacing.space2;
 
@@ -25,7 +32,11 @@ class PreferenceValueView extends StatelessWidget {
         return Text(
           label,
           style: typography.bodyMediumSemiBold.copyWith(
-            color: isMuted ? colors.textBody : colors.textLink,
+            color: isDisabled
+                ? colors.textDisable
+                : isMuted
+                    ? colors.textBody
+                    : colors.textLink,
           ),
         );
       case CorePreferencePillValue(:final label, :final isOn):
@@ -54,8 +65,12 @@ class PreferenceValueView extends StatelessWidget {
               const SizedBox(width: CoreSpacing.space2),
               Text(
                 label,
-                style: typography.bodyMediumSemiBold.copyWith(
-                  color: isOn ? colors.textSuccess : colors.textBody,
+                style: typography.bodySmallRegular.copyWith(
+                  color: isDisabled
+                      ? colors.textDisable
+                      : isOn
+                          ? colors.textSuccess
+                          : colors.textBody,
                 ),
               ),
             ],
