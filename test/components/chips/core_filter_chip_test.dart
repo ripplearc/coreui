@@ -77,6 +77,29 @@ void main() {
       expect(tester.getSize(pill).height, CoreSpacing.space8);
     });
 
+    testWidgets('draws the library arrow: 24 dp glyph in textDark', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () {}),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final arrow = tester.widget<CoreIconWidget>(
+        find.descendant(
+          of: find.byType(CoreFilterChip),
+          matching: find.byType(CoreIconWidget),
+        ),
+      );
+      final colors = AppColorsExtension.of(
+        tester.element(find.byType(CoreFilterChip)),
+      );
+      expect(arrow.size, CoreIconSize.size24);
+      expect(arrow.color, colors.textDark);
+    });
+
     testWidgets('draws the focus border on the pill when focused with Tab', (
       tester,
     ) async {
