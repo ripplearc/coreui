@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -76,7 +77,7 @@ void main() {
       expect(tester.getSize(pill).height, CoreSpacing.space8);
     });
 
-    testWidgets('shows a focus overlay on the pill when focused', (
+    testWidgets('draws the focus border on the pill when focused with Tab', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -85,17 +86,36 @@ void main() {
           theme: CoreTheme.light(),
         ),
       );
-      final inkWell = find.descendant(
-        of: find.byType(CoreFilterChip),
-        matching: find.byType(InkWell),
-      );
+      final pill = find.byKey(CoreFilterChip.pillKey);
+      final restingSize = tester.getSize(pill);
 
-      final overlay = tester.widget<InkWell>(inkWell).overlayColor!;
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
 
-      expect(
-        overlay.resolve({WidgetState.focused}),
-        isNot(equals(overlay.resolve({}))),
+      final decoration = tester.widget<Container>(pill).decoration;
+      final border = (decoration as BoxDecoration).border as Border;
+      final colors = AppColorsExtension.of(tester.element(pill));
+      expect(border.top.color, colors.outlineFocus);
+      expect(border.top.width, 2);
+      expect(tester.getSize(pill), restingSize);
+    });
+
+    testWidgets('works with no Material above it', (tester) async {
+      var tapCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Center(
+            child: CoreFilterChip(label: 'Tags', onTap: () => tapCount++),
+          ),
+        ),
       );
+      await tester.tap(find.text('Tags'));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(tapCount, 1);
     });
   });
 }
