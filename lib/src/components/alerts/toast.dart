@@ -260,8 +260,12 @@ class Toast extends StatefulWidget {
 }
 
 class _ToastState extends State<Toast> {
+  static const double _closeFocusRingWidth = 2;
+
   Timer? _dismissTimer;
   bool _answered = false;
+  bool _isClosePressed = false;
+  bool _isCloseFocused = false;
   bool? _assistiveTechHoldsTheToast;
 
   @override
@@ -725,22 +729,49 @@ class _ToastState extends State<Toast> {
   }
 
   Widget _buildCloseButton(AppColorsExtension colors, String closeLabel) {
+    // Its own Material, so the InkWell works on any parent. The press and
+    // focus looks are drawn on the icon, not as a tint over the 48 dp area.
     return Semantics(
       container: true,
-      child: GestureDetector(
-        key: const Key('toast_close_button'),
-        behavior: HitTestBehavior.opaque,
-        onTap: _close,
-        child: Semantics(
-          button: true,
-          label: closeLabel,
-          child: SizedBox.square(
-            dimension: CoreSpacing.space12,
-            child: Center(
-              child: CoreIconWidget(
-                icon: CoreIcons.cross,
-                size: CoreIconSize.size24,
-                color: colors.iconDark,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          key: const Key('toast_close_button'),
+          onTap: _close,
+          onHighlightChanged: (isPressed) =>
+              setState(() => _isClosePressed = isPressed),
+          onFocusChange: (isFocused) =>
+              setState(() => _isCloseFocused = isFocused),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.all(colors.transparent),
+          child: Semantics(
+            button: true,
+            label: closeLabel,
+            child: SizedBox.square(
+              dimension: CoreSpacing.space12,
+              child: Center(
+                child: DecoratedBox(
+                  key: const Key('toast_close_focus_ring'),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: _isCloseFocused
+                        ? Border.all(
+                            color: colors.outlineFocus,
+                            width: _closeFocusRingWidth,
+                          )
+                        : null,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(CoreSpacing.space1),
+                    child: CoreIconWidget(
+                      icon: CoreIcons.cross,
+                      size: CoreIconSize.size24,
+                      color: _isClosePressed
+                          ? colors.buttonPress
+                          : colors.iconDark,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

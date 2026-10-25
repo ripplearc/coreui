@@ -168,6 +168,8 @@ The Toast component includes semantic labels for accessibility:
 - The title (if present) is used as the primary label
 - The description is used as a hint when a title is present
 - The close x has its own semantics node, labelled with `closeLabel`
+- The close x takes keyboard focus: Tab reaches it and Enter or Space closes the
+  alert. It is an `InkWell` with its own `Material`, so it works on any parent
 - A receipt's lead and highlight are read as one label ("Saved to history · Calc 60ft²")
 - Both actions stand 48 dp tall, the Android tap-target minimum. The design draws
   the `Undo` pill at ~29 dp; it is rendered at 48 dp instead, because a tap target
@@ -211,7 +213,11 @@ The Toast component includes semantic labels for accessibility:
   An alert with a title keeps the Large alert text (Figma `7:2594`), with its
   icon and close x on the first title line
 - Close: a plain `CoreIcons.cross` in `iconDark`, 48 dp target. The padding at
-  the end puts the glyph where Figma does, 4 dp in from the side padding
+  the end puts the glyph where Figma does, 4 dp in from the side padding.
+  Pressed, the x turns `buttonPress`, as a pressed Text button label does.
+  Focused, a 2 dp `outlineFocus` circle, 32 dp across, sits around the icon.
+  The library draws no states for the x; these were chosen to match the Text
+  button. No tint is drawn over the 48 dp target
 - Border Radius: 8 pixels
 - Shadow: `CoreShadows.medium`
 - Icon Size: 24 pixels
