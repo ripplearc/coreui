@@ -27,31 +27,35 @@ CoreQuickSheet.show(
 | Property | Type | Required | Default | Description |
 |---|---|---:|---|---|
 | `title` | `String` | Yes | — | The main line. Localised by the app. |
-| `subtitle` | `String?` | No | `null` | A second line under the title. Nothing is drawn when null. |
-| `onBack` | `VoidCallback` | Yes | — | Called when the arrow is tapped. The header does not pop anything itself. |
-| `backSemanticLabel` | `String` | Yes | — | What a screen reader announces for the arrow. |
+| `subtitle` | `String?` | No | `null` | A second line under the title: the subtitle, or the meta line for `CoreSheetHeaderStyle.metaLine`. Nothing is drawn when null. |
+| `onBack` | `VoidCallback?` | No | `null` | Called when the arrow is tapped. The header does not pop anything itself. Without it there is no arrow: the library Back=Off variant, for the first step of a sheet. |
+| `backSemanticLabel` | `String?` | With `onBack` | `null` | What a screen reader announces for the arrow. Asserted when `onBack` is set. |
+| `style` | `CoreSheetHeaderStyle` | No | `standard` | `standard` for a form sheet, `metaLine` for a sheet that lists records, such as Logs. |
+| `showBottomLine` | `bool` | No | `false` | A 1 dp `lineLight` line under the header. Turn it on only when the content under the header scrolls. |
 
 ## Layout
 
-Source: Figma Sheet Header / Headline in Estimate V2 (`66337:158600`; the same header is on `66368:186022`, `66368:186054` and `66337:159434`).
+Source: the library Sheet Header set (Figma `66335:151191`), variants Back=On (`66335:151178`), Back=Off and Back=Off Meta line.
 
 | Part | Value |
 |---|---|
-| Arrow | `CoreIcons.arrowLeft`, 24 dp, `textLink`, 12 dp from the left and the top |
+| Arrow (Back=On) | `CoreIcons.arrowLeft`, 24 dp, `textLink`, 12 dp from the left, centred on the title line |
 | Arrow tap area | 48 × 48 dp |
-| Text | starts 48 dp from the left, 11 dp from the top, 20 dp from the right, 15 dp above the bottom |
+| Text, Back=On | starts 48 dp from the left |
+| Text, Back=Off | 20 dp from both sides; 16 dp for the meta line |
+| Text, top and bottom | 4 dp above the title, 8 dp under the last line |
 | Title | `titleMediumSemiBold` (18/26), `textHeadline` |
-| Subtitle | `bodyMediumRegular` (14/20), `textBody` |
-| Height | 72 dp with a subtitle, 52 dp without |
+| Subtitle | `bodyMediumRegular` (14/20) with a back arrow; `bodySmallRegular` (12/16) on the first step and for the meta line; `textBody` |
+| Height (Back=On) | 58 dp with a subtitle, 48 dp without (the arrow's tap area) |
 
-The arrow sits 1 dp lower than the text so it is centred on the 26 dp title line, as Figma draws it.
+The arrow sits 1 dp below the 4 dp text padding, so it is centred on the 26 dp title line. The library draws the arrow box as one 48 dp wide layer, so the title starts at x 48, as the owner approved on 2026-10-14.
 
 ## Behaviour
 
 - The title and the subtitle are each one line, cut with an ellipsis when they do not fit.
 - The header has no drag handle. `CoreQuickSheet` draws that above its content.
-- Figma puts 10 dp between the arrow and the text. The header uses 12, so the arrow's tap area is 48 dp wide, the Android minimum. The text starts 2 dp further right than in Figma.
+- When a sheet step opens, focus moves to the title, as the library asks.
 
 ## Accessibility
 
-The arrow is a button announced as `backSemanticLabel`. The title is marked as a heading, so a screen reader can jump to it. Tests check the tap target, the button label and text contrast in the light and dark themes.
+The arrow is a button announced as `backSemanticLabel`. The title is marked as a heading, so a screen reader can jump to it, and it takes focus when the step opens. Tests check the tap target, the button label and text contrast in the light and dark themes.

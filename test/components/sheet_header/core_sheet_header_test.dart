@@ -69,7 +69,7 @@ void main() {
       expect(tester.getSize(backButton()), const Size(48, 48));
     });
 
-    testWidgets('draws a 24 dp arrow, 12 dp from the left and top edges',
+    testWidgets('draws a 24 dp arrow 12 dp in, centred on the title line',
         (tester) async {
       await pumpHeader(tester);
 
@@ -78,14 +78,18 @@ void main() {
         matching: find.byType(Icon),
       );
       expect(tester.getSize(arrow), const Size(24, 24));
-      expect(offsetInHeader(tester, arrow), const Offset(12, 12));
+      expect(offsetInHeader(tester, arrow), const Offset(12, 5));
+      expect(
+        tester.getCenter(arrow).dy,
+        tester.getCenter(find.text(title)).dy,
+      );
     });
 
-    testWidgets('starts the title 48 dp from the left and 11 dp from the top',
+    testWidgets('starts the title 48 dp from the left and 4 dp from the top',
         (tester) async {
       await pumpHeader(tester);
 
-      expect(offsetInHeader(tester, find.text(title)), const Offset(48, 11));
+      expect(offsetInHeader(tester, find.text(title)), const Offset(48, 4));
     });
 
     testWidgets('leaves 20 dp right of the text', (tester) async {
@@ -99,18 +103,101 @@ void main() {
       );
     });
 
-    testWidgets('is 72 dp tall with a subtitle: 11 + 26 + 20 + 15',
+    testWidgets('is 58 dp tall with a subtitle: 4 + 26 + 20 + 8',
         (tester) async {
       await pumpHeader(tester, subtitle: subtitle);
 
-      expect(tester.getSize(find.byType(CoreSheetHeader)).height, 72);
+      expect(tester.getSize(find.byType(CoreSheetHeader)).height, 58);
     });
 
-    testWidgets('is 52 dp tall without a subtitle: 11 + 26 + 15',
+    testWidgets('is 48 dp tall without a subtitle, the arrow tap area',
         (tester) async {
       await pumpHeader(tester);
 
-      expect(tester.getSize(find.byType(CoreSheetHeader)).height, 52);
+      expect(tester.getSize(find.byType(CoreSheetHeader)).height, 48);
+    });
+
+    Future<void> pumpVariant(WidgetTester tester, CoreSheetHeader header) {
+      return tester.pumpWidget(
+        buildTestApp(
+          SizedBox(width: 412, child: header),
+          theme: CoreTheme.light(),
+        ),
+      );
+    }
+
+    testWidgets('Back=Off draws no arrow, the title 20 dp in, a small subtitle',
+        (tester) async {
+      await pumpVariant(
+        tester,
+        const CoreSheetHeader(title: title, subtitle: subtitle),
+      );
+
+      expect(backButton(), findsNothing);
+      expect(offsetInHeader(tester, find.text(title)), const Offset(20, 4));
+      final style = tester.widget<Text>(find.text(subtitle)).style!;
+      final expected = AppTypographyExtension.create().bodySmallRegular;
+      expect(style.fontSize, expected.fontSize);
+      expect(style.fontWeight, expected.fontWeight);
+    });
+
+    testWidgets('the meta line style has 16 dp at both sides', (tester) async {
+      await pumpVariant(
+        tester,
+        const CoreSheetHeader(
+          title: 'Logs',
+          subtitle: 'Bedroom 2 · newest first',
+          style: CoreSheetHeaderStyle.metaLine,
+        ),
+      );
+
+      expect(offsetInHeader(tester, find.text('Logs')).dx, 16);
+      expect(
+        tester.getTopRight(find.byType(CoreSheetHeader)).dx -
+            tester.getTopRight(find.byKey(CoreSheetHeader.textColumnKey)).dx,
+        16,
+      );
+    });
+
+    testWidgets('draws a 1 dp lineLight bottom line only when asked',
+        (tester) async {
+      Border? bottomLine() => (tester
+              .widget<DecoratedBox>(find
+                  .descendant(
+                    of: find.byType(CoreSheetHeader),
+                    matching: find.byType(DecoratedBox),
+                  )
+                  .first)
+              .decoration as BoxDecoration)
+          .border as Border?;
+
+      await pumpVariant(tester, const CoreSheetHeader(title: title));
+      expect(bottomLine(), isNull);
+
+      await pumpVariant(
+        tester,
+        const CoreSheetHeader(title: title, showBottomLine: true),
+      );
+      expect(
+        bottomLine()!.bottom,
+        BorderSide(color: CoreTheme.light().coreColors.lineLight),
+      );
+    });
+
+    testWidgets('moves focus to the title when the step opens',
+        (tester) async {
+      await pumpHeader(tester);
+      await tester.pump();
+
+      expect(Focus.of(tester.element(find.text(title))).hasPrimaryFocus,
+          isTrue);
+    });
+
+    test('a back arrow needs a backSemanticLabel', () {
+      expect(
+        () => CoreSheetHeader(title: title, onBack: () {}),
+        throwsAssertionError,
+      );
     });
 
     testWidgets('cuts a long title with an ellipsis on one line',
