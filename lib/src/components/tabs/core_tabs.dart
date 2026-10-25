@@ -49,6 +49,10 @@ class CoreTabs extends StatefulWidget {
     this.onChanged,
   });
 
+  /// Key of the 40 dp face of the tab at [index], where the press fill and
+  /// the focus ring are drawn.
+  static Key tabKey(int index) => Key('core_tabs_tab_$index');
+
   @override
   State<CoreTabs> createState() => _CoreTabsState();
 }
@@ -105,7 +109,7 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    return IntrinsicWidth(
+    final tabBar = IntrinsicWidth(
       child: TabBar(
         enableFeedback: false,
         controller: _controller,
@@ -124,6 +128,10 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
         ),
         indicatorWeight: 0,
         dividerColor: colors.lineDarkOutline,
+        // The press fill and the focus ring are drawn on the 40 dp face only,
+        // not on the whole 48 dp tap area.
+        overlayColor: WidgetStateProperty.all(colors.transparent),
+        splashFactory: NoSplash.splashFactory,
         // Replaces Flutter's 16 a side with the 4px gap between tabs; the 12
         // side padding below is the tab's own.
         labelPadding: const EdgeInsetsDirectional.only(end: CoreSpacing.space1),
@@ -132,21 +140,62 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
         labelStyle: typography.bodyMediumSemiBold,
         unselectedLabelStyle: typography.bodyMediumRegular,
         tabs: [
-          for (final label in widget.tabs)
-            // The 8 on top makes a 48 dp tap area around the 40 dp tab.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CoreSpacing.space3,
-                CoreSpacing.space2,
-                CoreSpacing.space3,
-                0,
-              ),
-              child: Tab(
-                text: label,
-                height: CoreSpacing.space10,
-              ),
-            ),
+          for (final (index, label) in widget.tabs.indexed)
+            _TabFace(faceKey: CoreTabs.tabKey(index), label: label),
         ],
+      ),
+    );
+
+    // Our own Material, so the press fill also shows inside a coloured parent.
+    return Material(type: MaterialType.transparency, child: tabBar);
+  }
+}
+
+class _TabFace extends StatefulWidget {
+  const _TabFace({required this.faceKey, required this.label});
+
+  final Key faceKey;
+  final String label;
+
+  @override
+  State<_TabFace> createState() => _TabFaceState();
+}
+
+class _TabFaceState extends State<_TabFace> {
+  static const double _focusWidth = 2;
+
+  bool _isPressed = false;
+
+  void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    // The focus node is the one of the TabBar's InkWell around this tab.
+    final isFocused = Focus.of(context).hasFocus;
+
+    return Listener(
+      onPointerDown: (_) => _setPressed(true),
+      onPointerUp: (_) => _setPressed(false),
+      onPointerCancel: (_) => _setPressed(false),
+      // The 8 on top makes a 48 dp tap area around the 40 dp face.
+      child: Padding(
+        padding: const EdgeInsets.only(top: CoreSpacing.space2),
+        // The ring paints over the indicator. The Ink fill below paints on
+        // the Material, under the indicator, so a pressed tab keeps its line.
+        child: DecoratedBox(
+          key: widget.faceKey,
+          decoration: BoxDecoration(
+            border: isFocused
+                ? Border.all(color: colors.outlineFocus, width: _focusWidth)
+                : null,
+          ),
+          child: Ink(
+            color: _isPressed ? colors.backgroundGrayMid : colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
+            child: Tab(text: widget.label, height: CoreSpacing.space10),
+          ),
+        ),
       ),
     );
   }

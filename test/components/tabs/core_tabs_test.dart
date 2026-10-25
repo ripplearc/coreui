@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/a11y_guidelines.dart';
+import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
 
 void main() {
@@ -287,6 +289,110 @@ void main() {
       await tester.tapAt(Offset(tab.center.dx, target.top + 1));
       await tester.pumpAndSettle();
       expect(selected, [1]);
+    });
+  });
+
+  group('CoreTabs – press and focus', () {
+    const boundaryKey = Key('tabs_boundary');
+    const parentColor = Color(0xFFFFE0B2);
+    final colors = theme.coreColors;
+
+    Future<void> pumpTabs(WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: Center(
+              child: RepaintBoundary(
+                key: boundaryKey,
+                child: Container(
+                  color: parentColor,
+                  child: const CoreTabs(tabs: ['Tab 1', 'Tab 2']),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<Color> pixel(WidgetTester tester, Offset point) =>
+        pixelAt(tester, find.byKey(boundaryKey), point);
+
+    Rect faceOf(WidgetTester tester, int index) =>
+        tester.getRect(find.byKey(CoreTabs.tabKey(index)));
+
+    testWidgets('fills only the 40 dp face of a pressed tab, also inside a '
+        'coloured parent', (WidgetTester tester) async {
+      await pumpTabs(tester);
+      final face = faceOf(tester, 1);
+      expect(face.height, CoreSpacing.space10);
+
+      final gesture = await tester.startGesture(face.center);
+      await tester.pumpAndSettle();
+
+      final inFace = Offset(face.left + 4, face.top + 4);
+      final aboveFace = Offset(face.left + 4, face.top - 4);
+      expect(await pixel(tester, inFace), colors.backgroundGrayMid);
+      expect(await pixel(tester, aboveFace), parentColor);
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(await pixel(tester, inFace), parentColor);
+    });
+
+    testWidgets('a pressed selected tab keeps its underline',
+        (WidgetTester tester) async {
+      await pumpTabs(tester);
+      final face = faceOf(tester, 0);
+
+      final gesture = await tester.startGesture(face.center);
+      await tester.pumpAndSettle();
+
+      final onLine = Offset(face.center.dx, face.bottom - 2);
+      expect(await pixel(tester, onLine), colors.tabsHighlight);
+      await gesture.up();
+    });
+
+    testWidgets('Tab draws a 2 dp outlineFocus ring on the face',
+        (WidgetTester tester) async {
+      await pumpTabs(tester);
+
+      for (final index in [0, 1]) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        final face = faceOf(tester, index);
+
+        expect(
+          await pixel(tester, Offset(face.left + 1, face.center.dy)),
+          colors.outlineFocus,
+        );
+        expect(
+          await pixel(tester, Offset(face.left + 3, face.center.dy)),
+          parentColor,
+        );
+        expect(
+          await pixel(tester, Offset(face.left + 4, face.top - 4)),
+          parentColor,
+        );
+        expect(tester.getRect(find.byKey(CoreTabs.tabKey(index))), face);
+      }
+    });
+
+    testWidgets('a touch tap draws no focus ring', (WidgetTester tester) async {
+      await pumpTabs(tester);
+      final face = faceOf(tester, 1);
+
+      await tester.tap(find.byKey(CoreTabs.tabKey(1)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(CoreTabs.tabKey(1)));
+      await tester.pumpAndSettle();
+
+      expect(
+        await pixel(tester, Offset(face.left + 1, face.center.dy)),
+        parentColor,
+      );
     });
   });
 

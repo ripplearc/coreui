@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -127,4 +128,34 @@ void main() {
       matchesGoldenFile('goldens/switch_component_dark.png'),
     );
   });
+
+  for (final (name, theme) in [
+    ('switch_focused', _createTestTheme()),
+    ('switch_focused_dark', _createDarkTestTheme()),
+  ]) {
+    testWidgets('CoreSwitch Golden Test - $name', (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(const Size(120, 80));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          home: Scaffold(
+            backgroundColor: theme.coreColors.pageBackground,
+            body: const Padding(
+              padding: EdgeInsets.all(16),
+              child: CoreSwitch(value: false, onChanged: _noop),
+            ),
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/$name.png'),
+      );
+    });
+  }
 }

@@ -48,6 +48,9 @@ class _SwitchConstants {
 /// - Lock: Security switch with red styling for lock/unlock states
 /// - Imperial: Unit system switch with green styling for imperial/metric toggle
 ///
+/// Tab reaches the switch and Enter or Space toggles it. Keyboard focus draws
+/// a 2 px `outlineFocus` ring just outside the track.
+///
 /// ## Basic Usage
 ///
 /// ```dart
@@ -221,7 +224,7 @@ class CoreSwitch extends StatelessWidget {
     final double effectiveWidth = switchWidth < 48.0 ? 48.0 : switchWidth;
     final double effectiveHeight = switchHeight < 48.0 ? 48.0 : switchHeight;
 
-    return GestureDetector(
+    final control = GestureDetector(
       onTap: () => onChanged(!value),
       behavior: HitTestBehavior.translucent,
       child: Container(
@@ -280,6 +283,75 @@ class CoreSwitch extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+
+    return _SwitchFocus(
+      trackSize: Size(switchWidth, switchHeight),
+      onActivate: () => onChanged(!value),
+      child: control,
+    );
+  }
+}
+
+class _SwitchFocus extends StatefulWidget {
+  const _SwitchFocus({
+    required this.trackSize,
+    required this.onActivate,
+    required this.child,
+  });
+
+  final Size trackSize;
+  final VoidCallback onActivate;
+  final Widget child;
+
+  @override
+  State<_SwitchFocus> createState() => _SwitchFocusState();
+}
+
+class _SwitchFocusState extends State<_SwitchFocus> {
+  static const double _ringWidth = 2;
+
+  bool _showsRing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).coreColors;
+
+    // Tab reaches the switch and Enter or Space toggles it. The ring shows
+    // for keyboard focus only; the library draws no press look.
+    return FocusableActionDetector(
+      onShowFocusHighlight: (showsRing) =>
+          setState(() => _showsRing = showsRing),
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            widget.onActivate();
+            return null;
+          },
+        ),
+      },
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          widget.child,
+          if (_showsRing)
+            // Outside the track, so the switch keeps its size and look.
+            IgnorePointer(
+              child: Container(
+                width: widget.trackSize.width,
+                height: widget.trackSize.height,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colors.outlineFocus,
+                    width: _ringWidth,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                  ),
+                  borderRadius: BorderRadius.circular(CoreSpacing.space6),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

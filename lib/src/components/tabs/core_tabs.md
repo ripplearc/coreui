@@ -72,6 +72,14 @@ the bottom of the 40px tab and is as wide as the tab, not the 4px gap after it.
 A 1px `lineDarkOutline` line runs under the tabs. A 4px gap follows every tab, including the last, so the line runs
 4px past the last tab.
 
+### Press and Focus
+
+A pressed tab fills its 40px face with `backgroundGrayMid`, the library's Press state. The selected tab keeps its
+indicator while pressed. When Tab moves keyboard focus to a tab, a 2px `outlineFocus` ring is drawn on the face.
+Neither look covers the 8px of tap area above the face or the 4px gap, and a touch tap draws no ring. The tabs carry
+their own `Material`, so both looks also show inside a coloured `Container`. `CoreTabs.tabKey(index)` finds a tab's
+face in tests.
+
 ### Typography
 
 - Selected tab: `bodyMediumSemiBold` with `textHeadline` color
@@ -141,6 +149,8 @@ final typography = AppTypographyExtension.of(context);
 - `colors.lineDarkOutline` - Bottom line color
 - `colors.textHeadline` - Selected tab text color
 - `colors.textBody` - Unselected tab text color
+- `colors.backgroundGrayMid` - Pressed tab fill
+- `colors.outlineFocus` - Focus ring
 
 ### Spacing
 
@@ -155,5 +165,5 @@ The component uses Flutter's built-in `TabBar` which provides:
 
 - Keyboard navigation between tabs
 - Screen reader support with tab labels
-- Focus indicators for accessibility
+- A 2px `outlineFocus` ring on the tab that has keyboard focus
 
