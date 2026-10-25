@@ -212,6 +212,34 @@ void main() {
       expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
     });
 
+    testWidgets('Tab, Tab and Enter on × focuses the inactive chip', (
+      tester,
+    ) async {
+      DateRange? range = march;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) => CoreDateFilterChip(
+              selectedDateRange: range,
+              label: 'Modified',
+              inactiveChipKey: const Key('date_filter_chip'),
+              onApply: (_) {},
+              onClear: () => setState(() => range = null),
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
     testWidgets('does not take focus when the range clears without the ×', (
       tester,
     ) async {
