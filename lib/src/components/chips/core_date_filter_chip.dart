@@ -221,6 +221,8 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     );
   }
 
+  static const double _pillVerticalPadding = 6;
+
   void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
 
   @override
@@ -229,6 +231,7 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     final typography = AppTypographyExtension.of(context);
     final noTint = WidgetStateProperty.all(colors.transparent);
     const pillInset = (CoreSpacing.space12 - CoreSpacing.space8) / 2;
+    const datesInset = pillInset + _pillVerticalPadding;
     // The × target is wider than the icon plus the pill's 12 dp end padding,
     // so the pill stops short of the target's end edge by the difference.
     const clearTargetOverhang =
@@ -277,7 +280,9 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                       ),
                       padding: const EdgeInsets.only(
                         left: CoreSpacing.space3,
+                        top: datesInset,
                         right: clearTargetWidthBesideRange,
+                        bottom: datesInset,
                       ),
                       child: Center(
                         widthFactor: 1,
