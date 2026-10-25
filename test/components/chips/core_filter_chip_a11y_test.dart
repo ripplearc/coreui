@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -36,6 +37,25 @@ void main() {
       final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.flagsCollection.isButton, isFalse);
+    });
+
+    testWidgets('opens with Enter after a keyboard user tabs to it', (
+      tester,
+    ) async {
+      await setupA11yTest(tester);
+      var tapCount = 0;
+
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () => tapCount++),
+          theme: CoreTheme.light(),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      expect(tapCount, 1);
     });
 
     testWidgets('meets tap target and contrast guidelines in both themes', (
