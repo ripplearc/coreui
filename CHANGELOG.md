@@ -9,7 +9,7 @@
 
 ### 🧪 Tests
 
-- Date chip: a tap on the x focuses the inactive chip once the caller rebuilds without a range; when the caller keeps the range, a later "Reset all" keeps its focus. Filter chip: focus through `focusNode`
+- Date chip: a tap on the x focuses the inactive chip once the caller rebuilds without a range; when the caller keeps the range, a later "Reset all" keeps its focus; Tab, Tab and Enter on the x also lands focus on the inactive chip. Filter chip: focus through `focusNode`
 
 ## [0.51.0] - Active date filter chip matches the design library
 
