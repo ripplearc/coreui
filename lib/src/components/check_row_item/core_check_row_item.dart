@@ -89,9 +89,14 @@ class CoreCheckRowItem extends StatelessWidget {
     return CoreAvatar(
       radius: 12,
       backgroundColor: effectiveBackground,
+      // Scales down so a large text size keeps the initial inside the 24 dp
+      // circle instead of cutting it.
       child: initial.isEmpty
           ? null
-          : Text(initial, style: effectiveStyle),
+          : FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(initial, style: effectiveStyle),
+            ),
     );
   }
 
@@ -140,6 +145,9 @@ class CoreCheckRowItem extends StatelessWidget {
           onTap: () => onChanged(!selected),
           borderRadius: BorderRadius.circular(_rowRadius),
           splashFactory: NoSplash.splashFactory,
+          // The library Dropdown cell has no pressed or hover state.
+          highlightColor: colors.transparent,
+          hoverColor: colors.transparent,
           // The whole row is the tap target: 12 dp padding around the 24 dp
           // check box keeps it at least 48 dp high.
           child: Padding(
