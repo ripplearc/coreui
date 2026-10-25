@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.57.0] - Alert text button
+
+### ✨ Features
+
+- **Toast alerts**: `Toast.error`, `warning`, `info` and `success` take an optional `actionLabel` with `onAction`: a text button in `textLink` beside the close x, such as `View`, with a 48 x 48 target. Taking it fires `onAction`, then `onClose`. It never pops a route, so a `View` that opens a page leaves that page on screen; only the x pops the route when there is no `onClose`. On a titled alert the text button sits on the first title line with the x. An assert keeps `actionLabel` and `onAction` together (CA-1321)
+
+### 🧪 Tests
+
+- Alerts: no text button without `actionLabel`, `onAction` then `onClose`, a `View` with no `onClose` that opens a page leaves the page on screen, on a titled alert `View` centred on the first title line, the text button's 48 px target. A11y: the text button's target and label in both themes. Goldens: the toast sheet (light and dark) shows `View` on two error alerts
+
 ## [0.49.0] - Toast and alerts match the design library
 
 ### 🔧 Fixes
