@@ -4,7 +4,7 @@
 
 ### 🔧 Fixes
 
-- **CoreDateFilterChip, in use**: the library Chips Type=Tags With Remove. A 32 high `chipGrey` pill, radius 20, 12 px at the sides, the range in Body Medium Regular `textDark` (was SemiBold) and a 20 px circled x in `iconGrayMid`. The range and the x are separate 48 high targets. Tapping the range reopens the date sheet; only the x (`CoreDateFilterChip.clearButtonKey`) fires `onClear`. Before, a tap anywhere on the pill cleared the filter (CA-1322)
+- **CoreDateFilterChip, in use**: the library Chips Type=Tags With Remove. A 32 high `chipGrey` pill, radius 20, 12 px at the sides, the range in Body Medium Regular `textDark` (was SemiBold) and a 20 px circled x in `iconGrayMid`. The range and the x are separate 48 high targets. Tapping the range reopens the date sheet; only the x (`CoreDateFilterChip.clearButtonKey`) fires `onClear`. Before, a tap anywhere on the pill cleared the filter. Holding the range or the x shows the library Press look (`pageBackground` fill, 1 px `lineDarkOutline` border). Tab focus on the range or the x draws the pill border in `outlineFocus` at 2 px. Nothing is drawn outside the pill, and the chip brings its own `Material`, so it draws the same on any parent (CA-1322)
 
 ### 💥 Breaking changes
 
@@ -13,6 +13,7 @@
 ### ✨ Features
 
 - **CoreDateFilterChip**: `rangeSemanticHint` (default `'Opens the date range sheet'`) is read after the range by screen readers (CA-1322)
+- **CoreDateFilterChip**: `pillKey`, for widget-test finders (CA-1322)
 
 ### 📐 Design notes
 
@@ -20,7 +21,7 @@
 
 ### 🧪 Tests
 
-- Date chip: a tap on the pill opens the sheet and does not clear, a tap on the x clears, and both targets are 48 high. A11y: the range and the x announce as separate labelled buttons. Goldens: the date chip in light and dark
+- Date chip: a tap on the pill opens the sheet and does not clear, a tap on the x clears, and both targets are 48 high. Tab focus on the range, then on the x; the press look; no `Material` above the pill. A11y: the range and the x announce as separate labelled buttons; Tab, Tab, Enter clears. Goldens: the date chip in light and dark and, new, range focused, x focused, pressed, and on a white parent
 
 ## [0.50.0] - Filter chip matches the design library
 

@@ -35,6 +35,8 @@ The chip also forwards `CoreDateRangeSheet`'s label parameters (`sheetTitle`, `t
 - No selection → plain `CoreFilterChip`; tapping it opens `CoreDateRangeSheet.show` seeded with `selectedDateRange`. If the sheet resolves with a range, `onApply` fires; cancelling fires nothing.
 - Selection present → active pill with the formatted range (a single date when `start == end`). Tapping the pill reopens the sheet; tapping the × (`CoreDateFilterChip.clearButtonKey`) fires `onClear`.
 - The caller owns the selection state; the chip never stores a range itself.
+- Press and focus stay inside the pill. Holding the range or the × shows the library Press look: a `pageBackground` fill with a 1 px `lineDarkOutline` border. Tab focus on the range or the × draws the pill border in `outlineFocus` at 2 px.
+- The chip brings its own transparent `Material`, so the pill draws the same on any parent, with or without a `Material` above it.
 
 ## Accessibility
 
