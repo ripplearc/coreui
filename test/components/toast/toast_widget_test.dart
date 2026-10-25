@@ -332,6 +332,98 @@ void main() {
         expect(closed, isTrue);
       });
 
+      Widget buildThemedAlertWithView({
+        required VoidCallback onAction,
+        bool withMaterial = true,
+      }) {
+        final alert = Toast.error(
+          description: 'Upload failed',
+          closeLabel: 'Close',
+          actionLabel: 'View',
+          onAction: onAction,
+          onClose: _noop,
+        );
+        return MaterialApp(
+          theme: CoreTheme.light(),
+          home: withMaterial
+              ? Scaffold(body: alert)
+              : ColoredBox(
+                  color: CoreTheme.light().coreColors.pageBackground,
+                  child: Center(child: alert),
+                ),
+        );
+      }
+
+      Color actionLabelColor(WidgetTester tester) =>
+          tester.widget<Text>(find.text('View')).style!.color!;
+
+      testWidgets('View turns Button Press while pressed and fires once',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(actionFinder));
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.buttonPress);
+
+          await gesture.up();
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.textLink);
+        }
+        expect(actions, 1);
+      });
+
+      testWidgets('Tab focuses View, rings its label and Enter takes it',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+        final ringFinder = find.byKey(const Key('toast_action_focus_ring'));
+        expect(ringFinder, findsNothing);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final label = tester.getRect(find.text('View'));
+        final ring = tester.getRect(ringFinder);
+        expect(ring.left, label.left - CoreSpacing.space3);
+        expect(ring.right, label.right + CoreSpacing.space3);
+        expect(ring.top, label.top - 5);
+        expect(ring.bottom, label.bottom + 5);
+        final border = (tester
+                .widget<DecoratedBox>(find.descendant(
+                  of: ringFinder,
+                  matching: find.byType(DecoratedBox),
+                ))
+                .decoration as BoxDecoration)
+            .border! as Border;
+        expect(border.top.color, colors.outlineFocus);
+        expect(border.top.width, 3);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(actions, 1);
+      });
+
+      testWidgets('View works inside a coloured parent with no Material',
+          (WidgetTester tester) async {
+        var actions = 0;
+        await tester.pumpWidget(buildThemedAlertWithView(
+          onAction: () => actions++,
+          withMaterial: false,
+        ));
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(actionFinder);
+        expect(actions, 1);
+      });
+
       testWidgets('the close x works and draws inside a coloured parent '
           'with no Material', (WidgetTester tester) async {
         var closed = false;

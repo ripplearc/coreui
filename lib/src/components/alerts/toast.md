@@ -228,7 +228,11 @@ The Toast component includes semantic labels for accessibility:
 - Typography:
     - Title/Description: `CoreTypography.bodyLargeMedium`
     - Description (when title present): `CoreTypography.bodySmallRegular`
-    - Alert text button: `CoreTypography.bodyMediumSemiBold` in `textLink`
+    - Alert text button: `CoreTypography.bodyMediumSemiBold` in `textLink`.
+      It is the library Text button: pressed, the label turns `buttonPress`;
+      focused (Tab), a 3 dp `outlineFocus` pill ring sits 12 dp outside the
+      label at the sides and 5 dp above and below it. It has its own
+      `Material`, so it works on any parent, and no tint covers its target
     - Receipt lead: `CoreTypography.bodyLargeSemiBold` in `textLink`
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
     - Receipt secondary label: `CoreTypography.bodyLargeSemiBold` in `textLink` at 85 % opacity

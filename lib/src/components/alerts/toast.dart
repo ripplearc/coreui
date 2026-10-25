@@ -282,11 +282,15 @@ class Toast extends StatefulWidget {
 
 class _ToastState extends State<Toast> {
   static const double _closeFocusRingWidth = 2;
+  static const double _actionFocusRingWidth = 3;
+  static const double _actionFocusRingOutsetY = 5;
 
   Timer? _dismissTimer;
   bool _answered = false;
   bool _isClosePressed = false;
   bool _isCloseFocused = false;
+  bool _isActionPressed = false;
+  bool _isActionFocused = false;
   bool? _assistiveTechHoldsTheToast;
 
   @override
@@ -774,32 +778,67 @@ class _ToastState extends State<Toast> {
     AppColorsExtension colors,
     String actionLabel,
   ) {
+    // The library Text button: pressed, the label turns Button/Press; focused,
+    // a 3 px ring whose outer edge is 12 px beside and 5 px above and below
+    // the label. Neither is a tint over the 48 dp target.
     return Semantics(
       container: true,
-      child: InkWell(
-        key: const Key('toast_action_button'),
-        onTap: () => _answer(widget.onAction),
-        splashFactory: NoSplash.splashFactory,
-        highlightColor: colors.transparent,
-        hoverColor: colors.transparent,
-        child: Semantics(
-          button: true,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: CoreSpacing.space12,
-              minHeight: CoreSpacing.space12,
-            ),
-            child: Center(
-              widthFactor: 1,
-              heightFactor: 1,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoreSpacing.space1,
-                ),
-                child: Text(
-                  actionLabel,
-                  style: typography.bodyMediumSemiBold.copyWith(
-                    color: colors.textLink,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          key: const Key('toast_action_button'),
+          onTap: () => _answer(widget.onAction),
+          onHighlightChanged: (isPressed) =>
+              setState(() => _isActionPressed = isPressed),
+          onFocusChange: (isFocused) =>
+              setState(() => _isActionFocused = isFocused),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.all(colors.transparent),
+          child: Semantics(
+            button: true,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: CoreSpacing.space12,
+                minHeight: CoreSpacing.space12,
+              ),
+              child: Center(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space1,
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Text(
+                        actionLabel,
+                        style: typography.bodyMediumSemiBold.copyWith(
+                          color: _isActionPressed
+                              ? colors.buttonPress
+                              : colors.textLink,
+                        ),
+                      ),
+                      if (_isActionFocused)
+                        Positioned(
+                          key: const Key('toast_action_focus_ring'),
+                          left: -CoreSpacing.space3,
+                          right: -CoreSpacing.space3,
+                          top: -_actionFocusRingOutsetY,
+                          bottom: -_actionFocusRingOutsetY,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: colors.outlineFocus,
+                                width: _actionFocusRingWidth,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                CoreSpacing.space10,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
