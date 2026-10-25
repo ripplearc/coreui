@@ -144,7 +144,7 @@ class CoreSwitch extends StatelessWidget {
         (switch (type) {
           CoreSwitchType.lock => colors.statusError,
           CoreSwitchType.imperial => colors.iconGreen,
-          CoreSwitchType.normal => colors.lineDarkOutline,
+          CoreSwitchType.normal => colors.iconGrayMid,
         });
   }
 

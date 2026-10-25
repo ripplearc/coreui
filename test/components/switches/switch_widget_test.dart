@@ -194,7 +194,7 @@ void main() {
           Color Function(AppColorsExtension),
           Color Function(AppColorsExtension),
         )>{
-      CoreSwitchType.normal: ((c) => c.lineDarkOutline, (c) => c.iconGrayMid),
+      CoreSwitchType.normal: ((c) => c.iconGrayMid, (c) => c.iconGrayMid),
       CoreSwitchType.lock: ((c) => c.statusError, (c) => c.iconRed),
       CoreSwitchType.imperial: ((c) => c.iconGreen, (c) => c.iconGreen),
     };
