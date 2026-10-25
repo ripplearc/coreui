@@ -55,14 +55,6 @@ class SpacingShowcaseScreen extends StatelessWidget {
         _buildSpacingSection(context, '48', '12rem', '192px', CoreSpacing.space48),
         _buildSpacingSection(context, '56', '14rem', '224px', CoreSpacing.space56),
         _buildSpacingSection(context, '64', '16rem', '256px', CoreSpacing.space64),
-        _buildSpacingSection(context, 'px2', '0.125rem', '2px', CoreSpacing.px2),
-        _buildSpacingSection(context, 'px3', '0.1875rem', '3px', CoreSpacing.px3),
-        _buildSpacingSection(context, 'px5', '0.3125rem', '5px', CoreSpacing.px5),
-        _buildSpacingSection(context, 'px6', '0.375rem', '6px', CoreSpacing.px6),
-        _buildSpacingSection(context, 'px10', '0.625rem', '10px', CoreSpacing.px10),
-        _buildSpacingSection(context, 'px11', '0.6875rem', '11px', CoreSpacing.px11),
-        _buildSpacingSection(context, 'px15', '0.9375rem', '15px', CoreSpacing.px15),
-        _buildSpacingSection(context, 'px17', '1.0625rem', '17px', CoreSpacing.px17),
       ],
     );
   }
