@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography_extension.dart';
+import '../../theme/icon_sizes.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
@@ -85,13 +86,16 @@ class CoreSearchBox extends StatefulWidget {
 
 class _CoreSearchBoxState extends State<CoreSearchBox> {
   static const double _tapTargetSize = CoreSpacing.space12;
-  static const double _sheetIconSize = CoreSpacing.space5;
-  static const double _pillIconSize = CoreSpacing.space6;
+  static const double _sheetIconSize = CoreIconSize.size20;
+  static const double _pillIconSize = CoreIconSize.size24;
   static const double _sheetRadius = CoreSpacing.space3;
   static const double _pillRadius = CoreSpacing.space12;
+  static const double _clearFocusRingWidth = 2;
   late TextEditingController _controller;
   late FocusNode _focusNode;
   bool _hasText = false;
+  bool _isClearPressed = false;
+  bool _isClearFocused = false;
   bool _ownsController = false;
   bool _ownsFocusNode = false;
 
@@ -178,7 +182,9 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
     final isDisabled = !widget.enabled;
     final isPill = widget.type == CoreSearchBoxType.pill;
     final iconSize = isPill ? _pillIconSize : _sheetIconSize;
-    final iconColor = isPill ? colors.iconDark : colors.iconGrayMid;
+    final iconColor = isDisabled
+        ? colors.iconGrayLight
+        : (isPill ? colors.iconDark : colors.iconGrayMid);
     final textStyle =
         isPill ? typography.bodyMediumRegular : typography.bodyLargeRegular;
     final radius =
@@ -191,7 +197,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
           borderSide: BorderSide(color: color),
         );
 
-    return DecoratedBox(
+    final field = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: radius,
         boxShadow: isPill ? CoreShadows.extraSmall : null,
@@ -206,7 +212,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
         textInputAction: TextInputAction.search,
         cursorColor: colors.outlineFocus,
         style: textStyle.copyWith(
-          color: isDisabled ? colors.textDisable : colors.textDark,
+          color: isDisabled ? colors.textDisable : colors.textHeadline,
         ),
         decoration: InputDecoration(
           hintText: widget.hintText,
@@ -235,17 +241,42 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
                   child: Semantics(
                     button: true,
                     label: widget.clearSemanticLabel,
+                    // Pressed and focused looks follow the alert close x: on
+                    // the icon, with no tint over the 48 dp target.
                     child: InkWell(
                       key: CoreSearchBox.clearButtonKey,
                       onTap: _handleClear,
-                      customBorder: const CircleBorder(),
+                      onHighlightChanged: (isPressed) =>
+                          setState(() => _isClearPressed = isPressed),
+                      onFocusChange: (isFocused) =>
+                          setState(() => _isClearFocused = isFocused),
+                      splashFactory: NoSplash.splashFactory,
+                      overlayColor:
+                          WidgetStateProperty.all(colors.transparent),
                       child: SizedBox.square(
                         dimension: _tapTargetSize,
                         child: Center(
-                          child: CoreIconWidget(
-                            icon: CoreIcons.cross,
-                            size: iconSize,
-                            color: iconColor,
+                          child: DecoratedBox(
+                            key: const Key('core_search_box_clear_focus_ring'),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: _isClearFocused
+                                  ? Border.all(
+                                      color: colors.outlineFocus,
+                                      width: _clearFocusRingWidth,
+                                    )
+                                  : null,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(CoreSpacing.space1),
+                              child: CoreIconWidget(
+                                icon: CoreIcons.cross,
+                                size: iconSize,
+                                color: _isClearPressed
+                                    ? colors.buttonPress
+                                    : iconColor,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -269,5 +300,8 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
         ),
       ),
     );
+    // Its own Material, so the field works on any parent: a TextFormField
+    // throws without one.
+    return Material(type: MaterialType.transparency, child: field);
   }
 }
