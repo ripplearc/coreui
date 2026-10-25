@@ -321,6 +321,52 @@ void main() {
       final material = rowMaterial(tester);
       expect(material.color, colors.backgroundBlueLight);
       expect(material.borderRadius, BorderRadius.circular(CoreSpacing.space12));
+      final inkWell = tester.widget<InkWell>(find.descendant(
+        of: find.byType(CoreCheckRowItem),
+        matching: find.byType(InkWell),
+      ));
+      expect(inkWell.borderRadius, BorderRadius.circular(CoreSpacing.space12));
+    });
+
+    testWidgets('draws no press or hover tint, as the library cell has none',
+        (tester) async {
+      await pumpRow(tester, selected: false);
+
+      final inkWell = tester.widget<InkWell>(find.descendant(
+        of: find.byType(CoreCheckRowItem),
+        matching: find.byType(InkWell),
+      ));
+      expect(inkWell.highlightColor, colors.transparent);
+      expect(inkWell.hoverColor, colors.transparent);
+    });
+
+    testWidgets('keeps the initial inside the avatar at 200% text',
+        (tester) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: buildTestApp(
+            CoreCheckRowItem(
+              title: 'John Doe',
+              selected: false,
+              onChanged: (_) {},
+            ),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final initial = tester.renderObject<RenderBox>(find.text('J'));
+      expect(
+        initial.size.height,
+        greaterThanOrEqualTo(
+          initial.getMinIntrinsicHeight(initial.size.width),
+        ),
+      );
+      final avatar = tester.getRect(find.byType(CoreAvatar));
+      final drawn = tester.getRect(find.text('J'));
+      expect(avatar.contains(drawn.center), isTrue);
+      expect(drawn.height, lessThanOrEqualTo(avatar.height));
     });
 
     testWidgets('leaves an unselected row unfilled', (tester) async {
