@@ -4,7 +4,7 @@
 
 ### 🔧 Fixes
 
-- **CoreDateFilterChip, in use**: the library Chips Type=Tags With Remove. A 32 high `chipGrey` pill, radius 20, 12 px at the sides, the range in Body Medium Regular `textDark` (was SemiBold) and a 20 px circled x in `iconGrayMid`. The range and the x are separate 48 high targets. Tapping the range reopens the date sheet; only the x (`CoreDateFilterChip.clearButtonKey`) fires `onClear`. Before, a tap anywhere on the pill cleared the filter. Holding the range or the x shows the library Press look (`pageBackground` fill, 1 px `lineDarkOutline` border). Tab focus on the range or the x draws the pill border in `outlineFocus` at 2 px. Nothing is drawn outside the pill, and the chip brings its own `Material`, so it draws the same on any parent (CA-1322)
+- **CoreDateFilterChip, in use**: the library Chips Type=Tags With Remove. A 32 high `chipGrey` pill, radius 20, 12 px at the sides, the range in Body Medium Regular `textDark` (was SemiBold) and a 20 px circled x in `iconGrayMid`, 8 px after the dates (the x's 48 px target overlaps the range by 6 px). The range and the x are separate 48 high targets. Tapping the range reopens the date sheet; only the x (`CoreDateFilterChip.clearButtonKey`) fires `onClear`. Before, a tap anywhere on the pill cleared the filter. Holding the range or the x shows the library Press look (`pageBackground` fill, 1 px `lineDarkOutline` border). Tab focus on the range or the x draws the pill border in `outlineFocus` at 2 px. Nothing is drawn outside the pill, and the chip brings its own `Material`, so it draws the same on any parent (CA-1322)
 
 ### 💥 Breaking changes
 
