@@ -18,10 +18,10 @@ void main() {
 
   Future<void> pumpHeaders(WidgetTester tester, ThemeData theme) async {
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 824x352 @ 2.0 => 412x176 logical: Figma's 412 dp sheet width, a 72 dp
-    // header with a subtitle, a 52 dp one without and a long title cut short,
-    // 52 dp, stacked with no gaps.
-    tester.view.physicalSize = const Size(824, 352);
+    // 824x660 @ 2.0 => 412x330 logical: Figma's 412 dp sheet width. Back=On
+    // with and without a subtitle and with a long title, then Back=Off, the
+    // meta line and a header with its bottom line, stacked with no gaps.
+    tester.view.physicalSize = const Size(824, 660);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -52,6 +52,21 @@ void main() {
                 title: 'Hydraulic crawler excavator with a long reach boom',
                 backSemanticLabel: 'Back',
                 onBack: () {},
+              ),
+              const CoreSheetHeader(
+                title: 'Add a cost',
+                subtitle: 'Pick a category. It sets where the cost appears',
+              ),
+              const CoreSheetHeader(
+                title: 'Logs',
+                subtitle: 'Bedroom 2 — flooring & drywall · newest first',
+                style: CoreSheetHeaderStyle.metaLine,
+              ),
+              CoreSheetHeader(
+                title: 'Excavator',
+                backSemanticLabel: 'Back',
+                onBack: () {},
+                showBottomLine: true,
               ),
             ],
           ),
