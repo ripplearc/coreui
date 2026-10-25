@@ -175,5 +175,58 @@ void main() {
         matchesGoldenFile('goldens/core_filter_chip_coloured_parent.png'),
       );
     });
+
+    for (final dark in [false, true]) {
+      final suffix = dark ? '_dark' : '';
+      final theme = dark ? ' in dark theme' : '';
+      testWidgets('renders pressed chip correctly$theme', (tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = ratio;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await pumpFilterChip(
+          tester: tester,
+          label: 'Tags',
+          onTap: () {},
+          dark: dark,
+        );
+        final gesture = await tester.startGesture(
+          tester.getCenter(find.byKey(CoreFilterChip.pillKey)),
+        );
+        await tester.pump();
+
+        await expectLater(
+          find.byType(CoreFilterChip),
+          matchesGoldenFile('goldens/core_filter_chip_pressed$suffix.png'),
+        );
+        await gesture.up();
+      });
+    }
+
+    testWidgets('renders chip at 200% text correctly', (tester) async {
+      tester.view.physicalSize = const Size(390, 72);
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: _createTestTheme(),
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(2),
+            ),
+            child: child!,
+          ),
+          home: Material(
+            child: Center(child: CoreFilterChip(label: 'Tags', onTap: () {})),
+          ),
+        ),
+      );
+
+      await expectLater(
+        find.byType(CoreFilterChip),
+        matchesGoldenFile('goldens/core_filter_chip_text_200.png'),
+      );
+    });
   });
 }

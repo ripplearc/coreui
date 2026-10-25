@@ -123,6 +123,56 @@ void main() {
       expect(tester.getSize(pill), restingSize);
     });
 
+    testWidgets('fills the pill Grey Mid while pressed, every time', (
+      tester,
+    ) async {
+      var tapCount = 0;
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreFilterChip(label: 'Tags', onTap: () => tapCount++),
+          theme: CoreTheme.light(),
+        ),
+      );
+      final pill = find.byKey(CoreFilterChip.pillKey);
+      final colors = AppColorsExtension.of(tester.element(pill));
+      Color? pillFill() =>
+          (tester.widget<Container>(pill).decoration as BoxDecoration).color;
+
+      for (var press = 1; press <= 2; press++) {
+        final gesture = await tester.startGesture(tester.getCenter(pill));
+        await tester.pump();
+        expect(pillFill(), colors.backgroundGrayMid);
+
+        await gesture.up();
+        await tester.pump();
+        expect(pillFill(), colors.pageBackground);
+        expect(tapCount, press);
+      }
+    });
+
+    testWidgets('grows the pill so a 200% label is not cut', (tester) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: buildTestApp(
+            CoreFilterChip(label: 'Tags', onTap: () {}),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final label = tester.renderObject<RenderBox>(find.text('Tags'));
+      final pill = tester.getRect(find.byKey(CoreFilterChip.pillKey));
+      expect(
+        label.size.height,
+        greaterThanOrEqualTo(label.getMinIntrinsicHeight(label.size.width)),
+      );
+      expect(pill.height, greaterThan(CoreSpacing.space8));
+      final labelRect = tester.getRect(find.text('Tags'));
+      expect(pill.top, lessThanOrEqualTo(labelRect.top));
+      expect(pill.bottom, greaterThanOrEqualTo(labelRect.bottom));
+    });
+
     testWidgets('works with no Material above it', (tester) async {
       var tapCount = 0;
 
