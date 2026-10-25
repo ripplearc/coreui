@@ -54,6 +54,7 @@ When `isPhoneNumber` is set to `true`, the text field displays a country code se
 The component supports error states with:
 
 - Red border color
+- Red floating label (`textError`)
 - Error icon
 - Custom error message display
 
@@ -61,7 +62,7 @@ The component supports error states with:
 
 Helper text can be displayed below the input with:
 
-- Info icon
+- Info icon, on the same row as the message, 4 dp before it
 - Custom helper message
 - Proper styling according to the design system
 

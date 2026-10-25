@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.54.0] - Text fields and calculator keyboard match the design library
+
+### 🔧 Fixes
+
+- **CoreUnderlineTextField spacing**: regular puts the value 4 px under the label (was 3) and the underline 8 px under the value (was 10), with a 4 px gap before the unit (was 5); a regular field is 53 high (was 54). Large uses 4 px and 8 px (were 6 and 6) and stays 66 high. The side inset and the prefix gap are 0 for every size (were 2), so the label, value and helper line start flush with the field. Compact is still regular with the underline 2 px closer: 4 / 6 / 4 px, 51 high (was 52) (CA-1323)
+- **CoreTextField**: the floating label is Body Small Regular in `textDark` (was Body Large Semibold in `outlineFocus`), and the focus border is `outlineHover` (light `#003A54`, was `textDark`). With an error the floating label is `textError`, as the library Error state draws it. The helper icon and text sit on one row; the icon was above the text (CA-1323)
+- **CoreKeyboard keys**: unit keys have 20 px corners (were 12). Number keys are Title Large Medium (were Regular); a `textStyle` passed to `CoreDigitInput` still wins. A pressed key keeps its shape and only shows the flash; unit keys no longer turn into a pill and the other keys no longer change to 16 px corners. Keys stay 56 high (CA-1323)
+
+### 📐 Design notes
+
+The Figma Line field draws 12 px above the label. That space belongs to the form, as the component doc says, so the field does not add it.
+
+### 🧪 Tests
+
+- Underline field offsets, heights, insets and gaps for each size; text field floating label style, its contrast on the fill in both themes, its error colour, the helper icon and text on one row, and focus border; unit key radius at rest and pressed, number key weight, and a pressed number key keeping its shape. Goldens: underline field (light and dark), value editor sheet, text field, keyboard and the keyboard button grid
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
