@@ -177,6 +177,53 @@ void main() {
       expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
     });
 
+    testWidgets('calls onClear on each tap of × while the range is kept', (
+      tester,
+    ) async {
+      var clears = 0;
+      await pumpChip(tester, selectedDateRange: march, onClear: () => clears++);
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pump();
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pump();
+
+      expect(clears, 2);
+    });
+
+    testWidgets('keeps the dates inside the pill at 200% text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: buildTestApp(
+            CoreDateFilterChip(
+              selectedDateRange: march,
+              label: 'Modified',
+              onApply: (_) {},
+              onClear: () {},
+            ),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final pill = tester.getRect(find.byKey(CoreDateFilterChip.pillKey));
+      final dates = find.descendant(
+        of: find.byType(CoreDateFilterChip),
+        matching: find.byType(Text),
+      );
+      final text = tester.renderObject<RenderBox>(dates);
+      final textRect = tester.getRect(dates);
+      expect(
+        text.size.height,
+        greaterThanOrEqualTo(text.getMinIntrinsicHeight(text.size.width)),
+      );
+      expect(pill.top, lessThanOrEqualTo(textRect.top));
+      expect(pill.bottom, greaterThanOrEqualTo(textRect.bottom));
+    });
+
     testWidgets('keeps both active pill targets at least 48 dp high', (
       tester,
     ) async {

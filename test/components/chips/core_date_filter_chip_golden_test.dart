@@ -64,7 +64,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }
 
-  Future<void> pumpActivePill(WidgetTester tester, {Color? parentColor}) async {
+  Future<void> pumpActivePill(
+    WidgetTester tester, {
+    Color? parentColor,
+    double textScale = 1,
+  }) async {
     final theme = _withRoboto(CoreTheme.light());
     tester.view.physicalSize = const Size(780, 160);
     tester.view.devicePixelRatio = 2.0;
@@ -85,6 +89,12 @@ void main() {
       MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+          ),
+          child: child!,
+        ),
         home: Scaffold(
           backgroundColor: theme.coreColors.pageBackground,
           body: parentColor == null
@@ -164,6 +174,16 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_date_filter_chip_white_parent.png'),
+    );
+  });
+
+  testWidgets('CoreDateFilterChip Visual Regression - 200% text',
+      (WidgetTester tester) async {
+    await pumpActivePill(tester, textScale: 2);
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_date_filter_chip_text_200.png'),
     );
   });
 }

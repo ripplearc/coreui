@@ -40,4 +40,4 @@ The chip also forwards `CoreDateRangeSheet`'s label parameters (`sheetTitle`, `t
 
 ## Accessibility
 
-The inactive chip is one semantic button (`semanticLabel`). The active pill is two: the range text, and the × labelled `clearSemanticLabel`. Both chips draw a 32 dp pill inside 48 dp tap targets.
+The inactive chip is one semantic button (`semanticLabel`). The active pill is two: the range text, and the × labelled `clearSemanticLabel`. Both chips draw a 32 dp pill inside 48 dp tap targets. The pill height is a minimum: at large text sizes the pill grows around the label or the dates.
