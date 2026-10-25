@@ -128,6 +128,28 @@ void main() {
       expect(itemCheckbox(tester, 'wall').color, colors.iconGrayMid);
     });
 
+    testWidgets('fills a checked row Blue Light with a 48 dp radius', (
+      tester,
+    ) async {
+      await pumpAndShow(tester, initialSelectedIds: const {'roofing'});
+      final colors = CoreTheme.light().coreColors;
+      BoxDecoration rowFill(String id) => tester
+          .widget<Ink>(
+            find.descendant(
+              of: find.byKey(Key('sheet_item_$id')),
+              matching: find.byType(Ink),
+            ),
+          )
+          .decoration! as BoxDecoration;
+
+      expect(rowFill('roofing').color, colors.backgroundBlueLight);
+      expect(
+        rowFill('roofing').borderRadius,
+        BorderRadius.circular(CoreSpacing.space12),
+      );
+      expect(rowFill('wall').color, isNull);
+    });
+
     testWidgets('shows the default Clear all and Apply button labels', (
       tester,
     ) async {
