@@ -59,36 +59,55 @@ class _SingleItemSelectorState<T> extends State<SingleItemSelector<T>> {
     final displayText = widget.selectedItem == null ? null : _getDisplayText();
     return Semantics(
       button: true,
+      enabled: !widget.isDisabled,
       label: widget.labelText,
       value: displayText ?? widget.hintText,
-      child: InkWell(
-        onTap:
-            widget.isDisabled ? null : () => _showSelectionBottomSheet(context),
-        onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
-        splashFactory: NoSplash.splashFactory,
-        overlayColor: WidgetStateProperty.all(colors.transparent),
-        // The field only shows the selection; the InkWell owns the tap and the
-        // focus, so the inner text field never opens the keyboard. The field
-        // draws its own focused look while the InkWell holds the focus.
-        child: ExcludeSemantics(
-          child: IgnorePointer(
-            child: CoreTextField(
-              // A new key per selection rebuilds the field with the new text.
-              key: ValueKey(displayText),
-              label: widget.labelText,
-              hintText: widget.hintText,
-              initialValue: displayText,
-              enabled: !widget.isDisabled,
-              showsFocus: _isFocused,
-              suffix: widget.suffixIcon ??
-                  CoreIconWidget(
-                    icon: CoreIcons.arrowDown,
-                    size: CoreIconSize.size24,
-                    color: colors.iconGrayMid,
-                  ),
+      child: Stack(
+        children: [
+          // The field only shows the selection; the InkWell above it owns the
+          // tap and the focus, so the inner text field never opens the
+          // keyboard. The field draws its own focused look while the InkWell
+          // holds the focus.
+          ExcludeSemantics(
+            child: IgnorePointer(
+              child: CoreTextField(
+                // A new key per selection rebuilds the field with the new text.
+                key: ValueKey(displayText),
+                label: widget.labelText,
+                hintText: widget.hintText,
+                initialValue: displayText,
+                enabled: !widget.isDisabled,
+                showsFocus: _isFocused,
+                floatsLabel: true,
+                suffix: widget.suffixIcon ??
+                    CoreIconWidget(
+                      icon: CoreIcons.arrowDown,
+                      size: CoreIconSize.size24,
+                      color: widget.isDisabled
+                          ? colors.iconGrayLight
+                          : colors.iconGrayMid,
+                    ),
+              ),
             ),
           ),
-        ),
+          // On top of the opaque field, so the tap ripple can be seen.
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CoreSpacing.space1),
+                ),
+                onTap: widget.isDisabled
+                    ? null
+                    : () => _showSelectionBottomSheet(context),
+                onFocusChange: (isFocused) =>
+                    setState(() => _isFocused = isFocused),
+                focusColor: colors.transparent,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

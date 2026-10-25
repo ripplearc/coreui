@@ -256,8 +256,12 @@ class _CoreMultiSelectSheetState extends State<CoreMultiSelectSheet> {
               _localSelected.add(item.id);
             }
           }),
-          child: Padding(
+          child: Ink(
             padding: const EdgeInsets.all(CoreSpacing.space3),
+            decoration: BoxDecoration(
+              color: isSelected ? colors.backgroundBlueLight : null,
+              borderRadius: BorderRadius.circular(_rowRadius),
+            ),
             child: Row(
               children: [
                 CoreIconWidget(

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -215,6 +216,62 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Select Role'), findsOneWidget);
+    });
+
+    Widget roleSelector({bool isDisabled = false}) => buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            hintText: 'Select your role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            isDisabled: isDisabled,
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        );
+
+    testWidgets('draws the tap ripple on top of the field', (tester) async {
+      await tester.pumpWidget(roleSelector());
+      final selector = find.byType(SingleItemSelector<String>);
+      final inkLayer = find
+          .descendant(of: selector, matching: find.byType(Material))
+          .last;
+
+      final gesture = await tester.startGesture(tester.getCenter(selector));
+      await tester.pump(kPressTimeout);
+
+      expect(inkLayer, paints..clipPath()..rect());
+      await gesture.cancel();
+    });
+
+    testWidgets('shows the hint in an empty field', (tester) async {
+      await tester.pumpWidget(roleSelector());
+
+      final hintOpacity = tester.widget<AnimatedOpacity>(
+        find
+            .ancestor(
+              of: find.text('Select your role'),
+              matching: find.byType(AnimatedOpacity),
+            )
+            .first,
+      );
+      expect(hintOpacity.opacity, 1);
+    });
+
+    testWidgets('a disabled selector dims its chevron and reads as disabled',
+        (tester) async {
+      await tester.pumpWidget(roleSelector(isDisabled: true));
+
+      final chevron = tester.widget<CoreIconWidget>(
+        find.byWidgetPredicate(
+          (w) => w is CoreIconWidget && w.icon == CoreIcons.arrowDown,
+        ),
+      );
+      expect(chevron.color, CoreTheme.light().coreColors.iconGrayLight);
+      expect(
+        tester.getSemantics(find.byType(SingleItemSelector<String>)),
+        isSemantics(hasEnabledState: true, isEnabled: false),
+      );
     });
 
     testWidgets('meets a11y guidelines for closed field and option list', (tester) async {

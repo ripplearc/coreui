@@ -24,6 +24,8 @@ import '../core_icon.dart';
 /// [showsFocus] Draws the focused border and label without taking focus, for
 /// a field that only shows a choice whose tap target holds the focus, such as
 /// [SingleItemSelector]
+/// [floatsLabel] Keeps the label above the field, so an empty field that
+/// never takes focus, such as [SingleItemSelector], shows its [hintText]
 /// [prefix] The widget displayed before the text field
 /// [suffix] The widget displayed after the text field
 /// [isPhoneNumber] Whether or not the text field is used for phone number input
@@ -48,6 +50,7 @@ class CoreTextField extends StatelessWidget {
   final String? initialValue;
   final bool readOnly;
   final bool showsFocus;
+  final bool floatsLabel;
   final Widget? prefix;
   final Widget? suffix;
   final String? phonePrefix;
@@ -72,6 +75,7 @@ class CoreTextField extends StatelessWidget {
     this.initialValue,
     this.readOnly = false,
     this.showsFocus = false,
+    this.floatsLabel = false,
     this.prefix,
     this.suffix,
     this.isPhoneNumber = false,
@@ -123,6 +127,8 @@ class CoreTextField extends StatelessWidget {
             : colors.pageBackground,
         filled: true,
         labelText: label,
+        floatingLabelBehavior:
+            floatsLabel ? FloatingLabelBehavior.always : null,
         labelStyle: typography.bodyLargeRegular.copyWith(
           color: isDisabled
               ? colors.textDisable
