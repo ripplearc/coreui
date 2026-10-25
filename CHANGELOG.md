@@ -4,8 +4,12 @@
 
 ### 🐛 Fixes
 
-- **CoreSearchBox**: draws the library Search Bar. It had no border and no search icon, and its fill matched the page, so the field could not be seen. It now has a 1 px Line Mid border (Outline Focus when focused), a search icon 8 dp before the text, a plain x clear icon in place of the circled one, and a Text Body hint (was Text Disable) (CA-1318)
-- **CoreSearchBoxType**: `pill` (the default, for pages) has a pill radius, 24 dp icons in Icon Dark, Body Medium text and the xs shadow. `sheet` (for bottom sheets) has 12 dp corners, 20 dp icons in Icon Grey and Body Large text. The app's two search pages keep the default, so they get the Pill look with no change
+- **CoreSearchBox**: draws the library Search Bar. It had no border and no search icon, and its fill matched the page, so the field could not be seen. It now has a 1 px Line Mid border (Outline Focus when focused), a search icon 8 dp before the text, a plain x clear icon in place of the circled one, and a Text Body hint (was Text Disable). Typed text is Text Headline (`textHeadline`). A disabled field draws its icon in `iconGrayLight`. The clear x takes keyboard focus: Tab reaches it and Enter clears; pressed it turns `buttonPress`, focused it draws a 2 px `outlineFocus` circle, with no tint over its 48 dp target. The box brings its own transparent `Material`, so it works on any parent (CA-1318)
+- **CoreSearchBoxType**: `pill` (the default, for pages) has a pill radius, 24 dp icons in Icon Dark, Body Medium text and the xs shadow. `sheet` (for bottom sheets) has 12 dp corners, 20 dp icons in Icon Grey and Body Large text. The app's two search pages keep the default, so they get the Pill look with no change. The app's "Look up a rate" sheet (`your_rates_lookup_sheet.dart`) draws its own border around the box, so it moves to `sheet` when the app takes this version
+
+### 🔀 Migration
+
+- Inside a sheet, pass `type: CoreSearchBoxType.sheet` and remove any outer border
 
 ### 📐 Design notes
 
@@ -13,7 +17,7 @@ The ticket text gives the Pill a 12 dp gap between the search icon and the text.
 
 ### 🧪 Tests
 
-- Pill and Sheet icon sizes and colours, shadow, corner radius, border, focus border and hint colour. Goldens: light and dark, both types in default, filled and disabled states, and the focused Pill
+- Pill and Sheet icon sizes and colours, shadow, corner radius, border, focus border and hint colour. Typed text colour, the disabled icon colour, the clear x's press colour on two presses, Tab focus with its ring and Enter to clear, and a field with no `Material` above it. Goldens: light and dark, both types in default, filled and disabled states, a disabled Pill with text, and the focused Pill; new, the focused Sheet and the pressed and focused clear x
 
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
