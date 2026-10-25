@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -161,6 +162,59 @@ void main() {
 
       // Modal should not open
       expect(find.text('Select Role'), findsNothing);
+    });
+
+    testWidgets('draws the field focus look when Tab reaches it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            selectedItem: 'Designer',
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+      InputDecoration decoration() =>
+          tester.widget<TextField>(find.byType(TextField)).decoration
+              as InputDecoration;
+      final colors = AppColorsExtension.of(
+        tester.element(find.byType(TextField)),
+      );
+      final restingBorder = decoration().enabledBorder as OutlineInputBorder;
+      expect(restingBorder.borderSide.color, colors.lineDarkOutline);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final focusedBorder = decoration().enabledBorder as OutlineInputBorder;
+      expect(focusedBorder.borderSide.color, colors.textDark);
+      final labelStyle = decoration().labelStyle as TextStyle;
+      expect(labelStyle.color, colors.outlineFocus);
+    });
+
+    testWidgets('opens the sheet with Enter after Tab', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Role'), findsOneWidget);
     });
 
     testWidgets('meets a11y guidelines for closed field and option list', (tester) async {

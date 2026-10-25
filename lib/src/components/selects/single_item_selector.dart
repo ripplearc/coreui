@@ -16,7 +16,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [selectedBackgroundColor] is the background color of the selected item
 /// [isDisabled] indicates if the selector is disabled
 /// [onOpen] is an optional callback that is called when the selector is opened
-class SingleItemSelector<T> extends StatelessWidget {
+class SingleItemSelector<T> extends StatefulWidget {
   final String? labelText;
   final String? hintText;
   final String modalTitle;
@@ -47,27 +47,40 @@ class SingleItemSelector<T> extends StatelessWidget {
   });
 
   @override
+  State<SingleItemSelector<T>> createState() => _SingleItemSelectorState<T>();
+}
+
+class _SingleItemSelectorState<T> extends State<SingleItemSelector<T>> {
+  bool _isFocused = false;
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).coreColors;
-    final displayText = selectedItem == null ? null : _getDisplayText();
+    final displayText = widget.selectedItem == null ? null : _getDisplayText();
     return Semantics(
       button: true,
-      label: labelText,
-      value: displayText ?? hintText,
+      label: widget.labelText,
+      value: displayText ?? widget.hintText,
       child: InkWell(
-        onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
-        // The field only shows the selection; the InkWell owns the tap, so
-        // the inner text field never takes focus or opens the keyboard.
+        onTap:
+            widget.isDisabled ? null : () => _showSelectionBottomSheet(context),
+        onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
+        splashFactory: NoSplash.splashFactory,
+        overlayColor: WidgetStateProperty.all(colors.transparent),
+        // The field only shows the selection; the InkWell owns the tap and the
+        // focus, so the inner text field never opens the keyboard. The field
+        // draws its own focused look while the InkWell holds the focus.
         child: ExcludeSemantics(
           child: IgnorePointer(
             child: CoreTextField(
               // A new key per selection rebuilds the field with the new text.
               key: ValueKey(displayText),
-              label: labelText,
-              hintText: hintText,
+              label: widget.labelText,
+              hintText: widget.hintText,
               initialValue: displayText,
-              enabled: !isDisabled,
-              suffix: suffixIcon ??
+              enabled: !widget.isDisabled,
+              showsFocus: _isFocused,
+              suffix: widget.suffixIcon ??
                   CoreIconWidget(
                     icon: CoreIcons.arrowDown,
                     size: CoreIconSize.size24,
@@ -81,17 +94,18 @@ class SingleItemSelector<T> extends StatelessWidget {
   }
 
   String _getDisplayText() {
-    if (selectedItem == null) return hintText ?? '';
-    return itemToString?.call(selectedItem) ?? selectedItem.toString();
+    if (widget.selectedItem == null) return widget.hintText ?? '';
+    return widget.itemToString?.call(widget.selectedItem) ??
+        widget.selectedItem.toString();
   }
 
   void _showSelectionBottomSheet(BuildContext context) {
     final colors = Theme.of(context).coreColors;
-    final effectiveSelectedColor = selectedColor ?? colors.textSuccess;
+    final effectiveSelectedColor = widget.selectedColor ?? colors.textSuccess;
     final effectiveSelectedBackgroundColor =
-        selectedBackgroundColor ?? colors.backgroundBlueLight;
+        widget.selectedBackgroundColor ?? colors.backgroundBlueLight;
 
-    final onOpenCallback = onOpen;
+    final onOpenCallback = widget.onOpen;
     if (onOpenCallback != null) {
       onOpenCallback();
     }
@@ -115,7 +129,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      modalTitle,
+                      widget.modalTitle,
                       style: typography.titleMediumSemiBold
                           .copyWith(color: colors.textHeadline),
                     ),
@@ -126,10 +140,10 @@ class SingleItemSelector<T> extends StatelessWidget {
                 child: ListView.builder(
                   key: const Key('professional_role_list'),
                   padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: items.length,
+                  itemCount: widget.items.length,
                   itemBuilder: (context, index) {
-                    final item = items[index];
-                    final isSelected = selectedItem == item;
+                    final item = widget.items[index];
+                    final isSelected = widget.selectedItem == item;
 
                     return Container(
                       margin: const EdgeInsets.symmetric(
@@ -151,7 +165,8 @@ class SingleItemSelector<T> extends StatelessWidget {
                           title: Row(
                             children: [
                               Text(
-                                itemToString?.call(item) ?? item.toString(),
+                                widget.itemToString?.call(item) ??
+                                    item.toString(),
                                 style: typography.bodyMediumRegular
                                     .copyWith(color: colors.textBody),
                               ),
@@ -165,7 +180,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                           ),
                           onTap: () {
                             Navigator.pop(context);
-                            onItemSelected(item);
+                            widget.onItemSelected(item);
                           },
                         ),
                       ),

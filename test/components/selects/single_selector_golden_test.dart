@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -71,6 +72,27 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/single_item_selector_$name.png'),
+      );
+    });
+
+    testWidgets('SingleItemSelector focused - $name', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 120));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        buildApp(
+          theme,
+          Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
+            child: buildSelector(selectedItem: 'Designer'),
+          ),
+        ),
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/single_item_selector_focused_$name.png'),
       );
     });
 

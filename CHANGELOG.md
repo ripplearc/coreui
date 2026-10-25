@@ -5,12 +5,13 @@
 ### 🐛 Fixes
 
 - **CoreMultiSelectSheet**: the checked box was Flutter's default purple (`#6750a4`), not a library colour. Rows now draw the library check box icon, 24 dp, in Icon Dark when checked and Icon Grey when not, with a Body Medium label in Text Headline (was Body Large), 12 dp padding and a 48 dp height. The search field is `CoreSearchBox` with `CoreSearchBoxType.sheet` (was an outlined `CoreTextField`), and the title is Title Medium Semibold (was Body Large Semibold) (CA-1318)
-- **SingleItemSelector**: the field is the library `CoreTextField` with a chevron (was a plain `OutlineInputBorder` and a Material arrow), and the sheet title is Title Medium Semibold (was Headline Medium Semibold). With nothing selected the label sits in the field as its placeholder, as on every `CoreTextField`
+- **SingleItemSelector**: the field is the library `CoreTextField` with a chevron (was a plain `OutlineInputBorder` and a Material arrow), and the sheet title is Title Medium Semibold (was Headline Medium Semibold). With nothing selected the label sits in the field as its placeholder, as on every `CoreTextField`. Tab focus now shows: the field draws its own focused look (Text Dark border, Outline Focus label) while the selector holds the focus, and the selector draws no tint, which the filled field used to hide (CA-1318)
+- **CoreTextField**: `showsFocus` draws the focused border and label without taking focus, for a field that only shows a choice whose tap target holds the focus, such as `SingleItemSelector` (CA-1318)
 
 ### 🧪 Tests
 
 - Multi-select: title style, Sheet search bar, row label style and 48 dp height, check box icon and colours. Goldens regenerated, light and dark, with and without the keyboard
-- Single selector: goldens now in light and dark for the field states and the open sheet, unselected and selected
+- Single selector: Tab focus turns on the field's focused border and label, and Enter opens the sheet. Goldens now in light and dark for the field states and the open sheet, unselected and selected, and, new, the focused field
 
 ## [0.44.0] - CoreSearchBox matches the library Search Bar
 
