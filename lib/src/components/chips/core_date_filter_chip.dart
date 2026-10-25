@@ -233,6 +233,10 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     // so the pill stops short of the target's end edge by the difference.
     const clearTargetOverhang =
         (CoreSpacing.space12 - CoreIconSize.size20) / 2 - CoreSpacing.space3;
+    // The × target overlaps the range so the dates end 8 dp before the ×,
+    // as Figma's gap is, while the target stays 48 dp wide.
+    const clearTargetWidthBesideRange = CoreSpacing.space12 -
+        ((CoreSpacing.space12 - CoreIconSize.size20) / 2 - CoreSpacing.space2);
 
     return Material(
       type: MaterialType.transparency,
@@ -271,7 +275,10 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                       constraints: const BoxConstraints(
                         minHeight: CoreSpacing.space12,
                       ),
-                      padding: const EdgeInsets.only(left: CoreSpacing.space3),
+                      padding: const EdgeInsets.only(
+                        left: CoreSpacing.space3,
+                        right: clearTargetWidthBesideRange,
+                      ),
                       child: Center(
                         widthFactor: 1,
                         heightFactor: 1,
@@ -290,31 +297,36 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                   ),
                 ),
               ),
-              Semantics(
-                label: widget.clearSemanticLabel,
-                button: true,
-                container: true,
-                child: InkWell(
-                  key: CoreDateFilterChip.clearButtonKey,
-                  onTap: widget.onClear,
-                  onFocusChange: (isFocused) =>
-                      setState(() => _isClearFocused = isFocused),
-                  onHighlightChanged: _setPressed,
-                  splashFactory: NoSplash.splashFactory,
-                  overlayColor: noTint,
-                  child: SizedBox.square(
-                    dimension: CoreSpacing.space12,
-                    child: Center(
-                      child: CoreIconWidget(
-                        icon: CoreIcons.close,
-                        color: colors.iconGrayMid,
-                        size: CoreIconSize.size20,
-                      ),
+            ],
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 0,
+            child: Semantics(
+              label: widget.clearSemanticLabel,
+              button: true,
+              container: true,
+              child: InkWell(
+                key: CoreDateFilterChip.clearButtonKey,
+                onTap: widget.onClear,
+                onFocusChange: (isFocused) =>
+                    setState(() => _isClearFocused = isFocused),
+                onHighlightChanged: _setPressed,
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: noTint,
+                child: SizedBox.square(
+                  dimension: CoreSpacing.space12,
+                  child: Center(
+                    child: CoreIconWidget(
+                      icon: CoreIcons.close,
+                      color: colors.iconGrayMid,
+                      size: CoreIconSize.size20,
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),

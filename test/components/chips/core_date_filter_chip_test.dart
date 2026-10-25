@@ -198,6 +198,26 @@ void main() {
       );
     });
 
+    testWidgets('ends the dates 8 dp before the ×, as Figma does', (
+      tester,
+    ) async {
+      await pumpChip(tester, selectedDateRange: march);
+
+      final textRight =
+          tester.getRect(find.text('Mar 01, 2024 - Mar 31, 2024')).right;
+      final iconLeft = tester
+          .getRect(find.descendant(
+            of: find.byKey(CoreDateFilterChip.clearButtonKey),
+            matching: find.byType(CoreIconWidget),
+          ))
+          .left;
+      expect(iconLeft - textRight, moreOrLessEquals(CoreSpacing.space2));
+      expect(
+        tester.getSize(find.byKey(CoreDateFilterChip.clearButtonKey)).width,
+        CoreSpacing.space12,
+      );
+    });
+
     testWidgets('draws the range focus on the pill border', (tester) async {
       await pumpChip(tester, selectedDateRange: march);
 
