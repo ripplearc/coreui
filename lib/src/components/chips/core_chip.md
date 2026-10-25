@@ -185,7 +185,7 @@ CoreChip(
 
 The component uses theme-aware tokens from `AppColorsExtension` and `AppTypographyExtension`:
 
-- **Text style** (`CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle`): label `typography.bodyMediumMedium` in `colors.textBody`; value `bodyMediumMedium` and unit `bodyMediumSemiBold` at `CoreChipTheme.unitFontWeight` (w800) in `colors.textDark`. A `mini` chip reads its value and unit in plain `bodyMediumSemiBold` instead, so the whole value is one semibold run. A `large` chip (the suggestion strip) reads its label in `bodyMediumRegular` `colors.textDark`, 8 px before a value as heavy as its unit
+- **Text style** (`CoreChipTheme.labelStyle` / `valueStyle` / `unitStyle`): label `typography.bodyMediumMedium` in `colors.textBody`; value `bodyMediumMedium` and unit `bodyMediumSemiBold` at `CoreChipTheme.unitFontWeight` (w800) in `colors.textDark`. A `mini` chip reads its value and unit in plain `bodyMediumSemiBold` instead, so the whole value is one semibold run. A `large` chip (the suggestion strip) reads its label in `bodyMediumRegular` `colors.textDark`, 8 px before a value as heavy as its unit. A `dashed` (Bind) chip reads its label, value and unit in `colors.outlineFocus`, as the library Bind chip does. A large chip with a close icon keeps 16 px after the icon, as at its start
 - **Corner radius**: `BorderRadius.circular(CoreSpacing.space6)`
 - **Animation**: `CoreChipTheme.animationDuration` (`120ms`)
 - **Icons**:

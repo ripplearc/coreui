@@ -108,21 +108,36 @@ abstract final class CoreChipTheme {
   /// The label's text style: `bodyMediumRegular` in [colors.textDark] for
   /// [CoreChipSize.large] (Figma Suggestion Strip Chip), otherwise
   /// `bodyMediumMedium` in [colors.textBody].
+  /// A [CoreChipOutline.dashed] chip reads it in [colors.outlineFocus], as
+  /// the library Bind chip does.
   static TextStyle labelStyle({
     required CoreChipSize size,
     required AppTypographyExtension typography,
     required AppColorsExtension colors,
+    CoreChipOutline outline = CoreChipOutline.solid,
   }) =>
       size == CoreChipSize.large
-          ? typography.bodyMediumRegular.copyWith(color: colors.textDark)
-          : typography.bodyMediumMedium.copyWith(color: colors.textBody);
+          ? typography.bodyMediumRegular.copyWith(
+              color: _textColor(outline, colors, colors.textDark),
+            )
+          : typography.bodyMediumMedium.copyWith(
+              color: _textColor(outline, colors, colors.textBody),
+            );
+
+  static Color _textColor(
+    CoreChipOutline outline,
+    AppColorsExtension colors,
+    Color solidColor,
+  ) =>
+      outline == CoreChipOutline.dashed ? colors.outlineFocus : solidColor;
 
   /// The gap between the label and the value: [CoreSpacing.space2] for
   /// [CoreChipSize.large], [CoreSpacing.space1] otherwise.
   static double labelGap(CoreChipSize size) =>
       size == CoreChipSize.large ? CoreSpacing.space2 : CoreSpacing.space1;
 
-  /// The value's text style in [colors.textDark]: `bodyMediumMedium`;
+  /// The value's text style in [colors.textDark] ([colors.outlineFocus] for
+  /// a [CoreChipOutline.dashed] chip, the library Bind look): `bodyMediumMedium`;
   /// `bodyMediumSemiBold` for [CoreChipSize.mini], whose whole value reads
   /// semibold instead of ending in a heavy unit; and `bodyMediumSemiBold` at
   /// [unitFontWeight] for [CoreChipSize.large], whose whole value is heavy.
@@ -130,6 +145,7 @@ abstract final class CoreChipTheme {
     required CoreChipSize size,
     required AppTypographyExtension typography,
     required AppColorsExtension colors,
+    CoreChipOutline outline = CoreChipOutline.solid,
   }) =>
       switch (size) {
         CoreChipSize.mini => typography.bodyMediumSemiBold,
@@ -140,19 +156,21 @@ abstract final class CoreChipTheme {
         CoreChipSize.medium =>
           typography.bodyMediumMedium,
       }
-          .copyWith(color: colors.textDark);
+          .copyWith(color: _textColor(outline, colors, colors.textDark));
 
-  /// The unit's text style in [colors.textDark]: `bodyMediumSemiBold` at
+  /// The unit's text style in [colors.textDark] ([colors.outlineFocus] for
+  /// a [CoreChipOutline.dashed] chip): `bodyMediumSemiBold` at
   /// [unitFontWeight], or plain `bodyMediumSemiBold` for [CoreChipSize.mini]
   /// so the unit matches its value.
   static TextStyle unitStyle({
     required CoreChipSize size,
     required AppTypographyExtension typography,
     required AppColorsExtension colors,
+    CoreChipOutline outline = CoreChipOutline.solid,
   }) =>
       typography.bodyMediumSemiBold.copyWith(
         fontWeight: size == CoreChipSize.mini ? null : unitFontWeight,
-        color: colors.textDark,
+        color: _textColor(outline, colors, colors.textDark),
       );
 
   /// The heavy weight of a unit on every size but [CoreChipSize.mini].

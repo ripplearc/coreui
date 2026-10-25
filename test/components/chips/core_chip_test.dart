@@ -472,6 +472,64 @@ void main() {
       expect(find.text('8ft ?'), findsOneWidget);
     });
 
+    testWidgets('reads a dashed chip label and value in outlineFocus',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(
+              label: 'Height:',
+              value: '8ft ?',
+              selected: selected,
+              size: CoreChipSize.large,
+              outline: CoreChipOutline.dashed,
+            ),
+          ),
+        ),
+      );
+
+      final colors =
+          AppColorsExtension.of(tester.element(find.byType(CoreChip)));
+      final label = tester.widget<Text>(find.text('Height:')).style;
+      final value = tester.widget<Text>(find.text('8ft ?')).style;
+      expect((label as TextStyle).color, colors.outlineFocus);
+      expect((value as TextStyle).color, colors.outlineFocus);
+    });
+
+    testWidgets('keeps 16 dp at both ends of a large chip with a close icon',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: CoreChip(
+                label: 'Chips',
+                selected: selected,
+                size: CoreChipSize.large,
+                icon: CoreIcons.check,
+                withCloseIcon: true,
+                onRemove: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
+      final close = tester.getRect(find.byKey(const Key('close_icon')));
+      final check = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.check,
+      ));
+      expect(
+        surface.right - close.right,
+        moreOrLessEquals(check.left - surface.left),
+      );
+    });
+
     testWidgets('renders a highlight chip with its text intact',
         (WidgetTester tester) async {
       final selected = ValueNotifier<bool>(false);

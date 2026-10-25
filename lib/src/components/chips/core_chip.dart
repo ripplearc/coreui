@@ -321,6 +321,7 @@ class _CoreChipState extends State<CoreChip> {
                                                         size: widget.size,
                                                         typography: typography,
                                                         colors: colors,
+                                                        outline: widget.outline,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -343,6 +344,7 @@ class _CoreChipState extends State<CoreChip> {
                                                         size: widget.size,
                                                         typography: typography,
                                                         colors: colors,
+                                                        outline: widget.outline,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -358,6 +360,7 @@ class _CoreChipState extends State<CoreChip> {
                                                         size: widget.size,
                                                         typography: typography,
                                                         colors: colors,
+                                                        outline: widget.outline,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -388,6 +391,11 @@ class _CoreChipState extends State<CoreChip> {
                                             ),
                                           ),
                                         ),
+                                      if (widget.withCloseIcon &&
+                                          widget.onRemove != null &&
+                                          widget.size == CoreChipSize.large)
+                                        const SizedBox(
+                                            width: CoreSpacing.space2),
                                     ],
                                   ),
                                 ),
