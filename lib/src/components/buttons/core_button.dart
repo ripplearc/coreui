@@ -245,11 +245,17 @@ class _CoreButtonState extends State<CoreButton> {
     final icon = widget.icon;
 
     if (widget.variant == CoreButtonVariant.social) {
+      const logoWithGap = CoreSpacing.space6 + CoreSpacing.space2;
       return Stack(
         alignment: Alignment.center,
         children: [
           if (icon != null) Align(alignment: Alignment.centerLeft, child: icon),
-          labelWidget,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: icon == null ? 0 : logoWithGap,
+            ),
+            child: labelWidget,
+          ),
         ],
       );
     }

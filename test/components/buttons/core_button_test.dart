@@ -514,6 +514,37 @@ void main() {
         expect(iconRect.overlaps(textRect), isFalse);
       });
 
+      testWidgets('keeps a long label 8px clear of the logo at 200% text',
+          (tester) async {
+        const longLabel = 'Continue with Microsoft';
+        await tester.pumpWidget(
+          _wrapWithTheme(
+            MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: Center(
+                child: SizedBox(
+                  width: 328,
+                  child: CoreButton(
+                    label: longLabel,
+                    variant: CoreButtonVariant.social,
+                    onPressed: () {},
+                    icon: const CoreIconWidget(
+                      key: iconKey,
+                      icon: CoreIcons.microsoft,
+                      size: CoreSpacing.space6,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final logoRight = tester.getRect(find.byKey(iconKey)).right;
+        final labelLeft = tester.getRect(find.text(longLabel)).left;
+        expect(labelLeft - logoRight, greaterThanOrEqualTo(CoreSpacing.space2));
+      });
+
       testWidgets('centres the text on the button', (tester) async {
         await tester.pumpWidget(social());
 

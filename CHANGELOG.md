@@ -8,7 +8,7 @@
 - **Primary focus**: a focused primary button keeps its `buttonSurface` fill and draws a 3 px `outlineFocus` ring 5 px outside the button, with a 2 px transparent gap. It used to switch to the hover fill, which looked the same as pressed. The ring does not change the button's size or its touch area. `CoreButton.focusRingWidth` and `CoreButton.focusRingOffset` hold the two values (CA-1319)
 - **Large padding**: 20 px on each side (`space5`). It was 24 px (CA-1319)
 - **Small text**: Small buttons use Body Medium Semibold. Every size used Body Large Semibold (CA-1319)
-- **Social login button**: the logo sits at the left edge, 20 px in, and the label is centred on its own. The label is Body Large Medium (was Semibold), the side padding 20 px (was 24), the border 1 px `lineMid` (was 2 px). Pressed, it fills `backgroundGrayMid` and keeps the `lineMid` border (the border used to turn `outlineHover`). Disabled, the label is `textDisable` (was `textBody`) (CA-1319)
+- **Social login button**: the logo sits at the left edge, 20 px in, and the label is centred on its own. The label is inset 32 px on both sides (the 24 px logo plus the Figma 8 px gap), so it stays centred and at least 8 px from the logo; at large text sizes a long label ends in "…" instead of running under the logo. The label is Body Large Medium (was Semibold), the side padding 20 px (was 24), the border 1 px `lineMid` (was 2 px). Pressed, it fills `backgroundGrayMid` and keeps the `lineMid` border (the border used to turn `outlineHover`). Disabled, the label is `textDisable` (was `textBody`) (CA-1319)
 
 ### 📐 Design notes
 
@@ -16,8 +16,8 @@ The ticket and the Figma library give the pressed colour for the light theme onl
 
 ### 🧪 Tests
 
-- Pressed primary fill, focused primary fill and ring (position, width, none when unfocused or on a secondary button), a forced parent height still filling the button, Large padding, Small and Large label styles. A11y: contrast for the small primary and focused primary buttons in both themes, the focus ring keeps the 48 px touch area, and white text reaches 4.5:1 on the light pressed fill. Social: 48 px height, logo 20 px from the left edge, centred label, label style, 1 px border, pressed fill and border, disabled label colour
-- Goldens: new focused primary (light and dark), social pressed and social disabled (light and dark). Updated: large, medium, small, custom child, social (Google and Apple, light and dark), toast, colour tokens
+- Pressed primary fill, focused primary fill and ring (position, width, none when unfocused or on a secondary button), a forced parent height still filling the button, Large padding, Small and Large label styles. A11y: contrast for the small primary and focused primary buttons in both themes, the focus ring keeps the 48 px touch area, and white text reaches 4.5:1 on the light pressed fill. Social: 48 px height, logo 20 px from the left edge, centred label, a long label 8 px clear of the logo at 200% text in a 328 px button, label style, 1 px border, pressed fill and border, disabled label colour
+- Goldens: new focused primary (light and dark), social pressed and social disabled (light and dark), social long label at 200% text. Updated: large, medium, small, custom child, social (Google and Apple, light and dark), toast, colour tokens
 
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 

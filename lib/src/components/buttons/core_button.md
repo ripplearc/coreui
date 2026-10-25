@@ -42,7 +42,7 @@ CoreButton(
 
 - **Primary**: Solid background using `colors.buttonSurface`, `colors.buttonPress` while pressed. When focused it keeps its fill and draws a 3 px `colors.outlineFocus` ring 5 px outside the button, with a 2 px transparent gap.
 - **Secondary**: Outlined button with transparent background.
-- **Social**: Specifically designed for social login buttons (e.g., Google, Microsoft). Requires `CoreButtonSize.large`. The logo sits at the left edge, 20 px in, and the label is centred on its own in Body Large Medium. 1 px `colors.lineMid` border; `colors.backgroundGrayMid` fill while pressed.
+- **Social**: Specifically designed for social login buttons (e.g., Google, Microsoft). Requires `CoreButtonSize.large`. The logo sits at the left edge, 20 px in, and the label is centred on its own in Body Large Medium. The label keeps the logo's width plus 8 px clear on both sides, so a long label ends in "…" instead of running under the logo. 1 px `colors.lineMid` border; `colors.backgroundGrayMid` fill while pressed.
 
 Large buttons have 20 px side padding, Medium 20 px and Small 16 px. Small labels are Body Medium Semibold; Large and Medium labels are Body Large Semibold.
 

@@ -23,13 +23,16 @@ void main() {
     required String label,
     required CoreIconData icon,
     bool isDisabled = false,
+    double textScale = 1,
   }) async {
     final colors = theme.coreColors;
 
     tester.view.physicalSize = const Size(800, 300);
     tester.view.devicePixelRatio = 2.0;
+    tester.platformDispatcher.textScaleFactorTestValue = textScale;
     addTearDown(() => tester.view.resetPhysicalSize());
     addTearDown(() => tester.view.resetDevicePixelRatio());
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -186,6 +189,23 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_button_social_disabled_dark.png'),
+    );
+  });
+
+  testWidgets('CoreButton social variant long label at 200% text', (
+    tester,
+  ) async {
+    await pumpSocialButton(
+      tester,
+      _withRoboto(CoreTheme.light()),
+      label: 'Continue with Microsoft',
+      icon: CoreIcons.microsoft,
+      textScale: 2,
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_button_social_large_text.png'),
     );
   });
 }
