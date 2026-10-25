@@ -198,6 +198,101 @@ void main() {
         expect(closed, isTrue);
       });
 
+      Color closeIconColor(WidgetTester tester) => tester
+          .widget<CoreIconWidget>(find.descendant(
+            of: closeButtonFinder,
+            matching: find.byType(CoreIconWidget),
+          ))
+          .color!;
+
+      Border? closeFocusRing(WidgetTester tester) => (tester
+              .widget<DecoratedBox>(
+                find.byKey(const Key('toast_close_focus_ring')),
+              )
+              .decoration as BoxDecoration)
+          .border as Border?;
+
+      testWidgets('the close x turns Button Press while pressed, every time',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var closes = 0;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Toast.error(
+              description: 'Upload failed',
+              closeLabel: 'Close',
+              onClose: () => closes++,
+            ),
+          ),
+        ));
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(closeButtonFinder));
+          await tester.pump();
+          expect(closeIconColor(tester), colors.buttonPress);
+
+          await gesture.up();
+          await tester.pump();
+          expect(closeIconColor(tester), colors.iconDark);
+          expect(closes, press);
+        }
+      });
+
+      testWidgets('Tab focuses the close x, draws its ring and Enter closes',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var closed = false;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Toast.error(
+              description: 'Upload failed',
+              closeLabel: 'Close',
+              onClose: () => closed = true,
+            ),
+          ),
+        ));
+        expect(closeFocusRing(tester), isNull);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final ring = closeFocusRing(tester)!;
+        expect(ring.top.color, colors.outlineFocus);
+        expect(ring.top.width, 2);
+        expect(
+          tester.getSize(find.byKey(const Key('toast_close_focus_ring'))),
+          const Size.square(CoreSpacing.space8),
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(closed, isTrue);
+      });
+
+      testWidgets('the close x works and draws inside a coloured parent '
+          'with no Material', (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: ColoredBox(
+            color: CoreTheme.light().coreColors.pageBackground,
+            child: Center(
+              child: Toast.error(
+                description: 'Upload failed',
+                closeLabel: 'Close',
+                onClose: () => closed = true,
+              ),
+            ),
+          ),
+        ));
+
+        await tester.tap(closeButtonFinder);
+        expect(tester.takeException(), isNull);
+        expect(closed, isTrue);
+      });
+
       testWidgets(
           'without a title the surface is 40 dp high and the controls 48 dp',
           (WidgetTester tester) async {
