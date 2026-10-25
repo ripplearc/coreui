@@ -9,7 +9,7 @@ import 'core_chip_theme.dart';
 /// trailing dropdown arrow, centred in a 48 x 48 dp minimum touch area.
 /// When [onTap] is null the chip is rendered in a non-interactive state.
 /// Keyboard focus draws the pill border in `outlineFocus` at the chip focus
-/// width.
+/// width. Pressed, the pill fills `backgroundGrayMid`.
 class CoreFilterChip extends StatefulWidget {
   /// Key of the outlined pill, for widget-test finders.
   static const Key pillKey = Key('core_filter_chip_pill');
@@ -36,6 +36,7 @@ class CoreFilterChip extends StatefulWidget {
 
 class _CoreFilterChipState extends State<CoreFilterChip> {
   bool _isFocused = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +55,8 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
         child: InkWell(
           onTap: widget.onTap,
           onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
+          onHighlightChanged: (isPressed) =>
+              setState(() => _isPressed = isPressed),
           splashFactory: NoSplash.splashFactory,
           overlayColor: WidgetStateProperty.all(colors.transparent),
           child: ConstrainedBox(
@@ -66,14 +69,19 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
               heightFactor: 1,
               child: Container(
                 key: CoreFilterChip.pillKey,
-                height: CoreSpacing.space8,
+                // A minimum, so a 200% label grows the pill instead of
+                // being cut.
+                constraints:
+                    const BoxConstraints(minHeight: CoreSpacing.space8),
                 padding: EdgeInsets.symmetric(
                   horizontal: CoreSpacing.space3 -
                       (borderWidth - CoreChipTheme.borderWidth),
                 ),
                 decoration: BoxDecoration(
                   borderRadius: pillRadius,
-                  color: colors.pageBackground,
+                  color: _isPressed
+                      ? colors.backgroundGrayMid
+                      : colors.pageBackground,
                   border: Border.all(
                     color: _isFocused
                         ? colors.outlineFocus

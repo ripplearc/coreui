@@ -4,11 +4,11 @@
 
 ### 🔧 Fixes
 
-- **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The arrow is the Figma 10 dp wide drop-down in `textDark`: a 24 dp glyph (was 16 dp in `iconDark`). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too. A focused chip draws its pill border in `outlineFocus` at 2 px, with no tint over the touch area. The chip brings its own `Material`, so it draws the same on any parent (CA-1322)
+- **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The arrow is the Figma 10 dp wide drop-down in `textDark`: a 24 dp glyph (was 16 dp in `iconDark`). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too. A focused chip draws its pill border in `outlineFocus` at 2 px, with no tint over the touch area. The chip brings its own `Material`, so it draws the same on any parent. Pressed, the pill fills `backgroundGrayMid`, as the library List control chip does; the library draws no Press state for the Filter chip. The pill height is a minimum, so at 200% text the pill grows and the label is not cut (CA-1322)
 
 ### 🧪 Tests
 
-- Filter chip: the 32 high pill inside a 48 high touch area; Tab focus changes the pill border and keeps its size; the chip works with no `Material` above it; Tab then Enter opens it. Goldens: the filter chip states and, new, the filter chip in dark, focused in light and dark, and on a coloured parent; the date chip in light and dark
+- Filter chip: the 32 high pill inside a 48 high touch area; Tab focus changes the pill border and keeps its size; the chip works with no `Material` above it; Tab then Enter opens it; the press fill on two presses in a row; a 200% label fits in the pill. Goldens: the filter chip states and, new, the filter chip in dark, focused in light and dark, pressed in light and dark, at 200% text, and on a coloured parent; the date chip in light and dark
 
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
