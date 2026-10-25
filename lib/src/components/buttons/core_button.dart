@@ -247,7 +247,12 @@ class _CoreButtonState extends State<CoreButton> {
       final content = Stack(
         alignment: Alignment.center,
         children: [
-          if (icon != null) Align(alignment: Alignment.centerLeft, child: icon),
+          if (icon != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              heightFactor: 1,
+              child: icon,
+            ),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: icon == null ? 0 : logoWithGap,
@@ -326,9 +331,12 @@ class _CoreButtonState extends State<CoreButton> {
       ),
       child: Material(
         color: colors.transparent,
-        child: SizedBox(
+        child: Container(
           width: widget.fullWidth ? double.infinity : null,
-          height: widget.variant == CoreButtonVariant.social ? null : _height,
+          constraints: BoxConstraints(
+            minHeight:
+                widget.variant == CoreButtonVariant.social ? 0 : _height,
+          ),
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -353,6 +361,7 @@ class _CoreButtonState extends State<CoreButton> {
                   : _padding,
               child: Center(
                 widthFactor: widget.fullWidth ? null : 1.0,
+                heightFactor: 1.0,
                 child: _buildContentRow(),
               ),
             ),
@@ -407,12 +416,25 @@ class _CoreButtonState extends State<CoreButton> {
         autofocus: widget.autofocus,
         onFocusChange: (focused) => setState(() => isFocused = focused),
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: isEnabled ? widget.onPressed : null,
           onTapDown: isEnabled ? (_) => setState(() => isPressed = true) : null,
           onTapUp: isEnabled ? (_) => setState(() => isPressed = false) : null,
           onTapCancel:
               isEnabled ? () => setState(() => isPressed = false) : null,
-          child: buttonWithFocusRing,
+          child: widget.size == CoreButtonSize.large
+              ? buttonWithFocusRing
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: CoreSpacing.space12,
+                    minHeight: CoreSpacing.space12,
+                  ),
+                  child: Center(
+                    widthFactor: 1,
+                    heightFactor: 1,
+                    child: buttonWithFocusRing,
+                  ),
+                ),
         ),
       ),
     );

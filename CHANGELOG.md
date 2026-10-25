@@ -9,6 +9,9 @@
 - **Large padding**: 20 px on each side (`space5`). It was 24 px (CA-1319)
 - **Small text**: Small buttons use Body Medium Semibold. Every size used Body Large Semibold (CA-1319)
 - **Social login button**: the logo sits at the left edge, 20 px in, and the label is centred on its own. The label is inset 32 px on both sides (the 24 px logo plus the Figma 8 px gap), so it stays centred and at least 8 px from the logo; at large text sizes a long label ends in "…" instead of running under the logo. The label is Body Large Medium (was Semibold), the side padding 20 px (was 24), the border 1 px `lineMid` (was 2 px). Pressed, it fills `backgroundGrayMid` and keeps the `lineMid` border (the border used to turn `outlineHover`). Disabled, it has no fill, a 1 px `lineMid` border and a `textDisable` label (was a grey fill and `textBody`). With `fullWidth: false` it is as wide as its content (CA-1319)
+- **Social height**: a social button is 48 px tall in any parent. It used to stretch to all the height its parent offered, for example 100 px in a `Center` (CA-1319)
+- **Small and Medium tap area**: a Small (36 px) or Medium (40 px) button keeps its look and now sits in a 48 x 48 px tap area, so it takes 48 px of layout. Rows of Medium buttons, such as the display area value pills, sit 8 px taller (CA-1319)
+- **Large text**: the button heights are minimums, so at 200% text a Small or Medium label grows the button instead of being cut (CA-1319)
 
 ### 📐 Design notes
 
@@ -16,8 +19,8 @@ The ticket and the Figma library give the pressed colour for the light theme onl
 
 ### 🧪 Tests
 
-- Pressed primary fill, focused primary fill and ring (position, width, none when unfocused), a focused secondary keeps its colours and draws the ring, a forced parent height still filling the button, Large padding, Small and Large label styles. A11y: contrast for the small primary and focused primary buttons in both themes, the focus ring keeps the 48 px touch area, and white text reaches 4.5:1 on the light pressed fill. Social: 48 px height, logo 20 px from the left edge, centred label, a long label 8 px clear of the logo at 200% text in a 328 px button, label style, 1 px border, pressed fill and border, disabled label colour, a narrow social button as wide as its content
-- Goldens: new focused primary (light and dark), social pressed and social disabled (light and dark), social long label at 200% text. Updated: large, medium, small, custom child, social (Google and Apple, light and dark), toast, colour tokens
+- Pressed primary fill, focused primary fill and ring (position, width, none when unfocused), a focused secondary keeps its colours and draws the ring, a forced parent height still filling the button, Large padding, Small and Large label styles. A11y: contrast for the small primary and focused primary buttons in both themes, the focus ring keeps the 48 px touch area, and white text reaches 4.5:1 on the light pressed fill. Social: 48 px height, logo 20 px from the left edge, centred label, a long label 8 px clear of the logo at 200% text in a 328 px button, label style, 1 px border, pressed fill and border, disabled label colour, a narrow social button as wide as its content, a social button 48 px tall in a 300 px parent. Small and Medium: drawn 36 / 40 px inside a 48 px tap area that answers taps at its top and bottom edges; a Small label is not cut at 200% text. A forced parent height now also checks the fill height
+- Goldens: new focused primary (light and dark), social pressed and social disabled (light and dark), social long label at 200% text. Updated: large, medium, small, custom child, social (Google and Apple, light and dark, pressed, disabled, 200% text), toast, colour tokens, and the display area goldens with Medium value pills
 
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 

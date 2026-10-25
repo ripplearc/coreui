@@ -46,6 +46,8 @@ CoreButton(
 
 Large buttons have 20 px side padding, Medium 20 px and Small 16 px. Small labels are Body Medium Semibold; Large and Medium labels are Body Large Semibold.
 
+Large buttons are 48 px tall, Medium 40 px and Small 36 px. Medium and Small draw that height inside a 48 x 48 px tap area, so they take 48 px of layout and a tap just outside the drawn edge still counts. The heights are minimums: with a large text size the button grows instead of cutting the label. A social button is 48 px tall whatever height its parent offers.
+
 ## Examples
 
 ### Primary Button

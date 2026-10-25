@@ -306,6 +306,15 @@ void main() {
           }),
         );
 
+    Size fillSizeOf(WidgetTester tester) => tester.getSize(
+          find
+              .descendant(
+                of: find.byType(CoreButton),
+                matching: find.byType(DecoratedBox),
+              )
+              .at(1),
+        );
+
     TextStyle labelStyleOf(WidgetTester tester, String label) =>
         tester.widget<Text>(find.text(label)).style!;
 
@@ -371,6 +380,67 @@ void main() {
         tester.getCenter(find.text('Tall')).dy,
         moreOrLessEquals(tester.getCenter(find.byType(CoreButton)).dy),
       );
+      expect(fillSizeOf(tester).height, 68);
+    });
+
+    for (final (size, height) in [
+      (CoreButtonSize.small, 36.0),
+      (CoreButtonSize.medium, 40.0),
+    ]) {
+      testWidgets('a ${size.name} button keeps its ${height.toInt()}px look '
+          'in a 48px tap area', (tester) async {
+        var taps = 0;
+        await tester.pumpWidget(
+          _wrapWithTheme(
+            Center(
+              child: CoreButton(
+                label: 'Add',
+                size: size,
+                fullWidth: false,
+                onPressed: () => taps++,
+              ),
+            ),
+          ),
+        );
+
+        expect(fillSizeOf(tester).height, height);
+        final target = tester.getRect(find.byType(CoreButton));
+        expect(target.height, 48);
+        expect(target.width, greaterThanOrEqualTo(48));
+
+        await tester.tapAt(target.topCenter + const Offset(0, 1));
+        await tester.tapAt(target.bottomCenter - const Offset(0, 1));
+        expect(taps, 2);
+      });
+    }
+
+    testWidgets('a small button grows with 200% text so the label is not cut',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: Center(
+                child: CoreButton(
+                  label: 'Add',
+                  size: CoreButtonSize.small,
+                  fullWidth: false,
+                  onPressed: () {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final label = tester.renderObject<RenderBox>(find.text('Add'));
+      expect(
+        label.size.height,
+        greaterThanOrEqualTo(label.getMinIntrinsicHeight(label.size.width)),
+      );
+      expect(fillSizeOf(tester).height, greaterThan(36));
     });
 
     testWidgets('an unfocused primary button draws no focus ring',
@@ -475,6 +545,28 @@ void main() {
                   onPressed: () {},
                 ),
               ],
+            ),
+          ),
+        );
+
+        expect(tester.getSize(find.byType(CoreButton)).height, 48);
+      });
+
+      testWidgets('stays 48px tall when its parent offers more height',
+          (tester) async {
+        await tester.pumpWidget(
+          _wrapWithTheme(
+            Center(
+              child: SizedBox(
+                height: 300,
+                child: Center(
+                  child: CoreButton(
+                    label: label,
+                    variant: CoreButtonVariant.social,
+                    onPressed: () {},
+                  ),
+                ),
+              ),
             ),
           ),
         );
