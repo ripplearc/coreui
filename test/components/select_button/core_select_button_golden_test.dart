@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -100,5 +101,54 @@ void main() {
     );
 
     debugDisableShadows = true;
+  });
+
+  Future<void> pumpSingle(WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 80));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          extensions: [
+            AppColorsExtension.create(),
+            AppTypographyExtension.create(),
+          ],
+        ),
+        home: Scaffold(
+          body: Center(
+            child: CoreSelectButton(
+              tabs: const ['Tab 1', 'Tab 2', 'Tab 3'],
+              selectedIndex: 0,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  testWidgets('CoreSelectButton - Golden Test, Tab 2 focused', (tester) async {
+    await pumpSingle(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_select_button_focused.png'),
+    );
+  });
+
+  testWidgets('CoreSelectButton - Golden Test, Tab 2 pressed', (tester) async {
+    await pumpSingle(tester);
+    final gesture = await tester.press(find.text('Tab 2'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_select_button_pressed.png'),
+    );
+    await gesture.cancel();
   });
 }
