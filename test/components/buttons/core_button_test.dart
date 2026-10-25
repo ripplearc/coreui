@@ -382,7 +382,7 @@ void main() {
       expect(focusRing(), findsNothing);
     });
 
-    testWidgets('a focused secondary button draws no focus ring',
+    testWidgets('a focused secondary button keeps its look and draws the ring',
         (tester) async {
       await tester.pumpWidget(
         _wrapWithTheme(
@@ -396,7 +396,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(focusRing(), findsNothing);
+      expect(labelStyleOf(tester, 'Secondary').color, colors.buttonSurface);
+      expect(focusRing(), findsOneWidget);
     });
 
     testWidgets('a large button has 20px side padding', (tester) async {
@@ -509,9 +510,14 @@ void main() {
           ),
         );
 
+        final buttonWidth = tester.getSize(find.byType(CoreButton)).width;
         final iconRect = tester.getRect(find.byKey(iconKey));
         final textRect = tester.getRect(find.text(label));
-        expect(iconRect.overlaps(textRect), isFalse);
+        const logoWithGap = CoreSpacing.space6 + CoreSpacing.space2;
+        const sides = 2 * (logoWithGap + CoreSpacing.space5);
+        expect(buttonWidth, moreOrLessEquals(textRect.width + sides));
+        expect(textRect.left - iconRect.right,
+            greaterThanOrEqualTo(CoreSpacing.space2));
       });
 
       testWidgets('keeps a long label 8px clear of the logo at 200% text',

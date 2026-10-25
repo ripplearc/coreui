@@ -146,7 +146,7 @@ void main() {
           autofocus: true,
           icon: CoreIconWidget(
             icon: CoreIcons.arrowLeft,
-            color: colors.buttonHover,
+            color: colors.buttonSurface,
           ),
         ),
       ),

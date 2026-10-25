@@ -148,9 +148,13 @@ class _CoreButtonState extends State<CoreButton> {
     required bool isDark,
   }) {
     if (!isEnabled) {
-      return variant == CoreButtonVariant.secondary
-          ? colors.transparent
-          : colors.buttonDisable;
+      switch (variant) {
+        case CoreButtonVariant.primary:
+          return colors.buttonDisable;
+        case CoreButtonVariant.secondary:
+        case CoreButtonVariant.social:
+          return colors.transparent;
+      }
     }
     switch (variant) {
       case CoreButtonVariant.primary:
@@ -170,16 +174,14 @@ class _CoreButtonState extends State<CoreButton> {
     AppColorsExtension colors,
   ) {
     if (!isEnabled) {
-      return colors.buttonDisable;
+      return variant == CoreButtonVariant.social
+          ? colors.lineMid
+          : colors.buttonDisable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
-        return isPressed
-            ? colors.buttonPress
-            : isFocused
-                ? colors.buttonHover
-                : colors.buttonSurface;
+        return isPressed ? colors.buttonPress : colors.buttonSurface;
       case CoreButtonVariant.social:
         return isFocused && !isPressed
             ? colors.lineDarkOutline
@@ -201,11 +203,7 @@ class _CoreButtonState extends State<CoreButton> {
       case CoreButtonVariant.primary:
         return colors.textInverse;
       case CoreButtonVariant.secondary:
-        return isPressed
-            ? colors.buttonPress
-            : isFocused
-                ? colors.buttonHover
-                : colors.buttonSurface;
+        return isPressed ? colors.buttonPress : colors.buttonSurface;
       case CoreButtonVariant.social:
         return colors.textHeadline;
     }
@@ -246,7 +244,7 @@ class _CoreButtonState extends State<CoreButton> {
 
     if (widget.variant == CoreButtonVariant.social) {
       const logoWithGap = CoreSpacing.space6 + CoreSpacing.space2;
-      return Stack(
+      final content = Stack(
         alignment: Alignment.center,
         children: [
           if (icon != null) Align(alignment: Alignment.centerLeft, child: icon),
@@ -258,6 +256,7 @@ class _CoreButtonState extends State<CoreButton> {
           ),
         ],
       );
+      return widget.fullWidth ? content : IntrinsicWidth(child: content);
     }
 
     return Row(
@@ -362,8 +361,10 @@ class _CoreButtonState extends State<CoreButton> {
       ),
     );
 
-    final showFocusRing =
-        isFocused && isEnabled && widget.variant == CoreButtonVariant.primary;
+    final showFocusRing = isFocused &&
+        isEnabled &&
+        (widget.variant == CoreButtonVariant.primary ||
+            widget.variant == CoreButtonVariant.secondary);
     final buttonWithFocusRing = Stack(
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
