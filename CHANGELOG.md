@@ -4,7 +4,8 @@
 
 ### 🔧 Fixes
 
-- **CoreChipSize.large** (the suggestion strip chips): the library Suggestion Strip Chip. 48 high with its 1 px border (was 46), 16 px at each side, also after a close icon (was 12 on the left, 20 on the right) and no shadow (was `CoreShadows.small`). The label is Body Medium Regular in `textDark` (was Medium in `textBody`), 8 px before the value (was 4), and the whole value is heavy, not only the unit. Small, medium and mini chips do not change (CA-1322)
+- **CoreChipSize.large** (the suggestion strip chips): the library Suggestion Strip Chip. 48 high with its 1 px border (was 46), 16 px at each side, also after a close icon (was 12 on the left, 20 on the right) and no shadow (was `CoreShadows.small`). The label is Body Medium Regular in `textDark` (was Medium in `textBody`), 8 px before the value (was 4), and the whole value is heavy, not only the unit. Small, medium and mini chips keep their size padding (CA-1322)
+- **CoreChip side padding**: medium and mini chips had 12 px before the text and 20 px after it, because the label row added 8 px at its end on top of the padding. That 8 px is now only the gap before a close icon, so every size has the same space at both ends (CA-1322)
 - **Bind suggestion chip**: the dashed outline is 1.5 px at rest (was 1), `CoreChipTheme.dashedStrokeWidth`; focused it still thickens to 2. Its label, value and unit are `outlineFocus` (were `textDark`), as the library Bind chip draws them. The outlines of Deterministic (2 px `lineHighlight`) and the other kinds (1 px `lineMid`) already matched (CA-1322)
 
 ### 💥 Breaking changes
@@ -13,7 +14,7 @@
 
 ### 🧪 Tests
 
-- Large chip: 48 high, the label and value insets and gap, 16 px at both ends with a close icon, the dashed chip's `outlineFocus` text, no shadow, and the label and value styles in both themes. The dashed outline's resting stroke. Goldens: the chip component and outline sheets (light and dark), and every suggestion area golden. The outline and two-rows goldens grow a little to fit the wider and taller chips
+- Large chip: 48 high, the label and value insets and gap, 16 px at both ends with a close icon, the dashed chip's `outlineFocus` text, no shadow, and the label and value styles in both themes. The dashed outline's resting stroke. Every size has the same space at both ends of its text, left to right and right to left. Goldens: the chip component and outline sheets (light and dark), and every suggestion area golden. The outline and two-rows goldens grow a little to fit the wider and taller chips, and their mini and medium chips lose the extra 8 px after the text
 
 ## [0.52.0] - Date filter chip keeps focus after a clear
 

@@ -530,6 +530,45 @@ void main() {
       );
     });
 
+    for (final direction in TextDirection.values) {
+      for (final size in [
+        CoreChipSize.small,
+        CoreChipSize.medium,
+        CoreChipSize.mini,
+        CoreChipSize.large,
+      ]) {
+        testWidgets(
+            'a ${size.name} chip has the same space at both ends of its text '
+            '(${direction.name})', (WidgetTester tester) async {
+          final selected = ValueNotifier<bool>(false);
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light(),
+              home: Directionality(
+                textDirection: direction,
+                child: Scaffold(
+                  body: Center(
+                    child: CoreChip(
+                      label: 'Offer',
+                      selected: selected,
+                      size: size,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
+          final text = tester.getRect(find.text('Offer'));
+          expect(
+            surface.right - text.right,
+            moreOrLessEquals(text.left - surface.left),
+          );
+        });
+      }
+    }
+
     testWidgets('renders a highlight chip with its text intact',
         (WidgetTester tester) async {
       final selected = ValueNotifier<bool>(false);

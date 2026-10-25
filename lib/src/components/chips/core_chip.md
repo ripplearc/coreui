@@ -47,8 +47,10 @@ Notes:
 |---|---|---|
 | `small` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space2, vertical: 2.0)` | `chipGrey` |
 | `medium` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `chipGrey` |
-| `large` | `EdgeInsetsDirectional.fromSTEB(CoreSpacing.space4, 13, CoreSpacing.space2, 13)` (the label row adds `space2` at its end) | `pageBackground`, `lineMid` outline |
+| `large` | `EdgeInsetsDirectional.symmetric(horizontal: CoreSpacing.space4, vertical: 13)` | `pageBackground`, `lineMid` outline |
 | `mini` | `EdgeInsets.symmetric(horizontal: CoreSpacing.space3, vertical: CoreSpacing.space2)` | `pageBackground`, `lineMid` outline |
+
+The text has the same space at both ends in every size. When a close icon follows, the label row adds `CoreSpacing.space2` between the text and the icon.
 
 ## States
 
