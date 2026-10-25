@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/test_harness.dart';
 
 void main() {
+  final march = DateRange(
+    start: DateTime(2024, 3, 1),
+    end: DateTime(2024, 3, 31),
+  );
+
+  BoxDecoration pillDecoration(WidgetTester tester) {
+    final pill = find.byKey(CoreDateFilterChip.pillKey);
+    return tester.widget<DecoratedBox>(pill).decoration as BoxDecoration;
+  }
+
   Future<void> pumpChip(
     WidgetTester tester, {
     DateRange? selectedDateRange,
@@ -185,6 +196,93 @@ void main() {
         tester.getSize(find.byKey(const Key('active_date_filter_chip'))).height,
         CoreSpacing.space12,
       );
+    });
+
+    testWidgets('draws the range focus on the pill border', (tester) async {
+      await pumpChip(tester, selectedDateRange: march);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      final colors = AppColorsExtension.of(
+        tester.element(find.byKey(CoreDateFilterChip.pillKey)),
+      );
+      expect(
+        pillDecoration(tester).border,
+        Border.all(color: colors.outlineFocus, width: 2),
+      );
+    });
+
+    testWidgets('keeps the focus border on the pill when Tab moves to the ×', (
+      tester,
+    ) async {
+      await pumpChip(tester, selectedDateRange: march);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      final colors = AppColorsExtension.of(
+        tester.element(find.byKey(CoreDateFilterChip.pillKey)),
+      );
+      expect(
+        pillDecoration(tester).border,
+        Border.all(color: colors.outlineFocus, width: 2),
+      );
+      final focused = FocusManager.instance.primaryFocus as FocusNode;
+      expect(
+        find.descendant(
+          of: find.byKey(CoreDateFilterChip.clearButtonKey),
+          matching: find.byElementPredicate((e) => e == focused.context),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows the library press look while the range is held', (
+      tester,
+    ) async {
+      await pumpChip(tester, selectedDateRange: march);
+
+      final gesture = await tester.press(
+        find.text('Mar 01, 2024 - Mar 31, 2024'),
+      );
+      await tester.pump();
+
+      final colors = AppColorsExtension.of(
+        tester.element(find.byKey(CoreDateFilterChip.pillKey)),
+      );
+      expect(pillDecoration(tester).color, colors.pageBackground);
+      expect(
+        pillDecoration(tester).border,
+        Border.all(color: colors.lineDarkOutline),
+      );
+      await gesture.cancel();
+    });
+
+    testWidgets('works with no Material above the active pill', (
+      tester,
+    ) async {
+      var clearCalled = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Center(
+            child: CoreDateFilterChip(
+              selectedDateRange: march,
+              label: 'Modified',
+              onApply: (_) {},
+              onClear: () => clearCalled = true,
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(clearCalled, isTrue);
     });
   });
 }

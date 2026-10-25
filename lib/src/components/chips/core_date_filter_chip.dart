@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
+import 'core_chip_theme.dart';
 
 /// A filter chip for a date-range filter.
 ///
@@ -82,6 +83,9 @@ class CoreDateFilterChip extends StatelessWidget {
 
   /// Key of the active pill's clear × button.
   static const Key clearButtonKey = Key('core_date_filter_chip_clear_button');
+
+  /// Key of the active pill's grey fill, for widget-test finders.
+  static const Key pillKey = Key('core_date_filter_chip_pill');
 
   /// Creates a [CoreDateFilterChip].
   const CoreDateFilterChip({
@@ -183,7 +187,7 @@ class CoreDateFilterChip extends StatelessWidget {
   }
 }
 
-class _ActiveDateChip extends StatelessWidget {
+class _ActiveDateChip extends StatefulWidget {
   const _ActiveDateChip({
     super.key,
     required this.label,
@@ -200,87 +204,120 @@ class _ActiveDateChip extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
+  State<_ActiveDateChip> createState() => _ActiveDateChipState();
+}
+
+class _ActiveDateChipState extends State<_ActiveDateChip> {
+  bool _isPressed = false;
+  bool _isRangeFocused = false;
+  bool _isClearFocused = false;
+
+  BoxBorder? _pillBorder(AppColorsExtension colors) {
+    if (_isPressed) return Border.all(color: colors.lineDarkOutline);
+    if (!_isRangeFocused && !_isClearFocused) return null;
+    return Border.all(
+      color: colors.outlineFocus,
+      width: CoreChipTheme.borderWidthFor(isFocused: true),
+    );
+  }
+
+  void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
+
+  @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
-    final pillRadius = BorderRadius.circular(CoreSpacing.space5);
+    final noTint = WidgetStateProperty.all(colors.transparent);
     const pillInset = (CoreSpacing.space12 - CoreSpacing.space8) / 2;
     // The × target is wider than the icon plus the pill's 12 dp end padding,
     // so the pill stops short of the target's end edge by the difference.
     const clearTargetOverhang =
         (CoreSpacing.space12 - CoreIconSize.size20) / 2 - CoreSpacing.space3;
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          top: pillInset,
-          bottom: pillInset,
-          right: clearTargetOverhang,
-          child: Ink(
-            decoration: BoxDecoration(
-              color: colors.chipGrey,
-              borderRadius: pillRadius,
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            top: pillInset,
+            bottom: pillInset,
+            right: clearTargetOverhang,
+            child: DecoratedBox(
+              key: CoreDateFilterChip.pillKey,
+              decoration: BoxDecoration(
+                color: _isPressed ? colors.pageBackground : colors.chipGrey,
+                borderRadius: BorderRadius.circular(CoreSpacing.space5),
+                border: _pillBorder(colors),
+              ),
             ),
           ),
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Semantics(
-                label: label,
-                hint: rangeSemanticHint,
-                button: true,
-                container: true,
-                child: InkWell(
-                  onTap: onTap,
-                  borderRadius: pillRadius,
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      minHeight: CoreSpacing.space12,
-                    ),
-                    padding: const EdgeInsets.only(left: CoreSpacing.space3),
-                    child: Center(
-                      widthFactor: 1,
-                      heightFactor: 1,
-                      child: ExcludeSemantics(
-                        child: Text(
-                          label,
-                          style: typography.bodyMediumRegular.copyWith(
-                            color: colors.textDark,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Semantics(
+                  label: widget.label,
+                  hint: widget.rangeSemanticHint,
+                  button: true,
+                  container: true,
+                  child: InkWell(
+                    onTap: widget.onTap,
+                    onFocusChange: (isFocused) =>
+                        setState(() => _isRangeFocused = isFocused),
+                    onHighlightChanged: _setPressed,
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: noTint,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        minHeight: CoreSpacing.space12,
+                      ),
+                      padding: const EdgeInsets.only(left: CoreSpacing.space3),
+                      child: Center(
+                        widthFactor: 1,
+                        heightFactor: 1,
+                        child: ExcludeSemantics(
+                          child: Text(
+                            widget.label,
+                            style: typography.bodyMediumRegular.copyWith(
+                              color: colors.textDark,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Semantics(
-              label: clearSemanticLabel,
-              button: true,
-              container: true,
-              child: InkWell(
-                key: CoreDateFilterChip.clearButtonKey,
-                onTap: onClear,
-                customBorder: const CircleBorder(),
-                child: SizedBox.square(
-                  dimension: CoreSpacing.space12,
-                  child: Center(
-                    child: CoreIconWidget(
-                      icon: CoreIcons.close,
-                      color: colors.iconGrayMid,
-                      size: CoreIconSize.size20,
+              Semantics(
+                label: widget.clearSemanticLabel,
+                button: true,
+                container: true,
+                child: InkWell(
+                  key: CoreDateFilterChip.clearButtonKey,
+                  onTap: widget.onClear,
+                  onFocusChange: (isFocused) =>
+                      setState(() => _isClearFocused = isFocused),
+                  onHighlightChanged: _setPressed,
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: noTint,
+                  child: SizedBox.square(
+                    dimension: CoreSpacing.space12,
+                    child: Center(
+                      child: CoreIconWidget(
+                        icon: CoreIcons.close,
+                        color: colors.iconGrayMid,
+                        size: CoreIconSize.size20,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
