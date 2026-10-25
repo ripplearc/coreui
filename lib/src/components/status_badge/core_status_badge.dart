@@ -125,6 +125,7 @@ class CoreStatusBadge extends StatelessWidget {
 
   static const double _neutralHeight = 22;
   static const double _borderWidth = 1;
+  static const double _paddingInsideBorder = CoreSpacing.space3 - _borderWidth;
 
   bool get _isCompact => size == CoreStatusBadgeSize.compact;
   bool get _isNeutral => variant == CoreStatusBadgeVariant.neutral;
@@ -138,8 +139,8 @@ class CoreStatusBadge extends StatelessWidget {
       _isCompact || _isNeutral ? CoreRadius.radius6 : CoreRadius.radius8;
 
   double get _horizontalPadding {
-    if (_isNeutral) return CoreSpacing.px11;
-    return _isCompact ? CoreSpacing.space2 : CoreSpacing.px10;
+    if (_isNeutral) return _paddingInsideBorder;
+    return _isCompact ? CoreSpacing.space2 : _paddingInsideBorder;
   }
 
   Widget _buildInfoIcon(Color color) {
@@ -169,7 +170,7 @@ class CoreStatusBadge extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(
               left: CoreSpacing.space1,
-              right: CoreSpacing.px10,
+              right: _paddingInsideBorder,
             ),
             child: Center(heightFactor: 1, child: icon),
           ),
