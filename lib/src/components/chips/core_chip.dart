@@ -202,6 +202,8 @@ class _CoreChipState extends State<CoreChip> {
     super.dispose();
   }
 
+  bool get _hasCloseIcon => widget.withCloseIcon && widget.onRemove != null;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -303,9 +305,10 @@ class _CoreChipState extends State<CoreChip> {
                                       ],
                                       Flexible(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.only(
-                                            end: CoreSpacing.space2,
+                                          padding: EdgeInsetsDirectional.only(
+                                            end: _hasCloseIcon
+                                                ? CoreSpacing.space2
+                                                : 0,
                                           ),
                                           child: ExcludeSemantics(
                                             child: Row(
@@ -371,8 +374,7 @@ class _CoreChipState extends State<CoreChip> {
                                           ),
                                         ),
                                       ),
-                                      if (widget.withCloseIcon &&
-                                          widget.onRemove != null)
+                                      if (_hasCloseIcon)
                                         Semantics(
                                           button: true,
                                           label: 'Remove ${[
@@ -391,11 +393,6 @@ class _CoreChipState extends State<CoreChip> {
                                             ),
                                           ),
                                         ),
-                                      if (widget.withCloseIcon &&
-                                          widget.onRemove != null &&
-                                          widget.size == CoreChipSize.large)
-                                        const SizedBox(
-                                            width: CoreSpacing.space2),
                                     ],
                                   ),
                                 ),

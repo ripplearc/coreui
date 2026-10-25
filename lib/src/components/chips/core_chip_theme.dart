@@ -12,8 +12,7 @@ abstract final class CoreChipTheme {
   /// Returns the padding for a chip of a given [size]. [CoreChipSize.mini]
   /// shares the medium padding: it is the large surface at the medium height.
   /// [CoreChipSize.large] is the Figma Suggestion Strip Chip: 48 high with
-  /// its 1 px border, and 16 px at each side once the label row's trailing
-  /// [CoreSpacing.space2] is counted.
+  /// its 1 px border and 16 px at each side.
   static EdgeInsetsDirectional padding(CoreChipSize size) => switch (size) {
         CoreChipSize.small => const EdgeInsetsDirectional.symmetric(
             horizontal: CoreSpacing.space2,
@@ -25,11 +24,9 @@ abstract final class CoreChipTheme {
             horizontal: CoreSpacing.space3,
             vertical: CoreSpacing.space2,
           ),
-        CoreChipSize.large => const EdgeInsetsDirectional.fromSTEB(
-            CoreSpacing.space4,
-            _largeVerticalPadding,
-            CoreSpacing.space2,
-            _largeVerticalPadding,
+        CoreChipSize.large => const EdgeInsetsDirectional.symmetric(
+            horizontal: CoreSpacing.space4,
+            vertical: _largeVerticalPadding,
           ),
       };
 
