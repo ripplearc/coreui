@@ -220,6 +220,20 @@ void main() {
       );
     });
 
+    testWidgets('titleText is Title Large with implyLeading', (tester) async {
+      await tester.pumpWidget(
+        _buildBarApp(
+          const CoreAppBar(titleText: 'Riverside Tower', implyLeading: true),
+        ),
+      );
+      await tester.pump();
+
+      final text = tester.widget<Text>(find.text('Riverside Tower'));
+      final typography = CoreTheme.light().coreTypography;
+      expect(text.style!.fontSize, typography.titleLargeSemiBold.fontSize);
+      expect(text.style!.fontWeight, typography.titleLargeSemiBold.fontWeight);
+    });
+
     testWidgets('renders an arbitrary title widget', (tester) async {
       await tester.pumpWidget(
         _buildBarApp(

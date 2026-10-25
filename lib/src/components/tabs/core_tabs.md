@@ -64,7 +64,13 @@ The tabs are horizontally scrollable when they exceed the available width, makin
 
 ### Tab Indicator
 
-The currently selected tab is highlighted with an indicator line using the `tabsHighlight` color from the theme.
+The currently selected tab is highlighted with a 4px indicator line in `tabsHighlight`, with square ends. It sits inside
+the bottom of the 40px tab and is as wide as the tab, not the 4px gap after it.
+
+### Bottom Line and Gap
+
+A 1px `lineDarkOutline` line runs under the tabs. A 4px gap follows every tab, including the last, so the line runs
+4px past the last tab.
 
 ### Typography
 
@@ -132,14 +138,16 @@ final typography = AppTypographyExtension.of(context);
 ### Colors Used
 
 - `colors.tabsHighlight` - Tab indicator color
+- `colors.lineDarkOutline` - Bottom line color
 - `colors.textHeadline` - Selected tab text color
 - `colors.textBody` - Unselected tab text color
 
 ### Spacing
 
-- Tab height: `CoreSpacing.space10` (40px)
+- Tab height: `CoreSpacing.space10` (40px), drawn at the bottom of a `CoreSpacing.space12` (48px) tap area
 - Horizontal padding: `CoreSpacing.space3` (12px)
-- Indicator weight: `CoreSpacing.space1` (4px)
+- Gap after each tab: `CoreSpacing.space1` (4px)
+- Indicator: `CoreSpacing.space1` (4px) high, inside the tab
 
 ## Accessibility
 

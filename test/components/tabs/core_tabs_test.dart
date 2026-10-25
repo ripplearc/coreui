@@ -226,6 +226,68 @@ void main() {
         CoreSpacing.space3 * 2 + CoreSpacing.space1,
       );
     });
+    testWidgets('draws a square-ended indicator as wide as the selected tab',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: const Scaffold(
+            body: CoreTabs(tabs: ['Tab 1', 'Tab 2'], selectedIndex: 0),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final bar = tester.getRect(find.byType(TabBar));
+      final tab = tester.getRect(find.widgetWithText(Tab, 'Tab 1'));
+      // A line, not a rounded rect, so the ends are square. It spans
+      // 12 + label + 12, not the 4px gap after it.
+      final left = tab.left - CoreSpacing.space3 - bar.left;
+      final right = tab.right + CoreSpacing.space3 - bar.left;
+      const halfWidth = CoreSpacing.space1 / 2;
+      final y = bar.height - halfWidth;
+
+      expect(
+        find.byType(TabBar),
+        paints
+          ..line(color: theme.coreColors.lineDarkOutline)
+          ..line(
+            p1: Offset(left + halfWidth, y),
+            p2: Offset(right - halfWidth, y),
+            color: theme.coreColors.tabsHighlight,
+            strokeWidth: CoreSpacing.space1,
+          ),
+      );
+    });
+
+    testWidgets('each 40dp tab sits in a 48dp tap area',
+        (WidgetTester tester) async {
+      final selected = <int>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreTabs(
+              tabs: const ['Tab 1', 'Tab 2'],
+              onChanged: selected.add,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final tab = tester.getRect(find.widgetWithText(Tab, 'Tab 2'));
+      final target = tester.getRect(
+        find.ancestor(of: find.text('Tab 2'), matching: find.byType(InkWell)),
+      );
+      expect(tab.height, CoreSpacing.space10);
+      expect(target.height, greaterThanOrEqualTo(CoreSpacing.space12));
+      expect(tab.bottom, target.bottom);
+
+      await tester.tapAt(Offset(tab.center.dx, target.top + 1));
+      await tester.pumpAndSettle();
+      expect(selected, [1]);
+    });
   });
 
   // ---------------------------------------------------------------------------

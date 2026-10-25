@@ -81,12 +81,13 @@ enum CoreAppBarElevation {
 /// Colors come from [AppColorsExtension] (`pageBackground`, `textHeadline`) and
 /// typography from [AppTypographyExtension], so the bar tracks both
 /// [CoreTheme.light] and [CoreTheme.dark] without per-site work. A [titleText]
-/// next to a [leading] widget is `titleLargeSemiBold`, the Figma "Back with
-/// Headline" bar; without a leading widget it is `titleMediumSemiBold`, as on
-/// the landing page bar.
+/// next to a [leading] widget, or with [implyLeading], is `titleLargeSemiBold`,
+/// the Figma "Back with Headline" bar; otherwise it is `titleMediumSemiBold`,
+/// as on the landing page bar.
 ///
 /// The Figma "Back with Headline" bar is 48 high in total: pass
-/// `height: CoreSpacing.space12` and no vertical [padding]. The centred-title
+/// `height: CoreSpacing.space12` and no vertical [padding]. The default 56 is
+/// not a Figma size for a 20 px title. The centred-title
 /// layout has no Figma library type; ask design before using it on a new
 /// screen.
 ///
@@ -170,7 +171,8 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
 
   /// Convenience title rendered in `textHeadline`: `titleLargeSemiBold` when
-  /// [leading] is set, `titleMediumSemiBold` otherwise.
+  /// [leading] is set or [implyLeading] is true, `titleMediumSemiBold`
+  /// otherwise.
   ///
   /// Mutually exclusive with [title]; supply the widget form when you need
   /// control over styling or layout.
@@ -272,9 +274,9 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
             ? null
             : Text(
                 label,
-                style: (leading == null
-                        ? typography.titleMediumSemiBold
-                        : typography.titleLargeSemiBold)
+                style: (leading != null || implyLeading
+                        ? typography.titleLargeSemiBold
+                        : typography.titleMediumSemiBold)
                     .copyWith(color: colors.textHeadline),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
