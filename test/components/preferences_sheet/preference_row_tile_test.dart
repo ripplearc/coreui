@@ -53,17 +53,85 @@ void main() {
     return (container.decoration! as BoxDecoration).color!;
   }
 
-  testWidgets('a row has 12 dp padding and a Line Light bottom line',
+  testWidgets('a row is 48 dp high with a Line Light bottom line inside it',
       (tester) async {
     await pumpTile(tester);
 
     final container = tester.widget<AnimatedContainer>(
       find.byType(AnimatedContainer),
     );
-    expect(container.padding, const EdgeInsets.all(CoreSpacing.space3));
+    expect(tester.getSize(find.byType(AnimatedContainer)).height, 48);
     final border = (container.decoration! as BoxDecoration).border! as Border;
     expect(border.bottom, BorderSide(color: colors.lineLight));
     expect(border.top, BorderSide.none);
+  });
+
+  testWidgets('the value sits 12 dp after the label', (tester) async {
+    await pumpTile(tester);
+
+    final label = tester.getRect(find.ancestor(
+      of: find.text('Fractional resolution'),
+      matching: find.byType(Expanded),
+    ));
+    final value = tester.getRect(find.text('1/16'));
+    expect(value.left - label.right, CoreSpacing.space3);
+  });
+
+  testWidgets('the ink sits inside the fill, with a Blue Light highlight',
+      (tester) async {
+    await pumpTile(tester, onTap: () {});
+
+    final inkWell = find.byType(InkWell);
+    final inkMaterial = find
+        .ancestor(of: inkWell, matching: find.byType(Material))
+        .first;
+    expect(
+      find.ancestor(
+        of: inkMaterial,
+        matching: find.byType(AnimatedContainer),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<InkWell>(inkWell).highlightColor,
+      colors.backgroundBlueLight,
+    );
+  });
+
+  testWidgets('a disabled row draws its label and value in Text Disable',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light(),
+        home: Builder(
+          builder: (context) {
+            colors = AppColorsExtension.of(context);
+            return Scaffold(
+              body: PreferenceRowTile(
+                row: const CorePreferenceRow(
+                  key: 'units',
+                  label: 'Units',
+                  value: CorePreferenceTextValue('Imperial'),
+                  isDisabled: true,
+                ),
+                isEmphasised: false,
+                emphasisDuration: const Duration(milliseconds: 400),
+                anchorKey: anchor,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(
+      tester.widget<Text>(find.text('Units')).style!.color,
+      colors.textDisable,
+    );
+    expect(
+      tester.widget<Text>(find.text('Imperial')).style!.color,
+      colors.textDisable,
+    );
   });
 
   testWidgets('the label is Text Dark', (tester) async {

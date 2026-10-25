@@ -43,40 +43,63 @@ class PreferenceRowTile extends StatelessWidget {
     this.onTap,
   });
 
+  static const double _bottomLineWidth = 1;
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(CoreSpacing.space2),
-      child: AnimatedContainer(
-        key: anchorKey,
-        duration: emphasisDuration,
-        decoration: BoxDecoration(
-          // pageBackground and backgroundGrayLight are the same token, so the
-          // row needs the next step up to read as a surface of its own.
-          color: isEmphasised
-              ? colors.backgroundBlueLight
-              : colors.backgroundGrayMid,
-          borderRadius: BorderRadius.circular(CoreSpacing.space2),
-          border: Border(bottom: BorderSide(color: colors.lineLight)),
+    return AnimatedContainer(
+      key: anchorKey,
+      duration: emphasisDuration,
+      decoration: BoxDecoration(
+        // pageBackground and backgroundGrayLight are the same token, so the
+        // row needs the next step up to read as a surface of its own.
+        color: isEmphasised
+            ? colors.backgroundBlueLight
+            : colors.backgroundGrayMid,
+        borderRadius: BorderRadius.circular(CoreSpacing.space2),
+        border: Border(
+          bottom: BorderSide(color: colors.lineLight, width: _bottomLineWidth),
         ),
-        padding: const EdgeInsets.all(CoreSpacing.space3),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                row.label,
-                style: typography.bodyLargeRegular.copyWith(
-                  color: colors.textDark,
-                ),
-              ),
+      ),
+      // On top of the fill, so the press and focus looks can be seen.
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(CoreSpacing.space2),
+          highlightColor: colors.backgroundBlueLight,
+          // 11 at the bottom: the 1 dp bottom line is added to the padding,
+          // and the library row is 48 high with the line inside it.
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CoreSpacing.space3,
+              CoreSpacing.space3,
+              CoreSpacing.space3,
+              CoreSpacing.space3 - _bottomLineWidth,
             ),
-            const SizedBox(width: CoreSpacing.space2),
-            PreferenceValueView(value: row.value),
-          ],
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    row.label,
+                    style: typography.bodyLargeRegular.copyWith(
+                      color: row.isDisabled
+                          ? colors.textDisable
+                          : colors.textDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: CoreSpacing.space3),
+                PreferenceValueView(
+                  value: row.value,
+                  isDisabled: row.isDisabled,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -4,15 +4,16 @@
 
 ### 🐛 Fixes
 
-- **CorePreferencesSheet** rows: 12 dp padding on every side (was 16 dp at the sides), a 1 px Line Light line at the bottom of each row, and the label in Text Dark (was Text Headline). A text value is Body Medium Semibold (was Body Large Semibold). A read-only value (`isMuted`) is Text Body (was Text Disable, which made a read-only setting look disabled) (CA-1318)
+- **CorePreferencesSheet** rows: 12 dp padding on every side (was 16 dp at the sides), a 1 px Line Light line at the bottom of each row, and the label in Text Dark (was Text Headline). A text value is Body Medium Semibold (was Body Large Semibold). A read-only value (`isMuted`) is Text Body (was Text Disable, which made a read-only setting look disabled). A row is 48 dp high with its bottom line inside it (was 49) and 12 dp between the label and the value (was 8). The press and focus looks now show: the ink sits above the grey row fill, which used to cover it, and a pressed row fills Background Blue Light, the library Pressed state. The switch row's pill text is Body Small Regular (was Body Medium Semibold) (CA-1318)
+- **CorePreferenceRow.isDisabled**: the library Value row Disabled state. The label and the value are Text Disable and the row ignores taps (CA-1318)
 
 ### 📐 Design notes
 
-The row fill stays Background Grey Mid. Figma uses Background Grey Light, but in code that token is the same as the page colour, so the row would not show. The switch row's pill and the option sheet already matched and are unchanged.
+The row fill stays Background Grey Mid. Figma uses Background Grey Light, but in code that token is the same as the page colour, so the row would not show. The option sheet already matched and is unchanged. The switch row's pill dot stays 8 dp; its Figma size was not measured.
 
 ### 🧪 Tests
 
-- Row padding, bottom line and label colour; text value style and the read-only colour. Goldens regenerated, light and dark
+- Row height 48 with the bottom line, the 12 dp label-to-value gap, the ink inside the fill with a Blue Light highlight, label colour, a disabled row in Text Disable and inert; text value style, the read-only colour and the pill text style. Goldens regenerated, light and dark, now with a disabled row; new, a pressed row in light and dark
 
 ## [0.46.0] - CoreCheckRowItem matches the library Dropdown cell
 
