@@ -26,6 +26,8 @@ void main() {
         description: 'This is an error message that needs attention',
         closeLabel: 'Close',
         onClose: () {},
+        actionLabel: 'View',
+        onAction: () {},
       ),
       Toast.warning(
         title: 'Warning Title',
@@ -49,6 +51,8 @@ void main() {
         description: 'This is an error message without a title',
         closeLabel: 'Close',
         onClose: () {},
+        actionLabel: 'View',
+        onAction: () {},
       ),
       Toast.warning(
         description: 'This is a warning message without a title',

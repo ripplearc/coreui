@@ -41,7 +41,8 @@ enum _ToastType {
 /// toast that only reports a finished task.
 ///
 /// The four alerts draw a plain close x labelled [closeLabel] for screen
-/// readers.
+/// readers. [actionLabel] adds a text button beside it; taking it fires
+/// [onAction], then [onClose].
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
@@ -50,16 +51,17 @@ class Toast extends StatefulWidget {
   /// saved, where [description] is that it was saved.
   final String? highlight;
 
-  /// Called when the toast closes: from the close x, after the receipt's
-  /// action, or when its [duration] runs out. Without it, the close x pops the
-  /// current route.
+  /// Called when the toast closes: from the close x, after an action, or when
+  /// a receipt's [duration] runs out. Without it, the close x pops the current
+  /// route; an action never pops one, because it may have just opened a page.
   final VoidCallback? onClose;
   final String? closeLabel;
 
-  /// Label of the receipt's action — `Undo`. Localised by the caller.
+  /// Label of the toast's action — the receipt's `Undo`, or an alert's text
+  /// button beside its close x, such as `View`. Localised by the caller.
   final String? actionLabel;
 
-  /// Fires once when the receipt's action is taken, before [onClose].
+  /// Fires once when the action is taken, before [onClose].
   final VoidCallback? onAction;
 
   /// Label of the receipt's quieter second action — `View`. Travels with
@@ -121,13 +123,21 @@ class Toast extends StatefulWidget {
     this.secondaryLabel,
     this.onSecondary,
     this.duration,
-  }) : _type = type;
+  })  : assert(
+          (actionLabel == null) == (onAction == null),
+          'actionLabel and onAction travel together: an action with no label '
+          'is invisible to a screen reader, and a label with no action is a '
+          'dead control.',
+        ),
+        _type = type;
 
   factory Toast.error({
     required String description,
     required String closeLabel,
     String? title,
     VoidCallback? onClose,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     return Toast._(
       description: description,
@@ -135,6 +145,8 @@ class Toast extends StatefulWidget {
       closeLabel: closeLabel,
       type: _ToastType.error,
       onClose: onClose,
+      actionLabel: actionLabel,
+      onAction: onAction,
     );
   }
 
@@ -143,6 +155,8 @@ class Toast extends StatefulWidget {
     required String closeLabel,
     String? title,
     VoidCallback? onClose,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     return Toast._(
       description: description,
@@ -150,6 +164,8 @@ class Toast extends StatefulWidget {
       closeLabel: closeLabel,
       type: _ToastType.warning,
       onClose: onClose,
+      actionLabel: actionLabel,
+      onAction: onAction,
     );
   }
 
@@ -158,6 +174,8 @@ class Toast extends StatefulWidget {
     required String closeLabel,
     String? title,
     VoidCallback? onClose,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     return Toast._(
       description: description,
@@ -165,6 +183,8 @@ class Toast extends StatefulWidget {
       closeLabel: closeLabel,
       type: _ToastType.info,
       onClose: onClose,
+      actionLabel: actionLabel,
+      onAction: onAction,
     );
   }
 
@@ -173,6 +193,8 @@ class Toast extends StatefulWidget {
     required String closeLabel,
     String? title,
     VoidCallback? onClose,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     return Toast._(
       description: description,
@@ -180,6 +202,8 @@ class Toast extends StatefulWidget {
       closeLabel: closeLabel,
       type: _ToastType.success,
       onClose: onClose,
+      actionLabel: actionLabel,
+      onAction: onAction,
     );
   }
 
@@ -476,7 +500,7 @@ class _ToastState extends State<Toast> {
                   text: _buildStackedText(typography, colors),
                   trailing: closeLabel == null
                       ? null
-                      : _buildCloseButton(colors, closeLabel),
+                      : _buildAlertControls(typography, colors, closeLabel),
                 ),
         ),
       ),
@@ -725,6 +749,65 @@ class _ToastState extends State<Toast> {
     );
 
     return Semantics(container: true, child: button);
+  }
+
+  Widget _buildAlertControls(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+    String closeLabel,
+  ) {
+    final actionLabel = widget.actionLabel;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (actionLabel != null) ...[
+          _buildAlertAction(typography, colors, actionLabel),
+          const SizedBox(width: CoreSpacing.space1),
+        ],
+        _buildCloseButton(colors, closeLabel),
+      ],
+    );
+  }
+
+  Widget _buildAlertAction(
+    AppTypographyExtension typography,
+    AppColorsExtension colors,
+    String actionLabel,
+  ) {
+    return Semantics(
+      container: true,
+      child: InkWell(
+        key: const Key('toast_action_button'),
+        onTap: () => _answer(widget.onAction),
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: colors.transparent,
+        hoverColor: colors.transparent,
+        child: Semantics(
+          button: true,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: CoreSpacing.space12,
+              minHeight: CoreSpacing.space12,
+            ),
+            child: Center(
+              widthFactor: 1,
+              heightFactor: 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoreSpacing.space1,
+                ),
+                child: Text(
+                  actionLabel,
+                  style: typography.bodyMediumSemiBold.copyWith(
+                    color: colors.textLink,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildCloseButton(AppColorsExtension colors, String closeLabel) {
