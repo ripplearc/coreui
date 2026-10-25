@@ -37,6 +37,7 @@ class UnderlineFieldMetrics {
     required this.unitGap,
   });
 
+  // TODO: [CA-1238] use CoreSpacing.px2/px5/px6/px17 when they exist
   static const double _px2 = 2;
   static const double _px5 = 5;
   static const double _px6 = 6;

@@ -85,6 +85,7 @@ class CoreTextField extends StatelessWidget {
     }
 
     final bool isDisabled = !enabled || readOnly;
+    final bool hasError = errorTextList != null || errorWidgetList != null;
     final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
 
@@ -104,7 +105,9 @@ class CoreTextField extends StatelessWidget {
       ),
       decoration: InputDecoration(
         floatingLabelStyle: typography.bodySmallRegular.copyWith(
-          color: isDisabled ? colors.textDisable : colors.textDark,
+          color: isDisabled
+              ? colors.textDisable
+              : (hasError ? colors.textError : colors.textDark),
         ),
         hoverColor: isDisabled
             ? colors.backgroundGrayMid
@@ -125,7 +128,7 @@ class CoreTextField extends StatelessWidget {
         suffixIcon: (obscureText
             ? suffix ?? const Icon(Icons.visibility)
             : suffix),
-        error: (errorTextList == null && errorWidgetList == null)
+        error: !hasError
             ? null
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +142,7 @@ class CoreTextField extends StatelessWidget {
               ),
         helper: helperText == null
             ? null
-            : Column(
+            : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CoreIconWidget(
@@ -148,12 +151,14 @@ class CoreTextField extends StatelessWidget {
                     color: colors.iconGrayMid,
                   ),
                   const SizedBox(width: CoreSpacing.space1),
-                  Text(
-                    helperText ?? "",
-                    style: typography.bodySmallRegular.copyWith(
-                      color: isDisabled
-                          ? colors.textDisable
-                          : colors.textHeadline,
+                  Flexible(
+                    child: Text(
+                      helperText ?? "",
+                      style: typography.bodySmallRegular.copyWith(
+                        color: isDisabled
+                            ? colors.textDisable
+                            : colors.textHeadline,
+                      ),
                     ),
                   ),
                 ],

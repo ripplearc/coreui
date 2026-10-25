@@ -128,6 +128,59 @@ void main() {
       expect(style.color, theme.coreColors.textDark);
     });
 
+    testWidgets('floats the label in textError when the field has an error',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            // In a Column, as on a form: a field stretched to the full
+            // screen height trips an assert in Flutter's outlined border.
+            body: Column(
+              children: [
+                CoreTextField(
+                  label: 'Label',
+                  errorTextList: const ['Error Message'],
+                  controller: TextEditingController(text: 'Filled'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      expect(
+        decoration.floatingLabelStyle!.color,
+        theme.coreColors.textError,
+      );
+    });
+
+    testWidgets('puts the helper icon and text on one row, 20 dp apart',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Label',
+              helperText: 'Helper Text',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final icon = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.info,
+      ));
+      final text = tester.getRect(find.text('Helper Text'));
+      expect(text.left - icon.left, 20);
+      expect(text.center.dy, moreOrLessEquals(icon.center.dy, epsilon: 1));
+    });
+
     testWidgets('draws the focus border in outlineHover',
         (WidgetTester tester) async {
       final theme = CoreTheme.light();
