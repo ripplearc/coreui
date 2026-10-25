@@ -4,14 +4,19 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
+ThemeData _withRoboto(ThemeData base) {
+  return base.copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
+
 void main() {
   setUpAll(() async {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
-  final colors = AppColorsExtension.create();
-  testWidgets('Toast Component Visual Regression Test',
-      (WidgetTester tester) async {
+  Future<void> pumpToasts(WidgetTester tester, {ThemeData? theme}) async {
+    final colors = theme?.coreColors ?? AppColorsExtension.create();
     await tester.binding.setSurfaceSize(const Size(1050, 660));
 
     final toasts = <Widget>[
@@ -98,6 +103,8 @@ void main() {
     ];
 
     final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: Padding(
@@ -115,10 +122,25 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('Toast Component Visual Regression Test',
+      (WidgetTester tester) async {
+    await pumpToasts(tester);
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/toast_component.png'),
+    );
+  });
+
+  testWidgets('Toast Component Visual Regression Test (dark)',
+      (WidgetTester tester) async {
+    await pumpToasts(tester, theme: _withRoboto(CoreTheme.dark()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/toast_component_dark.png'),
     );
   });
 }

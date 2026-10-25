@@ -55,9 +55,9 @@ Toast.acknowledgement(description: 'Added to Bedroom 2');
 | Property      | Type            | Required | Description                                                           |
 |---------------|-----------------|----------|-----------------------------------------------------------------------|
 | `description` | `String`        | Yes      | The main message to be displayed in the toast                         |
-| `closeLabel`  | `String`        | Yes      | The text label for the close button                                   |
+| `closeLabel`  | `String`        | Yes      | The screen-reader label of the close x. It is not drawn               |
 | `title`       | `String?`       | No       | Optional title text displayed above the description                   |
-| `onClose`     | `VoidCallback?` | No       | Optional callback function triggered when the close button is pressed |
+| `onClose`     | `VoidCallback?` | No       | Called when the close x is tapped. Without it, the close x pops the current route |
 
 ### Toast.receipt Properties
 
@@ -154,7 +154,7 @@ Each toast type has specific styling:
       in the dark theme
     - Tick: `CoreIcons.checkMark` at 21.3 dp (a 15.6 dp wide glyph, 65 % of the
       circle) in `textInverse`, centred on a 24 dp `statusSuccess` circle
-    - Height: at least 50 dp
+    - Height: at least 48 dp, like the library Toast
     - Text: `CoreTypography.bodyMediumSemiBold` in `textInverse` (light) or
       `textHeadline` (dark)
     - Shadow: `CoreShadows.floating`; a `CoreSpacing.space3` corner radius
@@ -167,7 +167,7 @@ The Toast component includes semantic labels for accessibility:
 - The close button is marked as a button
 - The title (if present) is used as the primary label
 - The description is used as a hint when a title is present
-- The close button has its own semantic label
+- The close x has its own semantics node, labelled with `closeLabel`
 - A receipt's lead and highlight are read as one label ("Saved to history · Calc 60ft²")
 - Both actions stand 48 dp tall, the Android tap-target minimum. The design draws
   the `Undo` pill at ~29 dp; it is rendered at 48 dp instead, because a tap target
@@ -204,13 +204,20 @@ The Toast component includes semantic labels for accessibility:
 
 - Padding: Horizontal `CoreSpacing.space4`, Vertical `CoreSpacing.space3`
   (`CoreSpacing.space1` for a receipt, whose actions already stand 48 dp tall)
+- An alert without a title is the library's Small alert (Figma `7:2638`): its
+  surface is drawn 40 dp high with `CoreSpacing.space3` at the sides, and its
+  text is `CoreTypography.bodyMediumMedium`. Its close x keeps a 48 dp
+  target, so they stand 4 dp past the surface's top and bottom edges.
+  An alert with a title keeps the Large alert text (Figma `7:2594`), with its
+  icon and close x on the first title line
+- Close: a plain `CoreIcons.cross` in `iconDark`, 48 dp target. The padding at
+  the end puts the glyph where Figma does, 4 dp in from the side padding
 - Border Radius: 8 pixels
 - Shadow: `CoreShadows.medium`
 - Icon Size: 24 pixels
 - Typography:
     - Title/Description: `CoreTypography.bodyLargeMedium`
     - Description (when title present): `CoreTypography.bodySmallRegular`
-    - Close Label: `CoreTypography.bodyMediumSemiBold` 
     - Receipt lead: `CoreTypography.bodyLargeSemiBold` in `textLink`
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
     - Receipt secondary label: `CoreTypography.bodyLargeSemiBold` in `textLink` at 85 % opacity
@@ -329,8 +336,8 @@ three places:
   green is 2.3:1, under the 3:1 a graphic needs, so the tick uses `textInverse`,
   which is dark there. See Accessibility.
 - **Spacing.** Figma draws 13/15 dp padding and an 11 dp gap. The nearest
-  `CoreSpacing` steps (12/16 and 12) are used, and a 50 dp minimum height keeps
-  the frame's 384×50.
+  `CoreSpacing` steps (12/16 and 12) are used, and a 48 dp minimum height
+  matches the library Toast (CA-1321).
 
 The circle is `statusSuccess`, which is green500 (`#009E69`) like Figma's
 `State Color/Success`.

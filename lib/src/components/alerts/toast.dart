@@ -39,6 +39,9 @@ enum _ToastType {
 /// Use [Toast.receipt] for the self-dismissing confirmation that offers an
 /// action to undo what it reports. Use [Toast.acknowledgement] for the dark
 /// toast that only reports a finished task.
+///
+/// The four alerts draw a plain close x labelled [closeLabel] for screen
+/// readers.
 class Toast extends StatefulWidget {
   final String? title;
   final String description;
@@ -46,6 +49,10 @@ class Toast extends StatefulWidget {
   /// The receipt's tail, set after a middot in the lighter weight: what was
   /// saved, where [description] is that it was saved.
   final String? highlight;
+
+  /// Called when the toast closes: from the close x, after the receipt's
+  /// action, or when its [duration] runs out. Without it, the close x pops the
+  /// current route.
   final VoidCallback? onClose;
   final String? closeLabel;
 
@@ -84,7 +91,10 @@ class Toast extends StatefulWidget {
 
   static const double _verticalPadding = CoreSpacing.space3;
 
-  static const double _acknowledgementHeight = 50;
+  static const double _titleLineToTargetInset =
+      (CoreSpacing.space12 - CoreIconSize.size24) / 2;
+
+  static const double _acknowledgementHeight = 48;
 
   static const double _acknowledgementRowMinHeight =
       _acknowledgementHeight - Toast._verticalPadding * 2;
@@ -93,6 +103,14 @@ class Toast extends StatefulWidget {
 
   static const double _receiptVerticalPaddingAroundTheTapTarget =
       CoreSpacing.space1;
+
+  static const double _smallAlertHeight = 40;
+
+  static const double _smallAlertSurfaceInset =
+      (CoreSpacing.space12 - _smallAlertHeight) / 2;
+
+  static const double _closeIconInset =
+      (CoreSpacing.space12 - CoreIconSize.size24) / 2;
 
   const Toast._({
     required this.description,
@@ -298,9 +316,23 @@ class _ToastState extends State<Toast> {
     }
   }
 
+  void _close() {
+    final onClose = widget.onClose;
+    if (onClose != null) {
+      onClose();
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
   void _dismissWithoutAnAction() => _answer(null);
 
   bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+
+  bool get _isSmallAlert => widget.closeLabel != null && widget.title == null;
+
+  bool get _hasTitledControls =>
+      widget.closeLabel != null && widget.title != null;
 
   CoreIconData get _icon {
     switch (widget._type) {
@@ -360,9 +392,17 @@ class _ToastState extends State<Toast> {
     final isAcknowledgement = widget._type == _ToastType.acknowledgement;
     final closeLabel = widget.closeLabel;
     final actionLabel = widget.actionLabel;
+    final isSmallAlert = _isSmallAlert;
+    final horizontalPadding =
+        isSmallAlert ? CoreSpacing.space3 : CoreSpacing.space4;
+    final verticalPadding = isSmallAlert
+        ? 0.0
+        : isReceipt
+            ? Toast._receiptVerticalPaddingAroundTheTapTarget
+            : Toast._verticalPadding;
 
-    return Semantics(
-      container: true,
+    final toast = Semantics(
+      container: !isSmallAlert,
       button: !isReceipt && widget.onClose != null,
       // The receipt is the one toast that is both timed and actionable: a
       // screen reader has to be told it arrived, or the Undo window closes
@@ -372,15 +412,19 @@ class _ToastState extends State<Toast> {
       label: widget.title,
       hint: widget.title != null ? widget.description : null,
       child: Container(
-        key: const Key('toast_surface'),
-        padding: EdgeInsets.symmetric(
-          horizontal: CoreSpacing.space4,
-          vertical: isReceipt
-              ? Toast._receiptVerticalPaddingAroundTheTapTarget
-              : Toast._verticalPadding,
+        key: isSmallAlert ? null : const Key('toast_surface'),
+        padding: EdgeInsetsDirectional.fromSTEB(
+          horizontalPadding,
+          _hasTitledControls
+              ? verticalPadding - Toast._titleLineToTargetInset
+              : verticalPadding,
+          closeLabel == null
+              ? horizontalPadding
+              : horizontalPadding + CoreSpacing.space1 - Toast._closeIconInset,
+          verticalPadding,
         ),
         decoration: BoxDecoration(
-          color: _getBackgroundColor(colors),
+          color: isSmallAlert ? null : _getBackgroundColor(colors),
           borderRadius: BorderRadius.circular(
             isReceipt || isAcknowledgement
                 ? Toast._largeRadius
@@ -392,7 +436,7 @@ class _ToastState extends State<Toast> {
                   width: CoreButton.hairlineBorderWidth,
                 )
               : null,
-          boxShadow: isReceipt
+          boxShadow: isReceipt || isSmallAlert
               ? null
               : isAcknowledgement
                   ? CoreShadows.floating
@@ -400,7 +444,7 @@ class _ToastState extends State<Toast> {
         ),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: isReceipt
+            minHeight: isReceipt || isSmallAlert
                 ? CoreSpacing.space12
                 : isAcknowledgement
                     ? Toast._acknowledgementRowMinHeight
@@ -429,9 +473,36 @@ class _ToastState extends State<Toast> {
                   text: _buildStackedText(typography, colors),
                   trailing: closeLabel == null
                       ? null
-                      : _buildCloseButton(typography, colors, closeLabel),
+                      : _buildCloseButton(colors, closeLabel),
                 ),
         ),
+      ),
+    );
+    if (!isSmallAlert) return toast;
+
+    // The small alert's surface is drawn 40 dp high, but its controls keep
+    // 48 dp targets, so they stand 4 dp past its top and bottom edges.
+    return Semantics(
+      container: true,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: Toast._smallAlertSurfaceInset,
+              ),
+              child: DecoratedBox(
+                key: const Key('toast_surface'),
+                decoration: BoxDecoration(
+                  color: _getBackgroundColor(colors),
+                  borderRadius: BorderRadius.circular(Toast._radius),
+                  boxShadow: CoreShadows.medium,
+                ),
+              ),
+            ),
+          ),
+          toast,
+        ],
       ),
     );
   }
@@ -441,13 +512,18 @@ class _ToastState extends State<Toast> {
     required Widget text,
     required Widget? trailing,
   }) {
+    final titleLineInset = EdgeInsets.only(
+      top: _hasTitledControls ? Toast._titleLineToTargetInset : 0,
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: _hasTitledControls
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
-        _buildLeading(colors),
+        Padding(padding: titleLineInset, child: _buildLeading(colors)),
         const SizedBox(width: CoreSpacing.space3),
-        Expanded(child: text),
+        Expanded(child: Padding(padding: titleLineInset, child: text)),
         if (trailing != null) ...[
           const SizedBox(width: CoreSpacing.space3),
           trailing,
@@ -484,7 +560,20 @@ class _ToastState extends State<Toast> {
     AppTypographyExtension typography,
     AppColorsExtension colors,
   ) {
+    if (_isSmallAlert) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: CoreSpacing.space2 + Toast._smallAlertSurfaceInset,
+        ),
+        child: Text(
+          widget.description,
+          style: typography.bodyMediumMedium.copyWith(color: colors.textDark),
+        ),
+      );
+    }
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -635,39 +724,24 @@ class _ToastState extends State<Toast> {
     return Semantics(container: true, child: button);
   }
 
-  Widget _buildCloseButton(
-    AppTypographyExtension typography,
-    AppColorsExtension colors,
-    String closeLabel,
-  ) {
-    return GestureDetector(
-      key: const Key('toast_close_button'),
-      onTap: widget.onClose ?? () => Navigator.of(context).pop(),
-      child: Semantics(
-        button: true,
-        label: closeLabel,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: CoreSpacing.space12,
-            minHeight: CoreSpacing.space12,
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  closeLabel,
-                  style: typography.bodyMediumSemiBold.copyWith(
-                    color: colors.textLink,
-                  ),
-                ),
-                const SizedBox(width: CoreSpacing.space2),
-                CoreIconWidget(
-                  icon: CoreIcons.close,
-                  size: CoreIconSize.size24,
-                  color: colors.iconDark,
-                ),
-              ],
+  Widget _buildCloseButton(AppColorsExtension colors, String closeLabel) {
+    return Semantics(
+      container: true,
+      child: GestureDetector(
+        key: const Key('toast_close_button'),
+        behavior: HitTestBehavior.opaque,
+        onTap: _close,
+        child: Semantics(
+          button: true,
+          label: closeLabel,
+          child: SizedBox.square(
+            dimension: CoreSpacing.space12,
+            child: Center(
+              child: CoreIconWidget(
+                icon: CoreIcons.cross,
+                size: CoreIconSize.size24,
+                color: colors.iconDark,
+              ),
             ),
           ),
         ),
