@@ -22,7 +22,9 @@ class CoreDateFilterChip extends StatefulWidget {
   final ValueChanged<DateRange> onApply;
 
   /// Called when the user taps the active pill's × to clear the filter.
-  /// Focus then moves to the inactive chip; tapping the pill reopens the sheet.
+  /// Once the caller rebuilds without a range, focus moves to the inactive
+  /// chip unless another control has taken it. Tapping the pill reopens the
+  /// sheet.
   final VoidCallback onClear;
 
   /// Label shown on the chip when no range is selected.
@@ -129,8 +131,13 @@ class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
     if (!wasCleared || !_focusInactiveChipOnceCleared) return;
     _focusInactiveChipOnceCleared = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _inactiveChipFocusNode.requestFocus();
+      if (mounted && _isFocusFree) _inactiveChipFocusNode.requestFocus();
     });
+  }
+
+  bool get _isFocusFree {
+    final focused = FocusManager.instance.primaryFocus;
+    return focused == null || focused is FocusScopeNode;
   }
 
   @override

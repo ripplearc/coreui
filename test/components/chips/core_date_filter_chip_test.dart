@@ -291,6 +291,48 @@ void main() {
       expect(pill.bottom, greaterThanOrEqualTo(textRect.bottom));
     });
 
+    testWidgets('keeps focus on a later Reset all after the × was ignored', (
+      tester,
+    ) async {
+      DateRange? range = march;
+      final resetFocusNode = FocusNode();
+      addTearDown(resetFocusNode.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CoreDateFilterChip(
+                  selectedDateRange: range,
+                  label: 'Modified',
+                  inactiveChipKey: const Key('date_filter_chip'),
+                  onApply: (_) {},
+                  onClear: () {},
+                ),
+                TextButton(
+                  focusNode: resetFocusNode,
+                  onPressed: () => setState(() => range = null),
+                  child: const Text('Reset all'),
+                ),
+              ],
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pumpAndSettle();
+      resetFocusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(resetFocusNode.hasFocus, isTrue);
+    });
+
     testWidgets('keeps both active pill targets at least 48 dp high', (
       tester,
     ) async {
