@@ -40,96 +40,153 @@ class CoreSelectButton extends StatelessWidget {
         assert(tabs.length == 0 || selectedIndex < tabs.length,
             'selectedIndex must be < tabs.length');
 
+  /// Key of the tap target of the segment at [index], at least 48 x 48 dp.
+  static Key tapTargetKey(int index) =>
+      Key('core_select_button_tap_target_$index');
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
+    const trackInset = (CoreSpacing.space12 - CoreSpacing.space10) / 2;
 
-    return Container(
-      key: const Key('core_select_button_outer'),
-      decoration: BoxDecoration(
-        color: colors.pageBackground,
-        borderRadius: BorderRadius.circular(CoreSpacing.space12),
-        boxShadow: CoreShadows.small,
-      ),
-      padding: const EdgeInsets.all(CoreSpacing.space1),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(
-            tabs.isEmpty ? 0 : tabs.length * 2 - 1,
-            (index) {
-              if (index.isOdd) {
-                return const SizedBox(width: CoreSpacing.space1);
-              }
-              final tabIndex = index ~/ 2;
-              return _buildTab(
-                context,
-                index: tabIndex,
-                label: tabs[tabIndex],
-                selected: tabIndex == selectedIndex,
-                onTap: () {
-                  if (tabIndex != selectedIndex) {
-                    onChanged?.call(tabIndex);
-                  }
-                },
-              );
-            },
+    return Stack(
+      children: [
+        Positioned.fill(
+          top: trackInset,
+          bottom: trackInset,
+          child: Container(
+            key: const Key('core_select_button_outer'),
+            decoration: BoxDecoration(
+              color: colors.pageBackground,
+              borderRadius: BorderRadius.circular(CoreSpacing.space12),
+              boxShadow: CoreShadows.small,
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CoreSpacing.space1),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                tabs.isEmpty ? 0 : tabs.length * 2 - 1,
+                (index) {
+                  if (index.isOdd) {
+                    return const SizedBox(width: CoreSpacing.space1);
+                  }
+                  final tabIndex = index ~/ 2;
+                  return _Segment(
+                    index: tabIndex,
+                    label: tabs[tabIndex],
+                    selected: tabIndex == selectedIndex,
+                    onTap: () {
+                      if (tabIndex != selectedIndex) {
+                        onChanged?.call(tabIndex);
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
+}
 
-  static const Duration _kTabTransitionDuration = Duration(milliseconds: 200);
+class _Segment extends StatefulWidget {
+  const _Segment({
+    required this.index,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
-  static const double _kSegmentVerticalPadding = 6;
+  final int index;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
-  Widget _buildTab(
-    BuildContext context, {
-    required int index,
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
+  @override
+  State<_Segment> createState() => _SegmentState();
+}
+
+class _SegmentState extends State<_Segment> {
+  static const Duration _transitionDuration = Duration(milliseconds: 200);
+  static const double _verticalPadding = 6;
+  static const double _focusWidth = 2;
+
+  bool _isPressed = false;
+  bool _isFocused = false;
+
+  Color _fill(AppColorsExtension colors) {
+    if (widget.selected) return colors.tabsHighlight;
+    return _isPressed ? colors.backgroundGrayMid : colors.transparent;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final focusInset = _isFocused ? _focusWidth : 0.0;
 
     return Semantics(
-      selected: selected,
+      selected: widget.selected,
       button: true,
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
-          borderRadius: BorderRadius.circular(CoreSpacing.space12),
-          customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoreSpacing.space12),
-          ),
-          onTap: onTap,
-          child: AnimatedContainer(
-            key: Key('core_select_button_segment_$index'),
-            duration: _kTabTransitionDuration,
-            curve: Curves.easeOut,
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoreSpacing.space4,
-              vertical: _kSegmentVerticalPadding,
+          key: CoreSelectButton.tapTargetKey(widget.index),
+          onTap: widget.onTap,
+          onHighlightChanged: (isPressed) =>
+              setState(() => _isPressed = isPressed),
+          onFocusChange: (isFocused) => setState(() => _isFocused = isFocused),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.all(colors.transparent),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: CoreSpacing.space12,
+              minHeight: CoreSpacing.space12,
             ),
-            decoration: BoxDecoration(
-              color: selected ? colors.tabsHighlight : colors.transparent,
-              borderRadius: BorderRadius.circular(CoreSpacing.space12),
-              boxShadow: selected ? CoreShadows.medium : null,
-            ),
-            child: Text(
-              label,
-              style: selected
-                  ? typography.bodyMediumSemiBold.copyWith(
-                      // tabsHighlight is bright cyan in both modes; use dark text
-                      // in dark mode (textInverse = gray900) so it passes contrast.
-                      color: isDark ? colors.textInverse : colors.textHeadline,
-                    )
-                  : typography.bodyMediumRegular.copyWith(
-                      color: colors.textBody,
-                    ),
+            child: Center(
+              widthFactor: 1,
+              heightFactor: 1,
+              child: AnimatedContainer(
+                key: Key('core_select_button_segment_${widget.index}'),
+                duration: _transitionDuration,
+                curve: Curves.easeOut,
+                padding: EdgeInsets.symmetric(
+                  horizontal: CoreSpacing.space4 - focusInset,
+                  vertical: _verticalPadding - focusInset,
+                ),
+                decoration: BoxDecoration(
+                  color: _fill(colors),
+                  borderRadius: BorderRadius.circular(CoreSpacing.space12),
+                  border: _isFocused
+                      ? Border.all(
+                          color: colors.lineHighlight,
+                          width: _focusWidth,
+                        )
+                      : null,
+                  boxShadow: widget.selected ? CoreShadows.medium : null,
+                ),
+                child: Text(
+                  widget.label,
+                  style: widget.selected
+                      ? typography.bodyMediumSemiBold.copyWith(
+                          // tabsHighlight is bright cyan in both modes; use dark
+                          // text in dark mode (textInverse = gray900) so it
+                          // passes contrast.
+                          color:
+                              isDark ? colors.textInverse : colors.textHeadline,
+                        )
+                      : typography.bodyMediumRegular.copyWith(
+                          color: colors.textBody,
+                        ),
+                ),
+              ),
             ),
           ),
         ),
