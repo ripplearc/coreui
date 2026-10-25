@@ -21,6 +21,9 @@ import '../core_icon.dart';
 /// [focusNode] The focus node for the text field
 /// [initialValue] The initial value for the text field
 /// [readOnly] Whether or not the text field is read-only
+/// [showsFocus] Draws the focused border and label without taking focus, for
+/// a field that only shows a choice whose tap target holds the focus, such as
+/// [SingleItemSelector]
 /// [prefix] The widget displayed before the text field
 /// [suffix] The widget displayed after the text field
 /// [isPhoneNumber] Whether or not the text field is used for phone number input
@@ -44,6 +47,7 @@ class CoreTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final String? initialValue;
   final bool readOnly;
+  final bool showsFocus;
   final Widget? prefix;
   final Widget? suffix;
   final String? phonePrefix;
@@ -67,6 +71,7 @@ class CoreTextField extends StatelessWidget {
     this.focusNode,
     this.initialValue,
     this.readOnly = false,
+    this.showsFocus = false,
     this.prefix,
     this.suffix,
     this.isPhoneNumber = false,
@@ -87,6 +92,10 @@ class CoreTextField extends StatelessWidget {
     final bool isDisabled = !enabled || readOnly;
     final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
+    final focusedBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(4),
+      borderSide: BorderSide(color: colors.textDark),
+    );
 
     return TextFormField(
       controller: controller,
@@ -115,7 +124,11 @@ class CoreTextField extends StatelessWidget {
         filled: true,
         labelText: label,
         labelStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled ? colors.textDisable : colors.textHeadline,
+          color: isDisabled
+              ? colors.textDisable
+              : showsFocus
+                  ? colors.outlineFocus
+                  : colors.textHeadline,
         ),
         prefixIcon: prefixWidget,
         hintText: hintText,
@@ -164,16 +177,15 @@ class CoreTextField extends StatelessWidget {
             color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
           ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(
-            color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colors.textDark),
-        ),
+        enabledBorder: showsFocus
+            ? focusedBorder
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(
+                  color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
+                ),
+              ),
+        focusedBorder: focusedBorder,
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(color: colors.statusError),

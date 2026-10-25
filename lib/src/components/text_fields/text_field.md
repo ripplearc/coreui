@@ -33,6 +33,7 @@ onChanged: (value) {
 | `focusNode`            | `FocusNode?`                 | Focus node for the text field                               |
 | `initialValue`         | `String?`                    | Initial value for the text field                            |
 | `readOnly`             | `bool`                       | Whether the text field is read-only                         |
+| `showsFocus`           | `bool`                       | Draws the focused border and label without taking focus, for a field whose tap target holds the focus (`SingleItemSelector`) |
 | `prefix`               | `Widget?`                    | Widget to display before the text input                     |
 | `suffix`               | `Widget?`                    | Widget to display after the text input                      |
 | `phonePrefix`          | `String?`                    | Default phone prefix (e.g., '+1')                           |
