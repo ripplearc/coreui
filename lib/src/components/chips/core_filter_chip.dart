@@ -96,8 +96,8 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
                     ExcludeSemantics(
                       child: CoreIconWidget(
                         icon: CoreIcons.arrowDropDown,
-                        color: colors.iconDark,
-                        size: CoreSpacing.space4,
+                        color: colors.textDark,
+                        size: CoreIconSize.size24,
                       ),
                     ),
                   ],
