@@ -19,6 +19,9 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [confirmLabel] is the filled button's text, e.g. `Add to estimate`.
 /// [isConfirmEnabled] is whether the filled button answers taps; `false`
 /// greys it out and reports it disabled to a screen reader.
+/// [semantics] supplies the screen-reader label of every digit key and of
+/// backspace; see [CoreKeyboardSemantics]. The two buttons announce their
+/// own text.
 ///
 /// Four rows of three pill keys, 68 dp tall with 4 dp gaps and a 16 dp inset
 /// on each side, then the two buttons 16 dp lower, splitting the width of the
@@ -59,6 +62,7 @@ class CoreNumberKeypad extends StatelessWidget {
   final String clearLabel;
   final String confirmLabel;
   final bool isConfirmEnabled;
+  final CoreKeyboardSemantics semantics;
 
   const CoreNumberKeypad({
     super.key,
@@ -70,6 +74,7 @@ class CoreNumberKeypad extends StatelessWidget {
     required this.clearLabel,
     required this.confirmLabel,
     this.isConfirmEnabled = true,
+    this.semantics = CoreKeyboardSemantics.english,
   });
 
   @override
@@ -92,12 +97,11 @@ class CoreNumberKeypad extends StatelessWidget {
               _row([
                 _digitKey(context, DigitType.decimal, keyWidth),
                 _digitKey(context, DigitType.zero, keyWidth),
-                // TODO: [CA-1198] https://ripplearc.youtrack.cloud/issue/CA-1198
-                // Pass the app's screen-reader labels to every keypad key.
                 CoreControlButton(
                   action: ControlAction.delete,
                   onControlAction: (_) => onBackspacePressed(),
                   isNeutral: true,
+                  semantics: semantics,
                   width: keyWidth,
                   height: keyHeight,
                 ),
@@ -145,6 +149,7 @@ class CoreNumberKeypad extends StatelessWidget {
       width: width,
       height: keyHeight,
       textStyle: Theme.of(context).coreTypography.titleLargeMedium,
+      semantics: semantics,
     );
   }
 

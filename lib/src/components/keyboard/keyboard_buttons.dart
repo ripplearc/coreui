@@ -11,6 +11,9 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [textStyle] replaces the label style, which by default is
 /// `titleLargeMedium` scaled to the button's height. The colour stays
 /// `textHeadline` either way.
+/// [semantics] supplies the screen-reader label through
+/// [CoreKeyboardSemantics.digitLabel]; it defaults to
+/// [CoreKeyboardSemantics.english].
 ///
 /// The rendered button carries [DigitTypeX.testKey] (`calc_key_seven`) for
 /// Patrol and widget tests.
@@ -22,6 +25,7 @@ class CoreDigitInput extends StatelessWidget {
   final double? width;
   final double? height;
   final TextStyle? textStyle;
+  final CoreKeyboardSemantics semantics;
 
   const CoreDigitInput({
     super.key,
@@ -32,6 +36,7 @@ class CoreDigitInput extends StatelessWidget {
     this.width,
     this.height,
     this.textStyle,
+    this.semantics = CoreKeyboardSemantics.english,
   });
 
   @override
@@ -46,7 +51,7 @@ class CoreDigitInput extends StatelessWidget {
     final textColor = colors.textHeadline;
 
     return Semantics(
-      label: '${digit.label} button',
+      label: semantics.digitLabel(digit),
       button: true,
       child: _KeyboardButton(
         key: digit.testKey,
@@ -74,6 +79,9 @@ class CoreDigitInput extends StatelessWidget {
 /// [operatorType] is the type of operator to display (+, −, ×, ÷, %).
 /// [onOperatorPressed] is called when the button is pressed.
 /// [size] is the width and height of the button (defaults to 64px).
+/// [semantics] supplies the screen-reader label through
+/// [CoreKeyboardSemantics.operatorLabel]; it defaults to
+/// [CoreKeyboardSemantics.english].
 ///
 /// The rendered button carries [OperatorTypeX.testKey] (`calc_key_add`) for
 /// Patrol and widget tests.
@@ -83,6 +91,7 @@ class CoreOperatorButton extends StatelessWidget {
   final double? size;
   final double? width;
   final double? height;
+  final CoreKeyboardSemantics semantics;
 
   const CoreOperatorButton({
     super.key,
@@ -91,6 +100,7 @@ class CoreOperatorButton extends StatelessWidget {
     this.size,
     this.width,
     this.height,
+    this.semantics = CoreKeyboardSemantics.english,
   });
 
   @override
@@ -101,7 +111,7 @@ class CoreOperatorButton extends StatelessWidget {
     final effectiveHeight = height ?? effectiveSize;
     final backgroundColor = colors.keyboardCalculate;
     return Semantics(
-      label: '${operatorType.symbol} operator button',
+      label: semantics.operatorLabel(operatorType),
       button: true,
       child: _KeyboardButton(
         key: operatorType.testKey,
@@ -124,6 +134,9 @@ class CoreOperatorButton extends StatelessWidget {
 /// [onUnitSelected] is called when the button is pressed.
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 78% of width or 60px.
+/// [semantics] supplies the screen-reader label through
+/// [CoreKeyboardSemantics.unitLabel]; it defaults to
+/// [CoreKeyboardSemantics.english].
 ///
 /// The rendered button carries [UnitTypeX.testKey] (`calc_key_feet`) for
 /// Patrol and widget tests.
@@ -132,6 +145,7 @@ class CoreUnitButton extends StatelessWidget {
   final ValueChanged<UnitType> onUnitSelected;
   final double? width;
   final double? height;
+  final CoreKeyboardSemantics semantics;
 
   const CoreUnitButton({
     super.key,
@@ -139,6 +153,7 @@ class CoreUnitButton extends StatelessWidget {
     required this.onUnitSelected,
     this.width,
     this.height,
+    this.semantics = CoreKeyboardSemantics.english,
   });
 
   @override
@@ -156,7 +171,7 @@ class CoreUnitButton extends StatelessWidget {
         : null;
 
     return Semantics(
-      label: '${unit.label} unit button',
+      label: semantics.unitLabel(unit),
       button: true,
       child: _KeyboardButton(
         key: unit.testKey,
@@ -192,10 +207,14 @@ class CoreUnitButton extends StatelessWidget {
 /// [isNeutral] draws the button on the digit keys' grey with a dark grey
 /// face, in place of its action's colour, so it does not compete with a
 /// filled commit button beside it.
-/// [semanticLabel] replaces the English screen-reader label built for
-/// [action] with the app's localised one.
-/// [semanticHint] does the same for the hint, and is withheld while the
-/// button is not [enabled].
+/// [semantics] supplies the screen-reader label and hint through
+/// [CoreKeyboardSemantics.controlLabel] and
+/// [CoreKeyboardSemantics.controlHint]; it defaults to
+/// [CoreKeyboardSemantics.english].
+/// [semanticLabel] replaces the label [semantics] would build for this one
+/// [action].
+/// [semanticHint] does the same for the hint. Either hint is withheld while
+/// the button is not [enabled].
 /// [width] is the width of the button.
 /// [height] is the height of the button.
 ///
@@ -206,6 +225,7 @@ class CoreControlButton extends StatelessWidget {
   final ValueChanged<ControlAction> onControlAction;
   final bool enabled;
   final bool isNeutral;
+  final CoreKeyboardSemantics semantics;
   final String? semanticLabel;
   final String? semanticHint;
   final double? width;
@@ -217,6 +237,7 @@ class CoreControlButton extends StatelessWidget {
     required this.onControlAction,
     this.enabled = true,
     this.isNeutral = false,
+    this.semantics = CoreKeyboardSemantics.english,
     this.semanticLabel,
     this.semanticHint,
     this.width,
@@ -258,10 +279,10 @@ class CoreControlButton extends StatelessWidget {
           );
 
     return Semantics(
-      label: semanticLabel ?? _getSemanticLabel(action),
+      label: semanticLabel ?? semantics.controlLabel(action),
       button: true,
       enabled: enabled,
-      hint: enabled ? semanticHint ?? _getSemanticHint(action) : null,
+      hint: enabled ? semanticHint ?? semantics.controlHint(action) : null,
       child: _KeyboardButton(
         key: action.testKey,
         isLabel: label != null,
@@ -279,26 +300,6 @@ class CoreControlButton extends StatelessWidget {
       ),
     );
   }
-
-  // TODO: [CA-1198] https://ripplearc.youtrack.cloud/issue/CA-1198
-  // Take every key's screen-reader label and hint from the app.
-  String _getSemanticLabel(ControlAction action) {
-    return switch (action) {
-      ControlAction.delete => 'Delete button',
-      ControlAction.clearAll => 'Clear all button',
-      ControlAction.moreOptions => 'More options button',
-      ControlAction.paren => 'Bracket button',
-    };
-  }
-
-  String _getSemanticHint(ControlAction action) {
-    return switch (action) {
-      ControlAction.delete => 'Deletes the last entered character',
-      ControlAction.clearAll => 'Clears all input',
-      ControlAction.moreOptions => 'Shows additional options',
-      ControlAction.paren => 'Opens a bracket; the next press closes it',
-    };
-  }
 }
 
 /// A button widget for result actions on the keyboard.
@@ -306,6 +307,10 @@ class CoreControlButton extends StatelessWidget {
 /// [resultType] is the type of result to display (equals, area, volume, density, or custom).
 /// [onTap] is called when the button is pressed.
 /// [customLabel] overrides [resultType]'s label and is rendered verbatim.
+/// [semantics] supplies the screen-reader label and hint through
+/// [CoreKeyboardSemantics.resultLabel], built from the face the key shows,
+/// and [CoreKeyboardSemantics.resultHint]; it defaults to
+/// [CoreKeyboardSemantics.english].
 /// [width] is the width of the button.
 /// [height] is the height of the button. If not provided, defaults to 53% of width or 56px.
 ///
@@ -317,6 +322,7 @@ class CoreResultButton extends StatelessWidget {
   final ResultType resultType;
   final VoidCallback onTap;
   final String? customLabel;
+  final CoreKeyboardSemantics semantics;
   final double? width;
   final double? height;
 
@@ -325,6 +331,7 @@ class CoreResultButton extends StatelessWidget {
     required this.resultType,
     required this.onTap,
     this.customLabel,
+    this.semantics = CoreKeyboardSemantics.english,
     this.width,
     this.height,
   });
@@ -351,12 +358,12 @@ class CoreResultButton extends StatelessWidget {
     final isCustom = custom != null && custom.isNotEmpty;
 
     return Semantics(
-      label: '$label button',
+      label: semantics.resultLabel(label),
       button: true,
       // A commit key reading "Update" does not calculate anything, so the
-      // default hint would announce something untrue. Its label already says
+      // result hint would announce something untrue. Its label already says
       // what it does.
-      hint: isCustom ? null : 'Calculates and displays the result',
+      hint: isCustom ? null : semantics.resultHint,
       child: _KeyboardButton(
         key: testKey,
         label: label,

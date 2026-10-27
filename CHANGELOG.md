@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.61.0] - The keyboard's screen-reader strings come from the app (1/2: the object and the keys)
+
+### ✨ Features
+
+- **CoreKeyboardSemantics**: one object for every string a screen reader announces on the keyboard — a builder per key kind (digit, operator, unit, control label and hint, result label from the key's face) and the strings of the result hint, the drag handle, the "View all" button and its hint, the unit system switch, the group headers and their drag handles. Each key widget (`CoreDigitInput`, `CoreOperatorButton`, `CoreUnitButton`, `CoreControlButton`, `CoreResultButton`) and `CoreNumberKeypad` take it as `semantics`; `CoreKeyboard`, its "View all" sheet and `CoreValueEditorSheet` take it in 0.62.0 (CA-1198, 1/2)
+- The parameter is optional and defaults to `CoreKeyboardSemantics.english`, the strings the keys announced before, so no caller breaks; the English now lives in that one constant and an app replaces it with its localisation in one place. A per-key `semanticLabel` / `semanticHint` on `CoreControlButton` stays as it was and, when set, wins over the object's `controlLabel` / `controlHint`
+- Showcase: the number keypad screen passes a showcase set
+
+### 🧪 Tests
+
+- Each key kind announces a caller-supplied label (and hint where it has one) when built alone; a per-key label or hint on a control key wins over the set; a result key with a caller-supplied face gets no hint; the English constant equals the former literals; `CoreNumberKeypad` passes the set to its digit and backspace keys. Keyboard goldens are unchanged
+
 ## [0.54.0] - Text fields and calculator keyboard match the design library
 
 ### 🔧 Fixes
