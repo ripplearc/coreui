@@ -326,7 +326,9 @@ extension UnitSystemX on UnitSystem {
 /// [label] is the text displayed on the key.
 /// [icon] is an optional icon to display instead of or alongside the label.
 /// [action] is the callback function executed when the key is pressed.
-/// [semanticLabel] is an optional label for accessibility purposes.
+/// [semanticLabel] is what a screen reader announces for the key: the full
+/// name behind an abbreviated face. Null or an empty string announces
+/// [label].
 @immutable
 class KeyType {
   /// Stable, locale-independent identifier for the key.
@@ -344,7 +346,9 @@ class KeyType {
   /// Callback function executed when the key is pressed.
   final VoidCallback? action;
 
-  /// Semantic label for accessibility.
+  /// What a screen reader announces for the key — the full name behind an
+  /// abbreviated face, `Footing` for the face `Footng`. Null announces
+  /// [label]. Localise it in the app layer with [label].
   final String? semanticLabel;
 
   /// The [Key] the rendered tile carries, for Patrol and widget tests.
