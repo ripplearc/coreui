@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../showcase_keyboard_semantics.dart';
+
 class NumberKeypadShowcaseScreen extends StatefulWidget {
   const NumberKeypadShowcaseScreen({super.key});
 
@@ -61,6 +63,7 @@ class _NumberKeypadShowcaseScreenState
             clearLabel: 'Clear',
             confirmLabel: 'Add to estimate',
             isConfirmEnabled: _value.isNotEmpty,
+            semantics: showcaseKeyboardSemantics,
           ),
           const SizedBox(height: CoreSpacing.space4),
         ],
