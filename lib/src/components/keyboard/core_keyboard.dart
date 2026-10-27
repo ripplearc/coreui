@@ -20,6 +20,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [groupAccentColors] is a map of group names to their accent colors.
 /// [customResultLabel] is an optional custom label for the result button.
+/// [semantics] is every screen-reader string of the keyboard, the "View all"
+/// sheet included; see [CoreKeyboardSemantics].
 ///
 /// ## Group swipe
 /// A horizontal swipe on the function-key strip selects the previous (swipe
@@ -55,6 +57,7 @@ class CoreKeyboard extends StatefulWidget {
     this.currentUnitSystem = UnitSystem.imperial,
     this.groupAccentColors = const {},
     this.customResultLabel,
+    this.semantics = CoreKeyboardSemantics.english,
     this.parenEnabled = true,
     this.parenSemanticLabel,
     this.parenSemanticHint,
@@ -83,18 +86,23 @@ class CoreKeyboard extends StatefulWidget {
   final Map<GroupNameType, Color> groupAccentColors;
   final String? customResultLabel;
 
+  /// The screen-reader strings of every key, the drag handle, the "View all"
+  /// button and the sheet it opens. Defaults to
+  /// [CoreKeyboardSemantics.english]; an app passes its own localised set.
+  final CoreKeyboardSemantics semantics;
+
   /// Whether the `( )` key bottom-left answers taps. `false` dims it and drops
   /// its tap action, which is how the value editor keeps a bracket out of a
   /// single number. The key's face never changes either way.
   final bool parenEnabled;
 
-  /// Screen-reader label of the `( )` key, in place of the English "Bracket
-  /// button". Pass a localised string from the app layer.
+  /// Screen-reader label of the `( )` key, in place of the one
+  /// [CoreKeyboardSemantics.controlLabel] builds for [ControlAction.paren].
   final String? parenSemanticLabel;
 
-  /// Screen-reader hint of the `( )` key, in place of the English "Opens a
-  /// bracket; the next press closes it". Withheld while the key is disabled.
-  /// Pass a localised string from the app layer.
+  /// Screen-reader hint of the `( )` key, in place of the one
+  /// [CoreKeyboardSemantics.controlHint] builds for [ControlAction.paren].
+  /// Withheld while the key is disabled.
   final String? parenSemanticHint;
 
   final ValueChanged<bool>? onCollapseChanged;
@@ -107,8 +115,8 @@ class CoreKeyboard extends StatefulWidget {
   final void Function(int oldIndex, int newIndex)? onGroupsReordered;
 
   /// Builds the screen-reader label of a group's drag handle in the "View
-  /// all" sheet from the group label. Defaults to
-  /// [CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel].
+  /// all" sheet from the group label, in place of
+  /// [CoreKeyboardSemantics.reorderHandle].
   final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
 
   @override
@@ -280,7 +288,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Semantics(
-                    label: 'Keyboard drag handle',
+                    label: widget.semantics.dragHandle,
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onVerticalDragStart: (details) {
@@ -351,6 +359,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
                               group: group,
                               onKeyTapped: widget.onKeyTapped,
                               accentColor: accent,
+                              semantics: widget.semantics,
                               onViewAll: () => _showFunctionsSheet(context),
                             ),
                           ),
@@ -399,30 +408,35 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             CoreControlButton(
               action: ControlAction.clearAll,
               onControlAction: widget.onControlAction,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreUnitButton(
               unit: UnitType.divideSymbol,
               onUnitSelected: widget.onUnitSelected,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.percent,
               onOperatorPressed: widget.onOperatorPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.divide,
               onOperatorPressed: widget.onOperatorPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreControlButton(
               action: ControlAction.delete,
               onControlAction: widget.onControlAction,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
@@ -435,30 +449,35 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             CoreUnitButton(
               unit: activeUnits[0],
               onUnitSelected: widget.onUnitSelected,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.seven,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.eight,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.nine,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.multiply,
               onOperatorPressed: widget.onOperatorPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
@@ -471,30 +490,35 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             CoreUnitButton(
               unit: activeUnits[1],
               onUnitSelected: widget.onUnitSelected,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.four,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.five,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.six,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.subtract,
               onOperatorPressed: widget.onOperatorPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
@@ -507,30 +531,35 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             CoreUnitButton(
               unit: activeUnits[2],
               onUnitSelected: widget.onUnitSelected,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.one,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.two,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreDigitInput(
               digit: DigitType.three,
               onDigitPressed: widget.onDigitPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
             CoreOperatorButton(
               operatorType: OperatorType.add,
               onOperatorPressed: widget.onOperatorPressed,
+              semantics: widget.semantics,
               width: buttonWidth,
               height: buttonHeight,
             ),
@@ -574,6 +603,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
           enabled: widget.parenEnabled,
           semanticLabel: widget.parenSemanticLabel,
           semanticHint: widget.parenSemanticHint,
+          semantics: widget.semantics,
           width: buttonWidth,
           height: buttonHeight,
         ),
@@ -581,6 +611,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
         CoreDigitInput(
           digit: DigitType.zero,
           onDigitPressed: widget.onDigitPressed,
+          semantics: widget.semantics,
           width: buttonWidth,
           height: buttonHeight,
         ),
@@ -588,6 +619,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
         CoreDigitInput(
           digit: DigitType.decimal,
           onDigitPressed: widget.onDigitPressed,
+          semantics: widget.semantics,
           width: buttonWidth,
           height: buttonHeight,
         ),
@@ -596,6 +628,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
           resultType: widget.result,
           customLabel: widget.customResultLabel,
           onTap: widget.onResultTapped,
+          semantics: widget.semantics,
           width: buttonWidth + buttonWidth + buttonSpacing,
           height: buttonHeight,
         ),
@@ -631,6 +664,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             },
             onGroupsReordered: widget.onGroupsReordered,
             reorderSemanticsLabelBuilder: widget.reorderSemanticsLabelBuilder,
+            semantics: widget.semantics,
             currentUnitSystem: widget.currentUnitSystem,
             onUnitSystemChanged: (system) {
               widget.onUnitSystemChanged(system);
@@ -682,12 +716,14 @@ class _FunctionKeyStrip extends StatelessWidget {
   final FunctionGroup group;
   final ValueChanged<KeyType> onKeyTapped;
   final Color accentColor;
+  final CoreKeyboardSemantics semantics;
   final VoidCallback onViewAll;
 
   const _FunctionKeyStrip({
     required this.group,
     required this.onKeyTapped,
     required this.accentColor,
+    required this.semantics,
     required this.onViewAll,
   });
 
@@ -744,10 +780,16 @@ class _FunctionKeyStrip extends StatelessWidget {
                   ],
                 ),
               ),
+              // One node of its own: without the container the label and
+              // hint merge into the strip and the focused button announces
+              // its visible text instead.
               Semantics(
-                label: 'View all function keys',
+                container: true,
+                excludeSemantics: true,
                 button: true,
-                hint: 'Opens a bottom sheet with all available function keys',
+                label: semantics.viewAllLabel,
+                hint: semantics.viewAllHint,
+                onTap: onViewAll,
                 child: TextButton(
                   onPressed: onViewAll,
                   style: TextButton.styleFrom(
