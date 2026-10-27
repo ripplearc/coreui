@@ -428,7 +428,8 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('screen reader reads an enabled switch as enabled and on',
+    testWidgets('screen reader reads an enabled switch as enabled, on and '
+        'focusable',
         (WidgetTester tester) async {
       final handle = tester.ensureSemantics();
       await pumpSwitch(
@@ -447,6 +448,7 @@ void main() {
           hasToggledState: true,
           isToggled: true,
           hasTapAction: true,
+          isFocusable: true,
         ),
       );
       handle.dispose();
@@ -615,6 +617,43 @@ void main() {
 
       final track = trackOf(tester);
       expect(changes, [true, false]);
+      expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
+          isNot(colors.outlineFocus));
+    });
+
+    testWidgets('Tab skips a disabled switch and draws no ring on it',
+        (WidgetTester tester) async {
+      final nextFocus = FocusNode();
+      addTearDown(nextFocus.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          RepaintBoundary(
+            key: boundaryKey,
+            child: Padding(
+              padding: const EdgeInsets.all(CoreSpacing.space2),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CoreSwitch(
+                    key: switchKey,
+                    value: false,
+                    onChanged: null,
+                  ),
+                  Focus(focusNode: nextFocus, child: const SizedBox()),
+                ],
+              ),
+            ),
+          ),
+          theme: theme,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final track = trackOf(tester);
+      expect(nextFocus.hasFocus, isTrue);
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
           isNot(colors.outlineFocus));
     });
