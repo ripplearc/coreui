@@ -124,9 +124,10 @@ class _SwitchConstants {
 ///
 /// ## Disabled Switch
 ///
-/// Pass a null [onChanged] to disable the switch. It ignores taps, is read
-/// as disabled by screen readers and draws the same disabled colours for
-/// every type. The thumb keeps the side and size of its On or Off state.
+/// Pass a null [onChanged] to disable the switch. It ignores taps, Tab skips
+/// it, it is read as disabled by screen readers and it draws the same
+/// disabled colours for every type. The thumb keeps the side and size of its
+/// On or Off state.
 ///
 /// ```dart
 /// CoreSwitch(
@@ -383,12 +384,16 @@ class CoreSwitch extends StatelessWidget {
       ),
     );
 
-    return _SwitchFocus(
-      trackSize: Size(switchWidth, switchHeight),
-      onActivate: onChangedCallback == null
-          ? null
-          : () => onChangedCallback(!value),
-      child: control,
+    // One node for the screen reader: the label, state and tap action of
+    // the switch together with its keyboard focus.
+    return MergeSemantics(
+      child: _SwitchFocus(
+        trackSize: Size(switchWidth, switchHeight),
+        onActivate: onChangedCallback == null
+            ? null
+            : () => onChangedCallback(!value),
+        child: control,
+      ),
     );
   }
 }
