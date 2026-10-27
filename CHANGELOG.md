@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.60.0] - A function key announces its full name, and the group dots get their own tokens
+
+### 🔧 Fixes
+
+- **FunctionKeyTile**: a key with `KeyType.semanticLabel` is announced by it — the full name behind an abbreviated face, "Footing" for `Footng` — and a key without one, or with an empty one, by its face. The hint is `customHint` or nothing (the strip and the sheet pass no hint, so a function key on the keyboard announces its name alone). The tile adds no words of its own: "function key" and "Tap to use … function" are gone, so nothing it announces is fixed English. Same on the strip and in the "View all" sheet (CA-1195 A)
+
+### ✨ Features
+
+- **AppColorsExtension.keyboardGroupGeometry / keyboardGroupShapes / keyboardGroupMaterials / keyboardGroupUnit / keyboardGroupTrigonometry**: one accent token per function-key group for the dot on the strip and in the "View all" sheet, from `CoreKeyboardColors` and `CoreDarkKeyboardColors`. Light: `orient800` `#015B7C` 7.21:1, `violet500` `#7A5AF8` 4.33:1, `orange500` `#EB5000` 3.54:1, `royalBlue500` `#2970FF` 4.14:1, `green500` `#009E69` 3.30:1 on the page background. Dark: `orient400` `#00AEE0` 6.87:1, `violet500` 3.93:1, `amber500` `#F79009` 7.56:1, `royalBlue500` 4.10:1, `emerald500` `#12B76A` 6.77:1. Every dot reaches 3:1 (WCAG 1.4.11) and no two match in either theme. The prototype's amber and green reach only 2.25:1 and 2.51:1 on the light sheet and its teal 2.36:1 on the dark one, so those three take the nearest palette step that passes (CA-1195 B)
+- Showcase: the colour screen gains a "Function-key group dots" section and the keyboard screen's groups use the new tokens
+
+### 📐 Design notes
+
+- `ControlAction.moreOptions` stays deprecated, not deleted (CA-1195 C): the app still carries its `case ControlAction.moreOptions:` arm until CA-1087 replaces its calculator bloc. The deletion is a breaking change and follows in its own release once that arm is gone
+
+### 🧪 Tests
+
+- Tile: a `semanticLabel` is what the Semantics node announces, a key without one announces its face, the hint is the caller's or absent, and both meet the tap target and label guidelines in both themes; the same read on the strip and in the "View all" sheet. Tokens: the five values in each theme, 3:1 on the page background, five distinct colours per theme, `copyWith` and `lerp`; the colour swatch goldens gain the five tokens. Keyboard and value editor goldens are unchanged
+
 ## [0.54.0] - Text fields and calculator keyboard match the design library
 
 ### 🔧 Fixes

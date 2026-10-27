@@ -94,6 +94,23 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color keyboardActions;
   final Color keyboardMain;
 
+  /// The accent dot of the Basic Geometry function-key group on the keyboard
+  /// strip and in its "View all" sheet, at least 3:1 on [pageBackground], as
+  /// each group's dot is.
+  final Color keyboardGroupGeometry;
+
+  /// The accent dot of the Shapes group.
+  final Color keyboardGroupShapes;
+
+  /// The accent dot of the Materials group.
+  final Color keyboardGroupMaterials;
+
+  /// The accent dot of the Unit group.
+  final Color keyboardGroupUnit;
+
+  /// The accent dot of the Trigonometry group.
+  final Color keyboardGroupTrigonometry;
+
   // Utility Colors
   final Color transparent;
 
@@ -180,6 +197,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.keyboardFunctions,
     required this.keyboardActions,
     required this.keyboardMain,
+    required this.keyboardGroupGeometry,
+    required this.keyboardGroupShapes,
+    required this.keyboardGroupMaterials,
+    required this.keyboardGroupUnit,
+    required this.keyboardGroupTrigonometry,
     required this.transparent,
     required this.shadowGrey3,
     required this.shadowGrey5,
@@ -276,6 +298,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? keyboardFunctions,
     Color? keyboardActions,
     Color? keyboardMain,
+    Color? keyboardGroupGeometry,
+    Color? keyboardGroupShapes,
+    Color? keyboardGroupMaterials,
+    Color? keyboardGroupUnit,
+    Color? keyboardGroupTrigonometry,
     Color? transparent,
     Color? shadowGrey3,
     Color? shadowGrey5,
@@ -358,6 +385,14 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       keyboardFunctions: keyboardFunctions ?? this.keyboardFunctions,
       keyboardActions: keyboardActions ?? this.keyboardActions,
       keyboardMain: keyboardMain ?? this.keyboardMain,
+      keyboardGroupGeometry:
+          keyboardGroupGeometry ?? this.keyboardGroupGeometry,
+      keyboardGroupShapes: keyboardGroupShapes ?? this.keyboardGroupShapes,
+      keyboardGroupMaterials:
+          keyboardGroupMaterials ?? this.keyboardGroupMaterials,
+      keyboardGroupUnit: keyboardGroupUnit ?? this.keyboardGroupUnit,
+      keyboardGroupTrigonometry:
+          keyboardGroupTrigonometry ?? this.keyboardGroupTrigonometry,
       transparent: transparent ?? this.transparent,
       shadowGrey3: shadowGrey3 ?? this.shadowGrey3,
       shadowGrey5: shadowGrey5 ?? this.shadowGrey5,
@@ -495,6 +530,24 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           keyboardActions,
       keyboardMain:
           Color.lerp(keyboardMain, other.keyboardMain, t) ?? keyboardMain,
+      keyboardGroupGeometry:
+          Color.lerp(keyboardGroupGeometry, other.keyboardGroupGeometry, t) ??
+              keyboardGroupGeometry,
+      keyboardGroupShapes:
+          Color.lerp(keyboardGroupShapes, other.keyboardGroupShapes, t) ??
+              keyboardGroupShapes,
+      keyboardGroupMaterials:
+          Color.lerp(keyboardGroupMaterials, other.keyboardGroupMaterials, t) ??
+              keyboardGroupMaterials,
+      keyboardGroupUnit:
+          Color.lerp(keyboardGroupUnit, other.keyboardGroupUnit, t) ??
+              keyboardGroupUnit,
+      keyboardGroupTrigonometry: Color.lerp(
+            keyboardGroupTrigonometry,
+            other.keyboardGroupTrigonometry,
+            t,
+          ) ??
+          keyboardGroupTrigonometry,
       transparent: Color.lerp(transparent, other.transparent, t) ?? transparent,
       shadowGrey3: Color.lerp(shadowGrey3, other.shadowGrey3, t) ?? shadowGrey3,
       shadowGrey5: Color.lerp(shadowGrey5, other.shadowGrey5, t) ?? shadowGrey5,

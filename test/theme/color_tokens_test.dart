@@ -160,6 +160,14 @@ void main() {
                 const MapEntry('functions', CoreKeyboardColors.functions),
                 const MapEntry('actions', CoreKeyboardColors.actions),
                 const MapEntry('main', CoreKeyboardColors.main),
+                const MapEntry(
+                    'groupGeometry', CoreKeyboardColors.groupGeometry),
+                const MapEntry('groupShapes', CoreKeyboardColors.groupShapes),
+                const MapEntry(
+                    'groupMaterials', CoreKeyboardColors.groupMaterials),
+                const MapEntry('groupUnit', CoreKeyboardColors.groupUnit),
+                const MapEntry(
+                    'groupTrigonometry', CoreKeyboardColors.groupTrigonometry),
               ]),
               buildColorGrid('Icon Colors', [
                 const MapEntry('dark', CoreIconColors.dark),
@@ -217,7 +225,8 @@ void main() {
     );
   });
 
-  testWidgets('Core Dark Color Tokens Golden Test', (WidgetTester tester) async {
+  testWidgets('Core Dark Color Tokens Golden Test',
+      (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 2700));
 
     final widget = MaterialApp(
@@ -238,36 +247,57 @@ void main() {
                 const MapEntry('link', CoreDarkTextColors.link),
                 const MapEntry('info', CoreDarkTextColors.info),
                 const MapEntry('warning', CoreDarkTextColors.warning),
-                const MapEntry('warningStrong', CoreDarkTextColors.warningStrong),
+                const MapEntry(
+                    'warningStrong', CoreDarkTextColors.warningStrong),
                 const MapEntry('error', CoreDarkTextColors.error),
                 const MapEntry('success', CoreDarkTextColors.success),
               ]),
               buildColorGrid('Background Colors', [
-                const MapEntry('pageBackground', CoreDarkBackgroundColors.pageBackground),
-                const MapEntry('backgroundGrayLight', CoreDarkBackgroundColors.backgroundGrayLight),
-                const MapEntry('backgroundGrayMid', CoreDarkBackgroundColors.backgroundGrayMid),
-                const MapEntry('backgroundBlueLight', CoreDarkBackgroundColors.backgroundBlueLight),
-                const MapEntry('backgroundBlueMid', CoreDarkBackgroundColors.backgroundBlueMid),
-                const MapEntry('backgroundGreenLight', CoreDarkBackgroundColors.backgroundGreenLight),
-                const MapEntry('backgroundGreenMid', CoreDarkBackgroundColors.backgroundGreenMid),
-                const MapEntry('backgroundRedLight', CoreDarkBackgroundColors.backgroundRedLight),
-                const MapEntry('backgroundRedMid', CoreDarkBackgroundColors.backgroundRedMid),
-                const MapEntry('backgroundOrangeLight', CoreDarkBackgroundColors.backgroundOrangeLight),
-                const MapEntry('backgroundOrangeMid', CoreDarkBackgroundColors.backgroundOrangeMid),
-                const MapEntry('backgroundDarkGray', CoreDarkBackgroundColors.backgroundDarkGray),
-                const MapEntry('backgroundDarkOrient', CoreDarkBackgroundColors.backgroundDarkOrient),
-                const MapEntry('backgroundOrientLight', CoreDarkBackgroundColors.backgroundOrientLight),
-                const MapEntry('backgroundOrientMid', CoreDarkBackgroundColors.backgroundOrientMid),
+                const MapEntry(
+                    'pageBackground', CoreDarkBackgroundColors.pageBackground),
+                const MapEntry('backgroundGrayLight',
+                    CoreDarkBackgroundColors.backgroundGrayLight),
+                const MapEntry('backgroundGrayMid',
+                    CoreDarkBackgroundColors.backgroundGrayMid),
+                const MapEntry('backgroundBlueLight',
+                    CoreDarkBackgroundColors.backgroundBlueLight),
+                const MapEntry('backgroundBlueMid',
+                    CoreDarkBackgroundColors.backgroundBlueMid),
+                const MapEntry('backgroundGreenLight',
+                    CoreDarkBackgroundColors.backgroundGreenLight),
+                const MapEntry('backgroundGreenMid',
+                    CoreDarkBackgroundColors.backgroundGreenMid),
+                const MapEntry('backgroundRedLight',
+                    CoreDarkBackgroundColors.backgroundRedLight),
+                const MapEntry('backgroundRedMid',
+                    CoreDarkBackgroundColors.backgroundRedMid),
+                const MapEntry('backgroundOrangeLight',
+                    CoreDarkBackgroundColors.backgroundOrangeLight),
+                const MapEntry('backgroundOrangeMid',
+                    CoreDarkBackgroundColors.backgroundOrangeMid),
+                const MapEntry('backgroundDarkGray',
+                    CoreDarkBackgroundColors.backgroundDarkGray),
+                const MapEntry('backgroundDarkOrient',
+                    CoreDarkBackgroundColors.backgroundDarkOrient),
+                const MapEntry('backgroundOrientLight',
+                    CoreDarkBackgroundColors.backgroundOrientLight),
+                const MapEntry('backgroundOrientMid',
+                    CoreDarkBackgroundColors.backgroundOrientMid),
               ]),
               buildColorGrid('Border Colors', [
                 const MapEntry('lineLight', CoreDarkBorderColors.lineLight),
                 const MapEntry('lineMid', CoreDarkBorderColors.lineMid),
-                const MapEntry('lineDarkOutline', CoreDarkBorderColors.lineDarkOutline),
-                const MapEntry('lineHighlight', CoreDarkBorderColors.lineHighlight),
+                const MapEntry(
+                    'lineDarkOutline', CoreDarkBorderColors.lineDarkOutline),
+                const MapEntry(
+                    'lineHighlight', CoreDarkBorderColors.lineHighlight),
                 const MapEntry('lineBlue', CoreDarkBorderColors.lineBlue),
-                const MapEntry('outlineHover', CoreDarkBorderColors.outlineHover),
-                const MapEntry('outlineFocus', CoreDarkBorderColors.outlineFocus),
-                const MapEntry('tabsHighlight', CoreDarkBorderColors.tabsHighlight),
+                const MapEntry(
+                    'outlineHover', CoreDarkBorderColors.outlineHover),
+                const MapEntry(
+                    'outlineFocus', CoreDarkBorderColors.outlineFocus),
+                const MapEntry(
+                    'tabsHighlight', CoreDarkBorderColors.tabsHighlight),
                 const MapEntry('lineOrange', CoreDarkBorderColors.lineOrange),
               ]),
               buildColorGrid('Status Colors', [
@@ -281,6 +311,15 @@ void main() {
                 const MapEntry('functions', CoreDarkKeyboardColors.functions),
                 const MapEntry('actions', CoreDarkKeyboardColors.actions),
                 const MapEntry('main', CoreDarkKeyboardColors.main),
+                const MapEntry(
+                    'groupGeometry', CoreDarkKeyboardColors.groupGeometry),
+                const MapEntry(
+                    'groupShapes', CoreDarkKeyboardColors.groupShapes),
+                const MapEntry(
+                    'groupMaterials', CoreDarkKeyboardColors.groupMaterials),
+                const MapEntry('groupUnit', CoreDarkKeyboardColors.groupUnit),
+                const MapEntry('groupTrigonometry',
+                    CoreDarkKeyboardColors.groupTrigonometry),
               ]),
               buildColorGrid('Icon Colors', [
                 const MapEntry('dark', CoreDarkIconColors.dark),

@@ -8,7 +8,7 @@ class ColorShowcaseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final colors = AppColorsExtension.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -20,7 +20,7 @@ class ColorShowcaseScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSection('Text Colors', [
+              _buildSection(context, 'Text Colors', [
                 _ColorItem('Headline', colors.textHeadline),
                 _ColorItem('Dark', colors.textDark),
                 _ColorItem('Body', colors.textBody),
@@ -32,7 +32,7 @@ class ColorShowcaseScreen extends StatelessWidget {
                 _ColorItem('Error', colors.textError),
                 _ColorItem('Success', colors.textSuccess),
               ]),
-              _buildSection('Background Colors', [
+              _buildSection(context, 'Background Colors', [
                 _ColorItem('Page Background', colors.pageBackground),
                 _ColorItem('Gray Light', colors.backgroundGrayLight),
                 _ColorItem('Gray Mid', colors.backgroundGrayMid),
@@ -49,7 +49,7 @@ class ColorShowcaseScreen extends StatelessWidget {
                 _ColorItem('Orient Light', colors.orientLight),
                 _ColorItem('Orient Mid', colors.orientMid),
               ]),
-              _buildSection('Border Colors', [
+              _buildSection(context, 'Border Colors', [
                 _ColorItem('Line Light', colors.lineLight),
                 _ColorItem('Line Mid', colors.lineMid),
                 _ColorItem('Line Dark Outline', colors.lineDarkOutline),
@@ -58,17 +58,17 @@ class ColorShowcaseScreen extends StatelessWidget {
                 _ColorItem('Outline Focus', colors.outlineFocus),
                 _ColorItem('Tabs Highlight', colors.tabsHighlight),
               ]),
-              _buildSection('Status Colors', [
+              _buildSection(context, 'Status Colors', [
                 _ColorItem('Error', colors.statusError),
                 _ColorItem('Success', colors.statusSuccess),
               ]),
-              _buildSection('Button Colors', [
+              _buildSection(context, 'Button Colors', [
                 _ColorItem('Surface', colors.buttonSurface),
                 _ColorItem('Hover', colors.buttonHover),
                 _ColorItem('Disable', colors.buttonDisable),
                 _ColorItem('Press', colors.buttonPress),
               ]),
-              _buildSection('Icon Colors', [
+              _buildSection(context, 'Icon Colors', [
                 _ColorItem('Dark', colors.iconDark),
                 _ColorItem('Gray Dark', colors.iconGrayDark),
                 _ColorItem('Gray Mid', colors.iconGrayMid),
@@ -80,7 +80,7 @@ class ColorShowcaseScreen extends StatelessWidget {
                 _ColorItem('Blue', colors.iconBlue),
                 _ColorItem('Orient', colors.iconOrient),
               ]),
-              _buildSection('Chip Colors', [
+              _buildSection(context, 'Chip Colors', [
                 _ColorItem('Grey', colors.chipGrey),
                 _ColorItem('Primary', colors.chipPrimary),
                 _ColorItem('Red', colors.chipRed),
@@ -88,19 +88,26 @@ class ColorShowcaseScreen extends StatelessWidget {
                 _ColorItem('Blue', colors.chipBlue),
                 _ColorItem('Green', colors.chipGreen),
               ]),
-              _buildSection('Alert Colors', [
+              _buildSection(context, 'Alert Colors', [
                 _ColorItem('Red', colors.alertRed),
                 _ColorItem('Orange', colors.alertOrange),
                 _ColorItem('Blue', colors.alertBlue),
                 _ColorItem('Green', colors.alertGreen),
               ]),
-              _buildSection('Keyboard Colors', [
+              _buildSection(context, 'Keyboard Colors', [
                 _ColorItem('Numbers', colors.keyboardNumbers),
                 _ColorItem('Calculate', colors.keyboardCalculate),
                 _ColorItem('Units', colors.keyboardUnits),
                 _ColorItem('Functions', colors.keyboardFunctions),
                 _ColorItem('Actions', colors.keyboardActions),
                 _ColorItem('Main', colors.keyboardMain),
+              ]),
+              _buildSection(context, 'Function-key group dots', [
+                _ColorItem('Basic geometry', colors.keyboardGroupGeometry),
+                _ColorItem('Shapes', colors.keyboardGroupShapes),
+                _ColorItem('Materials', colors.keyboardGroupMaterials),
+                _ColorItem('Unit', colors.keyboardGroupUnit),
+                _ColorItem('Trigonometry', colors.keyboardGroupTrigonometry),
               ]),
             ],
           ),
@@ -109,7 +116,11 @@ class ColorShowcaseScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, List<_ColorItem> colors) {
+  Widget _buildSection(
+    BuildContext context,
+    String title,
+    List<_ColorItem> colors,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -117,10 +128,7 @@ class ColorShowcaseScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTypographyExtension.of(context).titleLargeSemiBold,
           ),
         ),
         GridView.count(
@@ -130,13 +138,15 @@ class ColorShowcaseScreen extends StatelessWidget {
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
           childAspectRatio: 1,
-          children: colors.map((color) => _buildColorCard(color)).toList(),
+          children:
+              colors.map((color) => _buildColorCard(context, color)).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildColorCard(_ColorItem color) {
+  Widget _buildColorCard(BuildContext context, _ColorItem color) {
+    final outline = AppColorsExtension.of(context).lineMid;
     return Column(
       children: [
         Expanded(
@@ -145,7 +155,7 @@ class ColorShowcaseScreen extends StatelessWidget {
               color: color.color,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.grey.withOpacity(0.2),
+                color: outline,
                 width: 1,
               ),
             ),
@@ -154,7 +164,7 @@ class ColorShowcaseScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           color.name,
-          style: const TextStyle(fontSize: 12),
+          style: AppTypographyExtension.of(context).bodySmallRegular,
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

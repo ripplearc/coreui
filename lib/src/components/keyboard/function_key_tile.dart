@@ -11,7 +11,13 @@ import 'keyboard_models.dart';
 /// [keyType] is the key data to display.
 /// [onTap] is called when the key is tapped.
 /// [hasPadding] determines whether to add padding around the key (default: false).
-/// [customHint] is an optional custom semantic hint. If not provided, uses keyType.semanticLabel.
+/// [customHint] is the screen-reader hint, in the app's own words; without
+/// it the tile announces no hint.
+///
+/// A screen reader announces [KeyType.semanticLabel] when the key has one —
+/// the full name behind an abbreviated face, `Footing` for `Footng` — and
+/// the face [KeyType.label] otherwise. The tile adds no words of its own, so
+/// nothing it announces is fixed English.
 ///
 /// The rendered tile carries [KeyType.resolvedTestKey] (`calc_key_<id>`, or
 /// [KeyType.testKey]) for Patrol and widget tests.
@@ -82,13 +88,9 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
 
-    final semanticHint = widget.customHint ??
-        widget.keyType.semanticLabel ??
-        'Tap to use ${widget.keyType.label} function';
-
-    final semanticLabel = widget.keyType.semanticLabel != null
-        ? '${widget.keyType.label} function key'
-        : 'Function key ${widget.keyType.label}';
+    final fullName = widget.keyType.semanticLabel;
+    final semanticLabel =
+        fullName == null || fullName.isEmpty ? widget.keyType.label : fullName;
 
     final staticChild = Center(
       child: Row(
@@ -119,7 +121,7 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
     return Semantics(
       label: semanticLabel,
       button: true,
-      hint: semanticHint,
+      hint: widget.customHint,
       child: AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) {

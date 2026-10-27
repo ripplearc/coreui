@@ -91,6 +91,12 @@ abstract class _CoreColorPalette {
 
   // Accents
   static const Color indigo = Color(0xFF6155F5);
+
+  // Function-key group accents, the prototype's dot colours
+  static const Color violet500 = Color(0xFF7A5AF8);
+  static const Color royalBlue500 = Color(0xFF2970FF);
+  static const Color amber500 = Color(0xFFF79009);
+  static const Color emerald500 = Color(0xFF12B76A);
 }
 // Text-related color tokens
 // https://www.figma.com/design/vugaGpii5HfgEQHPbrS3mU/Construculator-Visual-Design?node-id=1-601&t=TW26RstPBOLMrBqw-4
@@ -162,6 +168,23 @@ class CoreKeyboardColors {
   static const Color actions = _CoreColorPalette.blue700;
   static const Color main = _CoreColorPalette.blue800;
   static const Color transparent = _CoreColorPalette.transparent;
+
+  /// The Basic geometry group's dot, 7.21:1 on the page background.
+  static const Color groupGeometry = _CoreColorPalette.orient800;
+
+  /// The Shapes group's dot, 4.33:1 on the page background.
+  static const Color groupShapes = _CoreColorPalette.violet500;
+
+  /// The Materials group's dot, 3.54:1 on the page background. The
+  /// prototype's amber reaches only 2.25:1 on the light sheet.
+  static const Color groupMaterials = _CoreColorPalette.orange500;
+
+  /// The Unit group's dot, 4.14:1 on the page background.
+  static const Color groupUnit = _CoreColorPalette.royalBlue500;
+
+  /// The Trigonometry group's dot, 3.30:1 on the page background. The
+  /// prototype's green reaches only 2.51:1 on the light sheet.
+  static const Color groupTrigonometry = _CoreColorPalette.green500;
 }
 
 // Icon-related color tokens
@@ -320,6 +343,22 @@ class CoreDarkKeyboardColors {
   static const Color actions = _CoreColorPalette.blue300;
   static const Color main = _CoreColorPalette.orient400;
   static const Color transparent = _CoreColorPalette.transparent;
+
+  /// The Basic geometry group's dot, 6.87:1 on the dark page background.
+  /// The prototype's deep teal reaches only 2.36:1 there.
+  static const Color groupGeometry = _CoreColorPalette.orient400;
+
+  /// The Shapes group's dot, 3.93:1 on the dark page background.
+  static const Color groupShapes = _CoreColorPalette.violet500;
+
+  /// The Materials group's dot, 7.56:1 on the dark page background.
+  static const Color groupMaterials = _CoreColorPalette.amber500;
+
+  /// The Unit group's dot, 4.10:1 on the dark page background.
+  static const Color groupUnit = _CoreColorPalette.royalBlue500;
+
+  /// The Trigonometry group's dot, 6.77:1 on the dark page background.
+  static const Color groupTrigonometry = _CoreColorPalette.emerald500;
 }
 
 /// Dark-mode icon color tokens. Primary icon color shifts to orient300;
