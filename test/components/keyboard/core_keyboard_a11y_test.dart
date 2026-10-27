@@ -8,6 +8,39 @@ import '../../load_fonts.dart';
 import '../../utils/a11y_guidelines.dart';
 import '../../utils/test_harness.dart';
 
+const CoreKeyboardSemantics _callerSemantics = CoreKeyboardSemantics(
+  digitLabel: _digitLabel,
+  operatorLabel: _operatorLabel,
+  unitLabel: _unitLabel,
+  controlLabel: _controlLabel,
+  controlHint: _controlHint,
+  resultLabel: _resultLabel,
+  resultHint: 'Calcule le résultat',
+  dragHandle: 'Poignée du clavier',
+  viewAllLabel: 'Toutes les touches',
+  viewAllHint: 'Ouvre la feuille des groupes',
+  unitSystemSwitch: 'Système de mesure',
+  groupHeader: _groupHeader,
+  reorderHandle: _reorderHandle,
+);
+
+String _digitLabel(DigitType digit) => 'Touche ${digit.label}';
+
+String _operatorLabel(OperatorType operatorType) =>
+    'Touche ${operatorType.symbol}';
+
+String _unitLabel(UnitType unit) => 'Touche ${unit.label}';
+
+String _controlLabel(ControlAction action) => 'Touche ${action.name}';
+
+String _controlHint(ControlAction action) => 'Indice ${action.name}';
+
+String _resultLabel(String face) => 'Touche $face';
+
+String _groupHeader(String groupLabel) => 'En-tête $groupLabel';
+
+String _reorderHandle(String groupLabel) => 'Déplacer $groupLabel';
+
 void main() {
   setUpAll(() async {
     await loadFonts();
@@ -37,6 +70,7 @@ void main() {
     Widget buildTestKeyboard({
       bool parenEnabled = true,
       String? parenSemanticLabel,
+      CoreKeyboardSemantics semantics = CoreKeyboardSemantics.english,
     }) {
       return CoreKeyboard(
         currentGroup:
@@ -52,15 +86,16 @@ void main() {
         onUnitSystemChanged: (_) {},
         parenEnabled: parenEnabled,
         parenSemanticLabel: parenSemanticLabel,
+        semantics: semantics,
       );
     }
 
-    final keyTypesToTest = {
-      'digit': CoreDigitInput,
-      'operator': CoreOperatorButton,
-      'unit': CoreUnitButton,
-      'control': CoreControlButton,
-      'result': CoreResultButton,
+    final keyTypesToTest = <String, Key>{
+      'digit': DigitType.five.testKey,
+      'operator': OperatorType.add.testKey,
+      'unit': UnitType.feet.testKey,
+      'control': ControlAction.delete.testKey,
+      'result': CoreResultButton.testKey,
     };
 
     for (final entry in keyTypesToTest.entries) {
@@ -75,11 +110,53 @@ void main() {
           await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
             tester,
             (_) => buildTestKeyboard(),
-            find.byType(entry.value).first,
+            find.byKey(entry.value),
           );
         },
       );
     }
+
+    for (final entry in keyTypesToTest.entries) {
+      testWidgets(
+        '${entry.key} keys labelled by the caller meet the guidelines',
+        (tester) async {
+          await setupA11yTest(
+            tester,
+            screenSize: const Size(1100, 1600),
+          );
+
+          await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+            tester,
+            (_) => buildTestKeyboard(semantics: _callerSemantics),
+            find.byKey(entry.value),
+          );
+
+          final semantics = tester.getSemantics(find.byKey(entry.value));
+          expect(semantics.label, startsWith('Touche'));
+        },
+      );
+    }
+
+    testWidgets(
+      'the drag handle and View all labelled by the caller meet the guidelines',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(semantics: _callerSemantics),
+          find.bySemanticsLabel('Poignée du clavier'),
+        );
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(semantics: _callerSemantics),
+          find.bySemanticsLabel('Toutes les touches'),
+        );
+      },
+    );
 
     testWidgets(
       'the bracket key meets tap target and label guidelines',
