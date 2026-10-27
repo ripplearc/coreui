@@ -115,11 +115,11 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
           final colors = AppColorsExtension.of(sheetContext);
           final Map<GroupNameType, Color> groupAccentColors = {
             GroupNameType(id: "Basic Geometry", label: "Basic Geometry"):
-                colors.keyboardFunctions,
+                colors.keyboardGroupGeometry,
             GroupNameType(id: "Materials", label: "Materials"):
-                colors.keyboardUnits,
+                colors.keyboardGroupMaterials,
             GroupNameType(id: "Trigonometry", label: "Trigonometry"):
-                colors.textSuccess,
+                colors.keyboardGroupTrigonometry,
           };
 
           return Padding(

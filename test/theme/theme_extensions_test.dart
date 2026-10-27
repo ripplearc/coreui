@@ -95,6 +95,11 @@ Map<String, Color> fieldMap(AppColorsExtension colors) {
     'keyboardFunctions': colors.keyboardFunctions,
     'keyboardActions': colors.keyboardActions,
     'keyboardMain': colors.keyboardMain,
+    'keyboardGroupGeometry': colors.keyboardGroupGeometry,
+    'keyboardGroupShapes': colors.keyboardGroupShapes,
+    'keyboardGroupMaterials': colors.keyboardGroupMaterials,
+    'keyboardGroupUnit': colors.keyboardGroupUnit,
+    'keyboardGroupTrigonometry': colors.keyboardGroupTrigonometry,
     'transparent': colors.transparent,
     'shadowGrey3': colors.shadowGrey3,
     'shadowGrey5': colors.shadowGrey5,
@@ -215,6 +220,82 @@ void main() {
           contrastRatio(colors.textGrayMid, colors.backgroundGrayMid),
           greaterThanOrEqualTo(4.5),
         );
+      }
+    });
+  });
+
+  group('function-key group dot tokens', () {
+    final light = AppColorsExtension.create();
+    final dark = AppColorsExtension.createDark();
+
+    List<Color> dots(AppColorsExtension colors) => [
+          colors.keyboardGroupGeometry,
+          colors.keyboardGroupShapes,
+          colors.keyboardGroupMaterials,
+          colors.keyboardGroupUnit,
+          colors.keyboardGroupTrigonometry,
+        ];
+
+    test('light theme resolves the five dots', () {
+      expect(light.keyboardGroupGeometry, const Color(0xFF015B7C));
+      expect(light.keyboardGroupShapes, const Color(0xFF7A5AF8));
+      expect(light.keyboardGroupMaterials, const Color(0xFFEB5000));
+      expect(light.keyboardGroupUnit, const Color(0xFF2970FF));
+      expect(light.keyboardGroupTrigonometry, const Color(0xFF009E69));
+    });
+
+    test('dark theme resolves the five dots', () {
+      expect(dark.keyboardGroupGeometry, const Color(0xFF00AEE0));
+      expect(dark.keyboardGroupShapes, const Color(0xFF7A5AF8));
+      expect(dark.keyboardGroupMaterials, const Color(0xFFF79009));
+      expect(dark.keyboardGroupUnit, const Color(0xFF2970FF));
+      expect(dark.keyboardGroupTrigonometry, const Color(0xFF12B76A));
+    });
+
+    test('every dot reaches 3:1 on the page background in each theme', () {
+      for (final colors in [light, dark]) {
+        for (final dot in dots(colors)) {
+          expect(
+            contrastRatio(dot, colors.pageBackground),
+            greaterThanOrEqualTo(3.0),
+            reason: '$dot on ${colors.pageBackground}',
+          );
+        }
+      }
+    });
+
+    test('no two dots look the same in either theme', () {
+      for (final colors in [light, dark]) {
+        expect(dots(colors).toSet().length, 5);
+      }
+    });
+
+    test('copyWith replaces each dot it is given and keeps the rest', () {
+      final changed = light.copyWith(
+        keyboardGroupGeometry: const Color(0xFF000001),
+        keyboardGroupShapes: const Color(0xFF000002),
+        keyboardGroupMaterials: const Color(0xFF000003),
+        keyboardGroupUnit: const Color(0xFF000004),
+        keyboardGroupTrigonometry: const Color(0xFF000005),
+      ) as AppColorsExtension;
+      final same = light.copyWith() as AppColorsExtension;
+
+      expect(dots(changed), [
+        const Color(0xFF000001),
+        const Color(0xFF000002),
+        const Color(0xFF000003),
+        const Color(0xFF000004),
+        const Color(0xFF000005),
+      ]);
+      expect(dots(same), dots(light));
+    });
+
+    test('lerp blends every dot between the two themes', () {
+      final halfway = light.lerp(dark, 0.5) as AppColorsExtension;
+
+      for (var i = 0; i < 5; i++) {
+        expect(
+            dots(halfway)[i], Color.lerp(dots(light)[i], dots(dark)[i], 0.5));
       }
     });
   });
