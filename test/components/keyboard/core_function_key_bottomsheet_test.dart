@@ -330,7 +330,7 @@ void main() {
       expect(find.bySemanticsLabel(RegExp('Drag indicator for Group A group')),
           findsOneWidget);
       expect(
-        CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel('Group A'),
+        CoreKeyboardSemantics.english.reorderHandle('Group A'),
         'Drag indicator for Group A group',
       );
 

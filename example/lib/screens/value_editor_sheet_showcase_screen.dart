@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../showcase_keyboard_semantics.dart';
+
 /// Demonstrates both modes of [CoreValueEditorSheet]: the multi-column size
 /// editor the geometry area opens, and the single-value editor a dependent-key
 /// pill opens on the calculator page.
@@ -41,6 +43,7 @@ class _ValueEditorSheetShowcaseScreenState
         values: ['47.24in', '94.49in'],
       ),
       initialIndex: 0,
+      keyboardSemantics: showcaseKeyboardSemantics,
     );
     if (result == null) return;
     _report('Size committed: ${result.values.join(' x ')}');
@@ -57,6 +60,7 @@ class _ValueEditorSheetShowcaseScreenState
       validator: (value) => (double.tryParse(value) ?? 0) > 0
           ? null
           : 'Enter a rate greater than zero',
+      keyboardSemantics: showcaseKeyboardSemantics,
     );
     if (result == null) return;
     _report('Rate committed: ${result.value}');
@@ -71,8 +75,8 @@ class _ValueEditorSheetShowcaseScreenState
       unitOptions: _unitOptions,
       unitGroupLabel: _unitGroupLabel,
       unit: 'cm',
-      validator: (value) =>
-          value.trim().isEmpty ? 'Enter a size' : null,
+      validator: (value) => value.trim().isEmpty ? 'Enter a size' : null,
+      keyboardSemantics: showcaseKeyboardSemantics,
     );
     if (result == null) return;
     _report('Sheet size committed: ${result.value} (unit: ${result.unit})');
