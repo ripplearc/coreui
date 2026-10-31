@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.58.0] - CoreTabs press and focus looks, CoreSwitch keyboard focus
+
+### 🔧 Fixes
+
+- **CoreTabs press**: a pressed tab fills its 40 px face with `backgroundGrayMid`, the library Press state. The selected tab keeps its indicator while pressed. Flutter's tint over the whole 48 px tap area and the 4 px gap is gone. The tabs carry their own transparent `Material`, so the fill also shows inside a coloured `Container` (CA-1320)
+- **CoreTabs focus**: Tab focus draws a 2 px `outlineFocus` ring on the tab face. A touch tap draws no ring, and the tab keeps its size. `CoreTabs.tabKey(index)` finds a tab's face in tests (CA-1320)
+- **CoreSwitch keyboard**: Tab now reaches the switch, and Enter or Space toggles it. Keyboard focus draws a 2 px `outlineFocus` ring just outside the track, so the switch keeps its size. A touch tap draws no ring. The library draws no press look for the switch, so there is none (CA-1320)
+
+### 🧪 Tests
+
+- Tabs: inside a coloured parent, a pressed tab fills only its 40 px face and clears on release; a pressed selected tab keeps its indicator; Tab draws the ring on each tab in turn without moving it; a touch tap draws no ring. Switch: Tab then Enter, Space and Enter toggles three times; Tab draws the ring outside the track without moving it; two touch taps toggle twice and draw no ring. The tests read real pixels through a new `pixelAt` test helper. Goldens: tabs pressed, focused and focused selected; switch focused (light and dark)
+
 ## [0.48.0] - App bar, tabs, segmented button and switch match the design library
 
 ### 🔧 Fixes
