@@ -91,10 +91,10 @@ class Toast extends StatefulWidget {
 
   static const double _verticalPadding = CoreSpacing.space3;
 
-  static const double _titleLineToTargetInset =
+  static const double _iconToTargetInset =
       (CoreSpacing.space12 - CoreIconSize.size24) / 2;
 
-  static const double _acknowledgementHeight = 48;
+  static const double _acknowledgementHeight = CoreSpacing.space12;
 
   static const double _acknowledgementRowMinHeight =
       _acknowledgementHeight - Toast._verticalPadding * 2;
@@ -104,13 +104,10 @@ class Toast extends StatefulWidget {
   static const double _receiptVerticalPaddingAroundTheTapTarget =
       CoreSpacing.space1;
 
-  static const double _smallAlertHeight = 40;
+  static const double _smallAlertHeight = CoreSpacing.space10;
 
   static const double _smallAlertSurfaceInset =
       (CoreSpacing.space12 - _smallAlertHeight) / 2;
-
-  static const double _closeIconInset =
-      (CoreSpacing.space12 - CoreIconSize.size24) / 2;
 
   const Toast._({
     required this.description,
@@ -420,11 +417,13 @@ class _ToastState extends State<Toast> {
         padding: EdgeInsetsDirectional.fromSTEB(
           horizontalPadding,
           _hasTitledControls
-              ? verticalPadding - Toast._titleLineToTargetInset
+              ? verticalPadding - Toast._iconToTargetInset
               : verticalPadding,
           closeLabel == null
               ? horizontalPadding
-              : horizontalPadding + CoreSpacing.space1 - Toast._closeIconInset,
+              : horizontalPadding +
+                  CoreSpacing.space1 -
+                  Toast._iconToTargetInset,
           verticalPadding,
         ),
         decoration: BoxDecoration(
@@ -517,7 +516,7 @@ class _ToastState extends State<Toast> {
     required Widget? trailing,
   }) {
     final titleLineInset = EdgeInsets.only(
-      top: _hasTitledControls ? Toast._titleLineToTargetInset : 0,
+      top: _hasTitledControls ? Toast._iconToTargetInset : 0,
     );
     return Row(
       mainAxisSize: MainAxisSize.min,
