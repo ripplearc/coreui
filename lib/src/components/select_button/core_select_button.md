@@ -41,20 +41,33 @@ CoreSelectButton(
 
 ### Styling
 
-The component follows the Core UI design system with:
+The component follows the library Segmented button:
 
-- **Container**: Inverse background color with rounded corners (12px radius)
+- **Track**: `pageBackground` with `CoreShadows.small`, fully rounded (`CoreSpacing.space12` radius), drawn 40px high
+  inside the component's 48px height
 - **Selected Tab**:
     - Background color: `AppColorsExtension.tabsHighlight`
     - Shadow: `CoreShadows.medium`
-    - Text style: `CoreTypography.bodyMediumSemiBold` with headline color
+    - Text style: `CoreTypography.bodyMediumSemiBold` with headline color (`textInverse` in dark mode, for contrast on the
+      bright highlight)
 - **Unselected Tab**:
     - Transparent background
     - Text style: `CoreTypography.bodyMediumRegular` with body color
 - **Padding**:
-    - Container: 8px all around (`CoreSpacing.space2`)
-    - Tab: 20px horizontal, 8px vertical
-    - Tab spacing: 8px between tabs
+    - Track: 4px at the sides (`CoreSpacing.space1`)
+    - Tab: 16px horizontal, 6px vertical, so a tab is 32px high around its 20px line
+    - Tab spacing: 4px between tabs
+
+### States
+
+- **Pressed**: an unselected tab fills `backgroundGrayMid`, the library Press state, while it is held
+- **Focused** (Tab): a 2px `lineHighlight` border inside the tab; the tab keeps its size
+- Neither look is a tint over the touch area
+
+### Tap target
+
+Every tab is a tap target at least 48 x 48px, including the 4px above and below the track, in the scroll view too.
+`CoreSelectButton.tapTargetKey(index)` finds a tab's target in tests.
 
 ### Scrolling
 
