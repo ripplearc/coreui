@@ -150,7 +150,7 @@ void main() {
       expect(clearCalled, isFalse);
     });
 
-    testWidgets('calls onClear and shows the inactive chip when × is tapped',
+    testWidgets('calls onClear and focuses the inactive chip when × is tapped',
         (tester) async {
       DateRange? range = DateRange(
         start: DateTime(2024, 3, 1),
@@ -175,6 +175,101 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
+    testWidgets('focuses the inactive chip when the caller clears later', (
+      tester,
+    ) async {
+      DateRange? range = DateRange(
+        start: DateTime(2024, 3, 1),
+        end: DateTime(2024, 3, 31),
+      );
+      late StateSetter rebuild;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CoreDateFilterChip(
+                selectedDateRange: range,
+                label: 'Modified',
+                inactiveChipKey: const Key('date_filter_chip'),
+                onApply: (_) {},
+                onClear: () {},
+              );
+            },
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pumpAndSettle();
+      rebuild(() => range = null);
+      await tester.pumpAndSettle();
+
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
+    testWidgets('Tab, Tab and Enter on × focuses the inactive chip', (
+      tester,
+    ) async {
+      DateRange? range = march;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) => CoreDateFilterChip(
+              selectedDateRange: range,
+              label: 'Modified',
+              inactiveChipKey: const Key('date_filter_chip'),
+              onApply: (_) {},
+              onClear: () => setState(() => range = null),
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isTrue);
+    });
+
+    testWidgets('does not take focus when the range clears without the ×', (
+      tester,
+    ) async {
+      DateRange? range = DateRange(
+        start: DateTime(2024, 3, 1),
+        end: DateTime(2024, 3, 31),
+      );
+      late StateSetter rebuild;
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return CoreDateFilterChip(
+                selectedDateRange: range,
+                label: 'Modified',
+                inactiveChipKey: const Key('date_filter_chip'),
+                onApply: (_) {},
+                onClear: () {},
+              );
+            },
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      rebuild(() => range = null);
+      await tester.pumpAndSettle();
+
+      expect(_hasPrimaryFocus(const Key('date_filter_chip')), isFalse);
     });
 
     testWidgets('calls onClear on each tap of × while the range is kept', (
@@ -222,6 +317,48 @@ void main() {
       );
       expect(pill.top, lessThanOrEqualTo(textRect.top));
       expect(pill.bottom, greaterThanOrEqualTo(textRect.bottom));
+    });
+
+    testWidgets('keeps focus on a later Reset all after the × was ignored', (
+      tester,
+    ) async {
+      DateRange? range = march;
+      final resetFocusNode = FocusNode();
+      addTearDown(resetFocusNode.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          StatefulBuilder(
+            builder: (context, setState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CoreDateFilterChip(
+                  selectedDateRange: range,
+                  label: 'Modified',
+                  inactiveChipKey: const Key('date_filter_chip'),
+                  onApply: (_) {},
+                  onClear: () {},
+                ),
+                TextButton(
+                  focusNode: resetFocusNode,
+                  onPressed: () => setState(() => range = null),
+                  child: const Text('Reset all'),
+                ),
+              ],
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.tap(find.byKey(CoreDateFilterChip.clearButtonKey));
+      await tester.pumpAndSettle();
+      resetFocusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('date_filter_chip')), findsOneWidget);
+      expect(resetFocusNode.hasFocus, isTrue);
     });
 
     testWidgets('keeps both active pill targets at least 48 dp high', (
@@ -382,4 +519,17 @@ void main() {
       expect(clearCalled, isTrue);
     });
   });
+}
+
+bool _hasPrimaryFocus(Key chipKey) {
+  final focusedContext = FocusManager.instance.primaryFocus?.context;
+  return find
+      .descendant(
+        of: find.byKey(chipKey),
+        matching: find.byElementPredicate(
+          (element) => element == focusedContext,
+        ),
+      )
+      .evaluate()
+      .isNotEmpty;
 }

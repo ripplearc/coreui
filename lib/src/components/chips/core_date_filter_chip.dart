@@ -14,7 +14,7 @@ import 'core_chip_theme.dart';
 /// Callers that intend to widget-test the chip should supply both
 /// [inactiveChipKey] and [activeChipKey]; without them the two chip variants
 /// have no stable finder targets.
-class CoreDateFilterChip extends StatelessWidget {
+class CoreDateFilterChip extends StatefulWidget {
   /// The currently selected date range, or `null` if no filter is active.
   final DateRange? selectedDateRange;
 
@@ -22,7 +22,9 @@ class CoreDateFilterChip extends StatelessWidget {
   final ValueChanged<DateRange> onApply;
 
   /// Called when the user taps the active pill's × to clear the filter.
-  /// Tapping the pill itself reopens the sheet.
+  /// Once the caller rebuilds without a range, focus moves to the inactive
+  /// chip unless another control has taken it. Tapping the pill reopens the
+  /// sheet.
   final VoidCallback onClear;
 
   /// Label shown on the chip when no range is selected.
@@ -113,25 +115,62 @@ class CoreDateFilterChip extends StatelessWidget {
     this.activeChipKey,
   });
 
-  Future<void> _showSheet(BuildContext context) async {
+  @override
+  State<CoreDateFilterChip> createState() => _CoreDateFilterChipState();
+}
+
+class _CoreDateFilterChipState extends State<CoreDateFilterChip> {
+  final FocusNode _inactiveChipFocusNode = FocusNode();
+  bool _focusInactiveChipOnceCleared = false;
+
+  @override
+  void didUpdateWidget(CoreDateFilterChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final wasCleared = oldWidget.selectedDateRange != null &&
+        widget.selectedDateRange == null;
+    if (!wasCleared || !_focusInactiveChipOnceCleared) return;
+    _focusInactiveChipOnceCleared = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _isFocusFree) _inactiveChipFocusNode.requestFocus();
+    });
+  }
+
+  bool get _isFocusFree {
+    final focused = FocusManager.instance.primaryFocus;
+    return focused == null || focused is FocusScopeNode;
+  }
+
+  @override
+  void dispose() {
+    _inactiveChipFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _showSheet() async {
+    _focusInactiveChipOnceCleared = false;
     final range = await CoreDateRangeSheet.show(
       context: context,
-      initialRange: selectedDateRange,
-      title: sheetTitle,
-      todayLabel: todayLabel,
-      last7DaysLabel: last7DaysLabel,
-      last30DaysLabel: last30DaysLabel,
-      thisMonthLabel: thisMonthLabel,
-      customRangeLabel: customRangeLabel,
-      startDateLabel: startDateLabel,
-      endDateLabel: endDateLabel,
-      cancelLabel: cancelLabel,
-      applyLabel: applyLabel,
-      confirmLabel: confirmLabel,
+      initialRange: widget.selectedDateRange,
+      title: widget.sheetTitle,
+      todayLabel: widget.todayLabel,
+      last7DaysLabel: widget.last7DaysLabel,
+      last30DaysLabel: widget.last30DaysLabel,
+      thisMonthLabel: widget.thisMonthLabel,
+      customRangeLabel: widget.customRangeLabel,
+      startDateLabel: widget.startDateLabel,
+      endDateLabel: widget.endDateLabel,
+      cancelLabel: widget.cancelLabel,
+      applyLabel: widget.applyLabel,
+      confirmLabel: widget.confirmLabel,
     );
     if (range != null) {
-      onApply(range);
+      widget.onApply(range);
     }
+  }
+
+  void _clear() {
+    _focusInactiveChipOnceCleared = true;
+    widget.onClear();
   }
 
   // English-only default; callers localise via [dateLabelBuilder].
@@ -156,7 +195,7 @@ class CoreDateFilterChip extends StatelessWidget {
   }
 
   String _formatRange(DateRange range) {
-    final formatDate = dateLabelBuilder ?? _defaultDateLabel;
+    final formatDate = widget.dateLabelBuilder ?? _defaultDateLabel;
     final start = formatDate(range.start);
     if (range.start == range.end) return start;
     final end = formatDate(range.end);
@@ -165,24 +204,25 @@ class CoreDateFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final range = selectedDateRange;
+    final range = widget.selectedDateRange;
 
     if (range == null) {
       return CoreFilterChip(
-        key: inactiveChipKey,
-        label: label,
-        semanticLabel: semanticLabel,
-        onTap: () => _showSheet(context),
+        key: widget.inactiveChipKey,
+        label: widget.label,
+        semanticLabel: widget.semanticLabel,
+        focusNode: _inactiveChipFocusNode,
+        onTap: _showSheet,
       );
     }
 
     return _ActiveDateChip(
-      key: activeChipKey,
+      key: widget.activeChipKey,
       label: _formatRange(range),
-      clearSemanticLabel: clearSemanticLabel,
-      rangeSemanticHint: rangeSemanticHint,
-      onTap: () => _showSheet(context),
-      onClear: onClear,
+      clearSemanticLabel: widget.clearSemanticLabel,
+      rangeSemanticHint: widget.rangeSemanticHint,
+      onTap: _showSheet,
+      onClear: _clear,
     );
   }
 }
