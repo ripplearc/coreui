@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.67.0] - Receipt toast View: press and focus looks
+
+### 🔧 Fixes
+
+- **Toast.receipt** second action (`View`): it had no `Material` of its own, so it threw "No Material widget found" on a parent without one, and it showed no press look and only Material's grey focus tint over the whole 48 dp box. It now has its own `Material`, and like the alert's text button its label turns `buttonPress` while pressed and Tab focus draws the 3 px `outlineFocus` ring around the label (CA-1321)
+
+### 🧪 Tests
+
+- View turns Button Press while pressed and fires once over two presses; Tab rings its label and Enter takes it; it works in a coloured parent with no `Material`. New goldens: receipt View pressed and focused, light and dark
+
 ## [0.65.0] - Alert text button
 
 ### ✨ Features
