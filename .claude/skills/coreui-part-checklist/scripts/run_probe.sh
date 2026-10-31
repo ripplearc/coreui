@@ -22,12 +22,13 @@ here="$(cd "$(dirname "$0")" && pwd)"
 probe="$root/test/zz_checklist_probe_test.dart"
 lock="$root/example/pubspec.lock"
 lock_copy="$(mktemp)"
+log="$(mktemp)"
 
 cp "$lock" "$lock_copy"
 cleanup() {
   rm -f "$probe"
   cp "$lock_copy" "$lock"
-  rm -f "$lock_copy"
+  rm -f "$lock_copy" "$log"
 }
 trap cleanup EXIT
 
@@ -37,8 +38,9 @@ for part in "$@"; do
   cases+="  Case('$name', () => $part),"$'\n'
 done
 
-awk -v cases="$cases" '
-  /\/\/ CASES/ { printf "%s", cases; next }
+# ENVIRON, unlike awk -v, keeps a backslash in an expression as it is.
+CASES="$cases" awk '
+  /\/\/ CASES/ { printf "%s", ENVIRON["CASES"]; next }
   { print }
 ' "$here/checklist_probe.dart.tmpl" > "$probe"
 
@@ -48,6 +50,17 @@ if command -v fvm > /dev/null; then
 fi
 
 cd "$root"
-"${flutter_cmd[@]}" test "$probe" 2>&1 \
-  | sed -n '/^### /,/^[0-9][0-9]:[0-9][0-9] /p' \
+status=0
+"${flutter_cmd[@]}" test "$probe" > "$log" 2>&1 || status=$?
+
+if ! grep -q '^### ' "$log"; then
+  # No part was measured, most often because an expression does not
+  # compile. Show what flutter test said instead of printing nothing.
+  echo "The probe measured no part. flutter test said:" >&2
+  grep -v -E '^[0-9][0-9]:[0-9][0-9] ' "$log" >&2
+  exit 1
+fi
+
+sed -n '/^### /,/^[0-9][0-9]:[0-9][0-9] /p' "$log" \
   | grep -v -E '^[0-9][0-9]:[0-9][0-9] '
+exit "$status"

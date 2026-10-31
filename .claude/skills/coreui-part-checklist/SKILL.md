@@ -103,6 +103,9 @@ text whether a label is cut or overlaps an icon.
   "CoreSwitch(value: true, onChanged: (_) {})"
 ```
 
+If an expression does not compile, the probe measures nothing; it then
+prints flutter test's errors and exits 1.
+
 Read the output like this:
 
 | Line | Pass | Fail |
