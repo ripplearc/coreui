@@ -221,7 +221,10 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     );
   }
 
-  static const double _pillVerticalPadding = 6;
+  static const double _pillHeight = CoreSpacing.space8;
+  static const double _bodyMediumLineHeight = CoreSpacing.space5;
+  static const double _pillVerticalPadding =
+      (_pillHeight - _bodyMediumLineHeight) / 2;
 
   void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
 
@@ -230,7 +233,7 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final noTint = WidgetStateProperty.all(colors.transparent);
-    const pillInset = (CoreSpacing.space12 - CoreSpacing.space8) / 2;
+    const pillInset = (CoreSpacing.space12 - _pillHeight) / 2;
     const datesInset = pillInset + _pillVerticalPadding;
     // The × target is wider than the icon plus the pill's 12 dp end padding,
     // so the pill stops short of the target's end edge by the difference.
@@ -245,10 +248,11 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
       type: MaterialType.transparency,
       child: Stack(
         children: [
-          Positioned.fill(
+          PositionedDirectional(
+            start: 0,
             top: pillInset,
+            end: clearTargetOverhang,
             bottom: pillInset,
-            right: clearTargetOverhang,
             child: DecoratedBox(
               key: CoreDateFilterChip.pillKey,
               decoration: BoxDecoration(
@@ -278,10 +282,10 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                       constraints: const BoxConstraints(
                         minHeight: CoreSpacing.space12,
                       ),
-                      padding: const EdgeInsets.only(
-                        left: CoreSpacing.space3,
+                      padding: const EdgeInsetsDirectional.only(
+                        start: CoreSpacing.space3,
                         top: datesInset,
-                        right: clearTargetWidthBesideRange,
+                        end: clearTargetWidthBesideRange,
                         bottom: datesInset,
                       ),
                       child: Center(
@@ -304,9 +308,9 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
               ),
             ],
           ),
-          Positioned(
+          PositionedDirectional(
             top: 0,
-            right: 0,
+            end: 0,
             bottom: 0,
             child: Semantics(
               label: widget.clearSemanticLabel,

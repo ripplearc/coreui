@@ -265,6 +265,36 @@ void main() {
       );
     });
 
+    testWidgets('puts the × at the start in a right-to-left app', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: CoreDateFilterChip(
+              selectedDateRange: march,
+              label: 'Modified',
+              activeChipKey: const Key('active_date_filter_chip'),
+              onApply: (_) {},
+              onClear: () {},
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final chip =
+          tester.getRect(find.byKey(const Key('active_date_filter_chip')));
+      final clear =
+          tester.getRect(find.byKey(CoreDateFilterChip.clearButtonKey));
+      final dates = tester.getRect(find.text('Mar 01, 2024 - Mar 31, 2024'));
+      final pill = tester.getRect(find.byKey(CoreDateFilterChip.pillKey));
+      expect(clear.left, chip.left);
+      expect(dates.left, greaterThan(clear.left));
+      expect(pill.right, chip.right);
+    });
+
     testWidgets('draws the range focus on the pill border', (tester) async {
       await pumpChip(tester, selectedDateRange: march);
 
