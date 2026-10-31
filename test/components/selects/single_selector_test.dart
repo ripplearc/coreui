@@ -233,9 +233,7 @@ void main() {
     testWidgets('draws the tap ripple on top of the field', (tester) async {
       await tester.pumpWidget(roleSelector());
       final selector = find.byType(SingleItemSelector<String>);
-      final inkLayer = find
-          .descendant(of: selector, matching: find.byType(Material))
-          .last;
+      final inkLayer = find.byKey(SingleItemSelector.inkLayerKey);
 
       final gesture = await tester.startGesture(tester.getCenter(selector));
       await tester.pump(kPressTimeout);
@@ -247,15 +245,14 @@ void main() {
     testWidgets('shows the hint in an empty field', (tester) async {
       await tester.pumpWidget(roleSelector());
 
-      final hintOpacity = tester.widget<AnimatedOpacity>(
-        find
-            .ancestor(
-              of: find.text('Select your role'),
-              matching: find.byType(AnimatedOpacity),
-            )
-            .first,
+      final hint = find.text('Select your role');
+      expect(hint, findsOneWidget);
+      final fades = tester.widgetList<AnimatedOpacity>(
+        find.ancestor(of: hint, matching: find.byType(AnimatedOpacity)),
       );
-      expect(hintOpacity.opacity, 1);
+      for (final fade in fades) {
+        expect(fade.opacity, 1, reason: 'the hint must not be faded out');
+      }
     });
 
     testWidgets('a disabled selector dims its chevron and reads as disabled',
