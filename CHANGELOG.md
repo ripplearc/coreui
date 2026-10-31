@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.49.0] - Toast and alerts match the design library
+
+### 🔧 Fixes
+
+- **Toast.acknowledgement**: 48 high, like the library Toast (was 50). The tick and `CoreShadows.floating` do not change (CA-1321)
+- **Toast alerts without a title**: the library's Small alert. The surface is drawn 40 high (was about 70) with 12 px at the sides, and the text is Body Medium Medium (14 px, was 16). The close x keeps a 48 x 48 target (CA-1321)
+- **Toast close control**: a plain `CoreIcons.cross` in `iconDark`, labelled `closeLabel` for screen readers. The word `Close` and the circled x are gone. Without `onClose` the x pops the current route, as before. The x takes keyboard focus (Tab, then Enter or Space). Pressed, it turns `buttonPress`; focused, it draws a 2 px `outlineFocus` circle around the icon, with no tint over the 48 x 48 target. With a title, the text keeps the Large alert styles, and the icon and the x sit on the first title line, as the Large alert draws them (CA-1321)
+
+### 📐 Design notes
+
+The library toast shadow has no token yet, so the acknowledgement keeps `CoreShadows.floating`. The light 'Saved to history' card (the receipt) is not changed here.
+
+### 🧪 Tests
+
+- Acknowledgement height. Alerts: the plain x and its label, on a titled alert the x centred on the first title line, a tap at the corner of the x's target, the pressed colour on two presses in a row, Tab focus with its ring and Enter to close, a coloured parent with no `Material`, the 40 px surface with a 48 px target, and the text styles with and without a title. `CoreToast` tests find the close button by key. Goldens: the toast sheet in light and, new, dark, without the debug banner; new, the pressed and the focused x in light and dark; the preference sheet's info card (light and dark) shows the plain x on its title line
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features

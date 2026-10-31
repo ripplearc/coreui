@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
+
+ThemeData _withRoboto(ThemeData base) {
+  return base.copyWith(
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+  );
+}
 
 void main() {
   setUpAll(() async {
     await loadFonts();
     TestWidgetsFlutterBinding.ensureInitialized();
   });
-  final colors = AppColorsExtension.create();
-  testWidgets('Toast Component Visual Regression Test',
-      (WidgetTester tester) async {
+  Future<void> pumpToasts(WidgetTester tester, {ThemeData? theme}) async {
+    final colors = theme?.coreColors ?? AppColorsExtension.create();
     await tester.binding.setSurfaceSize(const Size(1050, 660));
 
     final toasts = <Widget>[
@@ -98,6 +104,8 @@ void main() {
     ];
 
     final widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme,
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: Padding(
@@ -115,10 +123,75 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('Toast Component Visual Regression Test',
+      (WidgetTester tester) async {
+    await pumpToasts(tester);
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/toast_component.png'),
     );
+  });
+
+  testWidgets('Toast Component Visual Regression Test (dark)',
+      (WidgetTester tester) async {
+    await pumpToasts(tester, theme: _withRoboto(CoreTheme.dark()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/toast_component_dark.png'),
+    );
+  });
+
+  Future<void> pumpSmallAlert(WidgetTester tester, ThemeData theme) async {
+    await tester.binding.setSurfaceSize(const Size(400, 80));
+    await tester.pumpWidget(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme,
+      home: Scaffold(
+        backgroundColor: theme.coreColors.pageBackground,
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Toast.error(
+            description: 'Upload failed',
+            closeLabel: 'Close',
+            onClose: () {},
+          ),
+        ),
+      ),
+    ));
+  }
+
+  final closeButton = find.byKey(const Key('toast_close_button'));
+  final themes = {
+    'light': _withRoboto(CoreTheme.light()),
+    'dark': _withRoboto(CoreTheme.dark()),
+  };
+
+  themes.forEach((name, theme) {
+    testWidgets('the close x, pressed ($name)', (WidgetTester tester) async {
+      await pumpSmallAlert(tester, theme);
+      final gesture = await tester.startGesture(tester.getCenter(closeButton));
+      await tester.pump();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_close_pressed_$name.png'),
+      );
+      await gesture.up();
+    });
+
+    testWidgets('the close x, focused ($name)', (WidgetTester tester) async {
+      await pumpSmallAlert(tester, theme);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_close_focused_$name.png'),
+      );
+    });
   });
 }
