@@ -105,9 +105,11 @@ void main() {
     await pumpTile(tester, onTap: () {});
 
     final inkWell = find.byType(InkWell);
-    final inkMaterial = find
-        .ancestor(of: inkWell, matching: find.byType(Material))
-        .first;
+    final inkMaterial = find.byKey(PreferenceRowTile.inkLayerKey);
+    expect(
+      find.ancestor(of: inkWell, matching: inkMaterial),
+      findsOneWidget,
+    );
     expect(
       find.ancestor(
         of: inkMaterial,

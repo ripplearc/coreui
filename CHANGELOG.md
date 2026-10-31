@@ -13,7 +13,7 @@ The row fill stays Background Grey Mid. Figma uses Background Grey Light, but in
 
 ### 🧪 Tests
 
-- Row height 48 with the bottom line, the 12 dp label-to-value gap, the ink inside the fill with a Blue Light highlight, label colour, a disabled row in Text Disable and inert; text value style, the read-only colour and the pill text style; the pill dot, gaps and height, a pill row 48 dp high, the pill growing with 2.0 text. Goldens regenerated, light and dark, now with a disabled row; new, a pressed row in light and dark
+- Row height 48 with the bottom line, the 12 dp label-to-value gap, the ink inside the fill with a Blue Light highlight, label colour, a disabled row in Text Disable and inert; text value style, the read-only colour and the pill text style; the pill dot, gaps and height, a pill row 48 dp high, the pill growing with 2.0 text. The tests find the pill, its dot and the ink layer by key (`PreferenceValueView.pillKey`, `dotKey`, `PreferenceRowTile.inkLayerKey`). Goldens regenerated, light and dark, now with a disabled row; new, a pressed row in light and dark
 
 ## [0.46.0] - CoreCheckRowItem matches the library Dropdown cell
 
