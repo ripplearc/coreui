@@ -134,8 +134,12 @@ void main() {
     });
 
     group('alert controls', () {
+      final actionFinder = find.byKey(const Key('toast_action_button'));
+
       Widget buildAlert({
         String? title,
+        String? actionLabel,
+        VoidCallback? onAction,
         VoidCallback? onClose,
       }) {
         return MaterialApp(
@@ -147,6 +151,8 @@ void main() {
                   title: title,
                   description: 'Upload failed',
                   closeLabel: 'Close',
+                  actionLabel: actionLabel,
+                  onAction: onAction,
                   onClose: onClose,
                 ),
               ),
@@ -170,10 +176,63 @@ void main() {
         handle.dispose();
       });
 
-      testWidgets('with a title, the x sits on the first title line',
+      testWidgets('draws no text button without an actionLabel',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert());
+
+        expect(actionFinder, findsNothing);
+      });
+
+      testWidgets('the text button fires onAction, then onClose',
+          (WidgetTester tester) async {
+        final calls = <String>[];
+        await tester.pumpWidget(buildAlert(
+          actionLabel: 'View',
+          onAction: () => calls.add('action'),
+          onClose: () => calls.add('close'),
+        ));
+
+        expect(
+          find.descendant(of: actionFinder, matching: find.text('View')),
+          findsOneWidget,
+        );
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(calls, ['action', 'close']);
+      });
+
+      testWidgets('a View that opens a page leaves the page on screen',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Toast.error(
+                description: 'Upload failed',
+                closeLabel: 'Close',
+                actionLabel: 'View',
+                onAction: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const Scaffold(body: Text('Details')),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+
+        await tester.tap(actionFinder);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Details'), findsOneWidget);
+      });
+
+      testWidgets('with a title, View and the x sit on the first title line',
           (WidgetTester tester) async {
         await tester.pumpWidget(buildAlert(
           title: 'Upload failed on two files',
+          actionLabel: 'View',
+          onAction: _noop,
           onClose: _noop,
         ));
 
@@ -182,6 +241,8 @@ void main() {
             tester.getTopLeft(find.text('Upload failed on two files')).dy +
                 halfTitleLine;
         expect(tester.getCenter(closeButtonFinder).dy,
+            moreOrLessEquals(firstTitleLineCentre, epsilon: 1));
+        expect(tester.getCenter(actionFinder).dy,
             moreOrLessEquals(firstTitleLineCentre, epsilon: 1));
         expect(tester.getSize(closeButtonFinder), const Size(48, 48));
       });
@@ -271,6 +332,98 @@ void main() {
         expect(closed, isTrue);
       });
 
+      Widget buildThemedAlertWithView({
+        required VoidCallback onAction,
+        bool withMaterial = true,
+      }) {
+        final alert = Toast.error(
+          description: 'Upload failed',
+          closeLabel: 'Close',
+          actionLabel: 'View',
+          onAction: onAction,
+          onClose: _noop,
+        );
+        return MaterialApp(
+          theme: CoreTheme.light(),
+          home: withMaterial
+              ? Scaffold(body: alert)
+              : ColoredBox(
+                  color: CoreTheme.light().coreColors.pageBackground,
+                  child: Center(child: alert),
+                ),
+        );
+      }
+
+      Color actionLabelColor(WidgetTester tester) =>
+          tester.widget<Text>(find.text('View')).style!.color!;
+
+      testWidgets('View turns Button Press while pressed and fires once',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(actionFinder));
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.buttonPress);
+
+          await gesture.up();
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.textLink);
+        }
+        expect(actions, 1);
+      });
+
+      testWidgets('Tab focuses View, rings its label and Enter takes it',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+        final ringFinder = find.byKey(const Key('toast_action_focus_ring'));
+        expect(ringFinder, findsNothing);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final label = tester.getRect(find.text('View'));
+        final ring = tester.getRect(ringFinder);
+        expect(ring.left, label.left - CoreSpacing.space3);
+        expect(ring.right, label.right + CoreSpacing.space3);
+        expect(ring.top, label.top - 5);
+        expect(ring.bottom, label.bottom + 5);
+        final border = (tester
+                .widget<DecoratedBox>(find.descendant(
+                  of: ringFinder,
+                  matching: find.byType(DecoratedBox),
+                ))
+                .decoration as BoxDecoration)
+            .border! as Border;
+        expect(border.top.color, colors.outlineFocus);
+        expect(border.top.width, 3);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(actions, 1);
+      });
+
+      testWidgets('View works inside a coloured parent with no Material',
+          (WidgetTester tester) async {
+        var actions = 0;
+        await tester.pumpWidget(buildThemedAlertWithView(
+          onAction: () => actions++,
+          withMaterial: false,
+        ));
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(actionFinder);
+        expect(actions, 1);
+      });
+
       testWidgets('the close x works and draws inside a coloured parent '
           'with no Material', (WidgetTester tester) async {
         var closed = false;
@@ -296,12 +449,16 @@ void main() {
       testWidgets(
           'without a title the surface is 40 dp high and the controls 48 dp',
           (WidgetTester tester) async {
-        await tester.pumpWidget(buildAlert());
+        await tester.pumpWidget(
+          buildAlert(actionLabel: 'View', onAction: _noop),
+        );
 
         expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
             40);
         expect(tester.getSize(find.byType(Toast)).height, 48);
         expect(tester.getSize(closeButtonFinder), const Size(48, 48));
+        expect(tester.getSize(actionFinder).height, 48);
+        expect(tester.getSize(actionFinder).width, greaterThanOrEqualTo(48));
       });
 
       testWidgets('without a title the text is Body Medium Medium',

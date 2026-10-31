@@ -26,6 +26,8 @@ void main() {
         description: 'This is an error message that needs attention',
         closeLabel: 'Close',
         onClose: () {},
+        actionLabel: 'View',
+        onAction: () {},
       ),
       Toast.warning(
         title: 'Warning Title',
@@ -49,6 +51,8 @@ void main() {
         description: 'This is an error message without a title',
         closeLabel: 'Close',
         onClose: () {},
+        actionLabel: 'View',
+        onAction: () {},
       ),
       Toast.warning(
         description: 'This is a warning message without a title',
@@ -145,7 +149,11 @@ void main() {
     );
   });
 
-  Future<void> pumpSmallAlert(WidgetTester tester, ThemeData theme) async {
+  Future<void> pumpSmallAlert(
+    WidgetTester tester,
+    ThemeData theme, {
+    bool withView = false,
+  }) async {
     await tester.binding.setSurfaceSize(const Size(400, 80));
     await tester.pumpWidget(MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -157,6 +165,8 @@ void main() {
           child: Toast.error(
             description: 'Upload failed',
             closeLabel: 'Close',
+            actionLabel: withView ? 'View' : null,
+            onAction: withView ? () {} : null,
             onClose: () {},
           ),
         ),
@@ -165,6 +175,7 @@ void main() {
   }
 
   final closeButton = find.byKey(const Key('toast_close_button'));
+  final viewButton = find.byKey(const Key('toast_action_button'));
   final themes = {
     'light': _withRoboto(CoreTheme.light()),
     'dark': _withRoboto(CoreTheme.dark()),
@@ -191,6 +202,29 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/toast_close_focused_$name.png'),
+      );
+    });
+
+    testWidgets('View, pressed ($name)', (WidgetTester tester) async {
+      await pumpSmallAlert(tester, theme, withView: true);
+      final gesture = await tester.startGesture(tester.getCenter(viewButton));
+      await tester.pump();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_view_pressed_$name.png'),
+      );
+      await gesture.up();
+    });
+
+    testWidgets('View, focused ($name)', (WidgetTester tester) async {
+      await pumpSmallAlert(tester, theme, withView: true);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_view_focused_$name.png'),
       );
     });
   });
