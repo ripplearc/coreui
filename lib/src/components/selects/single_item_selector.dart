@@ -46,6 +46,10 @@ class SingleItemSelector<T> extends StatefulWidget {
     this.onOpen,
   });
 
+  /// Key of the transparent layer on top of the field that draws the tap
+  /// ripple, for widget-test finders.
+  static const Key inkLayerKey = Key('single_item_selector_ink_layer');
+
   @override
   State<SingleItemSelector<T>> createState() => _SingleItemSelectorState<T>();
 }
@@ -93,6 +97,7 @@ class _SingleItemSelectorState<T> extends State<SingleItemSelector<T>> {
           // On top of the opaque field, so the tap ripple can be seen.
           Positioned.fill(
             child: Material(
+              key: SingleItemSelector.inkLayerKey,
               type: MaterialType.transparency,
               child: InkWell(
                 customBorder: RoundedRectangleBorder(
