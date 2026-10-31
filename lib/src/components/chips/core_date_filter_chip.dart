@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
+import 'core_chip_theme.dart';
 
 /// A filter chip for a date-range filter.
 ///
@@ -20,7 +21,8 @@ class CoreDateFilterChip extends StatelessWidget {
   /// Called with the newly chosen range when the user applies a selection.
   final ValueChanged<DateRange> onApply;
 
-  /// Called when the user taps the × to clear the active filter.
+  /// Called when the user taps the active pill's × to clear the filter.
+  /// Tapping the pill itself reopens the sheet.
   final VoidCallback onClear;
 
   /// Label shown on the chip when no range is selected.
@@ -30,8 +32,11 @@ class CoreDateFilterChip extends StatelessWidget {
   /// Defaults to [label] when null.
   final String? semanticLabel;
 
-  /// Accessibility label for the active pill that clears the filter on tap.
+  /// Accessibility label for the × that clears the filter.
   final String clearSemanticLabel;
+
+  /// Accessibility hint for the active pill, which reopens the date sheet.
+  final String rangeSemanticHint;
 
   /// Formats the dates shown on the active pill. Defaults to a
   /// `"Jan 05, 2026"`-style English format.
@@ -76,6 +81,12 @@ class CoreDateFilterChip extends StatelessWidget {
   /// Key applied to the active pill (a range is selected).
   final Key? activeChipKey;
 
+  /// Key of the active pill's clear × button.
+  static const Key clearButtonKey = Key('core_date_filter_chip_clear_button');
+
+  /// Key of the active pill's grey fill, for widget-test finders.
+  static const Key pillKey = Key('core_date_filter_chip_pill');
+
   /// Creates a [CoreDateFilterChip].
   const CoreDateFilterChip({
     super.key,
@@ -85,6 +96,7 @@ class CoreDateFilterChip extends StatelessWidget {
     required this.label,
     this.semanticLabel,
     this.clearSemanticLabel = 'Clear date filter',
+    this.rangeSemanticHint = 'Opens the date range sheet',
     this.dateLabelBuilder,
     this.sheetTitle = 'Date range',
     this.todayLabel = 'Today',
@@ -164,15 +176,169 @@ class CoreDateFilterChip extends StatelessWidget {
       );
     }
 
-    // The active pill is a chip-family primitive: the whole pill clears the
-    // filter on tap, and the pill adopts CoreInputChip's visual treatment so
-    // every removable token in the catalogue reads the same (CA-830).
-    return CoreInputChip(
+    return _ActiveDateChip(
       key: activeChipKey,
       label: _formatRange(range),
-      onRemove: onClear,
-      removeOnChipTap: true,
-      removeSemanticLabel: clearSemanticLabel,
+      clearSemanticLabel: clearSemanticLabel,
+      rangeSemanticHint: rangeSemanticHint,
+      onTap: () => _showSheet(context),
+      onClear: onClear,
+    );
+  }
+}
+
+class _ActiveDateChip extends StatefulWidget {
+  const _ActiveDateChip({
+    super.key,
+    required this.label,
+    required this.clearSemanticLabel,
+    required this.rangeSemanticHint,
+    required this.onTap,
+    required this.onClear,
+  });
+
+  final String label;
+  final String clearSemanticLabel;
+  final String rangeSemanticHint;
+  final VoidCallback onTap;
+  final VoidCallback onClear;
+
+  @override
+  State<_ActiveDateChip> createState() => _ActiveDateChipState();
+}
+
+class _ActiveDateChipState extends State<_ActiveDateChip> {
+  bool _isPressed = false;
+  bool _isRangeFocused = false;
+  bool _isClearFocused = false;
+
+  BoxBorder? _pillBorder(AppColorsExtension colors) {
+    if (_isPressed) return Border.all(color: colors.lineDarkOutline);
+    if (!_isRangeFocused && !_isClearFocused) return null;
+    return Border.all(
+      color: colors.outlineFocus,
+      width: CoreChipTheme.borderWidthFor(isFocused: true),
+    );
+  }
+
+  static const double _pillHeight = CoreSpacing.space8;
+  static const double _bodyMediumLineHeight = CoreSpacing.space5;
+  static const double _pillVerticalPadding =
+      (_pillHeight - _bodyMediumLineHeight) / 2;
+
+  void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+    final noTint = WidgetStateProperty.all(colors.transparent);
+    const pillInset = (CoreSpacing.space12 - _pillHeight) / 2;
+    const datesInset = pillInset + _pillVerticalPadding;
+    // The × target is wider than the icon plus the pill's 12 dp end padding,
+    // so the pill stops short of the target's end edge by the difference.
+    const clearTargetOverhang =
+        (CoreSpacing.space12 - CoreIconSize.size20) / 2 - CoreSpacing.space3;
+    // The × target overlaps the range so the dates end 8 dp before the ×,
+    // as Figma's gap is, while the target stays 48 dp wide.
+    const clearTargetWidthBesideRange = CoreSpacing.space12 -
+        ((CoreSpacing.space12 - CoreIconSize.size20) / 2 - CoreSpacing.space2);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          PositionedDirectional(
+            start: 0,
+            top: pillInset,
+            end: clearTargetOverhang,
+            bottom: pillInset,
+            child: DecoratedBox(
+              key: CoreDateFilterChip.pillKey,
+              decoration: BoxDecoration(
+                color: _isPressed ? colors.pageBackground : colors.chipGrey,
+                borderRadius: BorderRadius.circular(CoreSpacing.space5),
+                border: _pillBorder(colors),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Semantics(
+                  label: widget.label,
+                  hint: widget.rangeSemanticHint,
+                  button: true,
+                  container: true,
+                  child: InkWell(
+                    onTap: widget.onTap,
+                    onFocusChange: (isFocused) =>
+                        setState(() => _isRangeFocused = isFocused),
+                    onHighlightChanged: _setPressed,
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: noTint,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        minHeight: CoreSpacing.space12,
+                      ),
+                      padding: const EdgeInsetsDirectional.only(
+                        start: CoreSpacing.space3,
+                        top: datesInset,
+                        end: clearTargetWidthBesideRange,
+                        bottom: datesInset,
+                      ),
+                      child: Center(
+                        widthFactor: 1,
+                        heightFactor: 1,
+                        child: ExcludeSemantics(
+                          child: Text(
+                            widget.label,
+                            style: typography.bodyMediumRegular.copyWith(
+                              color: colors.textDark,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          PositionedDirectional(
+            top: 0,
+            end: 0,
+            bottom: 0,
+            child: Semantics(
+              label: widget.clearSemanticLabel,
+              button: true,
+              container: true,
+              child: InkWell(
+                key: CoreDateFilterChip.clearButtonKey,
+                onTap: widget.onClear,
+                onFocusChange: (isFocused) =>
+                    setState(() => _isClearFocused = isFocused),
+                onHighlightChanged: _setPressed,
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: noTint,
+                child: SizedBox.square(
+                  dimension: CoreSpacing.space12,
+                  child: Center(
+                    child: CoreIconWidget(
+                      icon: CoreIcons.close,
+                      color: colors.iconGrayMid,
+                      size: CoreIconSize.size20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
