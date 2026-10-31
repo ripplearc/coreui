@@ -181,6 +181,20 @@ void main() {
       expect(tester.getSize(editable).height, 24);
     });
 
+    testWidgets('without a label the tap area is still 48px high',
+        (tester) async {
+      await pumpField(tester, const CoreUnderlineTextField(maxLines: 4));
+      bool focused() =>
+          tester.widget<EditableText>(editable).focusNode.hasFocus;
+
+      final field = tester.getRect(fieldFinder);
+      expect(field.height, 48);
+
+      await tester.tapAt(Offset(field.center.dx, field.bottom - 1));
+      await tester.pump();
+      expect(focused(), isTrue);
+    });
+
     testWidgets('asserts that maxLines is at least 1', (tester) async {
       expect(
         () => CoreUnderlineTextField(maxLines: 0),

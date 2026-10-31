@@ -195,7 +195,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   ///
   /// A multi-line field is not given the 48px tap target of a single-line one:
   /// its text area is as tall as its lines. A tap anywhere on the field still
-  /// focuses it.
+  /// focuses it, and the whole field is at least 48px high, even without a
+  /// label.
   final int maxLines;
 
   /// Whether the field takes focus when it is first built.
@@ -432,7 +433,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
     final hasLabelTrailing = widget.labelTrailing != null;
 
-    return GestureDetector(
+    final field = GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
       onTap: widget.enabled ? _handleTap : null,
@@ -455,6 +456,15 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
             UnderlineFieldMessage(text: message, isError: hasError),
         ],
       ),
+    );
+    if (!_isMultiLine) return field;
+
+    // A multi-line text area is only as tall as its lines, so without a label
+    // the field would be under 48px. The extra height falls below the
+    // underline, so the look does not change.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+      child: field,
     );
   }
 
