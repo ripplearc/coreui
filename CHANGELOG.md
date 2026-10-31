@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.57.0] - Alert text button
+## [0.65.0] - Alert text button
 
 ### ✨ Features
 
