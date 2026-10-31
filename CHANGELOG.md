@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.48.0] - App bar, tabs, segmented button and switch match the design library
+
+### 🔧 Fixes
+
+- **CoreAppBar title**: a `titleText` next to a `leading` widget, or with `implyLeading: true`, is Title Large Semibold (20 px), as the Figma "Back with Headline" bar draws it. Otherwise it stays Title Medium Semibold (18 px), as on the landing page bar. That bar is 48 high in total: pass `height: CoreSpacing.space12` and no vertical padding (CA-1320)
+- **CoreTabs**: Flutter's 16 px label padding is gone, so a tab is its own 12 px side padding around the label ('Tab 1' is 60 px wide, was 91). Each tab has a 4 px gap after it, also the last one, so the bottom line runs 4 px past the last tab. The indicator is sized to the tab so it stops short of the gap, has square ends (it had Material 3's round top corners) and sits inside the bottom of the 40 px tab. Each tab is drawn 40 px high at the bottom of a 48 px tap area (the tab row was 44 px), so screens with tabs move down 4 px. The bottom line is `lineDarkOutline` (light `#98A2B3`); it was Flutter's default `#CAC4D0` (CA-1320)
+- **CoreSelectButton**: track padding and the gap between segments are 4 px (were 8), segment padding 16 x 6 px (was 20 x 8). The track is drawn 40 high (was 52) and a segment 32, inside a 48 high component: each segment is a tap target at least 48 x 48, including the 4 px above and below the track. A pressed segment fills `backgroundGrayMid` (the library Press state) and Tab focus draws a 2 px `lineHighlight` border inside the segment; there is no tint over the touch area. `CoreSelectButton.tapTargetKey` finds a segment's target in tests (CA-1320)
+- **CoreSelectButton docs**: `core_select_button.md` gives the new track, padding and gaps, the pressed and focused looks and the 48 x 48 tap targets (it still described the old 8 px padding) (CA-1320)
+- **CoreSwitch off knob**: the knob has its own colour, separate from the border. Normal is `iconGrayMid` (light `#667085`, dark `#98A2B3`), the same as its border, as design decided: a lighter knob was under 3:1 on the track and looked disabled. Lock is `statusError` (light `#F04438`, was the `#D92D20` border red). Imperial and the borders do not change (CA-1320)
+
+### 📐 Design notes
+
+The centred-title app bar has no Figma library type; ask design before using it on a new screen. A segment is drawn 32 px high, as the Figma library draws it, with the extra tap space around it in code, as the library asks for parts under 48 px.
+
+### 🧪 Tests
+
+- App bar: title style with and without a leading widget and with `implyLeading`, the 48 px back bar, and an a11y check that its back button keeps a 48 x 48 target in both themes. Tabs: divider colour, label padding, the gap between tabs, a square-ended indicator exactly as wide as the tab, and a 48 px tap area around the 40 px tab (a tap 1 px inside its top edge selects the tab). Segmented button: track and segment height and the gap, a 48 x 48 target for every segment in the scroll view, a tap just above the track, the press fill and the Tab focus border. Switch: off knob and border colour for each type. Goldens: the back-with-title app bar (light and dark), tabs, segmented button (and, new, focused and pressed) and switch (light and dark)
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
