@@ -655,7 +655,7 @@ void main() {
       final track = trackOf(tester);
       expect(nextFocus.hasFocus, isTrue);
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
-          isNot(colors.outlineFocus));
+          isNot(colors.outlineFocus.toARGB32()));
     });
   });
 }
