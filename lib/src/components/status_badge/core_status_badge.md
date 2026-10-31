@@ -44,7 +44,7 @@ These are the only combinations Figma draws. Any other pairing fails an assert.
 | `warning` | `compact` | 20 | 6 | 8 | `backgroundOrangeLight` | 1 dp `lineOrange` | `textWarningStrong` | no |
 | `neutral` | `regular` | 22 | 6 | 11 | `backgroundGrayMid` | none | `textGrayMid` | no |
 
-Side padding is measured inside the 1 dp outline, so the outline and the padding make the 12 dp Figma draws from the outer edge to the text. Each colour is a theme token, so the same token name gives the right colour in the light and the dark theme. Heights are minimums: a badge grows taller when the user sets a larger text size.
+Side padding is measured inside the 1 dp outline, so the outline and the padding make the 12 dp Figma draws from the outer edge to the text. Each colour is a theme token, so the same token name gives the right colour in the light and the dark theme. Heights are minimums: a badge grows taller when the user sets a larger text size. The neutral badge's 22 dp is the height Figma draws for it; it is a size, not a gap, so the 4 px spacing grid does not move it.
 
 Sources: Figma Rate Status (component set `65685:147068`), the Text Field label row Badge and the Tag component, all in Estimate V2. The label is the 12/16 semibold body-small style. The width follows the label.
 
