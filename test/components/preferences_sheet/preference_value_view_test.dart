@@ -57,10 +57,7 @@ void main() {
     /// is enough to know which state the pill is drawn in.
     Color accentOf(WidgetTester tester) {
       final decoration = tester
-          .widget<Container>(find.ancestor(
-            of: find.byType(Row),
-            matching: find.byType(Container),
-          ).first)
+          .widget<Container>(find.byKey(PreferenceValueView.pillKey))
           .decoration! as BoxDecoration;
       return decoration.border!.top.color;
     }
@@ -109,12 +106,8 @@ void main() {
         const CorePreferencePillValue('Imperial', isOn: true),
       );
 
-      final pill = tester.getRect(find
-          .ancestor(of: find.byType(Row), matching: find.byType(Container))
-          .first);
-      final dot = tester.getRect(find
-          .descendant(of: find.byType(Row), matching: find.byType(Container))
-          .first);
+      final pill = tester.getRect(find.byKey(PreferenceValueView.pillKey));
+      final dot = tester.getRect(find.byKey(PreferenceValueView.dotKey));
       final text = tester.getRect(find.text('Imperial'));
 
       expect(dot.size, const Size(14, 14));
@@ -139,9 +132,7 @@ void main() {
         ),
       );
 
-      final pill = tester.getRect(find
-          .ancestor(of: find.byType(Row), matching: find.byType(Container))
-          .first);
+      final pill = tester.getRect(find.byKey(PreferenceValueView.pillKey));
       final text = tester.getRect(find.text('Imperial'));
 
       expect(text.height, greaterThan(24));

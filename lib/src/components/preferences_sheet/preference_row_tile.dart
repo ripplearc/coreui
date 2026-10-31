@@ -43,6 +43,10 @@ class PreferenceRowTile extends StatelessWidget {
     this.onTap,
   });
 
+  /// Key of the transparent layer inside the fill that draws the ink, for
+  /// widget-test finders.
+  static const Key inkLayerKey = Key('preference_row_tile_ink_layer');
+
   static const double _bottomLineWidth = 1;
 
   @override
@@ -66,6 +70,7 @@ class PreferenceRowTile extends StatelessWidget {
       ),
       // On top of the fill, so the press and focus looks can be seen.
       child: Material(
+        key: inkLayerKey,
         type: MaterialType.transparency,
         child: InkWell(
           onTap: onTap,

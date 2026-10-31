@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../ripplearc_coreui.dart';
 
 /// Renders a preference row's current value: plain text, or the outlined
-/// pill with a state dot that the switch-like preferences read as.
+/// pill with a state dot that the switch-like preferences read as. The pill
+/// follows the library Setting List Switch row (Figma 66778:196399).
 ///
 /// Internal to the preferences sheet — not exported from the package barrel.
 class PreferenceValueView extends StatelessWidget {
@@ -20,7 +21,12 @@ class PreferenceValueView extends StatelessWidget {
     this.isDisabled = false,
   });
 
-  // Library Setting List, Switch row (Figma 66778:196399).
+  /// Key of the pill's outline, for widget-test finders.
+  static const Key pillKey = Key('preference_value_pill');
+
+  /// Key of the pill's state dot, for widget-test finders.
+  static const Key dotKey = Key('preference_value_dot');
+
   static const double _dotSize = CoreIconSize.size14;
 
   @override
@@ -43,6 +49,7 @@ class PreferenceValueView extends StatelessWidget {
       case CorePreferencePillValue(:final label, :final isOn):
         final accent = isOn ? colors.iconGreen : colors.iconGrayMid;
         return Container(
+          key: pillKey,
           decoration: BoxDecoration(
             color: colors.pageBackground,
             borderRadius: BorderRadius.circular(CoreSpacing.space5),
@@ -58,6 +65,7 @@ class PreferenceValueView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
+                key: dotKey,
                 width: _dotSize,
                 height: _dotSize,
                 decoration: BoxDecoration(
