@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.64.0] - CoreUnderlineTextField text that wraps to several lines
+
+### ✨ Features
+
+- **CoreUnderlineTextField.maxLines**: lets the value wrap. The field grows with its text up to `maxLines` lines, then the text scrolls inside it, and the return key adds a new line. A regular field with `maxLines` above 1 sits its underline 8px under the last line, as the Figma Line Multi-line variants draw it. The default, 1, is unchanged (CA-1347)
+- The error row and the hint row the ticket asks for were already part of the field (`errorText`, `helperText`), so they are only covered with new multi-line tests and goldens
+- Showcase: a "Several lines" section in the Underline Text Field screen, and the component doc describes `maxLines`
+
+### 🧪 Tests
+
+- Widget tests for wrapping, the 8px gap under the last line, the stop at `maxLines` with scrolling, the new line on return, the error replacing the hint, and the unchanged default
+- Goldens for short text, long text, hint and error on a multi-line field, in light and dark
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
