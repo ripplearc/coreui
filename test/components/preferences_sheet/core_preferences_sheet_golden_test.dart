@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -60,6 +61,12 @@ void main() {
           label: 'Thousands separator',
           value: CorePreferencePillValue('Off', isOn: false),
         ),
+        CorePreferenceRow(
+          key: 'currency',
+          label: 'Currency',
+          value: CorePreferenceTextValue('USD'),
+          isDisabled: true,
+        ),
       ],
     ),
   ];
@@ -112,5 +119,18 @@ void main() {
       );
     });
 
+    testWidgets('CorePreferencesSheet pressed row - $name', (tester) async {
+      await pumpBody(tester, theme, buildList());
+      final gesture =
+          await tester.startGesture(tester.getCenter(find.text('Imperial')));
+      await tester.pump(kPressTimeout);
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(CorePreferencesSheet),
+        matchesGoldenFile('goldens/core_preferences_sheet_pressed_$name.png'),
+      );
+      await gesture.cancel();
+    });
   }
 }
