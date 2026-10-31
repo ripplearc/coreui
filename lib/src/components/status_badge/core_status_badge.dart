@@ -123,13 +123,9 @@ class CoreStatusBadge extends StatelessWidget {
           'A tappable info icon needs an infoSemanticLabel.',
         );
 
-  // TODO (CA-1238): CoreSpacing has no 10, 11 or 22 step. Replace these with
-  // tokens once they exist. https://ripplearc.youtrack.cloud/issue/CA-1238
-  static const double _padding10 = 10;
-  static const double _padding11 = 11;
-
   static const double _neutralHeight = 22;
   static const double _borderWidth = 1;
+  static const double _paddingInsideBorder = CoreSpacing.space3 - _borderWidth;
 
   bool get _isCompact => size == CoreStatusBadgeSize.compact;
   bool get _isNeutral => variant == CoreStatusBadgeVariant.neutral;
@@ -143,8 +139,8 @@ class CoreStatusBadge extends StatelessWidget {
       _isCompact || _isNeutral ? CoreRadius.radius6 : CoreRadius.radius8;
 
   double get _horizontalPadding {
-    if (_isNeutral) return _padding11;
-    return _isCompact ? CoreSpacing.space2 : _padding10;
+    if (_isNeutral) return _paddingInsideBorder;
+    return _isCompact ? CoreSpacing.space2 : _paddingInsideBorder;
   }
 
   Widget _buildInfoIcon(Color color) {
@@ -174,7 +170,7 @@ class CoreStatusBadge extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(
               left: CoreSpacing.space1,
-              right: _padding10,
+              right: _paddingInsideBorder,
             ),
             child: Center(heightFactor: 1, child: icon),
           ),

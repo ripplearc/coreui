@@ -20,9 +20,9 @@ class SpacingShowcaseScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Our spacing system is based on a 4px grid (0.25rem with 16px base).',
-              style: TextStyle(fontSize: 16),
+              style: Theme.of(context).coreTypography.bodyLargeRegular,
             ),
             const SizedBox(height: 24),
 
@@ -38,53 +38,55 @@ class SpacingShowcaseScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSpacingSection('1', '0.25rem', '4px', CoreSpacing.space1),
-        _buildSpacingSection('2', '0.5rem', '8px', CoreSpacing.space2),
-        _buildSpacingSection('3', '0.75rem', '12px', CoreSpacing.space3),
-        _buildSpacingSection('4', '1rem', '16px', CoreSpacing.space4),
-        _buildSpacingSection('5', '1.25rem', '20px', CoreSpacing.space5),
-        _buildSpacingSection('6', '1.5rem', '24px', CoreSpacing.space6),
-        _buildSpacingSection('8', '2rem', '32px', CoreSpacing.space8),
-        _buildSpacingSection('10', '2.5rem', '40px', CoreSpacing.space10),
-        _buildSpacingSection('12', '3rem', '48px', CoreSpacing.space12),
-        _buildSpacingSection('16', '4rem', '64px', CoreSpacing.space16),
-        _buildSpacingSection('20', '5rem', '80px', CoreSpacing.space20),
-        _buildSpacingSection('24', '6rem', '96px', CoreSpacing.space24),
-        _buildSpacingSection('32', '8rem', '128px', CoreSpacing.space32),
-        _buildSpacingSection('40', '10rem', '160px', CoreSpacing.space40),
-        _buildSpacingSection('48', '12rem', '192px', CoreSpacing.space48),
-        _buildSpacingSection('56', '14rem', '224px', CoreSpacing.space56),
-        _buildSpacingSection('64', '16rem', '256px', CoreSpacing.space64),
+        _buildSpacingSection(context, '1', '0.25rem', '4px', CoreSpacing.space1),
+        _buildSpacingSection(context, '2', '0.5rem', '8px', CoreSpacing.space2),
+        _buildSpacingSection(context, '3', '0.75rem', '12px', CoreSpacing.space3),
+        _buildSpacingSection(context, '4', '1rem', '16px', CoreSpacing.space4),
+        _buildSpacingSection(context, '5', '1.25rem', '20px', CoreSpacing.space5),
+        _buildSpacingSection(context, '6', '1.5rem', '24px', CoreSpacing.space6),
+        _buildSpacingSection(context, '8', '2rem', '32px', CoreSpacing.space8),
+        _buildSpacingSection(context, '10', '2.5rem', '40px', CoreSpacing.space10),
+        _buildSpacingSection(context, '12', '3rem', '48px', CoreSpacing.space12),
+        _buildSpacingSection(context, '16', '4rem', '64px', CoreSpacing.space16),
+        _buildSpacingSection(context, '20', '5rem', '80px', CoreSpacing.space20),
+        _buildSpacingSection(context, '24', '6rem', '96px', CoreSpacing.space24),
+        _buildSpacingSection(context, '32', '8rem', '128px', CoreSpacing.space32),
+        _buildSpacingSection(context, '40', '10rem', '160px', CoreSpacing.space40),
+        _buildSpacingSection(context, '48', '12rem', '192px', CoreSpacing.space48),
+        _buildSpacingSection(context, '56', '14rem', '224px', CoreSpacing.space56),
+        _buildSpacingSection(context, '64', '16rem', '256px', CoreSpacing.space64),
       ],
     );
   }
 
-  Widget _buildSpacingSection(
-      String name, String remValue, String pixelValue, double size) {
+  Widget _buildSpacingSection(BuildContext context, String name,
+      String remValue, String pixelValue, double size) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20,
+            width: 36,
             child: Text(
               name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: theme.coreTypography.bodyMediumSemiBold,
             ),
           ),
           SizedBox(
-            width: 50,
+            width: 64,
             child: Text(remValue),
           ),
           SizedBox(
-            width: 32,
+            width: 40,
             child: Text(pixelValue),
           ),
           Container(
             height: 24,
             width: size,
-            color: Colors.blue.shade200,
+            color: theme.coreColors.backgroundBlueLight,
           ),
         ],
       ),

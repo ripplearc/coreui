@@ -569,7 +569,7 @@ void main() {
   });
 
   group('CoreUnderlineTextField – sizes', () {
-    testWidgets('regular is 12/16 over 16/24 and 54px tall', (tester) async {
+    testWidgets('regular is 12/16 over 16/24 and 53px tall', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Rate', initialValue: '4'),
@@ -582,7 +582,7 @@ void main() {
       expect(label.height, 16 / 12);
       expect(value.fontSize, 16);
       expect(value.height, 24 / 16);
-      expect(tester.getSize(find.byType(CoreUnderlineTextField)).height, 54);
+      expect(tester.getSize(find.byType(CoreUnderlineTextField)).height, 53);
     });
 
     testWidgets('large is 14/20 over 24/32 semibold and 66px tall',
@@ -607,7 +607,7 @@ void main() {
       expect(tester.getSize(find.byType(CoreUnderlineTextField)).height, 66);
     });
 
-    testWidgets('the label sits 2px in for regular and flush for large',
+    testWidgets('the label sits 4px in for regular and flush for large',
         (tester) async {
       await pumpField(
         tester,
@@ -616,7 +616,7 @@ void main() {
       double labelInset() =>
           tester.getTopLeft(find.text('Rate')).dx -
           tester.getTopLeft(find.byType(CoreUnderlineTextField)).dx;
-      expect(labelInset(), 2);
+      expect(labelInset(), CoreSpacing.space1);
 
       await pumpField(
         tester,
@@ -637,8 +637,8 @@ void main() {
       final top = tester.getTopLeft(find.byType(CoreUnderlineTextField)).dy;
 
       expect(tester.getTopLeft(find.text('Rate')).dy - top, 0);
-      expect(tester.getTopLeft(find.byType(EditableText)).dy - top, 19);
-      expect(tester.getTopLeft(underline).dy - top, 53);
+      expect(tester.getTopLeft(find.byType(EditableText)).dy - top, 20);
+      expect(tester.getTopLeft(underline).dy - top, 52);
     });
 
     testWidgets('the typed text keeps the row height the design draws',
@@ -660,14 +660,14 @@ void main() {
       expect(tester.getSize(find.byType(EditableText)).height, 32);
     });
 
-    testWidgets('the caret is 2px wide and 17px or 24px tall once focused',
+    testWidgets('the caret is 2px wide and 16px or 24px tall once focused',
         (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Rate', autofocus: true),
       );
       expect(inner(tester).cursorWidth, 2);
-      expect(inner(tester).cursorHeight, 17);
+      expect(inner(tester).cursorHeight, 16);
       expect(
         inner(tester).cursorColor,
         CoreTheme.light().coreColors.outlineFocus,

@@ -47,7 +47,7 @@ void main() {
       );
 
       expect(inner(tester).cursorWidth, 0);
-      expect(gapAfterInput(tester, find.text('days')), 5);
+      expect(gapAfterInput(tester, find.text('days')), CoreSpacing.space1);
     });
 
     testWidgets('focus draws the 2px caret and moves the unit 2px right',
@@ -65,7 +65,7 @@ void main() {
 
       expect(inner(tester).cursorWidth, 2);
       expect(leftOf(tester, find.text('days')), restLeft + 2);
-      expect(gapAfterInput(tester, find.text('days')), 5);
+      expect(gapAfterInput(tester, find.text('days')), CoreSpacing.space1);
     });
 
     testWidgets('the large unit moves by the same 2px', (tester) async {
@@ -192,7 +192,7 @@ void main() {
       await focus(tester);
 
       expect(inner(tester).cursorWidth, 0);
-      expect(gapAfterInput(tester, find.text('/day')), 5);
+      expect(gapAfterInput(tester, find.text('/day')), CoreSpacing.space1);
     });
 
     testWidgets('losing focus gives the room back', (tester) async {

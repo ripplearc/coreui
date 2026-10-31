@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.55.0] - Off-grid gaps move to the 4px spacing steps
+
+### 🔧 Fixes
+
+- **CoreUnderlineTextField**: every gap is a 4px step, as design decided for the whole library. Regular: the value sits 4px under the label (was 3) and the underline 8px under the value (was 10), so the field is 53 high (was 54). Large: 4px and 8px (were 6 and 6); it stays 66 high. The unit sits 4px after the value (was 5), the label badge 4px after the label (was 5), the prefix 4px before the value (was 2), and the label, value and helper line start 4px in (were 2). The caret is 16px tall on regular (was 17). Compact now draws the same as regular, 53 high (was 52). The caret stays 2px wide, a line width (CA-1238)
+- **CoreStatusBadge**: the side padding is 11 dp inside the 1 dp outline (was 10), so the outline and the padding make the 12 dp Figma draws from the outer edge to the text. The neutral badge keeps 11 dp. The warning badge is 2 dp wider (CA-1238)
+
+### 📐 Design notes
+
+- Design decided on 2026-10-25 to keep the library on the 4px grid: no off-grid spacing tokens. The local constants that waited on CA-1238 are gone; each user takes the nearest 4px step
+
+### 🧪 Tests
+
+- Underline field heights, offsets, insets and gaps for each size; status badge width. Goldens: every underline field golden (light and dark) and the status badge (light and dark)
+
 ## [0.42.0] - CoreStatusBadge and its colour, radius and icon size tokens
 
 ### ✨ Features
