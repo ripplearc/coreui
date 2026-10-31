@@ -291,6 +291,8 @@ class _ToastState extends State<Toast> {
   bool _isCloseFocused = false;
   bool _isActionPressed = false;
   bool _isActionFocused = false;
+  bool _isSecondaryPressed = false;
+  bool _isSecondaryFocused = false;
   bool? _assistiveTechHoldsTheToast;
 
   @override
@@ -708,35 +710,75 @@ class _ToastState extends State<Toast> {
     final onSecondary = widget.onSecondary;
     if (secondaryLabel == null || onSecondary == null) return null;
 
+    // Its own Material, so the InkWell works on any parent. Pressed and
+    // focused, it draws the library Text button looks on its label, as the
+    // alert's text button does, not a tint over the 48 dp target.
     return Semantics(
       container: true,
-      child: InkWell(
-        key: const Key('toast_secondary_button'),
-        onTap: () => _answer(onSecondary),
-        splashFactory: NoSplash.splashFactory,
-        highlightColor: colors.transparent,
-        hoverColor: colors.transparent,
-        child: Semantics(
-          button: true,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: CoreSpacing.space12,
-              minHeight: CoreSpacing.space12,
-              maxHeight: CoreSpacing.space12,
-            ),
-            child: Center(
-              widthFactor: 1,
-              child: Text(
-                secondaryLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: typography.bodyLargeSemiBold.copyWith(
-                  color: colors.textLink
-                      .withValues(alpha: Toast._secondaryActionOpacity),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          key: const Key('toast_secondary_button'),
+          onTap: () => _answer(onSecondary),
+          onHighlightChanged: (isPressed) =>
+              setState(() => _isSecondaryPressed = isPressed),
+          onFocusChange: (isFocused) =>
+              setState(() => _isSecondaryFocused = isFocused),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: WidgetStateProperty.all(colors.transparent),
+          child: Semantics(
+            button: true,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: CoreSpacing.space12,
+                minHeight: CoreSpacing.space12,
+                maxHeight: CoreSpacing.space12,
+              ),
+              child: Center(
+                widthFactor: 1,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Text(
+                      secondaryLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.bodyLargeSemiBold.copyWith(
+                        color: (_isSecondaryPressed
+                                ? colors.buttonPress
+                                : colors.textLink)
+                            .withValues(alpha: Toast._secondaryActionOpacity),
+                      ),
+                    ),
+                    if (_isSecondaryFocused)
+                      _buildTextFocusRing(
+                        colors,
+                        const Key('toast_secondary_focus_ring'),
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFocusRing(AppColorsExtension colors, Key key) {
+    return Positioned(
+      key: key,
+      left: -CoreSpacing.space3,
+      right: -CoreSpacing.space3,
+      top: -_actionFocusRingOutsetY,
+      bottom: -_actionFocusRingOutsetY,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: colors.outlineFocus,
+            width: _actionFocusRingWidth,
+          ),
+          borderRadius: BorderRadius.circular(CoreSpacing.space10),
         ),
       ),
     );
@@ -820,23 +862,9 @@ class _ToastState extends State<Toast> {
                         ),
                       ),
                       if (_isActionFocused)
-                        Positioned(
-                          key: const Key('toast_action_focus_ring'),
-                          left: -CoreSpacing.space3,
-                          right: -CoreSpacing.space3,
-                          top: -_actionFocusRingOutsetY,
-                          bottom: -_actionFocusRingOutsetY,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: colors.outlineFocus,
-                                width: _actionFocusRingWidth,
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                CoreSpacing.space10,
-                              ),
-                            ),
-                          ),
+                        _buildTextFocusRing(
+                          colors,
+                          const Key('toast_action_focus_ring'),
                         ),
                     ],
                   ),

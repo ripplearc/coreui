@@ -1281,6 +1281,111 @@ void main() {
       });
     });
 
+    group('receipt View looks', () {
+      final secondaryFinder = find.byKey(const Key('toast_secondary_button'));
+      final ringFinder = find.byKey(const Key('toast_secondary_focus_ring'));
+
+      Widget buildReceiptWithView({
+        required VoidCallback onSecondary,
+        bool withMaterial = true,
+      }) {
+        final receipt = Toast.receipt(
+          description: 'Saved to history',
+          highlight: 'Calc 60ft²',
+          actionLabel: 'Undo',
+          onAction: _noop,
+          secondaryLabel: 'View',
+          onSecondary: onSecondary,
+          onClose: _noop,
+        );
+        return MaterialApp(
+          theme: CoreTheme.light(),
+          home: withMaterial
+              ? Scaffold(body: receipt)
+              : ColoredBox(
+                  color: CoreTheme.light().coreColors.pageBackground,
+                  child: Center(child: receipt),
+                ),
+        );
+      }
+
+      Color viewColor(WidgetTester tester) =>
+          tester.widget<Text>(find.text('View')).style!.color!;
+
+      testWidgets('View turns Button Press while pressed and fires once',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var views = 0;
+        await tester.pumpWidget(
+          buildReceiptWithView(onSecondary: () => views++),
+        );
+        final restColor = viewColor(tester);
+        expect(restColor.toARGB32(), isNot(colors.buttonPress.toARGB32()));
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(secondaryFinder));
+          await tester.pump();
+          expect(viewColor(tester).r, colors.buttonPress.r);
+          expect(viewColor(tester).g, colors.buttonPress.g);
+          expect(viewColor(tester).b, colors.buttonPress.b);
+
+          await gesture.up();
+          await tester.pump();
+          expect(viewColor(tester), restColor);
+        }
+        expect(views, 1);
+      });
+
+      testWidgets('Tab focuses View, rings its label and Enter takes it',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var views = 0;
+        await tester.pumpWidget(
+          buildReceiptWithView(onSecondary: () => views++),
+        );
+        expect(ringFinder, findsNothing);
+
+        for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+        }
+        final label = tester.getRect(find.text('View'));
+        final ring = tester.getRect(ringFinder);
+        expect(ring.left, label.left - CoreSpacing.space3);
+        expect(ring.right, label.right + CoreSpacing.space3);
+        expect(ring.top, label.top - 5);
+        expect(ring.bottom, label.bottom + 5);
+        final border = (tester
+                .widget<DecoratedBox>(find.descendant(
+                  of: ringFinder,
+                  matching: find.byType(DecoratedBox),
+                ))
+                .decoration as BoxDecoration)
+            .border! as Border;
+        expect(border.top.color, colors.outlineFocus);
+        expect(border.top.width, 3);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(views, 1);
+      });
+
+      testWidgets('View works inside a coloured parent with no Material',
+          (WidgetTester tester) async {
+        var views = 0;
+        await tester.pumpWidget(buildReceiptWithView(
+          onSecondary: () => views++,
+          withMaterial: false,
+        ));
+
+        expect(tester.takeException(), isNull);
+        await tester.tap(secondaryFinder);
+        await tester.pump();
+        expect(views, 1);
+      });
+    });
+
     group('Acknowledgement Toast', () {
       const message = 'Added to Bedroom 2';
 
