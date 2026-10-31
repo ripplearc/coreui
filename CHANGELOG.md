@@ -12,6 +12,7 @@
 - **Social height**: a social button is 48 px tall in any parent. It used to stretch to all the height its parent offered, for example 100 px in a `Center` (CA-1319)
 - **Small and Medium tap area**: a Small (36 px) or Medium (40 px) button keeps its look and now sits in a 48 x 48 px tap area, so it takes 48 px of layout. Rows of Medium buttons, such as the display area value pills, sit 8 px taller (CA-1319)
 - **Large text**: the button heights are minimums, so at 200% text a Small or Medium label grows the button instead of being cut (CA-1319)
+- **Test finder**: `CoreButton.fillKey` finds the button's fill and border in widget tests (CA-1319)
 
 ### 📐 Design notes
 

@@ -64,12 +64,16 @@ class CoreButton extends StatefulWidget {
   /// dependent-key pills draw (Figma Dependent Key Chip).
   static const double hairlineBorderWidth = 1;
 
-  /// Width of the focus ring a focused [CoreButtonVariant.primary] draws.
+  /// Width of the focus ring a focused [CoreButtonVariant.primary] or
+  /// [CoreButtonVariant.secondary] button draws.
   static const double focusRingWidth = 3;
 
   /// How far the outer edge of the focus ring sits outside the button. The
   /// 2 px between the button and the ring stay transparent (Figma Focus ring).
   static const double focusRingOffset = 5;
+
+  /// Key of the button's fill and border, for widget-test finders.
+  static const Key fillKey = Key('core_button_fill');
 
   const CoreButton({
     super.key,
@@ -338,6 +342,7 @@ class _CoreButtonState extends State<CoreButton> {
                 widget.variant == CoreButtonVariant.social ? 0 : _height,
           ),
           child: DecoratedBox(
+            key: CoreButton.fillKey,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.borderRadius),
               color: _getBackgroundColor(

@@ -280,15 +280,9 @@ void main() {
     final colors = AppColorsExtension.create();
     final typography = AppTypographyExtension.create();
 
-    BoxDecoration fillOf(WidgetTester tester) {
-      final decoratedBoxes = tester.widgetList<DecoratedBox>(
-        find.descendant(
-          of: find.byType(CoreButton),
-          matching: find.byType(DecoratedBox),
-        ),
-      );
-      return decoratedBoxes.elementAt(1).decoration as BoxDecoration;
-    }
+    BoxDecoration fillOf(WidgetTester tester) => tester
+        .widget<DecoratedBox>(find.byKey(CoreButton.fillKey))
+        .decoration as BoxDecoration;
 
     Finder focusRing() => find.descendant(
           of: find.byType(CoreButton),
@@ -306,14 +300,8 @@ void main() {
           }),
         );
 
-    Size fillSizeOf(WidgetTester tester) => tester.getSize(
-          find
-              .descendant(
-                of: find.byType(CoreButton),
-                matching: find.byType(DecoratedBox),
-              )
-              .at(1),
-        );
+    Size fillSizeOf(WidgetTester tester) =>
+        tester.getSize(find.byKey(CoreButton.fillKey));
 
     TextStyle labelStyleOf(WidgetTester tester, String label) =>
         tester.widget<Text>(find.text(label)).style!;
