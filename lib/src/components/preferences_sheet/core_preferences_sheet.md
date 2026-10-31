@@ -29,7 +29,7 @@ rows do not all read the same way:
 | Variant | Renders as | Used for |
 | :--- | :--- | :--- |
 | `CorePreferenceTextValue(label, isMuted:)` | text in `textLink`, or `textBody` when muted | most rows — `1/16`, `in`, `2,000 lb (US short ton)` |
-| `CorePreferencePillValue(label, isOn:)` | an outlined pill with a state dot and Body Small text, green when on and grey when off | rows that read as a state — `● Imperial`, `● Off` |
+| `CorePreferencePillValue(label, isOn:)` | an outlined pill, 24 dp high, with a 14 dp state dot 4 dp before Body Small text, green when on and grey when off (library Switch row, Figma 66778:196399) | rows that read as a state — `● Imperial`, `● Off` |
 
 Muted text is for preferences the app cannot act on yet, so a stub reads as
 quieter rather than as a live value.

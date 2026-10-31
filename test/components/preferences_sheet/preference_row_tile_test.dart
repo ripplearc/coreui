@@ -66,6 +66,29 @@ void main() {
     expect(border.top, BorderSide.none);
   });
 
+  testWidgets('a row with a pill value is 48 dp high too', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: PreferenceRowTile(
+            row: const CorePreferenceRow(
+              key: 'units',
+              label: 'System of units',
+              value: CorePreferencePillValue('Imperial', isOn: true),
+              options: [],
+            ),
+            isEmphasised: false,
+            emphasisDuration: const Duration(milliseconds: 400),
+            anchorKey: anchor,
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byType(AnimatedContainer)).height, 48);
+  });
+
   testWidgets('the value sits 12 dp after the label', (tester) async {
     await pumpTile(tester);
 

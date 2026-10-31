@@ -4,16 +4,16 @@
 
 ### 🐛 Fixes
 
-- **CorePreferencesSheet** rows: 12 dp padding on every side (was 16 dp at the sides), a 1 px Line Light line at the bottom of each row, and the label in Text Dark (was Text Headline). A text value is Body Medium Semibold (was Body Large Semibold). A read-only value (`isMuted`) is Text Body (was Text Disable, which made a read-only setting look disabled). A row is 48 dp high with its bottom line inside it (was 49) and 12 dp between the label and the value (was 8). The press and focus looks now show: the ink sits above the grey row fill, which used to cover it, and a pressed row fills Background Blue Light, the library Pressed state. The switch row's pill text is Body Small Regular (was Body Medium Semibold) (CA-1318)
+- **CorePreferencesSheet** rows: 12 dp padding on every side (was 16 dp at the sides), a 1 px Line Light line at the bottom of each row, and the label in Text Dark (was Text Headline). A text value is Body Medium Semibold (was Body Large Semibold). A read-only value (`isMuted`) is Text Body (was Text Disable, which made a read-only setting look disabled). A row is 48 dp high with its bottom line inside it (was 49) and 12 dp between the label and the value (was 8). The press and focus looks now show: the ink sits above the grey row fill, which used to cover it, and a pressed row fills Background Blue Light, the library Pressed state. The switch row's pill matches the library Switch row: Body Small Regular text (was Body Medium Semibold), a 14 dp dot (was 8) 4 dp inside the border and 4 dp before the text (were 12 and 8), and 24 dp high (was 26), so a pill row is 48 dp like the others (was 50). The pill grows with large text (CA-1318)
 - **CorePreferenceRow.isDisabled**: the library Value row Disabled state. The label and the value are Text Disable and the row ignores taps (CA-1318)
 
 ### 📐 Design notes
 
-The row fill stays Background Grey Mid. Figma uses Background Grey Light, but in code that token is the same as the page colour, so the row would not show. The option sheet already matched and is unchanged. The switch row's pill dot stays 8 dp; its Figma size was not measured.
+The row fill stays Background Grey Mid. Figma uses Background Grey Light, but in code that token is the same as the page colour, so the row would not show. The option sheet already matched and is unchanged.
 
 ### 🧪 Tests
 
-- Row height 48 with the bottom line, the 12 dp label-to-value gap, the ink inside the fill with a Blue Light highlight, label colour, a disabled row in Text Disable and inert; text value style, the read-only colour and the pill text style. Goldens regenerated, light and dark, now with a disabled row; new, a pressed row in light and dark
+- Row height 48 with the bottom line, the 12 dp label-to-value gap, the ink inside the fill with a Blue Light highlight, label colour, a disabled row in Text Disable and inert; text value style, the read-only colour and the pill text style; the pill dot, gaps and height, a pill row 48 dp high, the pill growing with 2.0 text. Goldens regenerated, light and dark, now with a disabled row; new, a pressed row in light and dark
 
 ## [0.46.0] - CoreCheckRowItem matches the library Dropdown cell
 
