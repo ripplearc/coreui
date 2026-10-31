@@ -174,6 +174,30 @@ void main() {
     ));
   }
 
+  Future<void> pumpReceipt(WidgetTester tester, ThemeData theme) async {
+    await tester.binding.setSurfaceSize(const Size(400, 112));
+    await tester.pumpWidget(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme,
+      home: Scaffold(
+        backgroundColor: theme.coreColors.pageBackground,
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Toast.receipt(
+            description: 'Saved to history',
+            highlight: 'Calc 60ft²',
+            actionLabel: 'Undo',
+            onAction: () {},
+            secondaryLabel: 'View',
+            onSecondary: () {},
+            onClose: () {},
+          ),
+        ),
+      ),
+    ));
+  }
+
+  final receiptViewButton = find.byKey(const Key('toast_secondary_button'));
   final closeButton = find.byKey(const Key('toast_close_button'));
   final viewButton = find.byKey(const Key('toast_action_button'));
   final themes = {
@@ -225,6 +249,34 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/toast_view_focused_$name.png'),
+      );
+    });
+
+    testWidgets('receipt View, pressed ($name)', (WidgetTester tester) async {
+      await pumpReceipt(tester, theme);
+      final gesture =
+          await tester.startGesture(tester.getCenter(receiptViewButton));
+      await tester.pump();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_receipt_view_pressed_$name.png'),
+      );
+      await gesture.up();
+    });
+
+    testWidgets('receipt View, focused ($name)', (WidgetTester tester) async {
+      await pumpReceipt(tester, theme);
+      final ring = find.byKey(const Key('toast_secondary_focus_ring'));
+      for (var tab = 0; tab < 3 && ring.evaluate().isEmpty; tab++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+      }
+      expect(ring, findsOneWidget);
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_receipt_view_focused_$name.png'),
       );
     });
   });
