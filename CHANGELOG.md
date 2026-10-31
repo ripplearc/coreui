@@ -5,6 +5,7 @@
 ### 🔧 Fixes
 
 - **CoreFilterChip**: the library Filter chip. A 32 high pill on `pageBackground` with a 1 px `lineDarkOutline` border, radius 20 and 12 px at the sides (was a grey `backgroundGrayMid` box, 48 high, radius 12). The arrow is the Figma 10 dp wide drop-down in `textDark`: a 24 dp glyph (was 16 dp in `iconDark`). The 48 x 48 touch area stays. The inactive `CoreDateFilterChip` uses it, so it changes too. A focused chip draws its pill border in `outlineFocus` at 2 px, with no tint over the touch area. The chip brings its own `Material`, so it draws the same on any parent. Pressed, the pill fills `backgroundGrayMid`, as the library List control chip does; the library draws no Press state for the Filter chip. The pill height is a minimum, so at 200% text the pill grows and the label is not cut (CA-1322)
+- **Docs**: `core_filter_chip.md` describes the chip, its sizes and its pressed, focused and large-text looks (CA-1322)
 
 ### 🧪 Tests
 
