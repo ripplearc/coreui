@@ -61,7 +61,7 @@ Toast.acknowledgement(description: 'Added to Bedroom 2');
 | `title`       | `String?`       | No       | Optional title text displayed above the description                   |
 | `onClose`     | `VoidCallback?` | No       | Called when the toast closes, from the close x or after the text button. Without it, the close x pops the current route; the text button never pops one, because its action may have just opened a page |
 | `actionLabel` | `String?`       | No       | A text button beside the close x — "View". Travels with `onAction`    |
-| `onAction`    | `VoidCallback?` | No       | Fires once when the text button is tapped, then `onClose` fires       |
+| `onAction`    | `VoidCallback?` | No       | Fires once when the text button is tapped, then `onClose` fires. The text button never pops a route, so pass `onClose` to remove the alert |
 
 ### Toast.receipt Properties
 
@@ -215,7 +215,8 @@ The Toast component includes semantic labels for accessibility:
   surface is drawn 40 dp high with `CoreSpacing.space3` at the sides, and its
   text is `CoreTypography.bodyMediumMedium`. Its text button and close x keep
   48 dp targets, so they stand 4 dp past the surface's top and bottom edges.
-  An alert with a title keeps the Large alert text (Figma `7:2594`)
+  An alert with a title keeps the Large alert text (Figma `7:2594`), with its
+  icon, text button and close x on the first title line
 - Close: a plain `CoreIcons.cross` in `iconDark`, 48 dp target. The padding at
   the end puts the glyph where Figma does, 4 dp in from the side padding.
   Pressed, the x turns `buttonPress`, as a pressed Text button label does.

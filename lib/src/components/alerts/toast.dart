@@ -61,7 +61,9 @@ class Toast extends StatefulWidget {
   /// button beside its close x, such as `View`. Localised by the caller.
   final String? actionLabel;
 
-  /// Fires once when the action is taken, before [onClose].
+  /// Fires once when the action is taken, before [onClose]. Taking it never
+  /// pops a route, so an alert shown with an action stays on screen until
+  /// [onClose] removes it; pass both.
   final VoidCallback? onAction;
 
   /// Label of the receipt's quieter second action — `View`. Travels with

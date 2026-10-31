@@ -202,6 +202,23 @@ void main() {
         expect(calls, ['action', 'close']);
       });
 
+      testWidgets('without onClose, View fires once and the alert stays',
+          (WidgetTester tester) async {
+        var actions = 0;
+        await tester.pumpWidget(buildAlert(
+          actionLabel: 'View',
+          onAction: () => actions++,
+        ));
+
+        await tester.tap(actionFinder);
+        await tester.pump();
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(actions, 1);
+        expect(actionFinder, findsOneWidget);
+      });
+
       testWidgets('a View that opens a page leaves the page on screen',
           (WidgetTester tester) async {
         await tester.pumpWidget(MaterialApp(
