@@ -20,7 +20,8 @@ class PreferenceValueView extends StatelessWidget {
     this.isDisabled = false,
   });
 
-  static const double _dotSize = CoreSpacing.space2;
+  // Library Setting List, Switch row (Figma 66778:196399).
+  static const double _dotSize = CoreIconSize.size14;
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +48,11 @@ class PreferenceValueView extends StatelessWidget {
             borderRadius: BorderRadius.circular(CoreSpacing.space5),
             border: Border.all(color: accent),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoreSpacing.space3,
-            vertical: CoreSpacing.space1,
+          // A minimum, not a fixed height, so large text grows the pill.
+          constraints: const BoxConstraints(minHeight: CoreSpacing.space6),
+          padding: const EdgeInsets.only(
+            left: CoreSpacing.space1,
+            right: CoreSpacing.space3,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -62,7 +65,7 @@ class PreferenceValueView extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: CoreSpacing.space2),
+              const SizedBox(width: CoreSpacing.space1),
               Text(
                 label,
                 style: typography.bodySmallRegular.copyWith(
