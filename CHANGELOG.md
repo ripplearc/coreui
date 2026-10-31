@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.56.0] - CoreSheetHeader
+
+### ✨ Features
+
+- **CoreSheetHeader**: the library Sheet Header (Figma set `66335:151191`) at the top of a bottom sheet. Back=On, for a later step: a back arrow, a title and an optional subtitle; tapping the arrow calls `onBack`, and the header pops nothing itself. Back=Off, for the first step: leave out `onBack`, and there is no arrow. `style: CoreSheetHeaderStyle.metaLine` is the Logs look, with a meta line under the title. `showBottomLine` draws a 1 dp `lineLight` line under the header for content that scrolls. The title is `titleMediumSemiBold` in `textHeadline`, marked as a heading, and takes focus when the step opens. The subtitle is `textBody`: Body Medium with a back arrow, Body Small on the first step and for the meta line. Each line is cut with an ellipsis. The arrow is 24 dp in `textLink`, centred on the title line, with a 48 × 48 dp tap area. The text has 4 dp above it and 8 dp under it; it starts at 48 dp with the arrow, 20 dp without, 16 dp for the meta line (CA-1238)
+- **CoreSheetHeaderStyle**: `standard` and `metaLine` (CA-1238)
+- Showcase: a Sheet Header screen in the example app, with the header also opened inside a `CoreQuickSheet`, and a component doc
+
+### 🧪 Tests
+
+- The arrow's tap, its 48 × 48 dp tap area, its 24 dp size and its place on the title line; the title offset and 20 dp right inset; the height with and without a subtitle; Back=Off without an arrow, its 20 dp inset and small subtitle; the meta line's 16 dp sides; the bottom line only when asked; focus on the title when the step opens; a back arrow without a label is rejected; the one-line ellipsis; colours in both themes and text styles. A11y: tap target, label and text contrast guidelines in both themes, the arrow announced as a labelled button and the title as a heading. Goldens: light and dark, with every variant
+
 ## [0.55.0] - Off-grid gaps move to the 4px spacing steps
 
 ### 🔧 Fixes
