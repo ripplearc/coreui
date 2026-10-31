@@ -114,7 +114,10 @@ class _Segment extends StatefulWidget {
 
 class _SegmentState extends State<_Segment> {
   static const Duration _transitionDuration = Duration(milliseconds: 200);
-  static const double _verticalPadding = 6;
+  static const double _segmentHeight = CoreSpacing.space8;
+  static const double _bodyMediumLineHeight = CoreSpacing.space5;
+  static const double _verticalPadding =
+      (_segmentHeight - _bodyMediumLineHeight) / 2;
   static const double _focusWidth = 2;
 
   bool _isPressed = false;
