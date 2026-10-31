@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.43.0] - CoreUnderlineTextField text that wraps to several lines
+## [0.64.0] - CoreUnderlineTextField text that wraps to several lines
 
 ### ✨ Features
 
