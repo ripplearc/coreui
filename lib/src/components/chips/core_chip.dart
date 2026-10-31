@@ -96,6 +96,7 @@ class CoreChip extends StatefulWidget {
     this.isSmartChip = false,
     this.outline = CoreChipOutline.solid,
     this.semanticsLabel,
+    this.removeSemanticsLabel,
     this.focusNode,
     this.autofocus = false,
   }) : assert(
@@ -153,6 +154,11 @@ class CoreChip extends StatefulWidget {
 
   final bool withCloseIcon;
 
+  /// Overrides the label screen readers announce for the close (×) button.
+  ///
+  /// Defaults to "Remove" and the chip's text. Pass a localised string.
+  final String? removeSemanticsLabel;
+
   @override
   State<CoreChip> createState() => _CoreChipState();
 }
@@ -162,6 +168,7 @@ class _CoreChipState extends State<CoreChip> {
   final ValueNotifier<bool> _highlighted = ValueNotifier(false);
   late final FocusNode _focusNode;
   final ValueNotifier<bool> _focused = ValueNotifier(false);
+  bool _isCloseFocused = false;
 
   void _handleTap() {
     widget.onTap?.call();
@@ -209,7 +216,7 @@ class _CoreChipState extends State<CoreChip> {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final chipRadius = BorderRadius.circular(CoreSpacing.space6);
-    return ValueListenableBuilder<bool>(
+    final chip = ValueListenableBuilder<bool>(
       valueListenable: widget.selected,
       builder: (context, isSelected, _) {
         return ValueListenableBuilder<bool>(
@@ -221,7 +228,8 @@ class _CoreChipState extends State<CoreChip> {
                 return ValueListenableBuilder<bool>(
                   valueListenable: _focused,
                   builder: (context, isFocused, ___) {
-                    final activeFocused = isFocused || isHighlighted;
+                    final activeFocused =
+                        isFocused || isHighlighted || _isCloseFocused;
                     return Semantics(
                         label: widget.semanticsLabel ??
                             [widget.label, widget.value, widget.unit]
@@ -375,23 +383,10 @@ class _CoreChipState extends State<CoreChip> {
                                         ),
                                       ),
                                       if (_hasCloseIcon)
-                                        Semantics(
-                                          button: true,
-                                          label: 'Remove ${[
-                                            widget.label,
-                                            widget.value,
-                                            widget.unit
-                                          ].where((e) => e != null).join(' ')}',
-                                          child: GestureDetector(
-                                            behavior: HitTestBehavior.opaque,
-                                            key: const Key('close_icon'),
-                                            onTap: widget.onRemove,
-                                            child: CoreIconWidget(
-                                              icon: CoreIcons.close,
-                                              size: CoreSpacing.space5,
-                                              color: colors.iconGrayMid,
-                                            ),
-                                          ),
+                                        CoreIconWidget(
+                                          icon: CoreIcons.close,
+                                          size: CoreSpacing.space5,
+                                          color: colors.iconGrayMid,
                                         ),
                                     ],
                                   ),
@@ -405,6 +400,45 @@ class _CoreChipState extends State<CoreChip> {
           },
         );
       },
+    );
+    if (!_hasCloseIcon) return chip;
+    // The × gets a 48 dp tap target of its own at the chip's end. It
+    // overlaps the end of the text, as the date chip's × does, so the chip
+    // keeps its size. Pressing or focusing it shows the chip's own pressed
+    // and focused looks, which stay inside the chip.
+    return Stack(
+      children: [
+        chip,
+        PositionedDirectional(
+          top: 0,
+          bottom: 0,
+          end: 0,
+          width: CoreSpacing.space12,
+          child: Semantics(
+            button: true,
+            label: widget.removeSemanticsLabel ??
+                'Remove ${[
+                  widget.label,
+                  widget.value,
+                  widget.unit,
+                ].where((e) => e != null).join(' ')}',
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                key: const Key('close_icon'),
+                onTap: widget.onRemove,
+                onHighlightChanged: (value) => _pressed.value = value,
+                onFocusChange: (value) =>
+                    setState(() => _isCloseFocused = value),
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: WidgetStateProperty.all(
+                  AppColorsExtension.of(context).transparent,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
