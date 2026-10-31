@@ -9,7 +9,7 @@
 
 ### 🧪 Tests
 
-- The × target is at least 48 x 48, covers the icon and stays inside the chip; Tab reaches the × and the chip keeps its focus look; pressing the × shows the pressed look; `removeSemanticsLabel` replaces the English label. No golden changes
+- The × target is at least 48 x 48, covers the icon and stays inside the chip; Tab reaches the × and the chip keeps its focus look; pressing the × shows the pressed look; `removeSemanticsLabel` replaces the English label; a tap on the start of the label selects the chip and does not fire `onRemove`. No golden changes
 
 ## [0.58.0] - CoreTabs press and focus looks, CoreSwitch keyboard focus
 

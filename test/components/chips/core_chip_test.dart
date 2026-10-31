@@ -912,8 +912,12 @@ void main() {
   group('CoreChip close button', () {
     late ValueNotifier<bool> selected;
     late AppColorsExtension colors;
+    late int removes;
 
-    setUp(() => selected = ValueNotifier<bool>(false));
+    setUp(() {
+      selected = ValueNotifier<bool>(false);
+      removes = 0;
+    });
 
     Future<void> pumpChip(
       WidgetTester tester, {
@@ -931,7 +935,7 @@ void main() {
                     label: 'Filter',
                     selected: selected,
                     withCloseIcon: true,
-                    onRemove: () {},
+                    onRemove: () => removes++,
                     removeSemanticsLabel: removeSemanticsLabel,
                   ),
                 ),
@@ -971,6 +975,18 @@ void main() {
       expect(chip.right, target.right);
     });
 
+    testWidgets('a tap on the start of the label selects the chip and does '
+        'not remove it', (tester) async {
+      await pumpChip(tester);
+
+      final chip = tester.getRect(find.byType(CoreChip));
+      await tester.tapAt(Offset(chip.left + 16, chip.center.dy));
+      await tester.pumpAndSettle();
+
+      expect(selected.value, isTrue);
+      expect(removes, 0);
+    });
+
     testWidgets('Tab moves from the chip to the close button and the chip '
         'keeps its focus look', (tester) async {
       await pumpChip(tester);
@@ -985,10 +1001,8 @@ void main() {
         CoreChipTheme.borderWidthFor(isFocused: true),
       );
       final focused = FocusManager.instance.primaryFocus!.context!;
-      expect(
-        focused.findAncestorWidgetOfExactType<InkWell>()?.key,
-        const Key('close_icon'),
-      );
+      final focusedInkWell = focused.findAncestorWidgetOfExactType<InkWell>()!;
+      expect(focusedInkWell.key, const Key('close_icon'));
     });
 
     testWidgets('pressing the close button shows the pressed look',
