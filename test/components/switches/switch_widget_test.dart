@@ -221,6 +221,256 @@ void main() {
       });
     });
 
+    Future<void> pumpSwitch(
+      WidgetTester tester, {
+      required CoreSwitchType type,
+      required bool value,
+      ValueChanged<bool>? onChanged,
+      String? activeLabel,
+      String? inactiveLabel,
+      String? semanticLabel,
+    }) {
+      return tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSwitch(
+              type: type,
+              value: value,
+              onChanged: onChanged,
+              activeLabel: activeLabel,
+              inactiveLabel: inactiveLabel,
+              semanticLabel: semanticLabel,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('show hide label names the current state',
+        (WidgetTester tester) async {
+      var value = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => CoreSwitch(
+                type: CoreSwitchType.showHide,
+                value: value,
+                onChanged: (v) => setState(() => value = v),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Hide'), findsOneWidget);
+      expect(find.text('Show'), findsNothing);
+
+      await tester.tap(find.byType(CoreSwitch));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Show'), findsOneWidget);
+      expect(find.text('Hide'), findsNothing);
+    });
+
+    testWidgets('show hide is 72 x 32', (WidgetTester tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+
+      expect(tester.getSize(find.byType(AnimatedContainer)),
+          const Size(72, 32));
+    });
+
+    testWidgets('show hide uses the Figma colours when enabled',
+        (WidgetTester tester) async {
+      final colors = CoreTheme.light().coreColors;
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+      expect(offKnobColor(tester), colors.iconGrayLight);
+      expect(offBorderColor(tester), colors.lineMid);
+      expect(tester.widget<Text>(find.text('Hide')).style!.color,
+          colors.textDark);
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      final track = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      final decoration = track.decoration! as BoxDecoration;
+      expect(decoration.color, colors.buttonSurface);
+      expect(decoration.border, isNull);
+      expect(offKnobColor(tester), colors.iconWhite);
+      expect(tester.widget<Text>(find.text('Show')).style!.color,
+          colors.textInverse);
+    });
+
+    for (final type in CoreSwitchType.values) {
+      for (final value in [false, true]) {
+        testWidgets('disabled ${type.name} ${value ? 'on' : 'off'} uses the '
+            'disabled colours', (WidgetTester tester) async {
+          final colors = CoreTheme.light().coreColors;
+          final labelled = type != CoreSwitchType.normal;
+
+          await pumpSwitch(
+            tester,
+            type: type,
+            value: value,
+            activeLabel: labelled ? 'On' : null,
+            inactiveLabel: labelled ? 'Off' : null,
+          );
+          await tester.pumpAndSettle();
+
+          final track = tester.widget<AnimatedContainer>(
+            find.byType(AnimatedContainer),
+          );
+          final decoration = track.decoration! as BoxDecoration;
+          expect(decoration.color, colors.pageBackground);
+          expect(offBorderColor(tester), colors.lineMid);
+          expect(offKnobColor(tester), colors.iconGrayLight);
+          if (labelled) {
+            expect(
+              tester.widget<Text>(find.text(value ? 'On' : 'Off')).style!.color,
+              colors.textDisable,
+            );
+          }
+        });
+      }
+    }
+
+    testWidgets('disabled thumb keeps the side of its value',
+        (WidgetTester tester) async {
+      Future<double> thumbLeft(bool value) async {
+        await pumpSwitch(
+          tester,
+          type: CoreSwitchType.showHide,
+          value: value,
+        );
+        await tester.pumpAndSettle();
+        return tester
+            .getTopLeft(find.byWidgetPredicate((w) =>
+                w is Container &&
+                w.decoration is BoxDecoration &&
+                (w.decoration! as BoxDecoration).shape == BoxShape.circle))
+            .dx;
+      }
+
+      final off = await thumbLeft(false);
+      final on = await thumbLeft(true);
+      expect(on, greaterThan(off));
+    });
+
+    testWidgets('disabled switch ignores taps', (WidgetTester tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+      );
+
+      await tester.tap(find.byType(CoreSwitch));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Hide'), findsOneWidget);
+      expect(find.text('Show'), findsNothing);
+    });
+
+    testWidgets('enabled switch calls onChanged with the toggled value',
+        (WidgetTester tester) async {
+      bool? received;
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (v) => received = v,
+      );
+
+      await tester.tap(find.byType(CoreSwitch));
+
+      expect(received, isTrue);
+    });
+
+    testWidgets('screen reader reads a disabled switch as disabled',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        semanticLabel: 'Markup to client',
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(
+          label: 'Markup to client',
+          hasEnabledState: true,
+          isEnabled: false,
+          hasToggledState: true,
+          isToggled: false,
+          hasTapAction: false,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('screen reader reads an enabled switch as enabled, on and '
+        'focusable',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+        semanticLabel: 'Markup to client',
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(
+          hasEnabledState: true,
+          isEnabled: true,
+          hasToggledState: true,
+          isToggled: true,
+          hasTapAction: true,
+          isFocusable: true,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('screen reader reads the current label when none is given',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(label: 'Show'),
+      );
+      handle.dispose();
+    });
+
     testWidgets('switch respects custom inactive color',
         (WidgetTester tester) async {
       final colors = AppColorsExtension.create();
@@ -367,6 +617,43 @@ void main() {
 
       final track = trackOf(tester);
       expect(changes, [true, false]);
+      expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
+          isNot(colors.outlineFocus));
+    });
+
+    testWidgets('Tab skips a disabled switch and draws no ring on it',
+        (WidgetTester tester) async {
+      final nextFocus = FocusNode();
+      addTearDown(nextFocus.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          RepaintBoundary(
+            key: boundaryKey,
+            child: Padding(
+              padding: const EdgeInsets.all(CoreSpacing.space2),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CoreSwitch(
+                    key: switchKey,
+                    value: false,
+                    onChanged: null,
+                  ),
+                  Focus(focusNode: nextFocus, child: const SizedBox()),
+                ],
+              ),
+            ),
+          ),
+          theme: theme,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final track = trackOf(tester);
+      expect(nextFocus.hasFocus, isTrue);
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
           isNot(colors.outlineFocus));
     });
