@@ -186,6 +186,10 @@ The Toast component includes semantic labels for accessibility:
   with its ink turned off rather than a `GestureDetector`, which would defer
   hit testing to its child and leave the top and bottom 12 dp dead — and which
   takes no keyboard or D-pad focus at all
+- `View` has its own `Material`, so it works on a coloured parent or with none.
+  Like the alert's text button, its label turns `buttonPress` (at the same 85 %
+  opacity) while pressed, and Tab focus draws a 3 px `outlineFocus` ring 12 dp
+  beside and 5 dp above and below the label. Neither is a tint over the 48 dp box
 - `secondaryLabel` and `onSecondary` are asserted to travel together: an
   interactive control with no label is invisible to a screen reader. The pair is
   resolved once, so the width the row holds back for the second action and the
