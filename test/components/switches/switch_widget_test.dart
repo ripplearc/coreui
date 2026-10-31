@@ -315,7 +315,7 @@ void main() {
       return changes;
     }
 
-    Future<Color> pixel(WidgetTester tester, Offset point) =>
+    Future<int> pixel(WidgetTester tester, Offset point) =>
         pixelAt(tester, find.byKey(boundaryKey), point);
 
     Rect trackOf(WidgetTester tester) =>
@@ -349,11 +349,11 @@ void main() {
       final x = track.center.dx;
       expect(track, restingTrack);
       expect(await pixel(tester, Offset(x, track.top - 1)),
-          colors.outlineFocus);
+          colors.outlineFocus.toARGB32());
       expect(await pixel(tester, Offset(x, track.bottom + 1)),
-          colors.outlineFocus);
+          colors.outlineFocus.toARGB32());
       expect(await pixel(tester, Offset(x, track.top - 3)),
-          isNot(colors.outlineFocus));
+          isNot(colors.outlineFocus.toARGB32()));
     });
 
     testWidgets('a touch tap toggles each time and draws no ring',
@@ -368,7 +368,7 @@ void main() {
       final track = trackOf(tester);
       expect(changes, [true, false]);
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
-          isNot(colors.outlineFocus));
+          isNot(colors.outlineFocus.toARGB32()));
     });
   });
 }

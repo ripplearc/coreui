@@ -4,9 +4,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Reads the colour drawn at the global [point] inside the RepaintBoundary
-/// that [boundary] finds. Use it to check what the user sees, for example a
-/// press fill that a coloured parent would hide.
-Future<Color> pixelAt(
+/// that [boundary] finds, as a 32-bit ARGB value. Use it to check what the
+/// user sees, for example a press fill that a coloured parent would hide:
+/// compare it with a theme colour's `toARGB32()`.
+Future<int> pixelAt(
   WidgetTester tester,
   Finder boundary,
   Offset point,
@@ -21,5 +22,5 @@ Future<Color> pixelAt(
     final i = (y * image.width + x) * 4;
     return [for (var c = 0; c < 4; c++) data!.getUint8(i + c)];
   });
-  return Color.fromARGB(rgba![3], rgba[0], rgba[1], rgba[2]);
+  return rgba![3] << 24 | rgba[0] << 16 | rgba[1] << 8 | rgba[2];
 }

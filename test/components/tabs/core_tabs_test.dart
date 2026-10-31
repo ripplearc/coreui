@@ -294,8 +294,8 @@ void main() {
 
   group('CoreTabs – press and focus', () {
     const boundaryKey = Key('tabs_boundary');
-    const parentColor = Color(0xFFFFE0B2);
     final colors = theme.coreColors;
+    final parentColor = colors.backgroundOrangeLight.toARGB32();
 
     Future<void> pumpTabs(WidgetTester tester) async {
       await tester.pumpWidget(
@@ -306,7 +306,7 @@ void main() {
               child: RepaintBoundary(
                 key: boundaryKey,
                 child: Container(
-                  color: parentColor,
+                  color: colors.backgroundOrangeLight,
                   child: const CoreTabs(tabs: ['Tab 1', 'Tab 2']),
                 ),
               ),
@@ -317,7 +317,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    Future<Color> pixel(WidgetTester tester, Offset point) =>
+    Future<int> pixel(WidgetTester tester, Offset point) =>
         pixelAt(tester, find.byKey(boundaryKey), point);
 
     Rect faceOf(WidgetTester tester, int index) =>
@@ -334,7 +334,10 @@ void main() {
 
       final inFace = Offset(face.left + 4, face.top + 4);
       final aboveFace = Offset(face.left + 4, face.top - 4);
-      expect(await pixel(tester, inFace), colors.backgroundGrayMid);
+      expect(
+        await pixel(tester, inFace),
+        colors.backgroundGrayMid.toARGB32(),
+      );
       expect(await pixel(tester, aboveFace), parentColor);
 
       await gesture.up();
@@ -351,7 +354,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final onLine = Offset(face.center.dx, face.bottom - 2);
-      expect(await pixel(tester, onLine), colors.tabsHighlight);
+      expect(await pixel(tester, onLine), colors.tabsHighlight.toARGB32());
       await gesture.up();
     });
 
@@ -366,7 +369,7 @@ void main() {
 
         expect(
           await pixel(tester, Offset(face.left + 1, face.center.dy)),
-          colors.outlineFocus,
+          colors.outlineFocus.toARGB32(),
         );
         expect(
           await pixel(tester, Offset(face.left + 3, face.center.dy)),
