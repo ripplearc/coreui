@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:ripplearc_coreui/src/components/chips/core_chip_theme.dart';
@@ -520,7 +521,9 @@ void main() {
       );
 
       final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
-      final close = tester.getRect(find.byKey(const Key('close_icon')));
+      final close = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.close,
+      ));
       final check = tester.getRect(find.byWidgetPredicate(
         (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.check,
       ));
@@ -904,5 +907,111 @@ void main() {
             CoreChipTheme.labelGap(CoreChipSize.medium), CoreSpacing.space1);
       });
     }
+  });
+
+  group('CoreChip close button', () {
+    late ValueNotifier<bool> selected;
+    late AppColorsExtension colors;
+
+    setUp(() => selected = ValueNotifier<bool>(false));
+
+    Future<void> pumpChip(
+      WidgetTester tester, {
+      String? removeSemanticsLabel,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Builder(
+            builder: (context) {
+              colors = AppColorsExtension.of(context);
+              return Scaffold(
+                body: Center(
+                  child: CoreChip(
+                    label: 'Filter',
+                    selected: selected,
+                    withCloseIcon: true,
+                    onRemove: () {},
+                    removeSemanticsLabel: removeSemanticsLabel,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+
+    BoxDecoration surfaceOf(WidgetTester tester) {
+      final surface = tester.widget<AnimatedContainer>(
+        find.byKey(CoreChip.surfaceKey),
+      );
+      return surface.decoration! as BoxDecoration;
+    }
+
+    testWidgets('the tap target is at least 48 x 48', (tester) async {
+      await pumpChip(tester);
+
+      final target = tester.getSize(find.byKey(const Key('close_icon')));
+      expect(target.width, greaterThanOrEqualTo(48));
+      expect(target.height, greaterThanOrEqualTo(48));
+    });
+
+    testWidgets('the target covers the icon and stays inside the chip',
+        (tester) async {
+      await pumpChip(tester);
+
+      final target = tester.getRect(find.byKey(const Key('close_icon')));
+      final chip = tester.getRect(find.byType(CoreChip));
+      final icon = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.close,
+      ));
+      expect(target.contains(icon.center), isTrue);
+      expect(chip.contains(target.topLeft), isTrue);
+      expect(chip.right, target.right);
+    });
+
+    testWidgets('Tab moves from the chip to the close button and the chip '
+        'keeps its focus look', (tester) async {
+      await pumpChip(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final border = surfaceOf(tester).border! as Border;
+      expect(
+        border.top.width,
+        CoreChipTheme.borderWidthFor(isFocused: true),
+      );
+      final focused = FocusManager.instance.primaryFocus!.context!;
+      expect(
+        focused.findAncestorWidgetOfExactType<InkWell>()?.key,
+        const Key('close_icon'),
+      );
+    });
+
+    testWidgets('pressing the close button shows the pressed look',
+        (tester) async {
+      await pumpChip(tester);
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(const Key('close_icon'))),
+      );
+      await tester.pumpAndSettle();
+
+      expect(surfaceOf(tester).color, colors.pageBackground);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(surfaceOf(tester).color, isNot(colors.pageBackground));
+    });
+
+    testWidgets('a removeSemanticsLabel replaces the English label',
+        (tester) async {
+      await pumpChip(tester, removeSemanticsLabel: 'Quitar Filter');
+
+      expect(find.bySemanticsLabel('Quitar Filter'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Remove')), findsNothing);
+    });
   });
 }

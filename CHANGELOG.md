@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.66.0] - CoreChip close button: 48 dp target, keyboard focus, own label
+
+### 🔧 Fixes
+
+- **CoreChip close (×)**: the × was a bare 20 dp `GestureDetector`, so it had a 20 x 20 tap area and Tab could not reach it. It now has a 48 x 48 tap target at the chip's end, which overlaps the end of the text so the chip keeps its size and look. Tab moves from the chip to the ×. While the × is focused or pressed the chip shows its own focused or pressed look, which stays inside the chip (CA-1322)
+- **CoreChip.removeSemanticsLabel**: new. Overrides the × button's screen-reader label, which was always the English "Remove" and the chip's text. Pass a localised string (CA-1322)
+
+### 🧪 Tests
+
+- The × target is at least 48 x 48, covers the icon and stays inside the chip; Tab reaches the × and the chip keeps its focus look; pressing the × shows the pressed look; `removeSemanticsLabel` replaces the English label. No golden changes
+
 ## [0.53.0] - Suggestion strip chips match the design library
 
 ### 🔧 Fixes
