@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.58.0] - CoreCheckRowItem matches the Figma Check row
+## [0.63.0] - CoreCheckRowItem matches the Figma Check row
 
 ### ✨ Features
 
