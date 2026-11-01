@@ -61,9 +61,10 @@ class Toast extends StatefulWidget {
   /// button beside its close x, such as `View`. Localised by the caller.
   final String? actionLabel;
 
-  /// Fires once when the action is taken, before [onClose]. Taking it never
-  /// pops a route, so an alert shown with an action stays on screen until
-  /// [onClose] removes it; pass both.
+  /// Fires when the action is taken, then [onClose]; with [onClose] it fires
+  /// once. Taking it never pops a route, so an alert shown with an action
+  /// stays on screen until [onClose] removes it, and without [onClose] it
+  /// fires on every tap.
   final VoidCallback? onAction;
 
   /// Label of the receipt's quieter second action — `View`. Travels with
@@ -789,7 +790,11 @@ class _ToastState extends State<Toast> {
         type: MaterialType.transparency,
         child: InkWell(
           key: const Key('toast_action_button'),
-          onTap: () => _answer(widget.onAction),
+          // The one-shot guard only matters when the alert closes; an alert
+          // that stays keeps a View that works on every tap.
+          onTap: widget.onClose == null
+              ? widget.onAction
+              : () => _answer(widget.onAction),
           onHighlightChanged: (isPressed) =>
               setState(() => _isActionPressed = isPressed),
           onFocusChange: (isFocused) =>

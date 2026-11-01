@@ -202,7 +202,7 @@ void main() {
         expect(calls, ['action', 'close']);
       });
 
-      testWidgets('without onClose, View fires once and the alert stays',
+      testWidgets('without onClose, View fires on every tap and the alert stays',
           (WidgetTester tester) async {
         var actions = 0;
         await tester.pumpWidget(buildAlert(
@@ -215,7 +215,7 @@ void main() {
         await tester.tap(actionFinder);
         await tester.pump();
 
-        expect(actions, 1);
+        expect(actions, 2);
         expect(actionFinder, findsOneWidget);
       });
 

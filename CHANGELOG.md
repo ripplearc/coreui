@@ -8,7 +8,7 @@
 
 ### 🧪 Tests
 
-- Alerts: no text button without `actionLabel`, `onAction` then `onClose`, a `View` with no `onClose` that opens a page leaves the page on screen, without `onClose` a second `View` does nothing and the alert stays, on a titled alert `View` centred on the first title line, the text button's 48 px target, the pressed colour on two presses with one action, Tab focus with the ring's place and Enter to take it, and a coloured parent with no `Material`. A11y: the text button's target and label in both themes. Goldens: the toast sheet (light and dark) shows `View` on two error alerts; new, `View` pressed and focused in light and dark
+- Alerts: no text button without `actionLabel`, `onAction` then `onClose`, a `View` with no `onClose` that opens a page leaves the page on screen, without `onClose` `View` fires on every tap and the alert stays, on a titled alert `View` centred on the first title line, the text button's 48 px target, the pressed colour on two presses with one action, Tab focus with the ring's place and Enter to take it, and a coloured parent with no `Material`. A11y: the text button's target and label in both themes. Goldens: the toast sheet (light and dark) shows `View` on two error alerts; new, `View` pressed and focused in light and dark
 
 ## [0.73.0] - Alert body text uses textDark
 
