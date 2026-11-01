@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -200,6 +202,190 @@ void main() {
 
       await tester.pump();
       expect(find.byKey(CoreSearchBox.clearButtonKey), findsNothing);
+    });
+    group('type', () {
+      Future<void> pumpType(
+        WidgetTester tester,
+        CoreSearchBoxType type,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            CoreSearchBox(
+              type: type,
+              hintText: 'Search',
+              controller: TextEditingController(text: 'Roof'),
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+        await tester.pump();
+      }
+
+      List<double?> iconSizes(WidgetTester tester) => tester
+          .widgetList<CoreIconWidget>(find.byType(CoreIconWidget))
+          .map((icon) => icon.size)
+          .toList();
+
+      InputDecoration decorationOf(WidgetTester tester) => tester
+          .widget<TextField>(find.byType(TextField))
+          .decoration!;
+
+      test('defaults to pill', () {
+        expect(const CoreSearchBox().type, CoreSearchBoxType.pill);
+      });
+
+      testWidgets('pill draws 24 dp dark icons, a shadow and a pill border',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.pill);
+        final colors = AppColorsExtension.create();
+
+        expect(iconSizes(tester), [CoreIconSize.size24, CoreIconSize.size24]);
+        final icons =
+            tester.widgetList<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(icons.map((icon) => icon.color), everyElement(colors.iconDark));
+        final box = tester.widget<DecoratedBox>(
+          find.ancestor(
+            of: find.byKey(CoreSearchBox.textFieldKey),
+            matching: find.byType(DecoratedBox),
+          ).first,
+        );
+        expect((box.decoration as BoxDecoration).boxShadow,
+            CoreShadows.extraSmall);
+        final border =
+            decorationOf(tester).enabledBorder! as OutlineInputBorder;
+        expect(border.borderRadius,
+            BorderRadius.circular(CoreSpacing.space12));
+        expect(border.borderSide.color, colors.lineMid);
+      });
+
+      testWidgets('sheet draws 20 dp grey icons, no shadow and 12 dp corners',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.sheet);
+        final colors = AppColorsExtension.create();
+
+        expect(iconSizes(tester), [CoreIconSize.size20, CoreIconSize.size20]);
+        final icons =
+            tester.widgetList<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(
+            icons.map((icon) => icon.color), everyElement(colors.iconGrayMid));
+        final box = tester.widget<DecoratedBox>(
+          find.ancestor(
+            of: find.byKey(CoreSearchBox.textFieldKey),
+            matching: find.byType(DecoratedBox),
+          ).first,
+        );
+        expect((box.decoration as BoxDecoration).boxShadow, isNull);
+        final border =
+            decorationOf(tester).enabledBorder! as OutlineInputBorder;
+        expect(border.borderRadius, BorderRadius.circular(CoreSpacing.space3));
+      });
+
+      testWidgets('focus border uses outlineFocus and hint uses textBody',
+          (tester) async {
+        await pumpType(tester, CoreSearchBoxType.sheet);
+        final colors = AppColorsExtension.create();
+        final decoration = decorationOf(tester);
+
+        expect(
+          (decoration.focusedBorder! as OutlineInputBorder).borderSide.color,
+          colors.outlineFocus,
+        );
+        expect(decoration.hintStyle!.color, colors.textBody);
+      });
+
+      testWidgets('typed text is textHeadline', (tester) async {
+        await pumpType(tester, CoreSearchBoxType.pill);
+
+        final field = tester.widget<TextField>(find.byType(TextField));
+        expect(field.style!.color, AppColorsExtension.create().textHeadline);
+      });
+
+      testWidgets('a disabled field draws its icon in iconGrayLight',
+          (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const CoreSearchBox(hintText: 'Search', enabled: false),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        final icon =
+            tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
+        expect(icon.color, AppColorsExtension.create().iconGrayLight);
+      });
+    });
+
+    group('clear button', () {
+      final clear = find.byKey(CoreSearchBox.clearButtonKey);
+
+      Future<void> pumpWithText(WidgetTester tester, {bool material = true}) {
+        final box = CoreSearchBox(
+          hintText: 'Search',
+          controller: TextEditingController(text: 'Roof'),
+        );
+        return tester.pumpWidget(
+          material
+              ? buildTestApp(box, theme: CoreTheme.light())
+              : MaterialApp(
+                  theme: CoreTheme.light(),
+                  home: Center(child: SizedBox(width: 300, child: box)),
+                ),
+        );
+      }
+
+      Color crossColor(WidgetTester tester) => tester
+          .widget<CoreIconWidget>(
+            find.descendant(of: clear, matching: find.byType(CoreIconWidget)),
+          )
+          .color!;
+
+      testWidgets('turns Button Press while pressed, every time',
+          (tester) async {
+        final colors = AppColorsExtension.create();
+        await pumpWithText(tester);
+
+        for (var press = 0; press < 2; press++) {
+          final gesture = await tester.startGesture(tester.getCenter(clear));
+          // The text field competes for the tap, so the press shows once
+          // the press timeout has passed.
+          await tester.pump(kPressTimeout);
+          expect(crossColor(tester), colors.buttonPress);
+
+          await gesture.cancel();
+          await tester.pump();
+          expect(crossColor(tester), colors.iconDark);
+        }
+      });
+
+      testWidgets('Tab reaches it, draws a ring and Enter clears',
+          (tester) async {
+        final colors = AppColorsExtension.create();
+        await pumpWithText(tester);
+        final ring =
+            find.byKey(const Key('core_search_box_clear_focus_ring'));
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final border = (tester.widget<DecoratedBox>(ring).decoration
+                as BoxDecoration)
+            .border! as Border;
+        expect(border.top.color, colors.outlineFocus);
+        expect(border.top.width, 2);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(find.text('Roof'), findsNothing);
+      });
+
+      testWidgets('works with no Material above the field', (tester) async {
+        await pumpWithText(tester, material: false);
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(clear);
+        await tester.pump();
+        expect(find.text('Roof'), findsNothing);
+      });
     });
   });
 }
