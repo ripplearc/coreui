@@ -658,4 +658,53 @@ void main() {
           isNot(colors.outlineFocus.toARGB32()));
     });
   });
+
+  group('CoreSwitch – large text', () {
+    final cases = <(CoreSwitchType, String?, String?)>[
+      (CoreSwitchType.showHide, null, null),
+      (CoreSwitchType.normal, 'On', 'Off'),
+      (CoreSwitchType.lock, 'Locked', 'Unlocked'),
+      (CoreSwitchType.imperial, 'Metric', 'Imperial'),
+    ];
+
+    for (final (type, activeLabel, inactiveLabel) in cases) {
+      for (final scale in [1.5, 2.0]) {
+        for (final value in [false, true]) {
+          testWidgets(
+              '${type.name} ${value ? 'on' : 'off'} keeps its label inside the '
+              'track at ${scale}x text', (tester) async {
+            await tester.pumpWidget(
+              MaterialApp(
+                theme: CoreTheme.light(),
+                home: MediaQuery(
+                  data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+                  child: Scaffold(
+                    body: CoreSwitch(
+                      type: type,
+                      value: value,
+                      onChanged: (_) {},
+                      activeLabel: activeLabel,
+                      inactiveLabel: inactiveLabel,
+                    ),
+                  ),
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
+
+            final track = tester.getRect(find.descendant(
+              of: find.byType(CoreSwitch),
+              matching: find.byType(AnimatedContainer),
+            ));
+            final label = tester.getRect(find.byType(Text));
+            expect(tester.takeException(), isNull);
+            expect(label.left, greaterThanOrEqualTo(track.left));
+            expect(label.right, lessThanOrEqualTo(track.right));
+            expect(label.top, greaterThanOrEqualTo(track.top));
+            expect(label.bottom, lessThanOrEqualTo(track.bottom));
+          });
+        }
+      }
+    }
+  });
 }
