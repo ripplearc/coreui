@@ -181,18 +181,28 @@ void main() {
       expect(tester.getSize(editable).height, 24);
     });
 
-    testWidgets('without a label the tap area is still 48px high',
+    testWidgets('the 48px text area does not change the drawn height',
         (tester) async {
-      await pumpField(tester, const CoreUnderlineTextField(maxLines: 4));
-      bool focused() =>
-          tester.widget<EditableText>(editable).focusNode.hasFocus;
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          label: 'Scope of work',
+          maxLines: 4,
+          initialValue: shortText,
+        ),
+      );
+      final multiLine = tester.getSize(fieldFinder).height;
 
-      final field = tester.getRect(fieldFinder);
-      expect(field.height, 48);
+      await pumpField(
+        tester,
+        const CoreUnderlineTextField(
+          key: ValueKey('single'),
+          label: 'Scope of work',
+          initialValue: shortText,
+        ),
+      );
 
-      await tester.tapAt(Offset(field.center.dx, field.bottom - 1));
-      await tester.pump();
-      expect(focused(), isTrue);
+      expect(multiLine, tester.getSize(fieldFinder).height);
     });
 
     testWidgets('asserts that maxLines is at least 1', (tester) async {
@@ -264,7 +274,7 @@ void main() {
   });
 
   group('CoreUnderlineTextField – default', () {
-    testWidgets('stays one line, 54px tall, with a long value',
+    testWidgets('stays one line, 53px tall, with a long value',
         (tester) async {
       await pumpField(
         tester,
@@ -274,7 +284,7 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 54);
+      expect(tester.getSize(fieldFinder).height, 53);
       expect(tester.getSize(editable).height, 24);
       expect(
         tester.widget<EditableText>(editable).keyboardType,
@@ -282,7 +292,7 @@ void main() {
       );
     });
 
-    testWidgets('keeps the 10px gap above the underline', (tester) async {
+    testWidgets('keeps the 8px gap above the underline', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Equipment', initialValue: 'Saw'),
@@ -290,7 +300,7 @@ void main() {
 
       expect(
         tester.getTopLeft(underline).dy,
-        tester.getBottomLeft(editable).dy + 10,
+        tester.getBottomLeft(editable).dy + 8,
       );
     });
   });

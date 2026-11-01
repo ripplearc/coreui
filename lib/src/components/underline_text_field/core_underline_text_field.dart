@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/app_typography_extension.dart';
@@ -27,17 +28,17 @@ import 'underline_field_metrics.dart';
 /// `statusError`.
 ///
 /// ### Sizes
-/// [CoreUnderlineTextFieldSize.compact] has the same text, caret and unit gap
-/// as [CoreUnderlineTextFieldSize.regular]. It only moves the underline 2px
-/// closer to the value, so a caller does not get smaller text.
+/// [CoreUnderlineTextFieldSize.compact] draws the same as
+/// [CoreUnderlineTextFieldSize.regular]: the design's 6px underline gap is
+/// kept at 8px on the 4px grid.
 /// [CoreUnderlineTextFieldSize.large] enlarges the label and the value.
 ///
 /// ### Several lines
 /// [maxLines] above 1 lets the text wrap. The value row grows with the text
 /// up to [maxLines] lines, then the text scrolls inside the field. The
-/// underline sits 8px under the last line of text at the regular size, as it
-/// does at the compact size, and the return key adds a new line, so
-/// [onSubmitted] does not fire on return unless [textInputAction] says so.
+/// underline sits 8px under the last line of text, and the return key adds a
+/// new line, so [onSubmitted] does not fire on return unless
+/// [textInputAction] says so.
 /// The default, 1, keeps one line that scrolls sideways.
 ///
 /// ### Placeholder
@@ -155,8 +156,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   final FocusNode? focusNode;
 
   /// The size of the field. [CoreUnderlineTextFieldSize.large] enlarges the
-  /// label and value. [CoreUnderlineTextFieldSize.compact] keeps the regular
-  /// text and only moves the underline closer. Defaults to
+  /// label and value. [CoreUnderlineTextFieldSize.compact] draws the same as
+  /// regular. Defaults to
   /// [CoreUnderlineTextFieldSize.regular].
   final CoreUnderlineTextFieldSize size;
 
@@ -193,10 +194,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// the return key adds a new line and the underline sits 8px under the last
   /// line. Defaults to 1, a single line that does not wrap.
   ///
-  /// A multi-line field is not given the 48px tap target of a single-line one:
-  /// its text area is as tall as its lines. A tap anywhere on the field still
-  /// focuses it, and the whole field is at least 48px high, even without a
-  /// label.
+  /// As on one line, the text area is at least 48px tall for touch and screen
+  /// readers while the row is drawn as tall as its lines.
   final int maxLines;
 
   /// Whether the field takes focus when it is first built.
@@ -350,11 +349,6 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   bool get _isMultiLine => widget.maxLines > 1;
 
-  CoreUnderlineTextFieldSize get _metricsSize =>
-      _isMultiLine && widget.size == CoreUnderlineTextFieldSize.regular
-          ? CoreUnderlineTextFieldSize.compact
-          : widget.size;
-
   @override
   void initState() {
     super.initState();
@@ -421,7 +415,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final theme = Theme.of(context);
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
-    final metrics = UnderlineFieldMetrics.of(_metricsSize);
+    final metrics = UnderlineFieldMetrics.of(widget.size);
     final errorText = widget.errorText;
     final hasError = errorText != null && errorText.isNotEmpty;
     final helperText = widget.helperText;
@@ -433,7 +427,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
     final hasLabelTrailing = widget.labelTrailing != null;
 
-    final field = GestureDetector(
+    return GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
       onTap: widget.enabled ? _handleTap : null,
@@ -456,15 +450,6 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
             UnderlineFieldMessage(text: message, isError: hasError),
         ],
       ),
-    );
-    if (!_isMultiLine) return field;
-
-    // A multi-line text area is only as tall as its lines, so without a label
-    // the field would be under 48px. The extra height falls below the
-    // underline, so the look does not change.
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
-      child: field,
     );
   }
 
@@ -617,11 +602,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         cursorHeight: metrics.caretHeight,
         decoration: InputDecoration(
           isCollapsed: true,
-          contentPadding: _isMultiLine
-              ? EdgeInsets.zero
-              : EdgeInsets.symmetric(
-                  vertical: (fieldHeight - rowHeight) / 2,
-                ),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: (fieldHeight - rowHeight) / 2,
+          ),
           hintText: widget.hintText,
           hintStyle: style.copyWith(color: colors.textDisable),
           filled: false,
@@ -632,9 +615,12 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
       ),
     );
 
+    // The text area is padded to 48px; the row is drawn without that padding.
+    // One line knows its height, so an OverflowBox does it. Several lines do
+    // not, so the padding is taken back off the measured height.
     if (_isMultiLine) {
-      return ConstrainedBox(
-        constraints: BoxConstraints(minHeight: rowHeight),
+      return _UnpaddedHeight(
+        padding: (fieldHeight - rowHeight) / 2,
         child: field,
       );
     }
@@ -642,6 +628,56 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     return SizedBox(
       height: rowHeight,
       child: OverflowBox(maxHeight: fieldHeight, child: field),
+    );
+  }
+}
+
+class _UnpaddedHeight extends SingleChildRenderObjectWidget {
+  const _UnpaddedHeight({required this.padding, required super.child});
+
+  final double padding;
+
+  @override
+  _RenderUnpaddedHeight createRenderObject(BuildContext context) =>
+      _RenderUnpaddedHeight(padding);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderUnpaddedHeight renderObject,
+  ) {
+    renderObject.padding = padding;
+  }
+}
+
+class _RenderUnpaddedHeight extends RenderShiftedBox {
+  _RenderUnpaddedHeight(this._padding) : super(null);
+
+  double _padding;
+
+  set padding(double value) {
+    if (value == _padding) return;
+    _padding = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    final child = this.child;
+    if (child == null) {
+      size = constraints.smallest;
+      return;
+    }
+    child.layout(
+      constraints.copyWith(minHeight: 0, maxHeight: double.infinity),
+      parentUsesSize: true,
+    );
+    final parentData = child.parentData;
+    if (parentData is BoxParentData) {
+      parentData.offset = Offset(0, -_padding);
+    }
+    size = constraints.constrain(
+      Size(child.size.width, child.size.height - 2 * _padding),
     );
   }
 }

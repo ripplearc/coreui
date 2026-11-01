@@ -95,18 +95,15 @@ CoreUnderlineTextField(
 
 - The value row grows with its text, one 24px line at a time, up to `maxLines`
   lines. Past that the text scrolls inside the field.
-- The underline sits 8px under the last line of text, so a regular field draws
-  the compact gap when `maxLines` is above 1. A `large` field keeps its own.
+- The underline sits 8px under the last line of text, as on one line. A
+  `large` field keeps its own gap.
 - The return key adds a new line, so `onSubmitted` does not fire on it. Pass
   `textInputAction` to change that.
 - A hint or error line sits under the underline as usual and replaces nothing
   but the hint.
-- The text area of a multi-line field is as tall as its lines and is not given
-  the 48px accessibility node a single-line field has. A tap on the label,
-  the underline or the message still focuses it. The whole field is at least
-  48px high, so without a label the space under the underline takes the tap.
-- The default, `maxLines: 1`, is unchanged: one line that scrolls sideways,
-  54px tall, with a 10px gap above the underline.
+- As on one line, the text area is at least 48px tall for touch and screen
+  readers, while the row is drawn as tall as its lines.
+- The default, `maxLines: 1`, is unchanged: one line that scrolls sideways.
 
 ## Underline and focus
 
