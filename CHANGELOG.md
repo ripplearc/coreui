@@ -10,7 +10,7 @@
 
 ### 🧪 Tests
 
-- Tabs: inside a coloured parent, a pressed tab fills only its 40 px face and clears on release; a pressed selected tab keeps its indicator; Tab draws the ring on each tab in turn without moving it; a touch tap draws no ring. Switch: Tab then Enter, Space and Enter toggles three times; Tab draws the ring outside the track without moving it; two touch taps toggle twice and draw no ring. The tests read real pixels through a new `pixelAt` test helper, which returns the 32-bit ARGB value to compare with a theme colour's `toARGB32()`; the coloured parent is `backgroundOrangeLight`. Goldens: tabs pressed, focused and focused selected; switch focused (light and dark)
+- Tabs: inside a coloured parent, a pressed tab fills only its 40 px face and clears on release; a pressed selected tab keeps its indicator; Tab draws the ring on each tab in turn without moving it; a touch tap draws no ring. Switch: Tab then Enter, Space and Enter toggles three times; Tab draws the ring outside the track without moving it; two touch taps toggle twice and draw no ring. The tests read real pixels through a new `pixelAt` test helper, which returns the 32-bit ARGB value to compare with a theme colour's `toARGB32()`; the coloured parent is `backgroundOrangeLight`. Goldens, light and dark: tabs pressed, focused and focused selected; switch focused
 
 ## [0.56.0] - CoreSheetHeader
 

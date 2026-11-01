@@ -96,15 +96,15 @@ void main() {
     );
   });
 
-  Future<void> pumpStateRows(WidgetTester tester) async {
+  Future<void> pumpStateRows(WidgetTester tester, ThemeData theme) async {
     await tester.binding.setSurfaceSize(const Size(240, 160));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: _createTestTheme(),
+        theme: theme,
         home: Scaffold(
-          backgroundColor: colors.pageBackground,
+          backgroundColor: theme.coreColors.pageBackground,
           body: const Padding(
             padding: EdgeInsets.all(CoreSpacing.space4),
             child: Column(
@@ -127,41 +127,53 @@ void main() {
         matching: find.byKey(CoreTabs.tabKey(index)),
       );
 
-  testWidgets('CoreTabs Golden Test - Pressed', (WidgetTester tester) async {
-    await pumpStateRows(tester);
+  for (final (suffix, theme) in [
+    ('', _createTestTheme()),
+    (
+      '_dark',
+      CoreTheme.dark().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+    ),
+  ]) {
+    testWidgets('CoreTabs Golden Test - Pressed$suffix',
+        (WidgetTester tester) async {
+      await pumpStateRows(tester, theme);
 
-    final unselected =
-        await tester.startGesture(tester.getCenter(tabOf('first_row', 1)));
-    final selected =
-        await tester.startGesture(tester.getCenter(tabOf('second_row', 0)));
-    await tester.pumpAndSettle();
+      final unselected =
+          await tester.startGesture(tester.getCenter(tabOf('first_row', 1)));
+      final selected =
+          await tester.startGesture(tester.getCenter(tabOf('second_row', 0)));
+      await tester.pumpAndSettle();
 
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/core_tabs_pressed.png'),
-    );
-    await unselected.cancel();
-    await selected.cancel();
-  });
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_pressed$suffix.png'),
+      );
+      await unselected.cancel();
+      await selected.cancel();
+    });
 
-  testWidgets('CoreTabs Golden Test - Focused', (WidgetTester tester) async {
-    await pumpStateRows(tester);
+    testWidgets('CoreTabs Golden Test - Focused$suffix',
+        (WidgetTester tester) async {
+      await pumpStateRows(tester, theme);
 
-    // First row: the selected tab. Second row: the unselected one.
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/core_tabs_focused_selected.png'),
-    );
-
-    for (var i = 0; i < 3; i++) {
+      // First row: the selected tab. Second row: the unselected one.
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    }
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/core_tabs_focused.png'),
-    );
-  });
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_focused_selected$suffix.png'),
+      );
+
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      }
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_focused$suffix.png'),
+      );
+    });
+  }
 }
