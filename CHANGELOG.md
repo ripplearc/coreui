@@ -2,7 +2,7 @@
 
 ## [0.58.0] - CoreTabs press and focus looks, CoreSwitch keyboard focus
 
-### 🔧 Fixes
+### ✨ Features
 
 - **CoreTabs press**: a pressed tab fills its 40 px face with `backgroundGrayMid`, the library Press state. The selected tab keeps its indicator while pressed. Flutter's tint over the whole 48 px tap area and the 4 px gap is gone. The tabs carry their own transparent `Material`, so the fill also shows inside a coloured `Container` (CA-1320)
 - **CoreTabs focus**: Tab focus draws a 2 px `outlineFocus` ring on the tab face. A touch tap draws no ring and clears one left by Tab, and the tab keeps its size. `CoreTabs.tabKey(index)` finds a tab's face in tests (CA-1320)
