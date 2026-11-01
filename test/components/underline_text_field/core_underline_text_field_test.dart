@@ -659,14 +659,14 @@ void main() {
       expect(tester.getSize(find.byType(EditableText)).height, 32);
     });
 
-    testWidgets('the caret is 2px wide and 17px or 24px tall once focused',
+    testWidgets('the caret is 2px wide and 16px or 24px tall once focused',
         (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Rate', autofocus: true),
       );
       expect(inner(tester).cursorWidth, 2);
-      expect(inner(tester).cursorHeight, 17);
+      expect(inner(tester).cursorHeight, 16);
       expect(
         inner(tester).cursorColor,
         CoreTheme.light().coreColors.outlineFocus,
