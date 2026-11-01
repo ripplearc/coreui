@@ -5,11 +5,12 @@
 ### 🔧 Fixes
 
 - **CoreChip close (×)**: the × was a bare 20 dp `GestureDetector`, so it had a 20 x 20 tap area and Tab could not reach it. It now has a 48 x 48 tap target at the chip's end, which overlaps the end of the text so the chip keeps its look. A chip with a × is at least 48 dp high, so a small chip with a × (42 dp before) sits centred in 48 dp. Tab moves from the chip to the ×. Pressed, the chip shows its pressed look. Focused, a 2 dp `outlineFocus` ring is drawn around the × and the chip border stays at rest, so Tab on the chip and Tab on the × look different (CA-1322)
+- **Breaking for tests**: the `close_icon` key moved from the × icon to the × button's `InkWell`. A test that finds `close_icon` and expects a `CoreIconWidget` now finds an `InkWell`; tapping it still removes the chip (CA-1322)
 - **CoreChip.removeSemanticsLabel**: new. Overrides the × button's screen-reader label, which was always the English "Remove" and the chip's text. Pass a localised string (CA-1322)
 
 ### 🧪 Tests
 
-- The × target is at least 48 x 48 on every chip size, covers the icon and stays inside the chip; Tab on the chip draws no × ring; a second Tab rings the × and puts the chip border back at rest; Enter on the focused × removes the chip once; pressing the × shows the pressed look; `removeSemanticsLabel` replaces the English label; a tap on the start of the label selects the chip and does not fire `onRemove`. New goldens for the × focused and pressed, light and dark
+- The × target is at least 48 x 48 on every chip size, covers the icon and stays inside the chip; Tab on the chip draws no × ring; a second Tab rings the × and puts the chip border back at rest; Enter or Space on the focused × removes the chip once; pressing the × shows the pressed look; `removeSemanticsLabel` replaces the English label; a tap on the start of the label selects the chip and does not fire `onRemove`. New goldens for the × focused and pressed, and for one Tab on a chip with a × (the chip ringed, not the ×), light and dark
 
 ## [0.58.0] - CoreTabs press and focus looks, CoreSwitch keyboard focus
 

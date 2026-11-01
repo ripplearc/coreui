@@ -1045,6 +1045,19 @@ void main() {
       expect(selected.value, isFalse);
     });
 
+    testWidgets('Space on the focused close button removes the chip once',
+        (tester) async {
+      await pumpChip(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pumpAndSettle();
+
+      expect(removes, 1);
+      expect(selected.value, isFalse);
+    });
+
     testWidgets('pressing the close button shows the pressed look',
         (tester) async {
       await pumpChip(tester);

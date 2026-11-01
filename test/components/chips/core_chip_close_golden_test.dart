@@ -63,6 +63,18 @@ void main() {
     ('light', CoreTheme.light()),
     ('dark', CoreTheme.dark()),
   ]) {
+    testWidgets('CoreChip with close, chip focused - $name', (tester) async {
+      await pumpRemovableChips(tester, _withRoboto(theme));
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_chip_close_chip_focused_$name.png'),
+      );
+    });
+
     testWidgets('CoreChip close focused - $name', (tester) async {
       await pumpRemovableChips(tester, _withRoboto(theme));
 
