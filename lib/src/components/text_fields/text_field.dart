@@ -136,7 +136,7 @@ class CoreTextField extends StatelessWidget {
           color: isDisabled
               ? colors.textDisable
               : showsFocus
-                  ? colors.outlineFocus
+                  ? colors.textDark
                   : colors.textHeadline,
         ),
         prefixIcon: prefixWidget,
