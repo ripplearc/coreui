@@ -60,7 +60,7 @@ Toast.acknowledgement(description: 'Added to Bedroom 2');
 | `closeLabel`  | `String`        | Yes      | The screen-reader label of the close x. It is not drawn               |
 | `title`       | `String?`       | No       | Optional title text displayed above the description                   |
 | `onClose`     | `VoidCallback?` | No       | Called when the toast closes, from the close x or after the text button. Without it, the close x pops the current route; the text button never pops one, because its action may have just opened a page |
-| `actionLabel` | `String?`       | No       | A text button beside the close x — "View". Travels with `onAction`    |
+| `actionLabel` | `String?`       | No       | A text button beside the close x — "View", on one line with an ellipsis. Travels with `onAction` |
 | `onAction`    | `VoidCallback?` | No       | Fires when the text button is tapped, then `onClose` fires; with `onClose` it fires once. The text button never pops a route, so pass `onClose` to remove the alert; without it, `onAction` fires on every tap |
 
 ### Toast.receipt Properties

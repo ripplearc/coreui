@@ -820,6 +820,8 @@ class _ToastState extends State<Toast> {
                     children: [
                       Text(
                         actionLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: typography.bodyMediumSemiBold.copyWith(
                           color: _isActionPressed
                               ? colors.buttonPress

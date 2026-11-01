@@ -202,6 +202,21 @@ void main() {
         expect(calls, ['action', 'close']);
       });
 
+      testWidgets('View stays on one line with an ellipsis, like the other '
+          'actions', (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert(
+          actionLabel: 'View',
+          onAction: () {},
+          onClose: () {},
+        ));
+
+        final label = tester.widget<Text>(
+          find.descendant(of: actionFinder, matching: find.text('View')),
+        );
+        expect(label.maxLines, 1);
+        expect(label.overflow, TextOverflow.ellipsis);
+      });
+
       testWidgets('without onClose, View fires on every tap and the alert stays',
           (WidgetTester tester) async {
         var actions = 0;
