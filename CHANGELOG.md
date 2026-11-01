@@ -13,7 +13,7 @@
 
 ### 📐 Design notes
 
-The Check row's pressed fill is `backgroundGrayMid`, not Figma's Background Grey Light: in coreui Grey Light is the page colour, so the press would not show. The preference rows made the same choice (CA-1318) until the page colour is settled. Neither library part draws a focused state.
+The Check row's pressed fill is `backgroundGrayMid`, not Figma's Background Grey Light: in coreui Grey Light is the page colour, so the press would not show. The preference rows made the same choice (CA-1318). CA-1373 (white page background) moves the press to Grey Light. Neither library part draws a focused state.
 
 ### 🧪 Tests
 

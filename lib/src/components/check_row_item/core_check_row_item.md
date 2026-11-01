@@ -15,7 +15,7 @@ It draws one of two parts of the Figma library:
 | Second line | `bodySmallRegular`, `textBody` | `bodyMediumRegular`, `textBody` |
 | Box | `outlineFocus` ticked, `iconGrayMid` empty | `iconDark` ticked, `iconGrayMid` empty |
 | Selected | `backgroundBlueLight` fill, 48 dp radius | No fill; only the box changes |
-| Pressed | No tint (the library cell has none) | `backgroundGrayMid` fill. Figma draws Background Grey Light, but in coreui that is the page colour (`pageBackground`), so the press would not show; Grey Mid follows the preference rows (CA-1318) until the page colour is settled |
+| Pressed | No tint (the library cell has none) | `backgroundGrayMid` fill. Figma draws Background Grey Light, but in coreui that is the page colour (`pageBackground`), so the press would not show; Grey Mid follows the preference rows (CA-1318) until CA-1373 makes the page white |
 | Divider | None | 1 dp `lineLight`, inset 20 dp, on the bottom edge (adds no height). `showDivider: false` on the last row |
 | Height | 48 dp | 64 dp with the default avatar, 68 dp with a second line; never under 48 dp |
 
