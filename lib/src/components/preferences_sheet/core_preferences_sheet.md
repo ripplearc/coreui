@@ -28,14 +28,22 @@ rows do not all read the same way:
 
 | Variant | Renders as | Used for |
 | :--- | :--- | :--- |
-| `CorePreferenceTextValue(label, isMuted:)` | text in `textLink`, or `textDisable` when muted | most rows — `1/16`, `in`, `2,000 lb (US short ton)` |
-| `CorePreferencePillValue(label, isOn:)` | an outlined pill with a state dot, green when on and grey when off | rows that read as a state — `● Imperial`, `● Off` |
+| `CorePreferenceTextValue(label, isMuted:)` | text in `textLink`, or `textBody` when muted | most rows — `1/16`, `in`, `2,000 lb (US short ton)` |
+| `CorePreferencePillValue(label, isOn:)` | an outlined pill, 24 dp high, with a 14 dp state dot 4 dp before Body Small text, green when on and grey when off (library Switch row, Figma 66778:196399) | rows that read as a state — `● Imperial`, `● Off` |
 
 Muted text is for preferences the app cannot act on yet, so a stub reads as
 quieter rather than as a live value.
 
 A row with fewer than two options is inert: it renders its value but opens no
 sub-sheet.
+
+A row with `isDisabled: true` is the library Value row Disabled state: its
+label and value are `textDisable` and it ignores taps.
+
+A row is 48 dp high, with its 1 dp bottom line inside that height, and 12 dp
+between the label and the value. Pressed, it shows the library Pressed fill,
+`backgroundBlueLight`; the ink sits above the row's grey fill so it can be
+seen.
 
 ## Deep linking
 

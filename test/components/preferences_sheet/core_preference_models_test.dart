@@ -35,6 +35,20 @@ void main() {
         isTrue,
       );
     });
+
+    test('a disabled row is inert, whatever its options', () {
+      const row = CorePreferenceRow(
+        key: 'fractional_resolution',
+        label: 'Fractional resolution',
+        value: CorePreferenceTextValue('1/16'),
+        options: [
+          CorePreferenceOption(id: '1/8', label: '1/8'),
+          CorePreferenceOption(id: '1/16', label: '1/16'),
+        ],
+        isDisabled: true,
+      );
+      expect(row.isSelectable, isFalse);
+    });
   });
 
   group('value equality', () {
