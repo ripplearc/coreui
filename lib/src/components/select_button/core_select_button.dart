@@ -115,9 +115,6 @@ class _Segment extends StatefulWidget {
 class _SegmentState extends State<_Segment> {
   static const Duration _transitionDuration = Duration(milliseconds: 200);
   static const double _segmentHeight = CoreSpacing.space8;
-  static const double _bodyMediumLineHeight = CoreSpacing.space5;
-  static const double _verticalPadding =
-      (_segmentHeight - _bodyMediumLineHeight) / 2;
   static const double _focusWidth = 2;
 
   bool _isPressed = false;
@@ -160,34 +157,39 @@ class _SegmentState extends State<_Segment> {
                 key: Key('core_select_button_segment_${widget.index}'),
                 duration: _transitionDuration,
                 curve: Curves.easeOut,
+                constraints: const BoxConstraints(minHeight: _segmentHeight),
                 padding: EdgeInsets.symmetric(
                   horizontal: CoreSpacing.space4 - focusInset,
-                  vertical: _verticalPadding - focusInset,
                 ),
                 decoration: BoxDecoration(
                   color: _fill(colors),
                   borderRadius: BorderRadius.circular(CoreSpacing.space12),
                   border: _isFocused
                       ? Border.all(
-                          color: colors.lineHighlight,
+                          color: colors.outlineFocus,
                           width: _focusWidth,
                         )
                       : null,
                   boxShadow: widget.selected ? CoreShadows.medium : null,
                 ),
-                child: Text(
-                  widget.label,
-                  style: widget.selected
-                      ? typography.bodyMediumSemiBold.copyWith(
-                          // tabsHighlight is bright cyan in both modes; use dark
-                          // text in dark mode (textInverse = gray900) so it
-                          // passes contrast.
-                          color:
-                              isDark ? colors.textInverse : colors.textHeadline,
-                        )
-                      : typography.bodyMediumRegular.copyWith(
-                          color: colors.textBody,
-                        ),
+                child: Center(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: Text(
+                    widget.label,
+                    style: widget.selected
+                        ? typography.bodyMediumSemiBold.copyWith(
+                            // tabsHighlight is bright cyan in both modes; use
+                            // dark text in dark mode (textInverse = gray900)
+                            // so it passes contrast.
+                            color: isDark
+                                ? colors.textInverse
+                                : colors.textHeadline,
+                          )
+                        : typography.bodyMediumRegular.copyWith(
+                            color: colors.textBody,
+                          ),
+                  ),
                 ),
               ),
             ),

@@ -55,13 +55,14 @@ The component follows the library Segmented button:
     - Text style: `CoreTypography.bodyMediumRegular` with body color
 - **Padding**:
     - Track: 4px at the sides (`CoreSpacing.space1`)
-    - Tab: 16px horizontal, 6px vertical, so a tab is 32px high around its 20px line
+    - Tab: 16px horizontal, at least 32px high (`CoreSpacing.space8`) with the label centred, so the height does not
+      follow the text style
     - Tab spacing: 4px between tabs
 
 ### States
 
 - **Pressed**: an unselected tab fills `backgroundGrayMid`, the library Press state, while it is held
-- **Focused** (Tab): a 2px `lineHighlight` border inside the tab; the tab keeps its size
+- **Focused** (Tab): a 2px `outlineFocus` border inside the tab, at least 3:1 on the track in both modes; the tab keeps its size
 - Neither look is a tint over the touch area
 
 ### Tap target

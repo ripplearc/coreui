@@ -221,6 +221,46 @@ void main() {
       );
     });
 
+    testWidgets('keeps a 32 high segment when the text line height changes',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      final typography = theme.extension<AppTypographyExtension>()!;
+      const tallLine = 22 / 14;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme.copyWith(
+            extensions: [
+              ...theme.extensions.values
+                  .where((e) => e is! AppTypographyExtension),
+              typography.copyWith(
+                bodyMediumRegular:
+                    typography.bodyMediumRegular.copyWith(height: tallLine),
+                bodyMediumSemiBold:
+                    typography.bodyMediumSemiBold.copyWith(height: tallLine),
+              ),
+            ],
+          ),
+          home: Scaffold(
+            body: Center(
+              child: CoreSelectButton(
+                tabs: ['Tab 1', 'Tab 2'],
+                selectedIndex: 0,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      for (final index in [0, 1]) {
+        final segment = find.byKey(Key('core_select_button_segment_$index'));
+        expect(tester.getSize(segment).height, CoreSpacing.space8);
+        expect(
+          tester.getCenter(find.text('Tab ${index + 1}')).dy,
+          tester.getCenter(segment).dy,
+        );
+      }
+    });
+
     testWidgets('handles null onChanged callback', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -330,7 +370,7 @@ void main() {
       final colors = AppColorsExtension.of(tester.element(segment));
       expect(
         decoration.border,
-        Border.all(color: colors.lineHighlight, width: 2),
+        Border.all(color: colors.outlineFocus, width: 2),
       );
       expect(tester.getSize(segment), restingSize);
     });
