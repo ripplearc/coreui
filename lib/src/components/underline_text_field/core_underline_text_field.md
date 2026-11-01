@@ -58,12 +58,12 @@ $ 145.00 /day  [inlineAccessory]                [trailing]
 
 | Size      | Label | Value           | Prefix and suffix | Unit  | Underline                | Height |
 |-----------|-------|-----------------|-------------------|-------|--------------------------|--------|
-| `regular` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 54px   |
-| `compact` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 52px   |
+| `regular` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 53px   |
+| `compact` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 51px   |
 | `large`   | 14/20 | 24/32, semibold | 24/32, semibold   | 16/24 | 2px, `lineMid`           | 66px   |
 
-`compact` is `regular` with the underline 2px closer to the value (8px under
-the value row instead of 10px). The design draws it on the fields of an open
+`compact` is `regular` with the underline 2px closer to the value (6px under
+the value row instead of 8px). The design draws it on the fields of an open
 editor panel: waste, burden, delivery and note.
 
 Use `large` only when a form asks a single question, so one number is enlarged.
@@ -72,8 +72,8 @@ A form with several fields of equal weight uses `regular` for every field.
 Heights are for a field with a label, no helper or error line and nothing in
 the value row taller than the text. A one-line helper or error line adds
 24px, and a longer one adds more. A 32px
-`inlineAccessory` makes the regular field 62px, and a 36px `trailing` widget
-makes it 66px, with the value centered against the widget.
+`inlineAccessory` makes the regular field 61px, and a 36px `trailing` widget
+makes it 65px, with the value centered against the widget.
 
 The design spaces stacked fields 12px apart. That spacing belongs to the form
 and is not part of the field.
@@ -99,7 +99,7 @@ typed text, never inside it:
 
 While the field has focus the caret takes 2px of room, and the suffix, unit or
 accessory after the value moves 2px right with it. At rest nothing is reserved,
-so `10%` touches and `4 days` sits 5px from the number. With `showCursor: false`
+so `10%` touches and `4 days` sits 4px from the number. With `showCursor: false`
 the caret and its room are both gone, as on the `%` waste editors, which the
 design draws with no cursor. A read-only field draws no caret by default.
 
@@ -115,7 +115,7 @@ owns their position and spacing, not their look.
   and takes the 4px back from the gap above the underline, so the field keeps
   its height.
 - `inlineAccessory` sits 12px after the value and unit.
-- `trailing` sits at the far end, 2px inside the field's edge.
+- `trailing` sits at the far end, flush with the field's edge.
 
 The widgets you pass are responsible for their own tap targets and semantics.
 

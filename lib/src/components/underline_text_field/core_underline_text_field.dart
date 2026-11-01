@@ -439,7 +439,6 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         minHeight:
             metrics.labelRowHeightFor(hasTrailing: labelTrailing != null),
       ),
-      padding: EdgeInsets.symmetric(horizontal: metrics.labelInset),
       child: Row(
         children: [
           Flexible(
@@ -493,7 +492,6 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
       children: [
         if (prefixText != null) ...[
           Text(prefixText, style: softStyle),
-          const SizedBox(width: UnderlineFieldMetrics.prefixGap),
         ],
         if (hugsValue)
           Flexible(child: IntrinsicWidth(child: input))
@@ -509,32 +507,27 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
     return ConstrainedBox(
       constraints: BoxConstraints(minHeight: metrics.valueRowHeight),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: UnderlineFieldMetrics.horizontalInset,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  if (hugsValue)
-                    Flexible(child: valueGroup)
-                  else
-                    Expanded(child: valueGroup),
-                  if (inlineAccessory != null) ...[
-                    const SizedBox(
-                      width: UnderlineFieldMetrics.inlineAccessoryGap,
-                    ),
-                    inlineAccessory,
-                  ],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                if (hugsValue)
+                  Flexible(child: valueGroup)
+                else
+                  Expanded(child: valueGroup),
+                if (inlineAccessory != null) ...[
+                  const SizedBox(
+                    width: UnderlineFieldMetrics.inlineAccessoryGap,
+                  ),
+                  inlineAccessory,
                 ],
-              ),
+              ],
             ),
-            if (trailing != null) trailing,
-          ],
-        ),
+          ),
+          if (trailing != null) trailing,
+        ],
       ),
     );
   }

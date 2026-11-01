@@ -12,6 +12,12 @@ void main() {
     await loadFonts();
   });
 
+  BorderRadiusGeometry keyRadius(WidgetTester tester, Key key) => tester
+      .widget<ClipRRect>(
+        find.descendant(of: find.byKey(key), matching: find.byType(ClipRRect)),
+      )
+      .borderRadius;
+
   group('CoreDigitInput', () {
     testWidgets('renders with correct label', (tester) async {
       await tester.pumpWidget(
@@ -189,6 +195,52 @@ void main() {
       final style = tester.widget<Text>(find.text('7')).style!;
       expect(style.fontSize, closeTo(35.0, 0.001));
     });
+
+    testWidgets('without textStyle the label is titleLargeMedium',
+        (tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreDigitInput(
+              digit: DigitType.seven,
+              onDigitPressed: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      final style = tester.widget<Text>(find.text('7')).style!;
+      expect(
+        style.fontWeight,
+        theme.coreTypography.titleLargeMedium.fontWeight,
+      );
+    });
+
+    testWidgets('keeps its round shape while pressed', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDigitInput(
+              digit: DigitType.seven,
+              onDigitPressed: (_) {},
+              width: 80.0,
+              height: 56.0,
+            ),
+          ),
+        ),
+      );
+      final atRest = keyRadius(tester, DigitType.seven.testKey);
+
+      final gesture =
+          await tester.startGesture(tester.getCenter(find.text('7')));
+      await tester.pumpAndSettle();
+
+      expect(keyRadius(tester, DigitType.seven.testKey), atRest);
+      await gesture.up();
+    });
   });
 
   group('CoreOperatorButton', () {
@@ -316,6 +368,37 @@ void main() {
       final sizedBox = tester.getSize(find.byType(CoreUnitButton));
       expect(sizedBox.width, equals(customWidth));
       expect(sizedBox.height, equals(customHeight));
+    });
+
+    testWidgets('has 20px corners and keeps them while pressed',
+        (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreUnitButton(
+              unit: UnitType.yards,
+              onUnitSelected: (_) {},
+              width: 80.0,
+              height: 56.0,
+            ),
+          ),
+        ),
+      );
+      expect(
+        keyRadius(tester, UnitType.yards.testKey),
+        BorderRadius.circular(20),
+      );
+
+      final gesture =
+          await tester.startGesture(tester.getCenter(find.text('Yards')));
+      await tester.pumpAndSettle();
+
+      expect(
+        keyRadius(tester, UnitType.yards.testKey),
+        BorderRadius.circular(20),
+      );
+      await gesture.up();
     });
   });
 

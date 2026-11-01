@@ -9,7 +9,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [isEmphasized] determines if the button uses emphasized styling.
 /// [size] is the width and height of the button (defaults to 64px).
 /// [textStyle] replaces the label style, which by default is
-/// `titleLargeRegular` scaled to the button's height. The colour stays
+/// `titleLargeMedium` scaled to the button's height. The colour stays
 /// `textHeadline` either way.
 ///
 /// The rendered button carries [DigitTypeX.testKey] (`calc_key_seven`) for
@@ -55,7 +55,7 @@ class CoreDigitInput extends StatelessWidget {
         backgroundColor: backgroundColor,
         onPressed: () => onDigitPressed(digit),
         textStyle: (textStyle ??
-                typography.titleLargeRegular.copyWith(
+                typography.titleLargeMedium.copyWith(
                   fontSize:
                       effectiveHeight * _KeyboardButton._largeFontSizeRatio,
                 ))
@@ -64,7 +64,6 @@ class CoreDigitInput extends StatelessWidget {
         height: effectiveHeight,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -114,7 +113,6 @@ class CoreOperatorButton extends StatelessWidget {
         height: effectiveHeight,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -171,10 +169,7 @@ class CoreUnitButton extends StatelessWidget {
         height: effectiveHeight,
         borderRadius: BorderRadius.circular(unit == UnitType.divideSymbol
             ? _KeyboardButton._circularBorderRadius
-            : CoreSpacing.space3),
-        pressedBorderRadius: BorderRadius.circular(unit == UnitType.divideSymbol
-            ? CoreSpacing.space4
-            : _KeyboardButton._circularBorderRadius),
+            : CoreSpacing.space5),
         textStyle: fontSize != null
             ? typography.bodyLargeMedium.copyWith(
                 color: textColor,
@@ -281,7 +276,6 @@ class CoreControlButton extends StatelessWidget {
         height: height,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
       ),
     );
   }
@@ -373,7 +367,6 @@ class CoreResultButton extends StatelessWidget {
         width: width,
         borderRadius:
             BorderRadius.circular(_KeyboardButton._circularBorderRadius),
-        pressedBorderRadius: BorderRadius.circular(CoreSpacing.space4),
         textStyle: fontSize != null
             ? typography.titleLargeSemiBold.copyWith(
                 color: textColor,
@@ -397,7 +390,6 @@ class _KeyboardButton extends StatefulWidget {
   final double? width;
   final double? height;
   final BorderRadius borderRadius;
-  final BorderRadius? pressedBorderRadius;
   final bool isLabel;
   final bool enabled;
 
@@ -424,7 +416,6 @@ class _KeyboardButton extends StatefulWidget {
     this.width,
     this.height,
     BorderRadius? borderRadius,
-    this.pressedBorderRadius,
     required this.isLabel,
     this.enabled = true,
   }) : borderRadius = borderRadius ??
@@ -437,33 +428,16 @@ class _KeyboardButton extends StatefulWidget {
 class _KeyboardButtonState extends State<_KeyboardButton>
     with SingleTickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 150);
-  static const Duration _squareToRoundPressAnimationDuration =
-      Duration(milliseconds: 125);
-  static const Curve _squareToRoundPressAnimationCurve = Curves.easeInOutCubic;
 
   late final AnimationController _animationController;
-  late bool _isSquareToRound;
   bool _isPressed = false;
-
-  static bool _isSquareToRoundPressStyle(_KeyboardButton w) {
-    final pressed = w.pressedBorderRadius ?? w.borderRadius;
-    return w.pressedBorderRadius != null &&
-        pressed.topLeft.x > w.borderRadius.topLeft.x;
-  }
-
-  static Duration _durationForStyle(bool squareToRound) =>
-      squareToRound ? _squareToRoundPressAnimationDuration : _animationDuration;
-
-  static Curve _curveForStyle(bool squareToRound) =>
-      squareToRound ? _squareToRoundPressAnimationCurve : Curves.ease;
 
   @override
   void initState() {
     super.initState();
-    _isSquareToRound = _isSquareToRoundPressStyle(widget);
     _animationController = AnimationController(
       vsync: this,
-      duration: _durationForStyle(_isSquareToRound),
+      duration: _animationDuration,
     );
   }
 
@@ -473,15 +447,6 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     if (!widget.enabled && _isPressed) {
       _isPressed = false;
       _animationController.reverse();
-    }
-    if (widget.borderRadius == oldWidget.borderRadius &&
-        widget.pressedBorderRadius == oldWidget.pressedBorderRadius) {
-      return;
-    }
-    _isSquareToRound = _isSquareToRoundPressStyle(widget);
-    final newDuration = _durationForStyle(_isSquareToRound);
-    if (_animationController.duration != newDuration) {
-      _animationController.duration = newDuration;
     }
   }
 
@@ -547,14 +512,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
-        final t = _curveForStyle(_isSquareToRound)
-            .transform(_animationController.value);
-        final currentBorderRadius = BorderRadius.lerp(
-              widget.borderRadius,
-              widget.pressedBorderRadius ?? widget.borderRadius,
-              t,
-            ) ??
-            widget.borderRadius;
+        final t = Curves.ease.transform(_animationController.value);
 
         return GestureDetector(
           onTapDown: widget.enabled ? _handleTapDown : null,
@@ -569,13 +527,13 @@ class _KeyboardButtonState extends State<_KeyboardButton>
                         width: _KeyboardButton._defaultBorderWidth,
                       )
                     : null,
-                borderRadius: currentBorderRadius,
+                borderRadius: widget.borderRadius,
                 color: effectiveBackgroundColor,
               ),
               width: effectiveWidth,
               height: effectiveHeight,
               child: ClipRRect(
-                borderRadius: currentBorderRadius,
+                borderRadius: widget.borderRadius,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -586,7 +544,7 @@ class _KeyboardButtonState extends State<_KeyboardButton>
                         child: Container(
                           decoration: BoxDecoration(
                             color: colors.iconGrayLight,
-                            borderRadius: currentBorderRadius,
+                            borderRadius: widget.borderRadius,
                           ),
                         ),
                       ),

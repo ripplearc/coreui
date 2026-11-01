@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -101,6 +103,106 @@ void main() {
           tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.enabled, false);
     });
+
+    testWidgets('floats the label in bodySmallRegular textDark',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Email',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      final style = decoration.floatingLabelStyle!;
+      final bodySmall = theme.coreTypography.bodySmallRegular;
+      expect(style.fontSize, bodySmall.fontSize);
+      expect(style.fontWeight, bodySmall.fontWeight);
+      expect(style.color, theme.coreColors.textDark);
+    });
+
+    testWidgets('floats the label in textError when the field has an error',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            // In a Column, as on a form: a field stretched to the full
+            // screen height trips an assert in Flutter's outlined border.
+            body: Column(
+              children: [
+                CoreTextField(
+                  label: 'Label',
+                  errorTextList: const ['Error Message'],
+                  controller: TextEditingController(text: 'Filled'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      expect(
+        decoration.floatingLabelStyle!.color,
+        theme.coreColors.textError,
+      );
+    });
+
+    testWidgets('puts the helper icon and text on one row, 20 dp apart',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Label',
+              helperText: 'Helper Text',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final icon = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.info,
+      ));
+      final text = tester.getRect(find.text('Helper Text'));
+      expect(text.left - icon.left, 20);
+      expect(text.center.dy, moreOrLessEquals(icon.center.dy, epsilon: 1));
+    });
+
+    testWidgets('draws the focus border in outlineHover',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: CoreTextField(
+              label: 'Email',
+              controller: TextEditingController(),
+            ),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<TextField>(find.byType(TextField)).decoration!;
+      expect(
+        (decoration.focusedBorder! as OutlineInputBorder).borderSide.color,
+        theme.coreColors.outlineHover,
+      );
+    });
   });
 
   group('CoreTextField – accessibility tests', () {
@@ -121,5 +223,34 @@ void main() {
         find.byType(CoreTextField),
       );
     });
+
+    // The field is one merged semantics node, so Flutter's
+    // textContrastGuideline samples the whole field, value text included, and
+    // passes whatever the label colour is. The label is checked against the
+    // fill instead.
+    for (final theme in kA11yTestThemes) {
+      testWidgets(
+          'the floating label is at least 4.5:1 on the fill '
+          '(${theme.brightness.name})', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              body: CoreTextField(
+                label: 'Email address',
+                controller: TextEditingController(),
+              ),
+            ),
+          ),
+        );
+
+        final decoration =
+            tester.widget<TextField>(find.byType(TextField)).decoration!;
+        final label = decoration.floatingLabelStyle!.color!.computeLuminance();
+        final fill = decoration.fillColor!.computeLuminance();
+        final ratio = (max(label, fill) + 0.05) / (min(label, fill) + 0.05);
+        expect(ratio, greaterThanOrEqualTo(4.5));
+      });
+    }
   });
 }
