@@ -21,7 +21,7 @@ void main() {
     final unselected = ValueNotifier<bool>(false);
     addTearDown(unselected.dispose);
 
-    tester.view.physicalSize = const Size(640, 160);
+    tester.view.physicalSize = const Size(640, 200);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
