@@ -166,13 +166,31 @@ class _TabFaceState extends State<_TabFace> {
 
   bool _isPressed = false;
 
+  @override
+  void initState() {
+    super.initState();
+    FocusManager.instance
+        .addHighlightModeListener(_redrawRingForNewHighlightMode);
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance
+        .removeHighlightModeListener(_redrawRingForNewHighlightMode);
+    super.dispose();
+  }
+
+  void _redrawRingForNewHighlightMode(FocusHighlightMode mode) =>
+      setState(() {});
+
   void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     // The focus node is the one of the TabBar's InkWell around this tab.
-    final isFocused = Focus.of(context).hasFocus;
+    final isFocused = Focus.of(context).hasFocus &&
+        FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
 
     return Listener(
       onPointerDown: (_) => _setPressed(true),

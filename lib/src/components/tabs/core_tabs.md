@@ -76,9 +76,9 @@ A 1px `lineDarkOutline` line runs under the tabs. A 4px gap follows every tab, i
 
 A pressed tab fills its 40px face with `backgroundGrayMid`, the library's Press state. The selected tab keeps its
 indicator while pressed. When Tab moves keyboard focus to a tab, a 2px `outlineFocus` ring is drawn on the face.
-Neither look covers the 8px of tap area above the face or the 4px gap, and a touch tap draws no ring. The tabs carry
-their own `Material`, so both looks also show inside a coloured `Container`. `CoreTabs.tabKey(index)` finds a tab's
-face in tests.
+Neither look covers the 8px of tap area above the face or the 4px gap, and a touch tap draws no ring, also
+clearing one left by Tab. The tabs carry their own `Material`, so both looks also show inside a coloured
+`Container`. `CoreTabs.tabKey(index)` finds a tab's face in tests.
 
 ### Typography
 

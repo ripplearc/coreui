@@ -397,6 +397,29 @@ void main() {
         parentColor,
       );
     });
+
+    testWidgets('a touch tap after Tab clears the focus ring',
+        (WidgetTester tester) async {
+      await pumpTabs(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      final first = faceOf(tester, 0);
+      expect(
+        await pixel(tester, Offset(first.left + 1, first.center.dy)),
+        colors.outlineFocus.toARGB32(),
+      );
+
+      await tester.tap(find.byKey(CoreTabs.tabKey(1)));
+      await tester.pumpAndSettle();
+
+      for (final index in [0, 1]) {
+        final face = faceOf(tester, index);
+        expect(
+          await pixel(tester, Offset(face.left + 1, face.center.dy)),
+          parentColor,
+        );
+      }
+    });
   });
 
   // ---------------------------------------------------------------------------
