@@ -30,10 +30,10 @@ class _SwitchConstants {
   static const double widthCompact = 32.0; // Compact switch width (no labels)
   static const double heightLabeled = 24.0; // Labeled switch height
   static const double heightCompact = 18.0; // Compact switch height
-  static const double widthShowHide = 72.0; // Show Hide switch width
-  static const double heightShowHide = 32.0; // Show Hide switch height
-  static const double thumbSizeShowHide = 14.0; // Show Hide thumb, both states
-  static const double thumbPaddingShowHide = 9.0; // Show Hide thumb padding
+  static const double widthShowHide = 72.0;
+  static const double heightShowHide = 32.0;
+  static const double thumbSizeShowHide = 14.0;
+  static const double thumbPaddingShowHide = 9.0;
   static const double thumbSizeLargeActive = 18.0; // Large thumb when active
   static const double thumbSizeLargeInactive =
       14.0; // Large thumb when inactive
@@ -250,28 +250,36 @@ class CoreSwitch extends StatelessWidget {
         : _SwitchConstants.heightCompact;
   }
 
+  double get _thumbSize {
+    if (_isShowHide) return _SwitchConstants.thumbSizeShowHide;
+    if (_hasLabels) {
+      return value
+          ? _SwitchConstants.thumbSizeLargeActive
+          : _SwitchConstants.thumbSizeLargeInactive;
+    }
+    return value
+        ? _SwitchConstants.thumbSizeSmallActive
+        : _SwitchConstants.thumbSizeSmallInactive;
+  }
+
+  double get _thumbPadding {
+    if (_isShowHide) return _SwitchConstants.thumbPaddingShowHide;
+    if (_hasLabels) {
+      return value
+          ? _SwitchConstants.thumbPaddingLargeActive
+          : _SwitchConstants.thumbPaddingLargeInactive;
+    }
+    return value
+        ? _SwitchConstants.thumbPaddingSmallActive
+        : _SwitchConstants.thumbPaddingSmallInactive;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double switchHeight = _getSwitchHeight;
     final double switchWidth = _getSwitchWidth;
-    final double thumbSize = _isShowHide
-        ? _SwitchConstants.thumbSizeShowHide
-        : _hasLabels
-        ? value
-            ? _SwitchConstants.thumbSizeLargeActive
-            : _SwitchConstants.thumbSizeLargeInactive
-        : value
-            ? _SwitchConstants.thumbSizeSmallActive
-            : _SwitchConstants.thumbSizeSmallInactive;
-    final double thumbPadding = _isShowHide
-        ? _SwitchConstants.thumbPaddingShowHide
-        : _hasLabels
-        ? value
-            ? _SwitchConstants.thumbPaddingLargeActive
-            : _SwitchConstants.thumbPaddingLargeInactive
-        : value
-            ? _SwitchConstants.thumbPaddingSmallActive
-            : _SwitchConstants.thumbPaddingSmallInactive;
+    final double thumbSize = _thumbSize;
+    final double thumbPadding = _thumbPadding;
 
     final colors = Theme.of(context).coreColors;
 
