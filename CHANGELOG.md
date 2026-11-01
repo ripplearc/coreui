@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.59.0] - CoreSwitch disabled state and Show Hide look
+## [0.71.0] - CoreSwitch disabled state and Show Hide look
 
 ### ✨ Features
 
@@ -8,13 +8,17 @@
 - **CoreSwitchType.showHide**: the Show Hide look of the share sheet, 72 x 32. Off is a `backgroundGrayLight` track with a `lineMid` border, "Hide" in `textDark` and an `iconGrayLight` thumb on the left. On is a `buttonSurface` track, "Show" in `textInverse` and an `iconWhite` thumb on the right. Both labels are Body Small Semibold and default to "Hide" and "Show"; the label always names the current state (CA-1342)
 - **CoreSwitch semantics**: the switch reads as toggled or not and as enabled or disabled. The new optional `semanticLabel` is the name a screen reader reads first. The label, state, tap action and keyboard focus are one node. The default "Show" and "Hide" labels are English; pass localized labels in a localized app (CA-1342)
 
+### 🔧 Fixes
+
+- **CoreSwitch labels at large text**: a label that does not fit the track scales down instead of being cut, so the switch keeps its library size. Show Hide was cut at 1.5x text, the other labelled types at 2.0x (CA-1342)
+
 ### 📐 Design notes
 
 Show Hide is 32 high; the other labelled types stay 24 high. The Show Hide thumb is 14 in both states with 9 px padding. Check the thumb padding against Figma node 57436:8960 when the design changes.
 
 ### 🧪 Tests
 
-- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action
+- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action. Large text: every labelled type, On and Off, keeps its label inside the track at 1.5x and 2.0x
 
 ## [0.82.0] - CoreCheckRowItem.checkRow, disabled rows and a keyboard focus ring
 
