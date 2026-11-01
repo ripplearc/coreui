@@ -37,17 +37,11 @@ class UnderlineFieldMetrics {
     required this.unitGap,
   });
 
-  // TODO: [CA-1238] use CoreSpacing.px2/px5/px6/px17 when they exist
-  static const double _px2 = 2;
-  static const double _px5 = 5;
-  static const double _px6 = 6;
-  static const double _px17 = 17;
-
   /// The width of the caret.
-  static const double caretWidth = _px2;
+  static const double caretWidth = 2;
 
   /// The space between the label and the widget after it.
-  static const double labelTrailingGap = _px5;
+  static const double labelTrailingGap = CoreSpacing.space1;
 
   /// The space between the value and the inline accessory.
   static const double inlineAccessoryGap = CoreSpacing.space3;
@@ -61,7 +55,7 @@ class UnderlineFieldMetrics {
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
     strokeWidth: 1,
-    caretHeight: _px17,
+    caretHeight: CoreSpacing.space4,
     unitGap: CoreSpacing.space1,
   );
 
@@ -69,9 +63,9 @@ class UnderlineFieldMetrics {
     labelRowHeight: CoreSpacing.space4,
     labelGap: CoreSpacing.space1,
     valueRowHeight: CoreSpacing.space6,
-    lineGap: _px6,
+    lineGap: CoreSpacing.space2,
     strokeWidth: 1,
-    caretHeight: _px17,
+    caretHeight: CoreSpacing.space4,
     unitGap: CoreSpacing.space1,
   );
 

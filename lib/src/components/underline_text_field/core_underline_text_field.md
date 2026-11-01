@@ -59,12 +59,13 @@ $ 145.00 /day  [inlineAccessory]                [trailing]
 | Size      | Label | Value           | Prefix and suffix | Unit  | Underline                | Height |
 |-----------|-------|-----------------|-------------------|-------|--------------------------|--------|
 | `regular` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 53px   |
-| `compact` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 51px   |
+| `compact` | 12/16 | 16/24           | 16/24             | 12/16 | 1px, `lineDarkOutline`   | 53px   |
 | `large`   | 14/20 | 24/32, semibold | 24/32, semibold   | 16/24 | 2px, `lineMid`           | 66px   |
 
-`compact` is `regular` with the underline 2px closer to the value (6px under
-the value row instead of 8px). The design draws it on the fields of an open
-editor panel: waste, burden, delivery and note.
+`compact` draws the same as `regular`. The design draws its underline 6px under
+the value row, but the library keeps every gap on the 4px grid, so it is 8px,
+as on `regular`. The design uses it on the fields of an open editor panel:
+waste, burden, delivery and note.
 
 Use `large` only when a form asks a single question, so one number is enlarged.
 A form with several fields of equal weight uses `regular` for every field.
@@ -111,7 +112,7 @@ only once there is a value to put it beside.
 `labelTrailing`, `inlineAccessory` and `trailing` take any widget. The field
 owns their position and spacing, not their look.
 
-- `labelTrailing` sits 5px after the label. It makes the label row 20px tall
+- `labelTrailing` sits 4px after the label. It makes the label row 20px tall
   and takes the 4px back from the gap above the underline, so the field keeps
   its height.
 - `inlineAccessory` sits 12px after the value and unit.

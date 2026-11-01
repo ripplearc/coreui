@@ -307,7 +307,7 @@ void main() {
   });
 
   group('CoreUnderlineTextField – labelTrailing', () {
-    testWidgets('sits 5px after the label in a 20px label row', (tester) async {
+    testWidgets('sits 4px after the label in a 20px label row', (tester) async {
       await pumpField(
         tester,
         CoreUnderlineTextField(label: 'Rate', labelTrailing: badge()),
@@ -316,7 +316,7 @@ void main() {
       expect(
         rectOf(tester, find.byKey(badgeKey)).left -
             rectOf(tester, find.text('Rate')).right,
-        5,
+        4,
       );
       expect(rectOf(tester, find.byKey(badgeKey)).height, 20);
     });

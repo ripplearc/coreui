@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.55.0] - Off-grid gaps move to the 4px spacing steps
+
+### 🔧 Fixes
+
+- **CoreUnderlineTextField**: every gap is a 4px step, as design decided for the whole library. 0.54.0 (CA-1323) already moved most gaps; this moves the rest. The label badge sits 4px after the label (was 5). The caret is 16px tall on regular and compact (was 17); it stays 2px wide, a line width. Compact's underline sits 8px under the value (was 6), so compact draws the same as regular, 53 high (was 51). The side inset and prefix gap stay 0, as 0.54.0 set them (CA-1238)
+- **CoreStatusBadge**: the side padding is 11 dp inside the 1 dp outline (was 10), so the outline and the padding make the 12 dp Figma draws from the outer edge to the text. The neutral badge keeps 11 dp. The warning badge is 2 dp wider (CA-1238)
+
+### 📐 Design notes
+
+- Design decided on 2026-10-25 to keep the library on the 4px grid: no off-grid spacing tokens. The local constants that waited on CA-1238 are gone; each user takes the nearest 4px step
+
+### 🧪 Tests
+
+- Underline field caret height, label badge gap and compact height and underline gap; status badge width. Goldens: every underline field golden (light and dark) and the status badge (light and dark)
+
 ## [0.54.0] - Text fields and calculator keyboard match the design library
 
 ### 🔧 Fixes

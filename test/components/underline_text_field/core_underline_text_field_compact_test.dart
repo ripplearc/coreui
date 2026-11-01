@@ -61,16 +61,16 @@ void main() {
       );
     });
 
-    testWidgets('is 51px tall, 2px shorter than regular', (tester) async {
+    testWidgets('is 53px tall, the same as regular', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(label: 'Note', size: compact),
       );
 
-      expect(tester.getSize(fieldFinder).height, 51);
+      expect(tester.getSize(fieldFinder).height, 53);
     });
 
-    testWidgets('the underline sits 6px under the value row', (tester) async {
+    testWidgets('the underline sits 8px under the value row', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(
@@ -83,7 +83,7 @@ void main() {
       final valueBottom = tester.getBottomLeft(find.byType(EditableText)).dy;
       final underlineTop = tester.getTopLeft(underline).dy;
 
-      expect(underlineTop - valueBottom, 6);
+      expect(underlineTop - valueBottom, 8);
     });
 
     testWidgets('the regular underline stays 8px under the value row',
@@ -153,7 +153,7 @@ void main() {
       expect(tester.widget<Container>(underline).color, colors.statusError);
     });
 
-    testWidgets('a label badge keeps the field 51px tall', (tester) async {
+    testWidgets('a label badge keeps the field 53px tall', (tester) async {
       await pumpField(
         tester,
         const CoreUnderlineTextField(
@@ -163,7 +163,7 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 51);
+      expect(tester.getSize(fieldFinder).height, 53);
     });
 
     testWidgets('a helper or error line adds the same 24px', (tester) async {
@@ -176,7 +176,7 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(fieldFinder).height, 51 + 24);
+      expect(tester.getSize(fieldFinder).height, 53 + 24);
     });
 
     testWidgets('takes prefix, unit and suffix like regular', (tester) async {
@@ -195,7 +195,7 @@ void main() {
       expect(find.text(r'$'), findsOneWidget);
       expect(find.text('%'), findsOneWidget);
       expect(find.text('/day'), findsOneWidget);
-      expect(tester.getSize(fieldFinder).height, 51);
+      expect(tester.getSize(fieldFinder).height, 53);
     });
 
     testWidgets('meets the accessibility guidelines in both themes',

@@ -38,14 +38,14 @@ void main() {
     });
 
     testWidgets(
-        'is as wide as its label plus 10 dp padding and 1 dp border '
-        'on each side', (tester) async {
+        'has 12 dp from each outer edge to the label, the 1 dp border '
+        'inside it', (tester) async {
       await pumpBadge(tester, const CoreStatusBadge(label: 'Sample rate'));
 
       final labelWidth = tester.getSize(find.text('Sample rate')).width;
       expect(
         tester.getSize(find.byType(CoreStatusBadge)).width,
-        labelWidth + 2 * 10 + 2 * 1,
+        labelWidth + 2 * CoreSpacing.space3,
       );
     });
 
