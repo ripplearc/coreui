@@ -9,7 +9,7 @@
 
 ### 🧪 Tests
 
-- View turns Button Press while pressed and fires once over two presses; Tab rings its label and Enter takes it; it works in a coloured parent with no `Material`; its ring stays clear of Undo, and the alert View ring stays clear of the close x. New goldens: receipt View pressed and focused, light and dark; the alert View focused goldens are redrawn for the stadium ring
+- View turns Button Press while pressed and fires once over two presses; Tab rings its label and Enter takes it; it works in a coloured parent with no `Material`; with the short label and a long one its ring stays clear of Undo and of the message text, and the alert View ring stays clear of the close x. New goldens: receipt View pressed and focused, light and dark; the alert View focused goldens are redrawn for the stadium ring
 
 ## [0.80.0] - Alert text button
 

@@ -1449,13 +1449,14 @@ void main() {
       Widget buildReceiptWithView({
         required VoidCallback onSecondary,
         bool withMaterial = true,
+        String secondaryLabel = 'View',
       }) {
         final receipt = Toast.receipt(
           description: 'Saved to history',
           highlight: 'Calc 60ft²',
           actionLabel: 'Undo',
           onAction: _noop,
-          secondaryLabel: 'View',
+          secondaryLabel: secondaryLabel,
           onSecondary: onSecondary,
           onClose: _noop,
         );
@@ -1532,20 +1533,29 @@ void main() {
         expect(views, 1);
       });
 
-      testWidgets('the View focus ring stays clear of Undo',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(buildReceiptWithView(onSecondary: _noop));
+      // A long label fills the View box, so the ring reaches furthest out.
+      for (final label in ['View', 'View the whole calculation']) {
+        testWidgets('the "$label" focus ring stays clear of Undo and the text',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(
+            buildReceiptWithView(onSecondary: _noop, secondaryLabel: label),
+          );
 
-        for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
-          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-          await tester.pump();
-        }
-        final ring = tester.getRect(ringFinder);
-        final undo = tester.getRect(
-          find.byKey(const Key('toast_action_button')),
-        );
-        expect(ring.overlaps(undo), isFalse);
-      });
+          for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
+            await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+            await tester.pump();
+          }
+          final ring = tester.getRect(ringFinder);
+          final undo = tester.getRect(
+            find.byKey(const Key('toast_action_button')),
+          );
+          final text = tester.getRect(
+            find.textContaining('Saved to history', findRichText: true),
+          );
+          expect(ring.overlaps(undo), isFalse);
+          expect(ring.overlaps(text), isFalse);
+        });
+      }
 
       testWidgets('View works inside a coloured parent with no Material',
           (WidgetTester tester) async {
