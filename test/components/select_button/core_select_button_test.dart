@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -192,6 +193,74 @@ void main() {
       );
     });
 
+    testWidgets('track is 40 high with a 32 high segment',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: CoreSelectButton(
+                tabs: ['Tab 1', 'Tab 2'],
+                selectedIndex: 0,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final track = find.byKey(const Key('core_select_button_outer'));
+      expect(tester.getSize(track).height, CoreSpacing.space10);
+
+      Finder segment(int index) =>
+          find.byKey(Key('core_select_button_segment_$index'));
+      expect(tester.getSize(segment(0)).height, CoreSpacing.space8);
+      expect(
+        tester.getTopLeft(segment(1)).dx - tester.getTopRight(segment(0)).dx,
+        CoreSpacing.space1,
+      );
+    });
+
+    testWidgets('keeps a 32 high segment when the text line height changes',
+        (WidgetTester tester) async {
+      final theme = CoreTheme.light();
+      final typography = theme.extension<AppTypographyExtension>()!;
+      const tallLine = 22 / 14;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme.copyWith(
+            extensions: [
+              ...theme.extensions.values
+                  .where((e) => e is! AppTypographyExtension),
+              typography.copyWith(
+                bodyMediumRegular:
+                    typography.bodyMediumRegular.copyWith(height: tallLine),
+                bodyMediumSemiBold:
+                    typography.bodyMediumSemiBold.copyWith(height: tallLine),
+              ),
+            ],
+          ),
+          home: Scaffold(
+            body: Center(
+              child: CoreSelectButton(
+                tabs: ['Tab 1', 'Tab 2'],
+                selectedIndex: 0,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      for (final index in [0, 1]) {
+        final segment = find.byKey(Key('core_select_button_segment_$index'));
+        expect(tester.getSize(segment).height, CoreSpacing.space8);
+        expect(
+          tester.getCenter(find.text('Tab ${index + 1}')).dy,
+          tester.getCenter(segment).dy,
+        );
+      }
+    });
+
     testWidgets('handles null onChanged callback', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -217,6 +286,93 @@ void main() {
       // Verifies the tap doesn't throw when onChanged is null.
       // selectedIndex stays 0 because this is a controlled widget with no setState.
       expect(button.selectedIndex, 0);
+    });
+
+    testWidgets('gives every segment a 48 dp tap target in the scroll view',
+        (WidgetTester tester) async {
+      final tabs = List.generate(6, (index) => 'Tab ${index + 1}');
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreSelectButton(tabs: tabs, selectedIndex: 0),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      for (var i = 0; i < tabs.length; i++) {
+        final target = tester.getSize(
+          find.byKey(CoreSelectButton.tapTargetKey(i)),
+        );
+        expect(target.height, greaterThanOrEqualTo(CoreSpacing.space12));
+        expect(target.width, greaterThanOrEqualTo(CoreSpacing.space12));
+      }
+    });
+
+    testWidgets('selects a segment from a tap just above the track',
+        (WidgetTester tester) async {
+      int? selected;
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreSelectButton(
+            tabs: const ['Tab 1', 'Tab 2'],
+            selectedIndex: 0,
+            onChanged: (index) => selected = index,
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final track = tester.getRect(
+        find.byKey(const Key('core_select_button_outer')),
+      );
+      final tab2 = tester.getCenter(find.text('Tab 2'));
+      await tester.tapAt(Offset(tab2.dx, track.top - 2));
+
+      expect(selected, 1);
+    });
+
+    testWidgets('fills a pressed segment with backgroundGrayMid',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreSelectButton(tabs: const ['Tab 1', 'Tab 2'], selectedIndex: 0),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      final gesture = await tester.press(find.text('Tab 2'));
+      await tester.pumpAndSettle();
+
+      final segment = find.byKey(const Key('core_select_button_segment_1'));
+      final decoration =
+          tester.widget<AnimatedContainer>(segment).decoration as BoxDecoration;
+      final colors = AppColorsExtension.of(tester.element(segment));
+      expect(decoration.color, colors.backgroundGrayMid);
+      await gesture.cancel();
+    });
+
+    testWidgets('draws the Tab focus as a border on the segment',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          CoreSelectButton(tabs: const ['Tab 1', 'Tab 2'], selectedIndex: 0),
+          theme: CoreTheme.light(),
+        ),
+      );
+      final segment = find.byKey(const Key('core_select_button_segment_1'));
+      final restingSize = tester.getSize(segment);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final decoration =
+          tester.widget<AnimatedContainer>(segment).decoration as BoxDecoration;
+      final colors = AppColorsExtension.of(tester.element(segment));
+      expect(
+        decoration.border,
+        Border.all(color: colors.outlineFocus, width: 2),
+      );
+      expect(tester.getSize(segment), restingSize);
     });
 
     testWidgets('renders all tabs when many tabs provided',

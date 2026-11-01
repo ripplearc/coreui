@@ -139,8 +139,14 @@ class CoreSwitch extends StatelessWidget {
       (activeLabel?.isNotEmpty ?? false) ||
       (inactiveLabel?.isNotEmpty ?? false);
 
-  Color _getInactiveThumbColor(AppColorsExtension colors) =>
-      _getBorderColor(colors);
+  Color _getInactiveThumbColor(AppColorsExtension colors) {
+    return inactiveColor ??
+        (switch (type) {
+          CoreSwitchType.lock => colors.statusError,
+          CoreSwitchType.imperial => colors.iconGreen,
+          CoreSwitchType.normal => colors.iconGrayMid,
+        });
+  }
 
   Color _getInactiveTextColor(AppColorsExtension colors) {
     return inactiveColor ??

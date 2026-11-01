@@ -166,6 +166,39 @@ void main() {
         );
       }
     });
+
+    testWidgets('back with headline bar keeps a 48x48 back target',
+        (tester) async {
+      await setupA11yTest(tester);
+
+      for (final theme in _themes) {
+        await tester.pumpWidget(
+          _buildBarApp(
+            CoreAppBar(
+              titleText: 'Riverside Tower',
+              height: CoreSpacing.space12,
+              titleSpacing: CoreSpacing.space1,
+              leading: CoreIconWidget(
+                key: const Key('core_app_bar_back'),
+                icon: CoreIcons.arrowLeft,
+                size: CoreIconSize.size24,
+                padding: const EdgeInsets.all(CoreSpacing.space3),
+                semanticLabel: 'Back',
+                onTap: () {},
+              ),
+            ),
+            theme,
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+
+        await expectMeetsTapTargetAndLabelGuidelines(
+          tester,
+          find.byKey(const Key('core_app_bar_back')),
+          checkTextContrast: false,
+        );
+      }
+    });
   });
 
   group('CoreAppBar title contrast', () {

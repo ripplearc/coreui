@@ -10,6 +10,7 @@ import '../../../ripplearc_coreui.dart';
 /// selection state.
 ///
 /// The tabs are horizontally scrollable when they exceed the available width.
+/// A 4 dp gap follows every tab, so the bottom line runs 4 dp past the last.
 ///
 /// Example:
 /// ```dart
@@ -109,19 +110,37 @@ class _CoreTabsState extends State<CoreTabs> with TickerProviderStateMixin {
         enableFeedback: false,
         controller: _controller,
         isScrollable: true,
-        indicatorSize: TabBarIndicatorSize.tab,
+        // Sized to the label so the indicator stops short of the gap between
+        // tabs, which lives in labelPadding.
+        indicatorSize: TabBarIndicatorSize.label,
         tabAlignment: TabAlignment.start,
-        indicatorColor: colors.tabsHighlight,
-        indicatorWeight: CoreSpacing.space1,
+        // No radius: square ends, as Figma draws them. Weight 0 because the
+        // underline sits inside the 40 dp tab, not below it.
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+            color: colors.tabsHighlight,
+            width: CoreSpacing.space1,
+          ),
+        ),
+        indicatorWeight: 0,
+        dividerColor: colors.lineDarkOutline,
+        // Replaces Flutter's 16 a side with the 4px gap between tabs; the 12
+        // side padding below is the tab's own.
+        labelPadding: const EdgeInsetsDirectional.only(end: CoreSpacing.space1),
         labelColor: colors.textHeadline,
         unselectedLabelColor: colors.textBody,
         labelStyle: typography.bodyMediumSemiBold,
         unselectedLabelStyle: typography.bodyMediumRegular,
         tabs: [
           for (final label in widget.tabs)
+            // The 8 on top makes a 48 dp tap area around the 40 dp tab.
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: CoreSpacing.space3),
+              padding: const EdgeInsets.fromLTRB(
+                CoreSpacing.space3,
+                CoreSpacing.space2,
+                CoreSpacing.space3,
+                0,
+              ),
               child: Tab(
                 text: label,
                 height: CoreSpacing.space10,

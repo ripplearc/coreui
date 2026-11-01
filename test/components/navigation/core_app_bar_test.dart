@@ -179,6 +179,61 @@ void main() {
       expect(text.style!.color, colors.textHeadline);
     });
 
+    testWidgets('titleText is Title Medium without a leading widget',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildBarApp(const CoreAppBar(titleText: 'Projects')),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final text = tester.widget<Text>(find.text('Projects'));
+      final typography = CoreTheme.light().coreTypography;
+      expect(text.style!.fontSize, typography.titleMediumSemiBold.fontSize);
+      expect(text.style!.fontWeight, typography.titleMediumSemiBold.fontWeight);
+    });
+
+    testWidgets('titleText is Title Large next to a leading widget',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildBarApp(
+          CoreAppBar(
+            titleText: 'Riverside Tower',
+            height: CoreSpacing.space12,
+            leading: CoreIconWidget(
+              icon: CoreIcons.arrowLeft,
+              padding: const EdgeInsets.all(CoreSpacing.space3),
+              semanticLabel: 'Back',
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final text = tester.widget<Text>(find.text('Riverside Tower'));
+      final typography = CoreTheme.light().coreTypography;
+      expect(text.style!.fontSize, typography.titleLargeSemiBold.fontSize);
+      expect(text.style!.fontWeight, typography.titleLargeSemiBold.fontWeight);
+      expect(
+        tester.getSize(find.byType(CoreAppBar)).height,
+        CoreSpacing.space12,
+      );
+    });
+
+    testWidgets('titleText is Title Large with implyLeading', (tester) async {
+      await tester.pumpWidget(
+        _buildBarApp(
+          const CoreAppBar(titleText: 'Riverside Tower', implyLeading: true),
+        ),
+      );
+      await tester.pump();
+
+      final text = tester.widget<Text>(find.text('Riverside Tower'));
+      final typography = CoreTheme.light().coreTypography;
+      expect(text.style!.fontSize, typography.titleLargeSemiBold.fontSize);
+      expect(text.style!.fontWeight, typography.titleLargeSemiBold.fontWeight);
+    });
+
     testWidgets('renders an arbitrary title widget', (tester) async {
       await tester.pumpWidget(
         _buildBarApp(
