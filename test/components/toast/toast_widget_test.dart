@@ -466,19 +466,36 @@ void main() {
         expect(ring.right, label.right + CoreSpacing.space3);
         expect(ring.top, label.top - 5);
         expect(ring.bottom, label.bottom + 5);
-        final border = (tester
+        final shape = (tester
                 .widget<DecoratedBox>(find.descendant(
                   of: ringFinder,
                   matching: find.byType(DecoratedBox),
                 ))
-                .decoration as BoxDecoration)
-            .border! as Border;
-        expect(border.top.color, colors.outlineFocus);
-        expect(border.top.width, 3);
+                .decoration as ShapeDecoration)
+            .shape as StadiumBorder;
+        expect(shape.side.color, colors.outlineFocus);
+        expect(shape.side.width, 3);
 
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pump();
         expect(actions, 1);
+      });
+
+      testWidgets('the View focus ring stays clear of the close x',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildThemedAlertWithView(onAction: _noop));
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final ring = tester.getRect(
+          find.byKey(const Key('toast_action_focus_ring')),
+        );
+        // The ring may cross the x's invisible 48 dp target, never the x.
+        final closeIcon = tester.getRect(find.descendant(
+          of: find.byKey(const Key('toast_close_button')),
+          matching: find.byType(CoreIconWidget),
+        ));
+        expect(ring.overlaps(closeIcon), isFalse);
       });
 
       testWidgets('View works inside a coloured parent with no Material',
@@ -1500,19 +1517,34 @@ void main() {
         expect(ring.right, label.right + CoreSpacing.space3);
         expect(ring.top, label.top - 5);
         expect(ring.bottom, label.bottom + 5);
-        final border = (tester
+        final shape = (tester
                 .widget<DecoratedBox>(find.descendant(
                   of: ringFinder,
                   matching: find.byType(DecoratedBox),
                 ))
-                .decoration as BoxDecoration)
-            .border! as Border;
-        expect(border.top.color, colors.outlineFocus);
-        expect(border.top.width, 3);
+                .decoration as ShapeDecoration)
+            .shape as StadiumBorder;
+        expect(shape.side.color, colors.outlineFocus);
+        expect(shape.side.width, 3);
 
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pump();
         expect(views, 1);
+      });
+
+      testWidgets('the View focus ring stays clear of Undo',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildReceiptWithView(onSecondary: _noop));
+
+        for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+        }
+        final ring = tester.getRect(ringFinder);
+        final undo = tester.getRect(
+          find.byKey(const Key('toast_action_button')),
+        );
+        expect(ring.overlaps(undo), isFalse);
       });
 
       testWidgets('View works inside a coloured parent with no Material',

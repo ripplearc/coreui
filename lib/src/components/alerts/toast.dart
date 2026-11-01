@@ -778,12 +778,13 @@ class _ToastState extends State<Toast> {
       top: -_textFocusRingOutsetY,
       bottom: -_textFocusRingOutsetY,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: colors.outlineFocus,
-            width: _textFocusRingWidth,
+        decoration: ShapeDecoration(
+          shape: StadiumBorder(
+            side: BorderSide(
+              color: colors.outlineFocus,
+              width: _textFocusRingWidth,
+            ),
           ),
-          borderRadius: BorderRadius.circular(CoreSpacing.space10),
         ),
       ),
     );
