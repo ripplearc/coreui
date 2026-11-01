@@ -33,8 +33,12 @@ cleanup() {
 trap cleanup EXIT
 
 cases=""
+# Numbered, so two cases of one class keep their own output block and
+# pictures.
+n=0
 for part in "$@"; do
-  name="${part%%(*}"
+  n=$((n + 1))
+  name="$n ${part%%(*}"
   cases+="  Case('$name', () => $part),"$'\n'
 done
 

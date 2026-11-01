@@ -43,6 +43,16 @@ match the library's Pressed and Focused states.
   yourself.
 - A `GestureDetector` has no focus and no press look. Use `InkWell`,
   `FocusableActionDetector` or a button.
+- Two focus stops in one part look different. Tab, then Tab again: the
+  screen must change, and the two focus goldens must not be the same file
+  (#237: dates and x drew the same border; #262: the x looked like the chip).
+- An `InkWell` shows its grey `focusColor` while a child `Focus` has focus,
+  even with `canRequestFocus: false`. If you draw your own ring, set
+  `focusColor` to transparent (#252).
+- Read press and focus pixels on the real page colour, not a transparent
+  box. In coreui `backgroundGrayLight` *is* `pageBackground`, so a Grey Light
+  press is invisible on the page; a test on a transparent background still
+  passes (#252, see CA-1373).
 
 ### 2. A coloured parent
 
@@ -66,8 +76,13 @@ Try text scale 1.5 and 2.0.
 
 ### 4. Tap size
 
-Every tap target is at least 48 × 48 dp. Measure it in a test of your own:
-the shared tap-size guideline skips parts inside a scroll view (#234).
+Every tap target is at least 48 × 48 dp, for **every value of the size enum**
+(#262: the small chip's x was 42 dp; the test only built the default size).
+Measure it in a test of your own:
+
+- The shared tap-size guideline skips parts inside a scroll view (#234).
+- It also skips a node that touches the screen edge, so a part at (0, 0)
+  passes when it is broken (#253). Pad the part, or read the node's rect.
 
 - Keep the library look and add the touch area around it: a 32 dp segment
   inside a 48 dp hit box, `HitTestBehavior.opaque`.
@@ -83,6 +98,12 @@ that every flag resets.
   on a later clear from another control (#238).
 - Test each callback **twice**. The second run catches a flag that never
   resets.
+- A test whose name describes strange behaviour ("View fires once and the
+  alert stays") is keeping a bug. Stop: fix the code, add an assert, or ask
+  in the PR text (#254).
+- Block a wrong use in code, not only in the docs: an assert, a behaviour
+  that cannot go wrong, or a constructor that does not take the bad
+  combination (#254, #252's `checkRow`-only `showDivider`).
 
 ### 6. A golden for each state
 
@@ -123,6 +144,11 @@ look at them. The script deletes the probe file afterwards. Never commit it.
 The probe finds problems. It does not replace the tests: write the recipe
 tests for each check and keep them in the PR.
 
+## Prove each new test can fail
+
+Put the old behaviour back for a moment (or break the fix) and run the
+test. If it still passes, it does not test the fix. Then restore the code.
+
 ## Also check before the PR
 
 These came up in the same review rounds:
@@ -140,3 +166,17 @@ These came up in the same review rounds:
 - **Lock file.** `flutter test` and `flutter analyze` rewrite
   `example/pubspec.lock`. Do not commit that change.
 - **CHANGELOG and the component `.md`** describe every state you changed.
+- **Known problems in a file you edit** are fixed in the PR, or have a
+  ticket you filed, named in the PR text. Run the probe on the part even if
+  your change is elsewhere in the file (#253 found a "No Material widget
+  found" that main already had).
+- **Every "later" item** has a ticket you filed yourself, named in the PR
+  text.
+- **Size line** in the PR text is the rule 01 insertions count on the pushed
+  branch.
+
+## After each review round
+
+- Reply on every thread with one line: "Fixed in <commit>." or "Not
+  changed, because …". Use the SHA on the pushed branch, after any rebase.
+- Read the PR text again and fix every number and claim that changed.

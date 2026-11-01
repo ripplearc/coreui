@@ -85,6 +85,7 @@ Future<void> _png(WidgetTester t, String name) async {
     final img = await rb.toImage(pixelRatio: 2);
     final bd = await img.toByteData(format: ui.ImageByteFormat.png);
     final dir = Platform.environment['PROBE_OUT'] ?? '/tmp';
+    Directory(dir).createSync(recursive: true);
     File('$dir/${name.replaceAll(RegExp('[^A-Za-z0-9]+'), '_')}.png').writeAsBytesSync(bd!.buffer.asUint8List());
   });
 }
