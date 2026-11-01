@@ -16,7 +16,7 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [selectedBackgroundColor] is the background color of the selected item
 /// [isDisabled] indicates if the selector is disabled
 /// [onOpen] is an optional callback that is called when the selector is opened
-class SingleItemSelector<T> extends StatelessWidget {
+class SingleItemSelector<T> extends StatefulWidget {
   final String? labelText;
   final String? hintText;
   final String modalTitle;
@@ -46,63 +46,90 @@ class SingleItemSelector<T> extends StatelessWidget {
     this.onOpen,
   });
 
+  /// Key of the transparent layer on top of the field that draws the tap
+  /// ripple, for widget-test finders.
+  static const Key inkLayerKey = Key('single_item_selector_ink_layer');
+
+  @override
+  State<SingleItemSelector<T>> createState() => _SingleItemSelectorState<T>();
+}
+
+class _SingleItemSelectorState<T> extends State<SingleItemSelector<T>> {
+  bool _isFocused = false;
+
   @override
   Widget build(BuildContext context) {
-    final typography = Theme.of(context).coreTypography;
     final colors = Theme.of(context).coreColors;
-    return InkWell(
-      onTap: isDisabled ? null : () => _showSelectionBottomSheet(context),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          enabled: !isDisabled,
-          labelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          hintStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          floatingLabelStyle: typography.bodyLargeSemiBold.copyWith(
-            color: isDisabled ? colors.textDisable : colors.outlineFocus,
-          ),
-          border: const OutlineInputBorder(),
-          suffixIcon: suffixIcon ?? const Icon(Icons.arrow_drop_down),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 16,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                _getDisplayText(),
-                style: typography.bodyLargeRegular.copyWith(
-                  color: (selectedItem == null || isDisabled)
-                      ? Theme.of(context).hintColor
-                      : null,
-                ),
+    final displayText = widget.selectedItem == null ? null : _getDisplayText();
+    return Semantics(
+      button: true,
+      enabled: !widget.isDisabled,
+      label: widget.labelText,
+      value: displayText ?? widget.hintText,
+      child: Stack(
+        children: [
+          // The field only shows the selection; the InkWell above it owns the
+          // tap and the focus, so the inner text field never opens the
+          // keyboard. The field draws its own focused look while the InkWell
+          // holds the focus.
+          ExcludeSemantics(
+            child: IgnorePointer(
+              child: CoreTextField(
+                // A new key per selection rebuilds the field with the new text.
+                key: ValueKey(displayText),
+                label: widget.labelText,
+                hintText: widget.hintText,
+                initialValue: displayText,
+                enabled: !widget.isDisabled,
+                showsFocus: _isFocused,
+                floatsLabel: true,
+                suffix: widget.suffixIcon ??
+                    CoreIconWidget(
+                      icon: CoreIcons.arrowDown,
+                      size: CoreIconSize.size24,
+                      color: widget.isDisabled
+                          ? colors.iconGrayLight
+                          : colors.iconGrayMid,
+                    ),
               ),
             ),
-          ],
-        ),
+          ),
+          // On top of the opaque field, so the tap ripple can be seen.
+          Positioned.fill(
+            child: Material(
+              key: SingleItemSelector.inkLayerKey,
+              type: MaterialType.transparency,
+              child: InkWell(
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CoreSpacing.space1),
+                ),
+                onTap: widget.isDisabled
+                    ? null
+                    : () => _showSelectionBottomSheet(context),
+                onFocusChange: (isFocused) =>
+                    setState(() => _isFocused = isFocused),
+                focusColor: colors.transparent,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   String _getDisplayText() {
-    if (selectedItem == null) return hintText ?? '';
-    return itemToString?.call(selectedItem) ?? selectedItem.toString();
+    if (widget.selectedItem == null) return widget.hintText ?? '';
+    return widget.itemToString?.call(widget.selectedItem) ??
+        widget.selectedItem.toString();
   }
 
   void _showSelectionBottomSheet(BuildContext context) {
     final colors = Theme.of(context).coreColors;
-    final effectiveSelectedColor = selectedColor ?? colors.textSuccess;
+    final effectiveSelectedColor = widget.selectedColor ?? colors.textSuccess;
     final effectiveSelectedBackgroundColor =
-        selectedBackgroundColor ?? colors.backgroundBlueLight;
+        widget.selectedBackgroundColor ?? colors.backgroundBlueLight;
 
-    final onOpenCallback = onOpen;
+    final onOpenCallback = widget.onOpen;
     if (onOpenCallback != null) {
       onOpenCallback();
     }
@@ -126,8 +153,8 @@ class SingleItemSelector<T> extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      modalTitle,
-                      style: typography.headlineMediumSemiBold
+                      widget.modalTitle,
+                      style: typography.titleMediumSemiBold
                           .copyWith(color: colors.textHeadline),
                     ),
                   ],
@@ -137,10 +164,10 @@ class SingleItemSelector<T> extends StatelessWidget {
                 child: ListView.builder(
                   key: const Key('professional_role_list'),
                   padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: items.length,
+                  itemCount: widget.items.length,
                   itemBuilder: (context, index) {
-                    final item = items[index];
-                    final isSelected = selectedItem == item;
+                    final item = widget.items[index];
+                    final isSelected = widget.selectedItem == item;
 
                     return Container(
                       margin: const EdgeInsets.symmetric(
@@ -162,7 +189,8 @@ class SingleItemSelector<T> extends StatelessWidget {
                           title: Row(
                             children: [
                               Text(
-                                itemToString?.call(item) ?? item.toString(),
+                                widget.itemToString?.call(item) ??
+                                    item.toString(),
                                 style: typography.bodyMediumRegular
                                     .copyWith(color: colors.textBody),
                               ),
@@ -176,7 +204,7 @@ class SingleItemSelector<T> extends StatelessWidget {
                           ),
                           onTap: () {
                             Navigator.pop(context);
-                            onItemSelected(item);
+                            widget.onItemSelected(item);
                           },
                         ),
                       ),

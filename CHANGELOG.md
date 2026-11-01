@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.45.0] - Selection sheets match the library Dropdown list
+
+### 🐛 Fixes
+
+- **CoreMultiSelectSheet**: the checked box was Flutter's default purple (`#6750a4`), not a library colour. Rows now draw the library check box icon, 24 dp, in Icon Dark when checked and Icon Grey when not, with a Body Medium label in Text Headline (was Body Large), 12 dp padding and a 48 dp height. A checked row is filled Background Blue Light (`backgroundBlueLight`) with a 48 dp radius, as the library "Plain Selected" cell draws it. The search field is `CoreSearchBox` with `CoreSearchBoxType.sheet` (was an outlined `CoreTextField`), and the title is Title Medium Semibold (was Body Large Semibold) (CA-1318)
+- **SingleItemSelector**: the field is the library `CoreTextField` with a chevron (was a plain `OutlineInputBorder` and a Material arrow), and the sheet title is Title Medium Semibold (was Headline Medium Semibold). With nothing selected the label sits above the field and the grey `hintText` shows inside it, as the library empty Text Field draws it. Tab focus shows the field's own focused look (Text Dark border, Outline Focus label). A tap draws the ripple on top of the filled field, which used to hide it; the selector brings its own `Material` for it, found in tests by `SingleItemSelector.inkLayerKey`. A disabled selector dims its chevron (`iconGrayLight`) and tells screen readers it is disabled (CA-1318)
+- **CoreTextField**: `showsFocus` draws the focused border and label without taking focus, for a field that only shows a choice whose tap target holds the focus, such as `SingleItemSelector`. `floatsLabel` keeps the label above the field so an empty field that never takes focus shows its `hintText` (CA-1318)
+
+### 🧪 Tests
+
+- Multi-select: title style, Sheet search bar, row label style and 48 dp height, check box icon and colours, the Blue Light fill on a checked row. Goldens regenerated, light and dark, with and without the keyboard
+- Single selector: Tab focus turns on the field's focused border and label, and Enter opens the sheet. A tap draws the ripple on top of the field; an empty field shows the hint; a disabled selector dims its chevron and reads as disabled. Goldens now in light and dark for the field states and the open sheet, unselected and selected, and, new, the focused field
+
 ## [0.44.0] - CoreSearchBox matches the library Search Bar
 
 ### 🐛 Fixes

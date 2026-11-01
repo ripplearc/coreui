@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -161,6 +163,112 @@ void main() {
 
       // Modal should not open
       expect(find.text('Select Role'), findsNothing);
+    });
+
+    testWidgets('draws the field focus look when Tab reaches it', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            selectedItem: 'Designer',
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+      InputDecoration decoration() =>
+          tester.widget<TextField>(find.byType(TextField)).decoration
+              as InputDecoration;
+      final colors = AppColorsExtension.of(
+        tester.element(find.byType(TextField)),
+      );
+      final restingBorder = decoration().enabledBorder as OutlineInputBorder;
+      expect(restingBorder.borderSide.color, colors.lineDarkOutline);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final focusedBorder = decoration().enabledBorder as OutlineInputBorder;
+      expect(focusedBorder.borderSide.color, colors.textDark);
+      final labelStyle = decoration().labelStyle as TextStyle;
+      expect(labelStyle.color, colors.outlineFocus);
+    });
+
+    testWidgets('opens the sheet with Enter after Tab', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Role'), findsOneWidget);
+    });
+
+    Widget roleSelector({bool isDisabled = false}) => buildTestApp(
+          SingleItemSelector<String>(
+            labelText: 'Role',
+            hintText: 'Select your role',
+            modalTitle: 'Select Role',
+            items: const ['Engineer', 'Designer'],
+            isDisabled: isDisabled,
+            onItemSelected: (_) {},
+          ),
+          theme: CoreTheme.light(),
+        );
+
+    testWidgets('draws the tap ripple on top of the field', (tester) async {
+      await tester.pumpWidget(roleSelector());
+      final selector = find.byType(SingleItemSelector<String>);
+      final inkLayer = find.byKey(SingleItemSelector.inkLayerKey);
+
+      final gesture = await tester.startGesture(tester.getCenter(selector));
+      await tester.pump(kPressTimeout);
+
+      expect(inkLayer, paints..clipPath()..rect());
+      await gesture.cancel();
+    });
+
+    testWidgets('shows the hint in an empty field', (tester) async {
+      await tester.pumpWidget(roleSelector());
+
+      final hint = find.text('Select your role');
+      expect(hint, findsOneWidget);
+      final fades = tester.widgetList<AnimatedOpacity>(
+        find.ancestor(of: hint, matching: find.byType(AnimatedOpacity)),
+      );
+      for (final fade in fades) {
+        expect(fade.opacity, 1, reason: 'the hint must not be faded out');
+      }
+    });
+
+    testWidgets('a disabled selector dims its chevron and reads as disabled',
+        (tester) async {
+      await tester.pumpWidget(roleSelector(isDisabled: true));
+
+      final chevron = tester.widget<CoreIconWidget>(
+        find.byWidgetPredicate(
+          (w) => w is CoreIconWidget && w.icon == CoreIcons.arrowDown,
+        ),
+      );
+      expect(chevron.color, CoreTheme.light().coreColors.iconGrayLight);
+      expect(
+        tester.getSemantics(find.byType(SingleItemSelector<String>)),
+        isSemantics(hasEnabledState: true, isEnabled: false),
+      );
     });
 
     testWidgets('meets a11y guidelines for closed field and option list', (tester) async {

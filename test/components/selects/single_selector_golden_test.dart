@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -9,124 +10,125 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('SingleItemSelector - all variants', (tester) async {
-    final colors = AppColorsExtension.create();
-    await tester.binding.setSurfaceSize(const Size(400, 600));
+  final themes = {'light': CoreTheme.light(), 'dark': CoreTheme.dark()};
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Container(
-            color: colors.pageBackground,
-            padding: const EdgeInsets.all(16),
+  Widget buildApp(ThemeData theme, Widget body) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme.copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+      home: Scaffold(
+        backgroundColor: theme.coreColors.pageBackground,
+        body: body,
+      ),
+    );
+  }
+
+  Widget buildSelector({String? selectedItem, bool isDisabled = false}) {
+    return SingleItemSelector<String>(
+      labelText: 'Role',
+      hintText: 'Select a role',
+      modalTitle: 'Select Role',
+      items: const ['Engineer', 'Designer', 'Manager'],
+      selectedItem: selectedItem,
+      onItemSelected: (_) {},
+      isDisabled: isDisabled,
+    );
+  }
+
+  for (final MapEntry(key: name, value: theme) in themes.entries) {
+    testWidgets('SingleItemSelector - all variants - $name', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final labelStyle = theme.coreTypography.bodyMediumRegular
+          .copyWith(color: theme.coreColors.textHeadline);
+
+      await tester.pumpWidget(
+        buildApp(
+          theme,
+          Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Default (no selection)'),
-                const SizedBox(height: 8),
-                SingleItemSelector<String>(
-                  labelText: 'Role',
-                  hintText: 'Select a role',
-                  modalTitle: 'Select Role',
-                  items: const ['Engineer', 'Designer'],
-                  selectedItem: null,
-                  onItemSelected: (_) {},
-                  isDisabled: false,
-                ),
-                const SizedBox(height: 16),
-                const Text('Selected'),
-                const SizedBox(height: 8),
-                SingleItemSelector<String>(
-                  labelText: 'Role',
-                  hintText: 'Select a role',
-                  modalTitle: 'Select Role',
-                  items: const ['Engineer', 'Designer'],
-                  selectedItem: 'Designer',
-                  onItemSelected: (_) {},
-                  isDisabled: false,
-                ),
-                const SizedBox(height: 16),
-                const Text('Disabled'),
-                const SizedBox(height: 8),
-                SingleItemSelector<String>(
-                  labelText: 'Role',
-                  hintText: 'Select a role',
-                  modalTitle: 'Select Role',
-                  items: const ['Engineer', 'Designer'],
-                  selectedItem: 'Designer',
-                  onItemSelected: (_) {},
-                  isDisabled: true,
-                ),
+                Text('Default (no selection)', style: labelStyle),
+                const SizedBox(height: CoreSpacing.space2),
+                buildSelector(),
+                const SizedBox(height: CoreSpacing.space4),
+                Text('Selected', style: labelStyle),
+                const SizedBox(height: CoreSpacing.space2),
+                buildSelector(selectedItem: 'Designer'),
+                const SizedBox(height: CoreSpacing.space4),
+                Text('Disabled', style: labelStyle),
+                const SizedBox(height: CoreSpacing.space2),
+                buildSelector(selectedItem: 'Designer', isDisabled: true),
               ],
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/single_item_selector.png'),
-    );
-  });
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/single_item_selector_$name.png'),
+      );
+    });
 
-  testWidgets('SingleItemSelector with bottom sheet', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: SingleItemSelector<String>(
-              labelText: 'Role',
-              hintText: 'Select your role',
-              modalTitle: 'Select Role',
-              items: const ['Engineer', 'Designer', 'Manager'],
-              selectedItem: null,
-              onItemSelected: (_) {},
-            ),
+    testWidgets('SingleItemSelector focused - $name', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 120));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        buildApp(
+          theme,
+          Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
+            child: buildSelector(selectedItem: 'Designer'),
           ),
         ),
-      ),
-    );
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(SingleItemSelector<String>));
-    await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/single_item_selector_focused_$name.png'),
+      );
+    });
 
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/single_item_selector_with_bottom_sheet.png'),
-    );
-  });
+    testWidgets('SingleItemSelector with bottom sheet - $name', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-  testWidgets('SingleItemSelector with bottom sheet and selected item',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
+      await tester.pumpWidget(buildApp(theme, Center(child: buildSelector())));
+      await tester.tap(find.byType(SingleItemSelector<String>));
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: SingleItemSelector<String>(
-              labelText: 'Role',
-              hintText: 'Select your role',
-              modalTitle: 'Select Role',
-              items: const ['Engineer', 'Designer', 'Manager'],
-              selectedItem: 'Designer',
-              onItemSelected: (_) {},
-            ),
-          ),
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile(
+          'goldens/single_item_selector_with_bottom_sheet_$name.png',
         ),
-      ),
-    );
+      );
+    });
 
-    await tester.tap(find.byType(SingleItemSelector<String>));
-    await tester.pumpAndSettle();
+    testWidgets('SingleItemSelector with bottom sheet and selected item - '
+        '$name', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile(
-          'goldens/single_item_selector_with_bottom_sheet_selected.png'),
-    );
-  });
+      await tester.pumpWidget(
+        buildApp(theme, Center(child: buildSelector(selectedItem: 'Designer'))),
+      );
+      await tester.tap(find.byType(SingleItemSelector<String>));
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile(
+          'goldens/single_item_selector_with_bottom_sheet_selected_$name.png',
+        ),
+      );
+    });
+  }
 }
