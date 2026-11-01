@@ -39,7 +39,7 @@ Notes:
 - At least one of `label`, `value`, or `unit` must be provided.
 
 - The close icon is rendered only when `withCloseIcon == true` **and** `onRemove != null`.
-- The close icon has a 48 x 48 tap target at the chip's end. It overlaps the end of the text, so the chip keeps its size. Tab reaches it after the chip. Pressed, the chip shows its pressed look. Focused, a 2 dp `outlineFocus` ring is drawn around the × (`CoreChip.closeFocusRingKey`) and the chip border stays at rest, so the chip and the × look different when each has focus.
+- The close icon has a 48 x 48 tap target at the chip's end. It overlaps the end of the text, so the chip keeps its look; a chip with a × is at least 48 dp high, so a small chip sits centred in 48 dp. Tab reaches it after the chip. Pressed, the chip shows its pressed look. Focused, a 2 dp `outlineFocus` ring is drawn around the × (`CoreChip.closeFocusRingKey`) and the chip border stays at rest, so the chip and the × look different when each has focus.
 
 ## Sizes
 

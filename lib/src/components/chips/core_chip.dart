@@ -427,38 +427,43 @@ class _CoreChipState extends State<CoreChip> {
     // overlaps the end of the text, as the date chip's × does, so the chip
     // keeps its size. Pressing it shows the chip's pressed look. Focusing it
     // draws a ring around the × and leaves the chip border at rest, so Tab
-    // on the chip and Tab on the × look different.
-    return Stack(
-      children: [
-        chip,
-        PositionedDirectional(
-          top: 0,
-          bottom: 0,
-          end: 0,
-          width: CoreSpacing.space12,
-          child: Semantics(
-            button: true,
-            label: widget.removeSemanticsLabel ??
-                'Remove ${[
-                  widget.label,
-                  widget.value,
-                  widget.unit,
-                ].where((e) => e != null).join(' ')}',
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                key: const Key('close_icon'),
-                onTap: widget.onRemove,
-                onHighlightChanged: (value) => _pressed.value = value,
-                onFocusChange: (value) =>
-                    setState(() => _isCloseFocused = value),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: WidgetStateProperty.all(colors.transparent),
+    // on the chip and Tab on the × look different. A small chip is under
+    // 48 dp high, so the Stack is at least 48 dp high with the chip centred.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          chip,
+          PositionedDirectional(
+            top: 0,
+            bottom: 0,
+            end: 0,
+            width: CoreSpacing.space12,
+            child: Semantics(
+              button: true,
+              label: widget.removeSemanticsLabel ??
+                  'Remove ${[
+                    widget.label,
+                    widget.value,
+                    widget.unit,
+                  ].where((e) => e != null).join(' ')}',
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  key: const Key('close_icon'),
+                  onTap: widget.onRemove,
+                  onHighlightChanged: (value) => _pressed.value = value,
+                  onFocusChange: (value) =>
+                      setState(() => _isCloseFocused = value),
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: WidgetStateProperty.all(colors.transparent),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

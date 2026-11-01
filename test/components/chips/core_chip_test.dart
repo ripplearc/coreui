@@ -922,6 +922,7 @@ void main() {
     Future<void> pumpChip(
       WidgetTester tester, {
       String? removeSemanticsLabel,
+      CoreChipSize size = CoreChipSize.medium,
     }) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -933,6 +934,7 @@ void main() {
                 body: Center(
                   child: CoreChip(
                     label: 'Filter',
+                    size: size,
                     selected: selected,
                     withCloseIcon: true,
                     onRemove: () => removes++,
@@ -953,13 +955,16 @@ void main() {
       return surface.decoration! as BoxDecoration;
     }
 
-    testWidgets('the tap target is at least 48 x 48', (tester) async {
-      await pumpChip(tester);
+    for (final size in CoreChipSize.values) {
+      testWidgets('the ${size.name} tap target is at least 48 x 48',
+          (tester) async {
+        await pumpChip(tester, size: size);
 
-      final target = tester.getSize(find.byKey(const Key('close_icon')));
-      expect(target.width, greaterThanOrEqualTo(48));
-      expect(target.height, greaterThanOrEqualTo(48));
-    });
+        final target = tester.getSize(find.byKey(const Key('close_icon')));
+        expect(target.width, greaterThanOrEqualTo(48));
+        expect(target.height, greaterThanOrEqualTo(48));
+      });
+    }
 
     testWidgets('the target covers the icon and stays inside the chip',
         (tester) async {
