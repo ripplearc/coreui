@@ -987,11 +987,17 @@ void main() {
       expect(removes, 0);
     });
 
-    testWidgets('Tab moves from the chip to the close button and the chip '
-        'keeps its focus look', (tester) async {
+    BoxDecoration closeRingOf(WidgetTester tester) {
+      final ring = tester.widget<DecoratedBox>(
+        find.byKey(CoreChip.closeFocusRingKey),
+      );
+      return ring.decoration as BoxDecoration;
+    }
+
+    testWidgets('Tab on the chip thickens its border and draws no ring '
+        'around the close button', (tester) async {
       await pumpChip(tester);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
@@ -1000,9 +1006,38 @@ void main() {
         border.top.width,
         CoreChipTheme.borderWidthFor(isFocused: true),
       );
+      expect(closeRingOf(tester).border, isNull);
+    });
+
+    testWidgets('a second Tab moves focus to the close button, rings it and '
+        'puts the chip border back at rest', (tester) async {
+      await pumpChip(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
       final focused = FocusManager.instance.primaryFocus!.context!;
       final focusedInkWell = focused.findAncestorWidgetOfExactType<InkWell>()!;
       expect(focusedInkWell.key, const Key('close_icon'));
+      final border = surfaceOf(tester).border! as Border;
+      expect(border.top.width, CoreChipTheme.borderWidth);
+      final ring = closeRingOf(tester).border! as Border;
+      expect(ring.top.color, colors.outlineFocus);
+      expect(ring.top.width, CoreChipTheme.borderWidthFor(isFocused: true));
+    });
+
+    testWidgets('Enter on the focused close button removes the chip once',
+        (tester) async {
+      await pumpChip(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(removes, 1);
+      expect(selected.value, isFalse);
     });
 
     testWidgets('pressing the close button shows the pressed look',

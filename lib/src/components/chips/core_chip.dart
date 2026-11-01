@@ -82,6 +82,9 @@ class CoreChip extends StatefulWidget {
   /// Key of the chip's outlined surface, for widget-test finders.
   static const Key surfaceKey = Key('core_chip_surface');
 
+  /// Key of the focus ring drawn around the close (×) icon.
+  static const Key closeFocusRingKey = Key('core_chip_close_focus_ring');
+
   const CoreChip({
     super.key,
     this.label,
@@ -228,8 +231,7 @@ class _CoreChipState extends State<CoreChip> {
                 return ValueListenableBuilder<bool>(
                   valueListenable: _focused,
                   builder: (context, isFocused, ___) {
-                    final activeFocused =
-                        isFocused || isHighlighted || _isCloseFocused;
+                    final activeFocused = isFocused || isHighlighted;
                     return Semantics(
                         label: widget.semanticsLabel ??
                             [widget.label, widget.value, widget.unit]
@@ -383,10 +385,29 @@ class _CoreChipState extends State<CoreChip> {
                                         ),
                                       ),
                                       if (_hasCloseIcon)
-                                        CoreIconWidget(
-                                          icon: CoreIcons.close,
-                                          size: CoreSpacing.space5,
-                                          color: colors.iconGrayMid,
+                                        DecoratedBox(
+                                          key: CoreChip.closeFocusRingKey,
+                                          position:
+                                              DecorationPosition.foreground,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: _isCloseFocused
+                                                ? Border.all(
+                                                    color: colors.outlineFocus,
+                                                    width: CoreChipTheme
+                                                        .borderWidthFor(
+                                                      isFocused: true,
+                                                    ),
+                                                    strokeAlign: BorderSide
+                                                        .strokeAlignOutside,
+                                                  )
+                                                : null,
+                                          ),
+                                          child: CoreIconWidget(
+                                            icon: CoreIcons.close,
+                                            size: CoreSpacing.space5,
+                                            color: colors.iconGrayMid,
+                                          ),
                                         ),
                                     ],
                                   ),
@@ -404,8 +425,9 @@ class _CoreChipState extends State<CoreChip> {
     if (!_hasCloseIcon) return chip;
     // The × gets a 48 dp tap target of its own at the chip's end. It
     // overlaps the end of the text, as the date chip's × does, so the chip
-    // keeps its size. Pressing or focusing it shows the chip's own pressed
-    // and focused looks, which stay inside the chip.
+    // keeps its size. Pressing it shows the chip's pressed look. Focusing it
+    // draws a ring around the × and leaves the chip border at rest, so Tab
+    // on the chip and Tab on the × look different.
     return Stack(
       children: [
         chip,
@@ -431,9 +453,7 @@ class _CoreChipState extends State<CoreChip> {
                 onFocusChange: (value) =>
                     setState(() => _isCloseFocused = value),
                 splashFactory: NoSplash.splashFactory,
-                overlayColor: WidgetStateProperty.all(
-                  AppColorsExtension.of(context).transparent,
-                ),
+                overlayColor: WidgetStateProperty.all(colors.transparent),
               ),
             ),
           ),
