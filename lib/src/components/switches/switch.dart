@@ -129,14 +129,6 @@ class _SwitchConstants {
 /// disabled colours for every type. The thumb keeps the side and size of its
 /// On or Off state.
 ///
-/// ```dart
-/// CoreSwitch(
-///   type: CoreSwitchType.showHide,
-///   value: false,
-///   onChanged: null,
-/// )
-/// ```
-///
 /// ## Custom Colors
 ///
 /// ```dart
@@ -360,11 +352,16 @@ class CoreSwitch extends StatelessWidget {
                           : thumbSize + thumbPadding * 1.4,
                       top: 0,
                       bottom: 0,
+                      // Scales down instead of cutting the label when the
+                      // text is large: the track keeps its library size.
                       child: Center(
-                        child: Text(
-                          currentLabel,
-                          style: labelStyle.copyWith(color: labelColor),
-                          textAlign: TextAlign.center,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            currentLabel,
+                            style: labelStyle.copyWith(color: labelColor),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       )),
 
