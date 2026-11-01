@@ -19,7 +19,7 @@ void main() {
     final infoDescriptionFinder = find.text('Info Description');
     final successTitleFinder = find.text('Success Title');
     final successDescriptionFinder = find.text('Success Description');
-    final closeLabelFinder = find.text('Close');
+    final closeLabelTextFinder = find.text('Close');
     final closableToastTitleFinder = find.text('Closable Toast');
     final closableToastDescriptionFinder =
         find.text('This toast can be closed');
@@ -39,7 +39,7 @@ void main() {
 
       expect(errorTitleFinder, findsOneWidget);
       expect(errorDescriptionFinder, findsOneWidget);
-      expect(closeLabelFinder, findsOneWidget);
+      expect(closeLabelTextFinder, findsNothing);
       expect(closeButtonFinder, findsOneWidget);
     });
 
@@ -58,7 +58,7 @@ void main() {
 
       expect(warningTitleFinder, findsOneWidget);
       expect(warningDescriptionFinder, findsOneWidget);
-      expect(closeLabelFinder, findsOneWidget);
+      expect(closeLabelTextFinder, findsNothing);
       expect(closeButtonFinder, findsOneWidget);
     });
 
@@ -77,7 +77,7 @@ void main() {
 
       expect(infoTitleFinder, findsOneWidget);
       expect(infoDescriptionFinder, findsOneWidget);
-      expect(closeLabelFinder, findsOneWidget);
+      expect(closeLabelTextFinder, findsNothing);
       expect(closeButtonFinder, findsOneWidget);
     });
 
@@ -96,7 +96,7 @@ void main() {
 
       expect(successTitleFinder, findsOneWidget);
       expect(successDescriptionFinder, findsOneWidget);
-      expect(closeLabelFinder, findsOneWidget);
+      expect(closeLabelTextFinder, findsNothing);
       expect(closeButtonFinder, findsOneWidget);
     });
 
@@ -120,7 +120,7 @@ void main() {
       );
 
       // The close button should exist
-      expect(closeLabelFinder, findsOneWidget);
+      expect(closeLabelTextFinder, findsNothing);
       expect(closeButtonFinder, findsOneWidget);
       expect(closableToastTitleFinder, findsOneWidget);
       expect(closableToastDescriptionFinder, findsOneWidget);
@@ -131,6 +131,202 @@ void main() {
 
       // Verify that the callback was triggered
       expect(wasClosed, isTrue);
+    });
+
+    group('alert controls', () {
+      Widget buildAlert({
+        String? title,
+        VoidCallback? onClose,
+      }) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 400,
+                child: Toast.error(
+                  title: title,
+                  description: 'Upload failed',
+                  closeLabel: 'Close',
+                  onClose: onClose,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      testWidgets('the close control is a plain x labelled for screen readers',
+          (WidgetTester tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(buildAlert());
+
+        final icon = tester.widget<CoreIconWidget>(find.descendant(
+          of: closeButtonFinder,
+          matching: find.byType(CoreIconWidget),
+        ));
+        expect(icon.icon, CoreIcons.cross);
+        expect(tester.getSemantics(closeButtonFinder).label, 'Close');
+        expect(closeLabelTextFinder, findsNothing);
+        handle.dispose();
+      });
+
+      testWidgets('with a title, the x sits on the first title line',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert(
+          title: 'Upload failed on two files',
+          onClose: _noop,
+        ));
+
+        const halfTitleLine = CoreIconSize.size24 / 2;
+        final firstTitleLineCentre =
+            tester.getTopLeft(find.text('Upload failed on two files')).dy +
+                halfTitleLine;
+        expect(tester.getCenter(closeButtonFinder).dy,
+            moreOrLessEquals(firstTitleLineCentre, epsilon: 1));
+        expect(tester.getSize(closeButtonFinder), const Size(48, 48));
+      });
+
+      testWidgets('the close x answers a tap at the corner of its target',
+          (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(buildAlert(onClose: () => closed = true));
+
+        await tester.tapAt(
+          tester.getTopLeft(closeButtonFinder) + const Offset(2, 2),
+        );
+
+        expect(closed, isTrue);
+      });
+
+      Color closeIconColor(WidgetTester tester) => tester
+          .widget<CoreIconWidget>(find.descendant(
+            of: closeButtonFinder,
+            matching: find.byType(CoreIconWidget),
+          ))
+          .color!;
+
+      Border? closeFocusRing(WidgetTester tester) => (tester
+              .widget<DecoratedBox>(
+                find.byKey(const Key('toast_close_focus_ring')),
+              )
+              .decoration as BoxDecoration)
+          .border as Border?;
+
+      testWidgets('the close x turns Button Press while pressed, every time',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var closes = 0;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Toast.error(
+              description: 'Upload failed',
+              closeLabel: 'Close',
+              onClose: () => closes++,
+            ),
+          ),
+        ));
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(closeButtonFinder));
+          await tester.pump();
+          expect(closeIconColor(tester), colors.buttonPress);
+
+          await gesture.up();
+          await tester.pump();
+          expect(closeIconColor(tester), colors.iconDark);
+          expect(closes, press);
+        }
+      });
+
+      testWidgets('Tab focuses the close x, draws its ring and Enter closes',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var closed = false;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Toast.error(
+              description: 'Upload failed',
+              closeLabel: 'Close',
+              onClose: () => closed = true,
+            ),
+          ),
+        ));
+        expect(closeFocusRing(tester), isNull);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final ring = closeFocusRing(tester)!;
+        expect(ring.top.color, colors.outlineFocus);
+        expect(ring.top.width, 2);
+        expect(
+          tester.getSize(find.byKey(const Key('toast_close_focus_ring'))),
+          const Size.square(CoreSpacing.space8),
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(closed, isTrue);
+      });
+
+      testWidgets('the close x works and draws inside a coloured parent '
+          'with no Material', (WidgetTester tester) async {
+        var closed = false;
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: ColoredBox(
+            color: CoreTheme.light().coreColors.pageBackground,
+            child: Center(
+              child: Toast.error(
+                description: 'Upload failed',
+                closeLabel: 'Close',
+                onClose: () => closed = true,
+              ),
+            ),
+          ),
+        ));
+
+        await tester.tap(closeButtonFinder);
+        expect(tester.takeException(), isNull);
+        expect(closed, isTrue);
+      });
+
+      testWidgets(
+          'without a title the surface is 40 dp high and the controls 48 dp',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert());
+
+        expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
+            40);
+        expect(tester.getSize(find.byType(Toast)).height, 48);
+        expect(tester.getSize(closeButtonFinder), const Size(48, 48));
+      });
+
+      testWidgets('without a title the text is Body Medium Medium',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert());
+        final context = tester.element(find.byType(Toast));
+        final expected = Theme.of(context).coreTypography.bodyMediumMedium;
+
+        final style = tester.widget<Text>(find.text('Upload failed')).style!;
+
+        expect(style.fontSize, expected.fontSize);
+        expect(style.fontWeight, expected.fontWeight);
+      });
+
+      testWidgets('with a title the text keeps Body Large Medium',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert(title: 'Upload'));
+        final context = tester.element(find.byType(Toast));
+        final expected = Theme.of(context).coreTypography.bodyLargeMedium;
+
+        final style = tester.widget<Text>(find.text('Upload')).style!;
+
+        expect(style.fontSize, expected.fontSize);
+        expect(style.fontWeight, expected.fontWeight);
+      });
     });
 
     group('semantics', () {
@@ -987,7 +1183,8 @@ void main() {
         handle.dispose();
       });
 
-      testWidgets('is 50 dp high, like the frame', (WidgetTester tester) async {
+      testWidgets('is 48 dp high, like the library Toast',
+          (WidgetTester tester) async {
         await tester.pumpWidget(MaterialApp(
           home: Stack(
             children: [
@@ -1001,7 +1198,7 @@ void main() {
         ));
 
         expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
-            50);
+            48);
       });
 
       testWidgets('draws its 15.6 dp tick (a 21.3 dp icon) centred in the circle',
