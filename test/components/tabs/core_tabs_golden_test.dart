@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -94,4 +95,85 @@ void main() {
       matchesGoldenFile('goldens/core_tabs_component.png'),
     );
   });
+
+  Future<void> pumpStateRows(WidgetTester tester, ThemeData theme) async {
+    await tester.binding.setSurfaceSize(const Size(240, 160));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home: Scaffold(
+          backgroundColor: theme.coreColors.pageBackground,
+          body: const Padding(
+            padding: EdgeInsets.all(CoreSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CoreTabs(key: Key('first_row'), tabs: ['Tab 1', 'Tab 2']),
+                SizedBox(height: CoreSpacing.space4),
+                CoreTabs(key: Key('second_row'), tabs: ['Tab 1', 'Tab 2']),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Finder tabOf(String row, int index) => find.descendant(
+        of: find.byKey(Key(row)),
+        matching: find.byKey(CoreTabs.tabKey(index)),
+      );
+
+  for (final (suffix, theme) in [
+    ('', _createTestTheme()),
+    (
+      '_dark',
+      CoreTheme.dark().copyWith(
+        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+      ),
+    ),
+  ]) {
+    testWidgets('CoreTabs Golden Test - Pressed$suffix',
+        (WidgetTester tester) async {
+      await pumpStateRows(tester, theme);
+
+      final unselected =
+          await tester.startGesture(tester.getCenter(tabOf('first_row', 1)));
+      final selected =
+          await tester.startGesture(tester.getCenter(tabOf('second_row', 0)));
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_pressed$suffix.png'),
+      );
+      await unselected.cancel();
+      await selected.cancel();
+    });
+
+    testWidgets('CoreTabs Golden Test - Focused$suffix',
+        (WidgetTester tester) async {
+      await pumpStateRows(tester, theme);
+
+      // First row: the selected tab. Second row: the unselected one.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_focused_selected$suffix.png'),
+      );
+
+      for (var i = 0; i < 3; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      }
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/core_tabs_focused$suffix.png'),
+      );
+    });
+  }
 }
