@@ -572,7 +572,7 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final rowHeight = math.max(metrics.valueRowHeight, textHeight);
     final fieldHeight = math.max(kMinInteractiveDimension, rowHeight);
 
-    final field = Semantics(
+    final textField = Semantics(
       label: widget.label,
       onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
       child: TextField(
@@ -614,6 +614,9 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
         ),
       ),
     );
+
+    // Its own Material, so the field works with no Material above it.
+    final field = Material(type: MaterialType.transparency, child: textField);
 
     // The text area is padded to 48px; the row is drawn without that padding.
     // One line knows its height, so an OverflowBox does it. Several lines do

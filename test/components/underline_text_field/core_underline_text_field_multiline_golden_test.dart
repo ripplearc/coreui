@@ -116,5 +116,67 @@ void main() {
         ),
       );
     });
+
+    for (final (id, size) in [
+      ('regular', CoreUnderlineTextFieldSize.regular),
+      ('large', CoreUnderlineTextFieldSize.large),
+    ]) {
+      testWidgets('CoreUnderlineTextField with several lines, $id focused - '
+          '$name', (tester) async {
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+
+        await pumpScenarios(tester, theme, const Size(404, 196), [
+          (
+            'Several lines, ${size.name}, focused',
+            CoreUnderlineTextField(
+              focusNode: focusNode,
+              size: size,
+              label: 'Scope of work',
+              maxLines: 4,
+              initialValue: 'Demolition of the existing kitchen and new '
+                  'flooring.',
+            ),
+          ),
+        ]);
+        focusNode.requestFocus();
+        await tester.pump();
+        await tester.pump();
+        await tester.pump();
+
+        await expectLater(
+          find.byType(Scaffold),
+          matchesGoldenFile(
+            'goldens/core_underline_text_field_multiline_focused_${id}_'
+            '$name.png',
+          ),
+        );
+      });
+    }
+
+    testWidgets('CoreUnderlineTextField with several lines, disabled - $name',
+        (tester) async {
+      await pumpScenarios(tester, theme, const Size(404, 420), [
+        for (final size in CoreUnderlineTextFieldSize.values)
+          (
+            'Several lines, ${size.name}, disabled',
+            CoreUnderlineTextField(
+              size: size,
+              label: 'Scope of work',
+              maxLines: 4,
+              enabled: false,
+              initialValue: 'Demolition of the existing kitchen and new '
+                  'flooring.',
+            ),
+          ),
+      ]);
+
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile(
+          'goldens/core_underline_text_field_multiline_disabled_$name.png',
+        ),
+      );
+    });
   }
 }

@@ -723,4 +723,37 @@ void main() {
       expect(find.byType(DecoratedBox), findsNothing);
     });
   });
+
+  group('CoreUnderlineTextField – no Material above it', () {
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      for (final maxLines in [1, 4]) {
+        testWidgets('${size.name}, maxLines $maxLines builds and takes text',
+            (tester) async {
+          // MaterialApp gives no Material widget; only a Scaffold would.
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light(),
+              home: Center(
+                child: SizedBox(
+                  width: 300,
+                  child: CoreUnderlineTextField(
+                    label: 'Scope of work',
+                    size: size,
+                    maxLines: maxLines,
+                  ),
+                ),
+              ),
+            ),
+          );
+          expect(find.byType(Scaffold), findsNothing);
+
+          await tester.enterText(find.byType(TextField), 'Kitchen');
+          await tester.pump();
+
+          expect(tester.takeException(), isNull);
+          expect(find.text('Kitchen'), findsOneWidget);
+        });
+      }
+    }
+  });
 }
