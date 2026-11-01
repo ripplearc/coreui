@@ -269,4 +269,124 @@ void main() {
       expect(semantics.label, 'Owner John Doe, unchecked');
     });
   });
+
+  group('CoreCheckRowItem – library layout', () {
+    final colors = AppColorsExtension.create();
+    final typography = AppTypographyExtension.create();
+
+    Future<void> pumpRow(WidgetTester tester, {required bool selected}) {
+      return tester.pumpWidget(
+        buildTestApp(
+          Center(
+            child: SizedBox(
+              width: 300,
+              child: CoreCheckRowItem(
+                title: 'John Doe',
+                selected: selected,
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+          theme: CoreTheme.light(),
+        ),
+      );
+    }
+
+    Material rowMaterial(WidgetTester tester) => tester.widget<Material>(
+          find.descendant(
+            of: find.byType(CoreCheckRowItem),
+            matching: find.byType(Material),
+          ),
+        );
+
+    testWidgets('is 48 dp high with the check box 12 dp from the end',
+        (tester) async {
+      await pumpRow(tester, selected: false);
+
+      final row = tester.getRect(find.byType(CoreCheckRowItem));
+      final checkbox = tester.getRect(find.byType(CoreIconWidget));
+      final avatar = tester.getRect(find.byType(CoreAvatar));
+      final name = tester.getRect(find.text('John Doe'));
+      expect(row.height, CoreSpacing.space12);
+      expect(checkbox.size, const Size.square(CoreIconSize.size24));
+      expect(row.right - checkbox.right, CoreSpacing.space3);
+      expect(avatar.left - row.left, CoreSpacing.space3);
+      expect(name.left - avatar.right, CoreSpacing.space2);
+    });
+
+    testWidgets('fills a selected row Blue Light with a 48 dp radius',
+        (tester) async {
+      await pumpRow(tester, selected: true);
+
+      final material = rowMaterial(tester);
+      expect(material.color, colors.backgroundBlueLight);
+      expect(material.borderRadius, BorderRadius.circular(CoreSpacing.space12));
+      final inkWell = tester.widget<InkWell>(find.descendant(
+        of: find.byType(CoreCheckRowItem),
+        matching: find.byType(InkWell),
+      ));
+      expect(inkWell.borderRadius, BorderRadius.circular(CoreSpacing.space12));
+    });
+
+    testWidgets('draws no press or hover tint, as the library cell has none',
+        (tester) async {
+      await pumpRow(tester, selected: false);
+
+      final inkWell = tester.widget<InkWell>(find.descendant(
+        of: find.byType(CoreCheckRowItem),
+        matching: find.byType(InkWell),
+      ));
+      expect(inkWell.highlightColor, colors.transparent);
+      expect(inkWell.hoverColor, colors.transparent);
+    });
+
+    testWidgets('keeps the initial inside the avatar at 200% text',
+        (tester) async {
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: buildTestApp(
+            CoreCheckRowItem(
+              title: 'John Doe',
+              selected: false,
+              onChanged: (_) {},
+            ),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final initial = tester.renderObject<RenderBox>(find.text('J'));
+      expect(
+        initial.size.height,
+        greaterThanOrEqualTo(
+          initial.getMinIntrinsicHeight(initial.size.width),
+        ),
+      );
+      final avatar = tester.getRect(find.byType(CoreAvatar));
+      final drawn = tester.getRect(find.text('J'));
+      expect(avatar.contains(drawn.center), isTrue);
+      expect(drawn.height, lessThanOrEqualTo(avatar.height));
+    });
+
+    testWidgets('leaves an unselected row unfilled', (tester) async {
+      await pumpRow(tester, selected: false);
+
+      expect(rowMaterial(tester).color, colors.transparent);
+    });
+
+    testWidgets('draws the name in Body Medium and the initial in Headline',
+        (tester) async {
+      await pumpRow(tester, selected: false);
+
+      expect(
+        tester.widget<Text>(find.text('John Doe')).style,
+        typography.bodyMediumRegular.copyWith(color: colors.textDark),
+      );
+      expect(
+        tester.widget<Text>(find.text('J')).style!.color,
+        colors.textHeadline,
+      );
+    });
+  });
 }

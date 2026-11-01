@@ -1,6 +1,6 @@
 # CoreCheckRowItem Component
 
-`CoreCheckRowItem` is a selectable list row with a leading widget, a title (and optional subtitle), and a trailing checkbox. Tapping anywhere on the row toggles selection. It's designed for multi-select sheets such as an owner / assignee filter, where the leading area defaults to a 24×24 [`CoreAvatar`](../avatar/avatar.md) showing the first initial of the row's title.
+`CoreCheckRowItem` is a selectable list row with a leading widget, a title (and optional subtitle), and a trailing checkbox. Tapping anywhere on the row toggles selection. It's designed for multi-select sheets such as an owner / assignee filter, where the leading area defaults to a 24×24 [`CoreAvatar`](../avatar/avatar.md) showing the first initial of the row's title. At large text sizes the initial scales down to stay inside the circle. Like the library Dropdown cell, the row has no pressed or hover tint; keyboard focus still shows.
 
 ## Usage
 
