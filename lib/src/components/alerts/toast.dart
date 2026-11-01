@@ -89,6 +89,8 @@ class Toast extends StatefulWidget {
 
   static const double _receiptActionMaxWidthFraction = 0.6;
 
+  static const double _alertActionMaxWidth = 120;
+
   static const double _receiptRowLeadingWidth =
       CoreIconSize.size24 + CoreSpacing.space3 * 2;
 
@@ -768,7 +770,14 @@ class _ToastState extends State<Toast> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (actionLabel != null) ...[
-          _buildAlertAction(typography, colors, actionLabel),
+          // The row gives a child that is not flex unlimited width, so the
+          // label needs this limit to end in its ellipsis.
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: Toast._alertActionMaxWidth,
+            ),
+            child: _buildAlertAction(typography, colors, actionLabel),
+          ),
           const SizedBox(width: CoreSpacing.space1),
         ],
         _buildCloseButton(colors, closeLabel),

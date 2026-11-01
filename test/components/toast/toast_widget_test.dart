@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -202,20 +203,58 @@ void main() {
         expect(calls, ['action', 'close']);
       });
 
-      testWidgets('View stays on one line with an ellipsis, like the other '
-          'actions', (WidgetTester tester) async {
-        await tester.pumpWidget(buildAlert(
-          actionLabel: 'View',
-          onAction: () {},
-          onClose: () {},
-        ));
+      for (final (label, textScale) in [
+        ('Voir les détails du téléchargement', 1.0),
+        ('Details anzeigen', 2.0),
+      ]) {
+        testWidgets('a long View label at ${textScale}x text ends in an '
+            'ellipsis and keeps the message and the x in the alert',
+            (WidgetTester tester) async {
+          tester.view.physicalSize = const Size(360, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.reset);
+          await tester.pumpWidget(MaterialApp(
+            home: MediaQuery(
+              data: MediaQueryData(
+                size: const Size(360, 800),
+                textScaler: TextScaler.linear(textScale),
+              ),
+              child: Scaffold(
+                body: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space4,
+                  ),
+                  child: Center(
+                    child: Toast.error(
+                      description: 'Upload failed',
+                      closeLabel: 'Close',
+                      actionLabel: label,
+                      onAction: () {},
+                      onClose: () {},
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ));
 
-        final label = tester.widget<Text>(
-          find.descendant(of: actionFinder, matching: find.text('View')),
-        );
-        expect(label.maxLines, 1);
-        expect(label.overflow, TextOverflow.ellipsis);
-      });
+          expect(tester.takeException(), isNull);
+          final alert = tester.getRect(find.byType(Toast));
+          final close =
+              tester.getRect(find.byKey(const Key('toast_close_button')));
+          final action = tester.getRect(actionFinder);
+          final message = tester.getRect(find.text('Upload failed'));
+          expect(alert.contains(close.topLeft), isTrue);
+          expect(alert.contains(close.bottomRight), isTrue);
+          expect(action.width, lessThanOrEqualTo(120));
+          expect(message.width, greaterThan(0));
+          expect(message.right, lessThanOrEqualTo(action.left));
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find.descendant(of: actionFinder, matching: find.text(label)),
+          );
+          expect(paragraph.didExceedMaxLines, isTrue);
+        });
+      }
 
       testWidgets('without onClose, View fires on every tap and the alert stays',
           (WidgetTester tester) async {
