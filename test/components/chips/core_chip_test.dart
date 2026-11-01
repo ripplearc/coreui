@@ -206,17 +206,26 @@ void main() {
         MaterialApp(
           theme: CoreTheme.light(),
           home: Scaffold(
-            body: CoreChip(
-              label: 'Large Chip',
-              selected: selected,
-              size: CoreChipSize.large,
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: CoreChip(
+                label: 'Sheets',
+                value: '5.81',
+                selected: selected,
+                size: CoreChipSize.large,
+              ),
             ),
           ),
         ),
       );
 
-      expect(find.text('Large Chip'), findsOneWidget);
-      expect(find.byType(CoreChip), findsOneWidget);
+      final surfaceRect = tester.getRect(find.byKey(CoreChip.surfaceKey));
+      final labelRect = tester.getRect(find.text('Sheets'));
+      final valueRect = tester.getRect(find.text('5.81'));
+      expect(surfaceRect.height, CoreSpacing.space12);
+      expect(labelRect.left - surfaceRect.left, CoreSpacing.space4 + 1);
+      expect(surfaceRect.right - valueRect.right, CoreSpacing.space4 + 1);
+      expect(valueRect.left - labelRect.right, CoreSpacing.space2);
     });
 
     testWidgets('renders mini size at the medium height',
@@ -463,6 +472,103 @@ void main() {
       expect(find.text('8ft ?'), findsOneWidget);
     });
 
+    testWidgets('reads a dashed chip label and value in outlineFocus',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreChip(
+              label: 'Height:',
+              value: '8ft ?',
+              selected: selected,
+              size: CoreChipSize.large,
+              outline: CoreChipOutline.dashed,
+            ),
+          ),
+        ),
+      );
+
+      final colors =
+          AppColorsExtension.of(tester.element(find.byType(CoreChip)));
+      final label = tester.widget<Text>(find.text('Height:')).style;
+      final value = tester.widget<Text>(find.text('8ft ?')).style;
+      expect((label as TextStyle).color, colors.outlineFocus);
+      expect((value as TextStyle).color, colors.outlineFocus);
+    });
+
+    testWidgets('keeps 16 dp at both ends of a large chip with a close icon',
+        (WidgetTester tester) async {
+      final selected = ValueNotifier<bool>(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: CoreChip(
+                label: 'Chips',
+                selected: selected,
+                size: CoreChipSize.large,
+                icon: CoreIcons.check,
+                withCloseIcon: true,
+                onRemove: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
+      final close = tester.getRect(find.byKey(const Key('close_icon')));
+      final check = tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.check,
+      ));
+      expect(
+        surface.right - close.right,
+        moreOrLessEquals(check.left - surface.left),
+      );
+    });
+
+    for (final direction in TextDirection.values) {
+      for (final size in [
+        CoreChipSize.small,
+        CoreChipSize.medium,
+        CoreChipSize.mini,
+        CoreChipSize.large,
+      ]) {
+        testWidgets(
+            'a ${size.name} chip has the same space at both ends of its text '
+            '(${direction.name})', (WidgetTester tester) async {
+          final selected = ValueNotifier<bool>(false);
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light(),
+              home: Directionality(
+                textDirection: direction,
+                child: Scaffold(
+                  body: Center(
+                    child: CoreChip(
+                      label: 'Offer',
+                      selected: selected,
+                      size: size,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
+          final text = tester.getRect(find.text('Offer'));
+          expect(
+            surface.right - text.right,
+            moreOrLessEquals(text.left - surface.left),
+          );
+        });
+      }
+    }
+
     testWidgets('renders a highlight chip with its text intact',
         (WidgetTester tester) async {
       final selected = ValueNotifier<bool>(false);
@@ -651,7 +757,7 @@ void main() {
           colors: colors,
         )!;
         expect(resting.color, colors.outlineFocus);
-        expect(resting.strokeWidth, CoreChipTheme.borderWidth);
+        expect(resting.strokeWidth, CoreChipTheme.dashedStrokeWidth);
         expect(
             focused.strokeWidth, CoreChipTheme.borderWidthFor(isFocused: true));
         expect(resting.radius, CoreSpacing.space6);
@@ -670,12 +776,11 @@ void main() {
   });
 
   group('CoreChip mini size', () {
-    test('shares the medium padding and no shadow', () {
+    test('shares the medium padding', () {
       expect(
         CoreChipTheme.padding(CoreChipSize.mini),
         CoreChipTheme.padding(CoreChipSize.medium),
       );
-      expect(CoreChipTheme.shadow(CoreChipSize.mini), isNull);
       expect(CoreChipTheme.onPageSurface(CoreChipSize.mini), isTrue);
       expect(CoreChipTheme.onPageSurface(CoreChipSize.medium), isFalse);
     });
@@ -754,7 +859,7 @@ void main() {
         );
         expect(
           CoreChipTheme.valueStyle(
-            size: CoreChipSize.large,
+            size: CoreChipSize.medium,
             typography: typography,
             colors: colors,
           ).fontWeight,
@@ -769,10 +874,34 @@ void main() {
           CoreChipTheme.unitFontWeight,
         );
         expect(
-          CoreChipTheme.labelStyle(typography: typography, colors: colors)
-              .color,
+          CoreChipTheme.labelStyle(
+            size: CoreChipSize.medium,
+            typography: typography,
+            colors: colors,
+          ).color,
           colors.textBody,
         );
+      });
+
+      test('${entry.key}: large chip has a Regular dark label and heavy value',
+          () {
+        final label = CoreChipTheme.labelStyle(
+          size: CoreChipSize.large,
+          typography: typography,
+          colors: colors,
+        );
+        final value = CoreChipTheme.valueStyle(
+          size: CoreChipSize.large,
+          typography: typography,
+          colors: colors,
+        );
+        expect(label.fontWeight, typography.bodyMediumRegular.fontWeight);
+        expect(label.color, colors.textDark);
+        expect(value.fontWeight, CoreChipTheme.unitFontWeight);
+        expect(value.color, colors.textDark);
+        expect(CoreChipTheme.labelGap(CoreChipSize.large), CoreSpacing.space2);
+        expect(
+            CoreChipTheme.labelGap(CoreChipSize.medium), CoreSpacing.space1);
       });
     }
   });
