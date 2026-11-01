@@ -1,6 +1,7 @@
 export 'src/components/alerts/toast.dart';
 export 'src/components/avatar/avatar.dart';
 export 'src/components/bottom_sheets/core_quick_sheet.dart';
+export 'src/components/bottom_sheets/core_sheet_header.dart';
 export 'src/components/buttons/core_button.dart';
 export 'src/components/buttons/core_outlined_icon_button.dart';
 export 'src/components/calculator_chips/core_calculator_chip.dart';
