@@ -209,6 +209,13 @@ void main() {
       }
     });
 
+    test('white button text meets 4.5:1 on the light pressed fill', () {
+      expect(
+        contrastRatio(light.textInverse, light.buttonPress),
+        greaterThanOrEqualTo(4.5),
+      );
+    });
+
     test('textGrayMid meets 4.5:1 on the grey fill in each theme', () {
       for (final colors in [light, dark]) {
         expect(

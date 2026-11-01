@@ -55,13 +55,25 @@ class CoreButton extends StatefulWidget {
   final Color? borderColor;
 
   /// Overrides the border width the [variant] resolves (`0` for
-  /// [CoreButtonVariant.primary], `2` otherwise). Pass
+  /// [CoreButtonVariant.primary], `1` for [CoreButtonVariant.social], `2`
+  /// for [CoreButtonVariant.secondary]). Pass
   /// [hairlineBorderWidth] for a chip-style 1 px edge.
   final double? borderWidth;
 
   /// A 1 px [borderWidth] — the hairline the chips and the display area's
   /// dependent-key pills draw (Figma Dependent Key Chip).
   static const double hairlineBorderWidth = 1;
+
+  /// Width of the focus ring a focused [CoreButtonVariant.primary] or
+  /// [CoreButtonVariant.secondary] button draws.
+  static const double focusRingWidth = 3;
+
+  /// How far the outer edge of the focus ring sits outside the button. The
+  /// 2 px between the button and the ring stay transparent (Figma Focus ring).
+  static const double focusRingOffset = 5;
+
+  /// Key of the button's fill and border, for widget-test finders.
+  static const Key fillKey = Key('core_button_fill');
 
   const CoreButton({
     super.key,
@@ -114,11 +126,22 @@ class _CoreButtonState extends State<CoreButton> {
   EdgeInsets get _padding {
     switch (widget.size) {
       case CoreButtonSize.large:
-        return const EdgeInsets.symmetric(horizontal: CoreSpacing.space6);
+        return const EdgeInsets.symmetric(horizontal: CoreSpacing.space5);
       case CoreButtonSize.medium:
         return const EdgeInsets.symmetric(horizontal: CoreSpacing.space5);
       case CoreButtonSize.small:
         return const EdgeInsets.symmetric(horizontal: CoreSpacing.space4);
+    }
+  }
+
+  double get _defaultBorderWidth {
+    switch (widget.variant) {
+      case CoreButtonVariant.primary:
+        return 0;
+      case CoreButtonVariant.secondary:
+        return 2;
+      case CoreButtonVariant.social:
+        return CoreButton.hairlineBorderWidth;
     }
   }
 
@@ -129,21 +152,22 @@ class _CoreButtonState extends State<CoreButton> {
     required bool isDark,
   }) {
     if (!isEnabled) {
-      return variant == CoreButtonVariant.secondary
-          ? colors.transparent
-          : colors.buttonDisable;
+      switch (variant) {
+        case CoreButtonVariant.primary:
+          return colors.buttonDisable;
+        case CoreButtonVariant.secondary:
+        case CoreButtonVariant.social:
+          return colors.transparent;
+      }
     }
     switch (variant) {
       case CoreButtonVariant.primary:
-        return isPressed
-            ? colors.buttonPress
-            : isFocused
-                ? colors.buttonHover
-                : colors.buttonSurface;
+        return isPressed ? colors.buttonPress : colors.buttonSurface;
       case CoreButtonVariant.secondary:
         if (widget.shadows == null) return colors.transparent;
         return isDark ? colors.backgroundGrayLight : colors.buttonInverse;
       case CoreButtonVariant.social:
+        if (isPressed) return colors.backgroundGrayMid;
         return isDark ? colors.backgroundGrayLight : colors.buttonInverse;
     }
   }
@@ -154,22 +178,18 @@ class _CoreButtonState extends State<CoreButton> {
     AppColorsExtension colors,
   ) {
     if (!isEnabled) {
-      return colors.buttonDisable;
+      return variant == CoreButtonVariant.social
+          ? colors.lineMid
+          : colors.buttonDisable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
       case CoreButtonVariant.secondary:
-        return isPressed
-            ? colors.buttonPress
-            : isFocused
-                ? colors.buttonHover
-                : colors.buttonSurface;
+        return isPressed ? colors.buttonPress : colors.buttonSurface;
       case CoreButtonVariant.social:
-        return isPressed
-            ? colors.outlineHover
-            : isFocused
-                ? colors.lineDarkOutline
-                : colors.lineMid;
+        return isFocused && !isPressed
+            ? colors.lineDarkOutline
+            : colors.lineMid;
     }
   }
 
@@ -179,19 +199,15 @@ class _CoreButtonState extends State<CoreButton> {
     required AppColorsExtension colors,
   }) {
     if (!isEnabled) {
-      return variant == CoreButtonVariant.secondary
-          ? colors.textDisable
-          : colors.textBody;
+      return variant == CoreButtonVariant.primary
+          ? colors.textBody
+          : colors.textDisable;
     }
     switch (variant) {
       case CoreButtonVariant.primary:
         return colors.textInverse;
       case CoreButtonVariant.secondary:
-        return isPressed
-            ? colors.buttonPress
-            : isFocused
-                ? colors.buttonHover
-                : colors.buttonSurface;
+        return isPressed ? colors.buttonPress : colors.buttonSurface;
       case CoreButtonVariant.social:
         return colors.textHeadline;
     }
@@ -203,10 +219,15 @@ class _CoreButtonState extends State<CoreButton> {
 
     final typography = Theme.of(context).coreTypography;
     final label = widget.label;
+    final style = widget.variant == CoreButtonVariant.social
+        ? typography.bodyLargeMedium
+        : widget.size == CoreButtonSize.small
+            ? typography.bodyMediumSemiBold
+            : typography.bodyLargeSemiBold;
 
     return Text(
       label ?? '',
-      style: typography.bodyLargeSemiBold.copyWith(
+      style: style.copyWith(
         color: _getContentColor(
           isEnabled: isEnabled,
           variant: widget.variant,
@@ -224,6 +245,28 @@ class _CoreButtonState extends State<CoreButton> {
 
     final labelWidget = _buildLabel(isEnabled, colors);
     final icon = widget.icon;
+
+    if (widget.variant == CoreButtonVariant.social) {
+      const logoWithGap = CoreSpacing.space6 + CoreSpacing.space2;
+      final content = Stack(
+        alignment: Alignment.center,
+        children: [
+          if (icon != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              heightFactor: 1,
+              child: icon,
+            ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: icon == null ? 0 : logoWithGap,
+            ),
+            child: labelWidget,
+          ),
+        ],
+      );
+      return widget.fullWidth ? content : IntrinsicWidth(child: content);
+    }
 
     return Row(
       mainAxisSize: widget.fullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -292,10 +335,14 @@ class _CoreButtonState extends State<CoreButton> {
       ),
       child: Material(
         color: colors.transparent,
-        child: SizedBox(
+        child: Container(
           width: widget.fullWidth ? double.infinity : null,
-          height: widget.variant == CoreButtonVariant.social ? null : _height,
+          constraints: BoxConstraints(
+            minHeight:
+                widget.variant == CoreButtonVariant.social ? 0 : _height,
+          ),
           child: DecoratedBox(
+            key: CoreButton.fillKey,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.borderRadius),
               color: _getBackgroundColor(
@@ -307,25 +354,57 @@ class _CoreButtonState extends State<CoreButton> {
               border: Border.all(
                 color: widget.borderColor ??
                     _getBorderColor(isEnabled, widget.variant, colors),
-                width: widget.borderWidth ??
-                    (widget.variant == CoreButtonVariant.primary ? 0 : 2),
+                width: widget.borderWidth ?? _defaultBorderWidth,
               ),
             ),
             child: Padding(
               padding: widget.variant == CoreButtonVariant.social
                   ? const EdgeInsets.symmetric(
                       vertical: CoreSpacing.space3,
-                      horizontal: CoreSpacing.space6,
+                      horizontal: CoreSpacing.space5,
                     )
                   : _padding,
               child: Center(
                 widthFactor: widget.fullWidth ? null : 1.0,
+                heightFactor: 1.0,
                 child: _buildContentRow(),
               ),
             ),
           ),
         ),
       ),
+    );
+
+    final showFocusRing = isFocused &&
+        isEnabled &&
+        (widget.variant == CoreButtonVariant.primary ||
+            widget.variant == CoreButtonVariant.secondary);
+    final buttonWithFocusRing = Stack(
+      fit: StackFit.passthrough,
+      clipBehavior: Clip.none,
+      children: [
+        buttonBody,
+        if (showFocusRing)
+          Positioned.fill(
+            left: -CoreButton.focusRingOffset,
+            top: -CoreButton.focusRingOffset,
+            right: -CoreButton.focusRingOffset,
+            bottom: -CoreButton.focusRingOffset,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                    widget.borderRadius + CoreButton.focusRingOffset,
+                  ),
+                  border: Border.all(
+                    color: colors.outlineFocus,
+                    width: CoreButton.focusRingWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
 
     return Semantics(
@@ -342,12 +421,25 @@ class _CoreButtonState extends State<CoreButton> {
         autofocus: widget.autofocus,
         onFocusChange: (focused) => setState(() => isFocused = focused),
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: isEnabled ? widget.onPressed : null,
           onTapDown: isEnabled ? (_) => setState(() => isPressed = true) : null,
           onTapUp: isEnabled ? (_) => setState(() => isPressed = false) : null,
           onTapCancel:
               isEnabled ? () => setState(() => isPressed = false) : null,
-          child: buttonBody,
+          child: widget.size == CoreButtonSize.large
+              ? buttonWithFocusRing
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: CoreSpacing.space12,
+                    minHeight: CoreSpacing.space12,
+                  ),
+                  child: Center(
+                    widthFactor: 1,
+                    heightFactor: 1,
+                    child: buttonWithFocusRing,
+                  ),
+                ),
         ),
       ),
     );

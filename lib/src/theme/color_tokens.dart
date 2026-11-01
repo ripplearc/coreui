@@ -194,7 +194,7 @@ class CoreButtonColors {
   static const Color surface = _CoreColorPalette.orient800;
   static const Color hover = _CoreColorPalette.orient700;
   static const Color disable = _CoreColorPalette.gray300;
-  static const Color press = _CoreColorPalette.orient600;
+  static const Color press = _CoreColorPalette.orient700;
 }
 
 // Alert-related color tokens

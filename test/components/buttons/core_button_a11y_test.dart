@@ -229,5 +229,63 @@ void main() {
         find.byType(CoreButton),
       );
     });
+
+    testWidgets('small primary button meets contrast guidelines',
+        (tester) async {
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (_) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: CoreButton(
+            label: 'Small',
+            onPressed: () {},
+            size: CoreButtonSize.small,
+          ),
+        ),
+        find.byType(CoreButton),
+      );
+    });
+
+    testWidgets('focused primary button meets a11y guidelines',
+        (tester) async {
+      await setupA11yTest(tester);
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (_) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: CoreButton(
+            label: 'Primary',
+            onPressed: () {},
+            autofocus: true,
+          ),
+        ),
+        find.byType(CoreButton),
+      );
+    });
+
+    testWidgets('the focus ring keeps the 48px touch area', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Center(
+              child: CoreButton(
+                label: 'Primary',
+                onPressed: () {},
+                autofocus: true,
+                fullWidth: false,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        tester.getSize(find.byType(CoreButton)).height,
+        CoreSpacing.space12,
+      );
+    });
   });
 }
