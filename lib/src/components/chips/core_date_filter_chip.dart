@@ -87,6 +87,9 @@ class CoreDateFilterChip extends StatelessWidget {
   /// Key of the active pill's grey fill, for widget-test finders.
   static const Key pillKey = Key('core_date_filter_chip_pill');
 
+  /// Key of the focus ring drawn around the × inside the pill.
+  static const Key clearFocusRingKey = Key('core_date_filter_chip_clear_ring');
+
   /// Creates a [CoreDateFilterChip].
   const CoreDateFilterChip({
     super.key,
@@ -214,17 +217,16 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
 
   BoxBorder? _pillBorder(AppColorsExtension colors) {
     if (_isPressed) return Border.all(color: colors.lineDarkOutline);
-    if (!_isRangeFocused && !_isClearFocused) return null;
-    return Border.all(
-      color: colors.outlineFocus,
-      width: CoreChipTheme.borderWidthFor(isFocused: true),
-    );
+    if (!_isRangeFocused) return null;
+    return _focusBorder(colors);
   }
 
+  BoxBorder _focusBorder(AppColorsExtension colors) => Border.all(
+        color: colors.outlineFocus,
+        width: CoreChipTheme.borderWidthFor(isFocused: true),
+      );
+
   static const double _pillHeight = CoreSpacing.space8;
-  static const double _bodyMediumLineHeight = CoreSpacing.space5;
-  static const double _pillVerticalPadding =
-      (_pillHeight - _bodyMediumLineHeight) / 2;
 
   void _setPressed(bool isPressed) => setState(() => _isPressed = isPressed);
 
@@ -233,8 +235,13 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     final noTint = WidgetStateProperty.all(colors.transparent);
+    final datesStyle =
+        typography.bodyMediumRegular.copyWith(color: colors.textDark);
     const pillInset = (CoreSpacing.space12 - _pillHeight) / 2;
-    const datesInset = pillInset + _pillVerticalPadding;
+    // One line of the dates sits centred in the 32 dp pill.
+    final datesLineHeight =
+        (datesStyle.fontSize ?? 0) * (datesStyle.height ?? 1);
+    final datesInset = pillInset + (_pillHeight - datesLineHeight) / 2;
     // The × target is wider than the icon plus the pill's 12 dp end padding,
     // so the pill stops short of the target's end edge by the difference.
     const clearTargetOverhang =
@@ -282,7 +289,7 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                       constraints: const BoxConstraints(
                         minHeight: CoreSpacing.space12,
                       ),
-                      padding: const EdgeInsetsDirectional.only(
+                      padding: EdgeInsetsDirectional.only(
                         start: CoreSpacing.space3,
                         top: datesInset,
                         end: clearTargetWidthBesideRange,
@@ -294,9 +301,7 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                         child: ExcludeSemantics(
                           child: Text(
                             widget.label,
-                            style: typography.bodyMediumRegular.copyWith(
-                              color: colors.textDark,
-                            ),
+                            style: datesStyle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -327,10 +332,20 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
                 child: SizedBox.square(
                   dimension: CoreSpacing.space12,
                   child: Center(
-                    child: CoreIconWidget(
-                      icon: CoreIcons.close,
-                      color: colors.iconGrayMid,
-                      size: CoreIconSize.size20,
+                    child: DecoratedBox(
+                      key: CoreDateFilterChip.clearFocusRingKey,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: _isClearFocused ? _focusBorder(colors) : null,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(CoreSpacing.space1),
+                        child: CoreIconWidget(
+                          icon: CoreIcons.close,
+                          color: colors.iconGrayMid,
+                          size: CoreIconSize.size20,
+                        ),
+                      ),
                     ),
                   ),
                 ),

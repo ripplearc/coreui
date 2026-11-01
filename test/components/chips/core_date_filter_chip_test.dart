@@ -16,6 +16,11 @@ void main() {
     return tester.widget<DecoratedBox>(pill).decoration as BoxDecoration;
   }
 
+  BoxDecoration clearRingDecoration(WidgetTester tester) {
+    final ring = find.byKey(CoreDateFilterChip.clearFocusRingKey);
+    return tester.widget<DecoratedBox>(ring).decoration as BoxDecoration;
+  }
+
   Future<void> pumpChip(
     WidgetTester tester, {
     DateRange? selectedDateRange,
@@ -308,9 +313,10 @@ void main() {
         pillDecoration(tester).border,
         Border.all(color: colors.outlineFocus, width: 2),
       );
+      expect(clearRingDecoration(tester).border, isNull);
     });
 
-    testWidgets('keeps the focus border on the pill when Tab moves to the ×', (
+    testWidgets('moves the focus mark to a ring around the × on a second Tab', (
       tester,
     ) async {
       await pumpChip(tester, selectedDateRange: march);
@@ -322,8 +328,10 @@ void main() {
       final colors = AppColorsExtension.of(
         tester.element(find.byKey(CoreDateFilterChip.pillKey)),
       );
+      expect(pillDecoration(tester).border, isNull);
+      expect(clearRingDecoration(tester).shape, BoxShape.circle);
       expect(
-        pillDecoration(tester).border,
+        clearRingDecoration(tester).border,
         Border.all(color: colors.outlineFocus, width: 2),
       );
       final focused = FocusManager.instance.primaryFocus as FocusNode;
