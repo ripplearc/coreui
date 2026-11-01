@@ -32,12 +32,14 @@ CoreChip(
 | `onRemove` | `VoidCallback?` | No | `null` | Called when the close (×) icon is tapped. You must remove the chip from the widget tree yourself. |
 | `outline` | `CoreChipOutline` | No | `CoreChipOutline.solid` | Outline style: `solid`; `dashed` for a tentative offer (a bind suggestion); `highlight` for the rule that fired (a deterministic suggestion). |
 | `semanticsLabel` | `String?` | No | `null` | Overrides the announced text; defaults to `label`, `value` and `unit` joined with spaces. |
+| `removeSemanticsLabel` | `String?` | No | `null` | Overrides the close (×) button's announced label; defaults to "Remove" and the chip's text. Pass a localised string. |
 
 Notes:
 
 - At least one of `label`, `value`, or `unit` must be provided.
 
 - The close icon is rendered only when `withCloseIcon == true` **and** `onRemove != null`.
+- The close icon has a 48 x 48 tap target at the chip's end. It overlaps the end of the text, so the chip keeps its look; a chip with a × is at least 48 dp high, so a small chip sits centred in 48 dp. Tab reaches it after the chip. Pressed, the chip shows its pressed look. Focused, a 2 dp `outlineFocus` ring is drawn around the × (`CoreChip.closeFocusRingKey`) and the chip border stays at rest, so the chip and the × look different when each has focus.
 
 ## Sizes
 
