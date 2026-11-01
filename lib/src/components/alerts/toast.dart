@@ -287,8 +287,8 @@ class Toast extends StatefulWidget {
 
 class _ToastState extends State<Toast> {
   static const double _closeFocusRingWidth = 2;
-  static const double _actionFocusRingWidth = 3;
-  static const double _actionFocusRingOutsetY = 5;
+  static const double _textFocusRingWidth = 3;
+  static const double _textFocusRingOutsetY = 5;
 
   Timer? _dismissTimer;
   bool _answered = false;
@@ -775,13 +775,13 @@ class _ToastState extends State<Toast> {
       key: key,
       left: -CoreSpacing.space3,
       right: -CoreSpacing.space3,
-      top: -_actionFocusRingOutsetY,
-      bottom: -_actionFocusRingOutsetY,
+      top: -_textFocusRingOutsetY,
+      bottom: -_textFocusRingOutsetY,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border.all(
             color: colors.outlineFocus,
-            width: _actionFocusRingWidth,
+            width: _textFocusRingWidth,
           ),
           borderRadius: BorderRadius.circular(CoreSpacing.space10),
         ),
