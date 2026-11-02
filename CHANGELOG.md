@@ -11,6 +11,7 @@
 ### 🔧 Fixes
 
 - **CoreSwitch labels at large text**: a label that does not fit the track scales down instead of being cut, so the switch keeps its library size. Show Hide was cut at 1.5x text, the other labelled types at 2.0x (CA-1342)
+- **CoreSwitch focus ring**: the 2 dp `outlineFocus` ring now stands 2 dp clear of the track, as CoreButton's focus ring does. In light mode an On track (`iconDark`, or `buttonSurface` for Show Hide) is the same colour as `outlineFocus`, so the touching ring of 0.58.0 only made an On switch look thicker (CA-1342)
 
 ### 📐 Design notes
 
@@ -18,7 +19,7 @@ Show Hide is 32 high; the other labelled types stay 24 high. The Show Hide thumb
 
 ### 🧪 Tests
 
-- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action. Large text: every labelled type, On and Off, keeps its label inside the track at 1.5x and 2.0x
+- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action. Large text: every labelled type, On and Off, keeps its label inside the track at 1.5x and 2.0x. Focus: the ring is 2 dp clear of the track for normal and Show Hide, On and Off (fails without the gap). Goldens: Show Hide focused Off and On, light and dark; the normal focused goldens are redrawn with the gap
 
 ## [0.88.0] - CoreUnderlineTextField text that wraps to several lines
 
