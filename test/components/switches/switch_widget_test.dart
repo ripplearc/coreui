@@ -537,9 +537,13 @@ void main() {
     final theme = CoreTheme.light();
     final colors = theme.coreColors;
 
-    Future<List<bool>> pumpSwitch(WidgetTester tester) async {
+    Future<List<bool>> pumpSwitch(
+      WidgetTester tester, {
+      CoreSwitchType type = CoreSwitchType.normal,
+      bool initialValue = false,
+    }) async {
       final changes = <bool>[];
-      var value = false;
+      var value = initialValue;
       await tester.pumpWidget(
         buildTestApp(
           RepaintBoundary(
@@ -549,6 +553,7 @@ void main() {
               child: StatefulBuilder(
                 builder: (context, setState) => CoreSwitch(
                   key: switchKey,
+                  type: type,
                   value: value,
                   onChanged: (newValue) {
                     changes.add(newValue);
@@ -586,25 +591,38 @@ void main() {
       expect(changes, [true, false, true]);
     });
 
-    testWidgets('Tab draws a 2 dp outlineFocus ring outside the track',
-        (WidgetTester tester) async {
-      await pumpSwitch(tester);
-      final restingTrack = trackOf(tester);
+    // An On track is outlineFocus in light mode, so the ring must stand clear
+    // of it to be seen.
+    for (final (type, value) in [
+      (CoreSwitchType.normal, false),
+      (CoreSwitchType.normal, true),
+      (CoreSwitchType.showHide, false),
+      (CoreSwitchType.showHide, true),
+    ]) {
+      testWidgets(
+          'Tab draws a 2 dp outlineFocus ring 2 dp clear of the '
+          '${type.name} ${value ? 'on' : 'off'} track',
+          (WidgetTester tester) async {
+        await pumpSwitch(tester, type: type, initialValue: value);
+        final restingTrack = trackOf(tester);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
 
-      // The top and bottom of the ring are straight, so no anti-aliasing.
-      final track = trackOf(tester);
-      final x = track.center.dx;
-      expect(track, restingTrack);
-      expect(await pixel(tester, Offset(x, track.top - 1)),
-          colors.outlineFocus.toARGB32());
-      expect(await pixel(tester, Offset(x, track.bottom + 1)),
-          colors.outlineFocus.toARGB32());
-      expect(await pixel(tester, Offset(x, track.top - 3)),
-          isNot(colors.outlineFocus.toARGB32()));
-    });
+        // The top and bottom of the ring are straight, so no anti-aliasing.
+        final track = trackOf(tester);
+        final x = track.center.dx;
+        final ring = colors.outlineFocus.toARGB32();
+        expect(track, restingTrack);
+        for (final gap in [track.top - 1, track.bottom + 1]) {
+          expect(await pixel(tester, Offset(x, gap)), isNot(ring));
+        }
+        for (final edge in [track.top - 3, track.bottom + 3]) {
+          expect(await pixel(tester, Offset(x, edge)), ring);
+        }
+        expect(await pixel(tester, Offset(x, track.top - 5)), isNot(ring));
+      });
+    }
 
     testWidgets('a touch tap toggles each time and draws no ring',
         (WidgetTester tester) async {

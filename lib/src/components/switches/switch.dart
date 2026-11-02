@@ -17,8 +17,7 @@ enum CoreSwitchType {
   /// Unit system switch with green colors for imperial/metric toggle.
   imperial,
 
-  /// Visibility switch: a light "Hide" track when off, a filled "Show" track
-  /// when on. The label always names the current state.
+  /// Visibility switch; the label names the current state, "Hide" or "Show".
   showHide,
 }
 
@@ -60,7 +59,7 @@ class _SwitchConstants {
 ///   filled track
 ///
 /// Tab reaches the switch and Enter or Space toggles it. Keyboard focus draws
-/// a 2 px `outlineFocus` ring just outside the track.
+/// a 2 px `outlineFocus` ring 2 px clear of the track.
 ///
 /// ## Basic Usage
 ///
@@ -352,8 +351,7 @@ class CoreSwitch extends StatelessWidget {
                           : thumbSize + thumbPadding * 1.4,
                       top: 0,
                       bottom: 0,
-                      // Scales down instead of cutting the label when the
-                      // text is large: the track keeps its library size.
+                      // A large label scales down; the track keeps its size.
                       child: Center(
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -420,6 +418,7 @@ class _SwitchFocus extends StatefulWidget {
 
 class _SwitchFocusState extends State<_SwitchFocus> {
   static const double _ringWidth = 2;
+  static const double _ringGap = 2;
 
   bool _showsRing = false;
 
@@ -451,11 +450,13 @@ class _SwitchFocusState extends State<_SwitchFocus> {
               child: Container(
                 width: widget.trackSize.width,
                 height: widget.trackSize.height,
-                decoration: BoxDecoration(
+                foregroundDecoration: BoxDecoration(
                   border: Border.all(
                     color: colors.outlineFocus,
                     width: _ringWidth,
-                    strokeAlign: BorderSide.strokeAlignOutside,
+                    // Clear of the On track, which is outlineFocus in light;
+                    // a foregroundDecoration may draw past its box.
+                    strokeAlign: 1 + 2 * _ringGap / _ringWidth,
                   ),
                   borderRadius: BorderRadius.circular(CoreSpacing.space6),
                 ),

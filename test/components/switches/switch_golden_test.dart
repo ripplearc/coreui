@@ -236,5 +236,27 @@ void main() {
         matchesGoldenFile('goldens/switch_disabled$suffix.png'),
       );
     });
+
+    // Tab once to the Off switch, then once more to the On switch.
+    for (final (tabs, state) in [(1, 'off'), (2, 'on')]) {
+      testWidgets('CoreSwitch Golden Test - Show Hide focused $state - $mode',
+          (WidgetTester tester) async {
+        await pumpVariants(
+          tester,
+          theme(),
+          child: _buildLooks(onChanged: _noop, onlyShowHide: true),
+          size: const Size(200, 100),
+        );
+        for (var tab = 0; tab < tabs; tab++) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        }
+        await tester.pumpAndSettle();
+
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('goldens/switch_show_hide_focused_$state$suffix.png'),
+        );
+      });
+    }
   });
 }
