@@ -203,7 +203,8 @@ void main() {
 
   testWidgets('the deep-link mark is a background of its own', (tester) async {
     await pumpTile(tester);
-    expect(backgroundOf(tester), colors.backgroundGrayMid);
+    expect(backgroundOf(tester), colors.backgroundGrayLight);
+    expect(backgroundOf(tester), isNot(colors.pageBackground));
 
     await pumpTile(tester, isEmphasised: true);
     expect(backgroundOf(tester), colors.backgroundBlueLight);

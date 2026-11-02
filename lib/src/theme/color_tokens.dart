@@ -115,7 +115,8 @@ class CoreTextColors {
 
 // Background-related color tokens
 class CoreBackgroundColors {
-  static const Color pageBackground = _CoreColorPalette.gray50;
+  /// Mirrors Figma `Background/Page BG` (Grey/25, white).
+  static const Color pageBackground = _CoreColorPalette.gray25;
   static const Color backgroundGrayLight = _CoreColorPalette.gray50;
   static const Color backgroundGrayMid = _CoreColorPalette.gray100;
   static const Color backgroundBlueLight = _CoreColorPalette.blue25;

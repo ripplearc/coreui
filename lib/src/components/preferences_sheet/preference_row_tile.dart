@@ -58,11 +58,9 @@ class PreferenceRowTile extends StatelessWidget {
       key: anchorKey,
       duration: emphasisDuration,
       decoration: BoxDecoration(
-        // pageBackground and backgroundGrayLight are the same token, so the
-        // row needs the next step up to read as a surface of its own.
         color: isEmphasised
             ? colors.backgroundBlueLight
-            : colors.backgroundGrayMid,
+            : colors.backgroundGrayLight,
         borderRadius: BorderRadius.circular(CoreSpacing.space2),
         border: Border(
           bottom: BorderSide(color: colors.lineLight, width: _bottomLineWidth),
