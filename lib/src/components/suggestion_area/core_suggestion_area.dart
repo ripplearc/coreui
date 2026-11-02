@@ -60,6 +60,8 @@ enum CoreSuggestionLayout {
 /// [SuggestionData.testKey], or [chipTestKey] / [conversionChipTestKey] by
 /// position in its row.
 class CoreSuggestionArea extends StatefulWidget {
+  /// Creates a suggestion area. The default labels are English; the
+  /// required screen-reader labels come from the app.
   const CoreSuggestionArea({
     super.key,
     this.suggestionAreaPlaceholder = defaultSuggestionAreaPlaceholder,

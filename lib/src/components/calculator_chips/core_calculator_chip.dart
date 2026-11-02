@@ -107,6 +107,8 @@ enum CoreCalculatorChipType {
 /// )
 /// ```
 class CoreCalculatorChip extends StatelessWidget {
+  /// Creates a calculator chip. A disabled chip needs a [label], a stale
+  /// chip a [semanticsLabel] and no [value], and a closed bracket a [value].
   const CoreCalculatorChip({
     super.key,
     required this.type,

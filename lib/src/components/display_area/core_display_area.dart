@@ -63,6 +63,8 @@ class CoreDisplayArea extends StatefulWidget {
   /// `calc_dep_pill_<index>`. [CoreDependentKeyData.testKey] overrides it.
   static Key dependentKeyTestKey(int index) => ValueKey('calc_dep_pill_$index');
 
+  /// Creates a display area. Pass [restoreSemanticsLabel] with
+  /// [onPreviousSessionTapped], or the assert fails.
   const CoreDisplayArea({
     super.key,
     this.onClose,

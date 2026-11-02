@@ -95,6 +95,8 @@ class CoreStatusBadge extends StatelessWidget {
   /// "About sample rates". Required when [onInfoTap] is set.
   final String? infoSemanticLabel;
 
+  /// Creates a badge. Only the regular warning badge can be compact or show
+  /// the info icon.
   const CoreStatusBadge({
     super.key,
     required this.label,

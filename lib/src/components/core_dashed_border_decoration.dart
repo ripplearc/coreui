@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 /// needs a tentative or offer outline.
 @immutable
 class CoreDashedBorderDecoration extends Decoration {
+  /// Creates a dashed outline: [color] dashes [dashLength] long, [gapLength]
+  /// apart, around a box with [radius] corners.
   const CoreDashedBorderDecoration({
     required this.color,
     required this.strokeWidth,
