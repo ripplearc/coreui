@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:ripplearc_coreui/src/components/calculator_chips/core_calculator_chip_theme.dart';
@@ -26,6 +27,55 @@ Future<void> pumpChip(
     ),
   );
 }
+
+  // The chips that take input. Each one has a callback, so a press or Tab
+// reaches its InkWell.
+final tappable = <CoreCalculatorChipType, CoreCalculatorChip>{
+    CoreCalculatorChipType.editable: CoreCalculatorChip(
+      type: CoreCalculatorChipType.editable,
+      value: '22ft',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.active: CoreCalculatorChip(
+      type: CoreCalculatorChipType.active,
+      value: '10ft',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.result: CoreCalculatorChip(
+      type: CoreCalculatorChipType.result,
+      label: 'Area',
+      value: '410.67ft²',
+      onLongPress: () {},
+    ),
+    CoreCalculatorChipType.error: CoreCalculatorChip(
+      type: CoreCalculatorChipType.error,
+      value: 'Dimension error',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.dashed: CoreCalculatorChip(
+      type: CoreCalculatorChipType.dashed,
+      value: '8ft ?',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.bracketOpen: CoreCalculatorChip(
+      type: CoreCalculatorChipType.bracketOpen,
+      value: '3×4',
+      semanticsLabel: 'open bracket, 3 times 4',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.bracketClosed: CoreCalculatorChip(
+      type: CoreCalculatorChipType.bracketClosed,
+      value: '3×4',
+      semanticsLabel: 'bracket, 3 times 4',
+      onTap: () {},
+    ),
+    CoreCalculatorChipType.stale: CoreCalculatorChip(
+      type: CoreCalculatorChipType.stale,
+      label: 'Calc',
+      semanticsLabel: 'Calc, pending',
+      onTap: () {},
+    ),
+  };
 
 void main() {
   group('CoreCalculatorChip Widget Tests', () {
@@ -1241,54 +1291,6 @@ void main() {
   });
 
   group('CoreCalculatorChip pressed', () {
-    // The chips that take input. Each one has a callback, so a press reaches
-    // its InkWell.
-    final tappable = <CoreCalculatorChipType, CoreCalculatorChip>{
-      CoreCalculatorChipType.editable: CoreCalculatorChip(
-        type: CoreCalculatorChipType.editable,
-        value: '22ft',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.active: CoreCalculatorChip(
-        type: CoreCalculatorChipType.active,
-        value: '10ft',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.result: CoreCalculatorChip(
-        type: CoreCalculatorChipType.result,
-        label: 'Area',
-        value: '410.67ft²',
-        onLongPress: () {},
-      ),
-      CoreCalculatorChipType.error: CoreCalculatorChip(
-        type: CoreCalculatorChipType.error,
-        value: 'Dimension error',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.dashed: CoreCalculatorChip(
-        type: CoreCalculatorChipType.dashed,
-        value: '8ft ?',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.bracketOpen: CoreCalculatorChip(
-        type: CoreCalculatorChipType.bracketOpen,
-        value: '3×4',
-        semanticsLabel: 'open bracket, 3 times 4',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.bracketClosed: CoreCalculatorChip(
-        type: CoreCalculatorChipType.bracketClosed,
-        value: '3×4',
-        semanticsLabel: 'bracket, 3 times 4',
-        onTap: () {},
-      ),
-      CoreCalculatorChipType.stale: CoreCalculatorChip(
-        type: CoreCalculatorChipType.stale,
-        label: 'Calc',
-        semanticsLabel: 'Calc, pending',
-        onTap: () {},
-      ),
-    };
 
     final layer = CoreTheme.light().coreColors.backgroundDarkGray.withValues(
           alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
@@ -1437,6 +1439,95 @@ void main() {
 
       expect(inkLayer(tester), isNot(drawsLayer()));
       await gesture.up();
+    });
+  });
+
+  group('CoreCalculatorChip focus', () {
+    final colors = CoreTheme.light().coreColors;
+
+    Decoration? outlineOf(WidgetTester tester) {
+      final outline = find.byKey(CoreCalculatorChip.outlineKey);
+      if (outline.evaluate().isEmpty) return null;
+      return tester.widget<DecoratedBox>(outline).decoration;
+    }
+
+    for (final MapEntry(key: type, value: chip) in tappable.entries) {
+      testWidgets('$type draws the focus outline on Tab',
+          (WidgetTester tester) async {
+        await pumpChip(tester, chip);
+        final restingOutline = outlineOf(tester);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+
+        expect(
+          outlineOf(tester),
+          CoreCalculatorChipTheme.focusOutline(type: type, colors: colors),
+        );
+        expect(outlineOf(tester), isNot(restingOutline));
+      });
+    }
+
+    testWidgets('the focus outline goes away when focus leaves',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.dashed]!);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      FocusManager.instance.primaryFocus!.unfocus();
+      await tester.pump();
+
+      expect(
+        outlineOf(tester),
+        CoreCalculatorChipTheme.dashedOutline(
+          type: CoreCalculatorChipType.dashed,
+          colors: colors,
+        ),
+      );
+    });
+
+    testWidgets('a touch tap draws no focus outline',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.editable]!);
+
+      await tester.tap(find.byType(CoreCalculatorChip));
+      await tester.pumpAndSettle();
+
+      expect(outlineOf(tester), isNull);
+    });
+
+    testWidgets('Tab skips a disabled chip', (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Area',
+          value: '410.67ft²',
+          onTap: () {},
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      expect(outlineOf(tester), isNull);
+    });
+
+    testWidgets('Tab skips an inert chip', (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '5',
+          inert: true,
+          onTap: () {},
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+
+      expect(outlineOf(tester), isNull);
     });
   });
 }

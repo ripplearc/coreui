@@ -114,6 +114,36 @@ abstract final class CoreCalculatorChipTheme {
     );
   }
 
+  /// The outline width while a chip has keyboard focus: twice
+  /// [borderWidth], as on the other chips (`CoreChipTheme.borderWidthFor`).
+  static const double focusOutlineWidth = borderWidth * 2;
+
+  /// Returns the outline drawn over a chip while it has keyboard focus: an
+  /// `outlineFocus` edge [focusOutlineWidth] wide, dashed on the variants
+  /// that are [isDashed] and solid on the rest. It is drawn over the chip, so
+  /// the chip keeps its size.
+  static Decoration focusOutline({
+    required CoreCalculatorChipType type,
+    required AppColorsExtension colors,
+  }) {
+    if (isDashed(type)) {
+      return CoreDashedBorderDecoration(
+        color: colors.outlineFocus,
+        strokeWidth: focusOutlineWidth,
+        radius: CoreSpacing.space6,
+        dashLength: dashLength,
+        gapLength: gapLength,
+      );
+    }
+    return BoxDecoration(
+      borderRadius: borderRadius,
+      border: Border.all(
+        color: colors.outlineFocus,
+        width: focusOutlineWidth,
+      ),
+    );
+  }
+
   /// Returns the label text style for a calculator chip given its [type],
   /// current [colors] theme, and [typography].
   static TextStyle labelStyle({

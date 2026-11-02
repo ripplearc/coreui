@@ -107,6 +107,10 @@ enum CoreCalculatorChipType {
 /// )
 /// ```
 class CoreCalculatorChip extends StatelessWidget {
+  /// Finds the outline drawn over the chip: the dashed edge of a dashed
+  /// variant, or the focus outline while the chip has keyboard focus.
+  static const Key outlineKey = Key('calculator_chip_outline');
+
   const CoreCalculatorChip({
     super.key,
     required this.type,
@@ -279,12 +283,10 @@ class CoreCalculatorChip extends StatelessWidget {
                     : colors.transparent,
               ),
               borderRadius: CoreCalculatorChipTheme.borderRadius,
-              child: Container(
-                foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
-                  type: type,
-                  colors: colors,
-                ),
-                // The fill is on Ink, not on the Container, so the Pressed
+              child: _ChipOutline(
+                type: type,
+                colors: colors,
+                // The fill is on Ink, not on the outline, so the Pressed
                 // layer is painted over it and can be seen.
                 child: Ink(
                   padding: CoreCalculatorChipTheme.padding,
@@ -352,6 +354,32 @@ class CoreCalculatorChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ChipOutline extends StatelessWidget {
+  const _ChipOutline({
+    required this.type,
+    required this.colors,
+    required this.child,
+  });
+
+  final CoreCalculatorChipType type;
+  final AppColorsExtension colors;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final outline = Focus.of(context).hasPrimaryFocus
+        ? CoreCalculatorChipTheme.focusOutline(type: type, colors: colors)
+        : CoreCalculatorChipTheme.dashedOutline(type: type, colors: colors);
+    if (outline == null) return child;
+    return DecoratedBox(
+      key: CoreCalculatorChip.outlineKey,
+      position: DecorationPosition.foreground,
+      decoration: outline,
+      child: child,
     );
   }
 }
