@@ -186,6 +186,25 @@ Container(
 
 ## Development
 
+### Before you push
+
+Run the CI checks on your machine first:
+
+```bash
+./scripts/run_check.sh
+```
+
+It runs `pub get`, `analyze`, the ripplearc_linter rules on the Dart files you changed against `origin/main`, and the tests for the files you changed. It stops at the first failure and never rebases or changes your branch. Only committed changes are checked, as in CI.
+
+- `--base origin/<branch>`: for a stacked PR, compare against its base branch instead.
+- `--goldens`: run the golden tests in the Docker image that matches CI. On macOS they are skipped otherwise, because macOS renders text differently from the Ubuntu CI.
+
+The lint rule list is in `scripts/ripplearc_lint_rules.txt`, which CI reads too. The script exits non-zero on failure, so it can run as a git pre-push hook:
+
+```bash
+printf '#!/bin/sh\nexec ./scripts/run_check.sh\n' > .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+```
+
 ### Running Tests
 
 #### Golden Tests with Docker
