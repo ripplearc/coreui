@@ -234,4 +234,148 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  // The eight types that take input, each held down, beside a disabled and an
+  // inert chip that are held down too and do not change.
+  Future<List<TestGesture>> pumpPressed(
+    WidgetTester tester,
+    ThemeData theme,
+  ) async {
+    final colors = theme.coreColors;
+    final caption =
+        theme.coreTypography.bodySmallRegular.copyWith(color: colors.textBody);
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // 1040x452 @ 2.0 => 520x226 logical: three rows of captioned chips (four,
+    // three, three) with space4 padding.
+    tester.view.physicalSize = const Size(1040, 452);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final chips = <String, CoreCalculatorChip>{
+      'Editable': CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        label: 'Length',
+        value: '22ft',
+        onTap: () {},
+      ),
+      'Active': CoreCalculatorChip(
+        type: CoreCalculatorChipType.active,
+        label: 'Width',
+        value: '10ft',
+        onTap: () {},
+      ),
+      'Result': CoreCalculatorChip(
+        type: CoreCalculatorChipType.result,
+        label: 'Area',
+        value: '410.67ft²',
+        onLongPress: () {},
+      ),
+      'Error': CoreCalculatorChip(
+        type: CoreCalculatorChipType.error,
+        value: 'Dimension error',
+        onTap: () {},
+      ),
+      'Dashed': CoreCalculatorChip(
+        type: CoreCalculatorChipType.dashed,
+        label: 'Height',
+        value: '8ft ?',
+        onTap: () {},
+      ),
+      'Bracket open': CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketOpen,
+        value: '3×4',
+        factor: CoreIcons.addOperator,
+        onTap: () {},
+      ),
+      'Bracket closed': CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketClosed,
+        value: '3×4',
+        factor: CoreIcons.addOperator,
+        onTap: () {},
+      ),
+      'Stale': CoreCalculatorChip(
+        type: CoreCalculatorChipType.stale,
+        label: 'Calc',
+        semanticsLabel: 'Calc, pending',
+        onTap: () {},
+      ),
+      'Disabled': CoreCalculatorChip(
+        type: CoreCalculatorChipType.disabled,
+        label: 'Area',
+        value: '410.67ft²',
+        onTap: () {},
+      ),
+      'Inert': CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        value: '5',
+        factor: CoreIcons.multiplyOperator,
+        inert: true,
+        onTap: () {},
+      ),
+    };
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
+            child: Wrap(
+              spacing: CoreSpacing.space6,
+              runSpacing: CoreSpacing.space4,
+              children: [
+                for (final MapEntry(key: title, value: chip) in chips.entries)
+                  captioned('$title, pressed', caption, chip),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final gestures = <TestGesture>[
+      for (final chip in find.byType(CoreCalculatorChip).evaluate())
+        await tester.startGesture(
+          tester.getCenter(find.byWidget(chip.widget)),
+        ),
+    ];
+    await tester.pumpAndSettle();
+    return gestures;
+  }
+
+  testWidgets('CoreCalculatorChip Pressed - Light',
+      (WidgetTester tester) async {
+    final gestures = await pumpPressed(tester, _withRoboto(CoreTheme.light()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_pressed_light.png'),
+    );
+    for (final gesture in gestures) {
+      await gesture.up();
+    }
+    debugDisableShadows = true;
+  });
+
+  testWidgets('CoreCalculatorChip Pressed - Dark',
+      (WidgetTester tester) async {
+    final gestures = await pumpPressed(tester, _withRoboto(CoreTheme.dark()));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_pressed_dark.png'),
+    );
+    for (final gesture in gestures) {
+      await gesture.up();
+    }
+    debugDisableShadows = true;
+  });
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.75.0] - CoreCalculatorChip Pressed look
+
+### ✨ Features
+
+- **CoreCalculatorChip pressed**: while a finger is down on a chip that takes input, a `backgroundDarkGray` layer at 8 % covers the whole chip, with the chip's corners, as in the Figma Pressed variants. It goes away when the press ends or is cancelled. The eight tappable types get it: `editable`, `active`, `result`, `error`, `dashed`, `bracketOpen`, `bracketClosed` and `stale`. A `disabled` or `inert` chip does not change. `CoreCalculatorChipTheme.pressedOverlayOpacity` holds the 8 % (CA-1373)
+- The chip's fill and border are now drawn with `Ink`, so the layer is painted over them. The shadow sits on a box outside the chip's `Material`, so the ink clip does not cut it. The resting chip and display-area goldens change only in anti-aliasing on the rounded ends (CA-1373)
+
+### 🧪 Tests
+
+- Each of the eight types draws the layer over its fill, at the chip's size and corners, while held; the layer goes away on release and on cancel; a disabled and an inert chip draw no layer while held; the layer shows on a coloured parent. New Pressed goldens, light and dark
+
 ## [0.66.0] - CoreChip close button: 48 dp target, keyboard focus, own label
 
 ### 🔧 Fixes

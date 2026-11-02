@@ -220,6 +220,11 @@ abstract final class CoreCalculatorChipTheme {
   /// their fills before any dim.
   static const double inertOpacity = 0.7;
 
+  /// The opacity of the layer drawn over a chip while it is pressed. The
+  /// layer is `backgroundDarkGray` and covers the whole chip. Mirrors the
+  /// Figma Pressed variants' "State layer" (Background/Dark Grey at 8 %).
+  static const double pressedOverlayOpacity = 0.08;
+
   /// The standard border radius for all calculator chips.
   static BorderRadius get borderRadius =>
       BorderRadius.circular(CoreSpacing.space6);
