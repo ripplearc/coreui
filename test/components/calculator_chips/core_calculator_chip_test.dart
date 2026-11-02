@@ -151,6 +151,35 @@ void main() {
       expect(find.byType(CoreIconWidget), findsOneWidget);
     });
 
+    testWidgets('a factor does not stretch the chip to its parent height',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '4in',
+          onTap: () {},
+        ),
+      );
+      final heightWithoutFactor =
+          tester.getSize(find.byType(CoreCalculatorChip)).height;
+
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '4in',
+          factor: CoreIcons.addOperator,
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSize(find.byType(CoreCalculatorChip)).height,
+        heightWithoutFactor,
+      );
+    });
+
     testWidgets('renders factor-only chip (null value) correctly',
         (WidgetTester tester) async {
       await tester.pumpWidget(

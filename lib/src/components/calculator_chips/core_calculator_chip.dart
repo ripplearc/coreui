@@ -309,15 +309,13 @@ class CoreCalculatorChip extends StatelessWidget {
                     children: [
                       if (factor != null && _isInteractive)
                         ExcludeSemantics(
-                          child: Center(
-                            child: CoreIconWidget(
-                              icon: factor,
-                              size: CoreSpacing.space5,
-                              color: CoreCalculatorChipTheme.factorColor(
-                                type: type,
-                                colors: colors,
-                                inert: inert,
-                              ),
+                          child: CoreIconWidget(
+                            icon: factor,
+                            size: CoreSpacing.space5,
+                            color: CoreCalculatorChipTheme.factorColor(
+                              type: type,
+                              colors: colors,
+                              inert: inert,
                             ),
                           ),
                         ),
