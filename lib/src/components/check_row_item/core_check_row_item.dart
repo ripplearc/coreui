@@ -6,13 +6,10 @@ import '../../../ripplearc_coreui.dart';
 /// subtitle), and a trailing checkbox.
 ///
 /// Tapping anywhere on the row toggles [selected] via [onChanged]. The leading
-/// area defaults to a [CoreAvatar] showing the first initial of [title], but
-/// any widget can be supplied via [leading].
-///
-/// [CoreCheckRowItem.new] draws the library Dropdown cell, for multi-select
-/// sheets such as an owner filter. [CoreCheckRowItem.checkRow] draws the
-/// library Check row (Figma 62505:74872), for lists such as the "Send to"
-/// sheet. Sizes and states of both are in `core_check_row_item.md`.
+/// area defaults to a [CoreAvatar] showing the initials of [title], but any
+/// widget can be supplied via [leading]. [CoreCheckRowItem.new] draws the
+/// library Dropdown cell; [CoreCheckRowItem.checkRow] draws the library Check
+/// row (Figma 62505:74872). Sizes and states: `core_check_row_item.md`.
 class CoreCheckRowItem extends StatelessWidget {
   /// Primary text for the row (e.g. an owner name).
   ///
@@ -29,21 +26,17 @@ class CoreCheckRowItem extends StatelessWidget {
   /// Called with the toggled value when the row or checkbox is activated.
   final ValueChanged<bool> onChanged;
 
-  /// Whether the row reacts to taps. False ignores taps, reads as disabled and
-  /// draws the text in `textDisable`; a custom [leading] or [avatarTextColor]
-  /// is not dimmed.
+  /// Whether the row reacts to taps; `core_check_row_item.md` has the look.
   final bool enabled;
 
-  /// Whether a [CoreCheckRowItem.checkRow] draws its divider on the bottom
-  /// edge. Always false for the Dropdown cell, which has none.
+  /// Whether a [CoreCheckRowItem.checkRow] draws its bottom divider.
   final bool showDivider;
 
   final bool _isCheckRow;
 
   /// Leading widget shown before the text.
   ///
-  /// Defaults to a circle showing the first initial of [title], 24 dp in the
-  /// Dropdown cell and 40 dp in the Check row. When
+  /// Defaults to a circle showing the initials of [title]. When
   /// provided, [avatarBackgroundColor] and [avatarTextColor] are ignored.
   final Widget? leading;
 
@@ -111,6 +104,16 @@ class CoreCheckRowItem extends StatelessWidget {
     return trimmed.characters.first.toUpperCase();
   }
 
+  /// Derives the Check row's initials: the first character of each of the
+  /// first two words, uppercased ("Judy Smith" gives "JS").
+  static String initialsFor(String name) => name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .take(2)
+      .map((word) => word.characters.first.toUpperCase())
+      .join();
+
   Widget _buildDefaultAvatar(
     AppColorsExtension colors,
     AppTypographyExtension typography,
@@ -128,7 +131,7 @@ class CoreCheckRowItem extends StatelessWidget {
                 ? typography.bodyLargeSemiBold
                 : typography.bodySmallMedium))
         .copyWith(color: effectiveTextColor);
-    final initial = initialFor(title);
+    final initial = _isCheckRow ? initialsFor(title) : initialFor(title);
 
     return CoreAvatar(
       radius: _isCheckRow ? CoreSpacing.space5 : CoreSpacing.space3,
@@ -187,11 +190,7 @@ class CoreCheckRowItem extends StatelessWidget {
 
     final effectiveLeading = leading ?? _buildDefaultAvatar(colors, typography);
     final gap = _isCheckRow ? CoreSpacing.space3 : CoreSpacing.space2;
-    final checkColor = !selected
-        ? colors.iconGrayMid
-        : _isCheckRow
-            ? colors.iconDark
-            : colors.outlineFocus;
+    final tickColor = _isCheckRow ? colors.iconDark : colors.outlineFocus;
     final radius = BorderRadius.circular(_isCheckRow ? 0 : _rowRadius);
 
     // The whole row is the tap target: 12 dp above and below the 24 dp check
@@ -213,7 +212,7 @@ class CoreCheckRowItem extends StatelessWidget {
             child: CoreIconWidget(
               icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
               size: CoreIconSize.size24,
-              color: checkColor,
+              color: selected ? tickColor : colors.iconGrayMid,
             ),
           ),
         ],

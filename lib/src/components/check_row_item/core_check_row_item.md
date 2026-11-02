@@ -10,7 +10,7 @@ It draws one of two parts of the Figma library:
 | Figma | Dropdown cell With Image (57516:18872) | List item, Type Check row (62505:74872; states 66801:224013 / 224021 / 224029 / 224037) |
 | Padding | 12 dp on every side | 12 dp above and below, 20 dp left and right |
 | Gaps | 8 dp avatar to text | 12 dp between avatar, text and box |
-| Avatar | 24 dp, `backgroundBlueMid`, initial `bodySmallMedium` `textHeadline` | 40 dp, `backgroundBlueLight`, initial `bodyLargeSemiBold` `textLink` |
+| Avatar | 24 dp, `backgroundBlueMid`, one initial (`initialFor`) in `bodySmallMedium` `textHeadline` | 40 dp, `backgroundBlueLight`, two initials (`initialsFor`, "JS" as in the storyboard's Send to list) in `bodyLargeSemiBold` `textLink` |
 | Name | `bodyMediumRegular`, `textDark` | `bodyLargeMedium`, `textHeadline` |
 | Second line | `bodySmallRegular`, `textBody` | `bodyMediumRegular`, `textBody` |
 | Box | `outlineFocus` ticked, `iconGrayMid` empty | `iconDark` ticked, `iconGrayMid` empty |
@@ -88,14 +88,15 @@ CoreCheckRowItem(
 
 ## Initial derivation
 
-The default leading avatar's initial is the **first character of the first whitespace-delimited token** of `title`, uppercased:
+The Dropdown cell's default avatar shows **one initial** (`CoreCheckRowItem.initialFor`): the first character of the first whitespace-delimited word of `title`, uppercased. The Check row's shows **two** (`CoreCheckRowItem.initialsFor`): the first character of each of the first two words.
 
-| Title           | Initial |
-|-----------------|---------|
-| `"John Doe"`    | `"J"`   |
-| `"floyd miles"` | `"F"`   |
-| `"madonna"`     | `"M"`   |
-| `"  "` (blank)  | `""` (empty circle, no crash) |
+| Title                | Dropdown cell | Check row |
+|----------------------|---------------|-----------|
+| `"John Doe"`         | `"J"`         | `"JD"`    |
+| `"floyd miles"`      | `"F"`         | `"FM"`    |
+| `"Anne Marie Smith"` | `"A"`         | `"AM"`    |
+| `"madonna"`          | `"M"`         | `"M"`     |
+| `"  "` (blank)       | `""` (empty circle, no crash) | `""` |
 
 ## Behavior
 

@@ -40,7 +40,36 @@ void main() {
     );
   }
 
+  group('CoreCheckRowItem.initialsFor', () {
+    for (final (name, initials) in [
+      ('Judy Smith', 'JS'),
+      ('marco reyes', 'MR'),
+      ('Anne Marie Smith', 'AM'),
+      ('madonna', 'M'),
+      ('  Judy   Smith  ', 'JS'),
+      ('   ', ''),
+      ('', ''),
+    ]) {
+      test('"$name" gives "$initials"', () {
+        expect(CoreCheckRowItem.initialsFor(name), initials);
+      });
+    }
+  });
+
   group('CoreCheckRowItem.checkRow – look', () {
+    testWidgets('shows two initials, as the storyboard Send to list does; '
+        'the Dropdown cell keeps one', (tester) async {
+      await pumpRow(tester, checkRow());
+      expect(find.text('JD'), findsOneWidget);
+
+      await pumpRow(
+        tester,
+        CoreCheckRowItem(title: 'John Doe', selected: false, onChanged: (_) {}),
+      );
+      expect(find.text('J'), findsOneWidget);
+      expect(find.text('JD'), findsNothing);
+    });
+
     testWidgets('uses the Figma Check row text styles and colours',
         (tester) async {
       await pumpRow(tester, checkRow(subtitle: 'john@acme.com'));
@@ -54,7 +83,7 @@ void main() {
         typography.bodyMediumRegular.copyWith(color: colors.textBody),
       );
       expect(
-        tester.widget<Text>(find.text('J')).style,
+        tester.widget<Text>(find.text('JD')).style,
         typography.bodyLargeSemiBold.copyWith(color: colors.textLink),
       );
       final avatar = tester.widget<CoreAvatar>(find.byType(CoreAvatar));
@@ -134,7 +163,7 @@ void main() {
       );
 
       final avatar = tester.getRect(find.byType(CoreAvatar));
-      final initial = tester.getRect(find.text('J'));
+      final initial = tester.getRect(find.text('JD'));
       expect(avatar.contains(initial.center), isTrue);
       expect(initial.height, lessThanOrEqualTo(avatar.height));
       expect(tester.takeException(), isNull);
@@ -248,7 +277,8 @@ void main() {
             tester.widget<CoreIconWidget>(find.byType(CoreIconWidget)).color;
 
         await pumpRow(tester, build(true, false, (_) {}));
-        for (final text in ['John Doe', 'john@acme.com', 'J']) {
+        final initials = name == 'Check row' ? 'JD' : 'J';
+        for (final text in ['John Doe', 'john@acme.com', initials]) {
           expect(
             tester.widget<Text>(find.text(text)).style!.color,
             colors.textDisable,
@@ -285,7 +315,7 @@ void main() {
       );
 
       expect(
-        tester.widget<Text>(find.text('J')).style!.color,
+        tester.widget<Text>(find.text('JD')).style!.color,
         colors.textSuccess,
       );
     });
