@@ -374,7 +374,7 @@ void main() {
           );
 
       Color? textColor(WidgetTester tester, String text) =>
-          tester.widget<Text>(find.text(text)).style?.color;
+          tester.widget<Text>(find.text(text)).style!.color;
 
       for (final (themeName, theme) in [
         ('light', CoreTheme.light()),
