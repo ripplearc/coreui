@@ -301,36 +301,40 @@ class _CoreKeyboardState extends State<CoreKeyboard>
                           _expand();
                         }
                       },
-                      child: InkWell(
-                        onTap: () {
-                          if (_isCollapsed) {
-                            _expand();
-                          } else {
-                            _collapse();
-                          }
-                        },
-                        child: AnimatedBuilder(
-                          animation: _controller,
-                          builder: (context, child) {
-                            return Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.only(
-                                  top: CoreSpacing.space1,
-                                  bottom: CoreSpacing.space1 *
-                                      (1.0 - _controller.value)),
-                              child: Center(
-                                child: CustomPaint(
-                                  size: const Size(_dragIndicatorWidth,
-                                      _dragIndicatorHeight),
-                                  painter: _CurvedDragHandlePainter(
-                                    color: colors.lineDarkOutline,
-                                    collapseProgress: 1.0 - _controller.value,
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                            onTap: () {
+                              if (_isCollapsed) {
+                                _expand();
+                              } else {
+                                _collapse();
+                              }
+                            },
+                            child: AnimatedBuilder(
+                              animation: _controller,
+                              builder: (context, child) {
+                                return Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.only(
+                                      top: CoreSpacing.space1,
+                                      bottom: CoreSpacing.space1 *
+                                          (1.0 - _controller.value)),
+                                  child: Center(
+                                    child: CustomPaint(
+                                      size: const Size(_dragIndicatorWidth,
+                                          _dragIndicatorHeight),
+                                      painter: _CurvedDragHandlePainter(
+                                        color: colors.lineDarkOutline,
+                                        collapseProgress:
+                                            1.0 - _controller.value,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                                );
+                              },
+                            ),
+                          ),
                       ),
                     ),
                   ),
