@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.73.0] - Alert body text uses textDark
+
+### 🔧 Fixes
+
+- **Toast alert body**: the body of a titled error, success, warning or info alert now uses `textDark`, not `textBody`, so it can be read in the sun. The title and the small alert already used `textDark`. The icon keeps its kind colour. The receipt keeps `textLink` and the acknowledgement does not change. Apps that show a titled alert will see darker body text in the light theme and brighter body text in the dark theme
+
+### 🧪 Tests
+
+- On all four alert kinds, in light and dark, the title and body of a titled alert and the body of a small alert use `textDark`. Goldens changed for the body text: `toast_component` and `core_preference_option_sheet_info`, light and dark
+
 ## [0.66.0] - CoreChip close button: 48 dp target, keyboard focus, own label
 
 ### 🔧 Fixes

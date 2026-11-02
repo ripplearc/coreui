@@ -224,6 +224,7 @@ The Toast component includes semantic labels for accessibility:
 - Typography:
     - Title/Description: `CoreTypography.bodyLargeMedium`
     - Description (when title present): `CoreTypography.bodySmallRegular`
+    - Alert text colour: the title and body of the four alerts use `textDark`, so they can be read in the sun. The icon keeps its kind colour. The receipt keeps `textLink`, because the owner's rule treats it as separate for now
     - Receipt lead: `CoreTypography.bodyLargeSemiBold` in `textLink`
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
     - Receipt secondary label: `CoreTypography.bodyLargeSemiBold` in `textLink` at 85 % opacity

@@ -329,6 +329,80 @@ void main() {
       });
     });
 
+    group('alert text colour', () {
+      const titleText = 'Alert title';
+      const bodyText = 'Alert body';
+
+      final alertKinds = <(String, Toast Function(String? title))>[
+        (
+          'error',
+          (title) => Toast.error(
+                title: title,
+                description: bodyText,
+                closeLabel: 'Close',
+              ),
+        ),
+        (
+          'success',
+          (title) => Toast.success(
+                title: title,
+                description: bodyText,
+                closeLabel: 'Close',
+              ),
+        ),
+        (
+          'warning',
+          (title) => Toast.warning(
+                title: title,
+                description: bodyText,
+                closeLabel: 'Close',
+              ),
+        ),
+        (
+          'info',
+          (title) => Toast.info(
+                title: title,
+                description: bodyText,
+                closeLabel: 'Close',
+              ),
+        ),
+      ];
+
+      Widget buildAlert(ThemeData theme, Toast alert) => MaterialApp(
+            theme: theme,
+            home: Scaffold(body: alert),
+          );
+
+      Color? textColor(WidgetTester tester, String text) =>
+          tester.widget<Text>(find.text(text)).style?.color;
+
+      for (final (themeName, theme) in [
+        ('light', CoreTheme.light()),
+        ('dark', CoreTheme.dark()),
+      ]) {
+        final textDark = theme.coreColors.textDark;
+
+        for (final (kind, alert) in alertKinds) {
+          testWidgets(
+              'a titled $kind alert uses textDark for its title and body '
+              'in the $themeName theme', (WidgetTester tester) async {
+            await tester.pumpWidget(buildAlert(theme, alert(titleText)));
+
+            expect(textColor(tester, titleText), textDark);
+            expect(textColor(tester, bodyText), textDark);
+          });
+
+          testWidgets(
+              'a small $kind alert uses textDark for its body '
+              'in the $themeName theme', (WidgetTester tester) async {
+            await tester.pumpWidget(buildAlert(theme, alert(null)));
+
+            expect(textColor(tester, bodyText), textDark);
+          });
+        }
+      }
+    });
+
     group('semantics', () {
       testWidgets('toast with title exposes title as label and description as hint',
           (WidgetTester tester) async {
