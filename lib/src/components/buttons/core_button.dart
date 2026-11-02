@@ -29,21 +29,63 @@ enum CoreButtonVariant {
 ///
 /// Either [label] or [child] must be provided.
 class CoreButton extends StatefulWidget {
+  /// Text on the button, on one line and cut with an ellipsis when too long.
+  /// Ignored when [child] is set.
   final String? label;
+
+  /// Content drawn in place of [label], for anything a plain string cannot
+  /// show. The button does not style it.
   final Widget? child;
+
+  /// Called on tap, Enter or Space. When null the button is disabled.
   final VoidCallback? onPressed;
+
+  /// Height of the button: 48, 40 or 36 px. Defaults to
+  /// [CoreButtonSize.large].
   final CoreButtonSize size;
+
+  /// Look of the button. Defaults to [CoreButtonVariant.primary].
   final CoreButtonVariant variant;
+
+  /// Icon beside the label, before it unless [trailing] is true. A
+  /// [CoreButtonVariant.social] button pins it to the left edge.
   final CoreIconWidget? icon;
+
+  /// Draws the disabled look and ignores taps, even when [onPressed] is set.
   final bool isDisabled;
+
+  /// Fills the parent's width when true (the default); otherwise the button
+  /// is as wide as its content.
   final bool fullWidth;
+
+  /// Corner radius in px. Defaults to 40, which rounds every size into a
+  /// pill.
   final double borderRadius;
+
+  /// Centres the content when true (the default); otherwise it starts at the
+  /// start edge. Ignored by [CoreButtonVariant.social].
   final bool centerAlign;
+
+  /// With [centerAlign], pushes the icon and the label to opposite ends.
+  /// Ignored by [CoreButtonVariant.social].
   final bool spaceOut;
+
+  /// Puts [icon] after the label instead of before it. Ignored by
+  /// [CoreButtonVariant.social].
   final bool trailing;
+
+  /// Focuses the button when it first builds.
   final bool autofocus;
+
+  /// Focus node for the button. When null the button makes and disposes
+  /// its own.
   final FocusNode? focusNode;
+
+  /// Shadows under the button. A [CoreButtonVariant.secondary] button with
+  /// shadows gets a solid fill; without them its fill is transparent.
   final List<BoxShadow>? shadows;
+
+  /// Screen-reader label. When null the reader announces [label].
   final String? semanticsLabel;
 
   /// Screen-reader hint announced after the label — what a tap does
@@ -75,6 +117,7 @@ class CoreButton extends StatefulWidget {
   /// Key of the button's fill and border, for widget-test finders.
   static const Key fillKey = Key('core_button_fill');
 
+  /// Creates a button. Either [label] or [child] must be set.
   const CoreButton({
     super.key,
     this.label,

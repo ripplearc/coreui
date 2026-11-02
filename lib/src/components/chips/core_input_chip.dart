@@ -17,6 +17,8 @@ import '../../../ripplearc_coreui.dart';
 /// )
 /// ```
 class CoreInputChip extends StatelessWidget {
+  /// Creates a token chip; it shows the close (×) button only when
+  /// [onRemove] is set.
   const CoreInputChip({
     super.key,
     required this.label,

@@ -14,6 +14,7 @@ class CoreFilterChip extends StatefulWidget {
   /// Key of the outlined pill, for widget-test finders.
   static const Key pillKey = Key('core_filter_chip_pill');
 
+  /// Creates a filter chip; it reacts to taps only when [onTap] is set.
   const CoreFilterChip({
     super.key,
     required this.label,

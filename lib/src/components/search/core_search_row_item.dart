@@ -111,6 +111,8 @@ class CoreSearchRowItem extends StatelessWidget {
     );
   }
 
+  /// Icon at the start of the row: history on a recent search, search on a
+  /// suggestion, or the caller's own on a custom row.
   final CoreIconData leadingIcon;
 
   /// Pre-built label widget. Null only when using the named constructors,
