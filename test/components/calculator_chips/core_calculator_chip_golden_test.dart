@@ -38,10 +38,10 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 1040x604 @ 2.0 => 520x302 logical: four rows of captioned chips (four,
+    // 1040x748 @ 2.0 => 520x374 logical: four rows of captioned chips (four,
     // four, three, four) with space4 padding and no dead space below the last
     // row.
-    tester.view.physicalSize = const Size(1040, 604);
+    tester.view.physicalSize = const Size(1040, 748);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -249,9 +249,9 @@ void main() {
     debugDisableShadows = false;
     addTearDown(() => debugDisableShadows = true);
 
-    // 1040x452 @ 2.0 => 520x226 logical: three rows of captioned chips (four,
+    // 1040x560 @ 2.0 => 520x280 logical: three rows of captioned chips (four,
     // three, three) with space4 padding.
-    tester.view.physicalSize = const Size(1040, 452);
+    tester.view.physicalSize = const Size(1040, 560);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -386,8 +386,8 @@ void main() {
     ThemeData theme,
     CoreCalculatorChip chip,
   ) async {
-    // 320x120 @ 2.0 => 160x60 logical: one chip with space4 padding.
-    tester.view.physicalSize = const Size(320, 120);
+    // 320x160 @ 2.0 => 160x80 logical: one chip with space4 padding.
+    tester.view.physicalSize = const Size(320, 160);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();

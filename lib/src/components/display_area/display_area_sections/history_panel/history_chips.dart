@@ -13,8 +13,8 @@ class _HistoryChips extends StatelessWidget {
   final String errorMessage;
   final bool isCollapsed;
 
-  /// 2 chip rows × ~30 dp chip height + 8 dp runSpacing gap between rows
-  static const double _twoRowMaxHeight = 68.0;
+  static const double _twoRowMaxHeight =
+      CoreCalculatorChip.minTapTargetSize * 2 + CoreSpacing.space2;
 
   static const double _collapsedVerticalPadding = CoreSpacing.space1;
 

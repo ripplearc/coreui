@@ -107,6 +107,14 @@ enum CoreCalculatorChipType {
 /// )
 /// ```
 class CoreCalculatorChip extends StatelessWidget {
+  /// The smallest width and height a chip takes up, so every chip can be
+  /// tapped across 48 x 48 dp. The visible chip is 30 dp high and sits
+  /// centred in this box; taps anywhere in the box reach it.
+  static const double minTapTargetSize = CoreSpacing.space12;
+
+  /// Finds the visible chip inside its tap area.
+  static const Key pillKey = Key('calculator_chip_pill');
+
   /// Finds the outline drawn over the chip: the dashed edge of a dashed
   /// variant, or the focus outline while the chip has keyboard focus.
   static const Key outlineKey = Key('calculator_chip_outline');
@@ -262,93 +270,84 @@ class CoreCalculatorChip extends StatelessWidget {
           effectiveOnLongPress != null ? longPressSemanticLabel : null,
       child: Opacity(
         opacity: effectiveOpacity,
-        // The shadow sits outside the Material: ink is clipped to the
-        // Material's bounds, which would cut the shadow off.
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: CoreCalculatorChipTheme.borderRadius,
-            boxShadow: CoreCalculatorChipTheme.shadow(type),
-          ),
-          child: Material(
-            color: colors.transparent,
-            child: InkWell(
-              onTap: effectiveOnTap,
-              onLongPress: effectiveOnLongPress,
-              splashFactory: NoSplash.splashFactory,
-              overlayColor: WidgetStateProperty.resolveWith(
-                (states) => states.contains(WidgetState.pressed)
-                    ? colors.backgroundDarkGray.withValues(
-                        alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
-                      )
-                    : colors.transparent,
-              ),
-              borderRadius: CoreCalculatorChipTheme.borderRadius,
-              child: _ChipOutline(
-                type: type,
-                colors: colors,
-                // The fill is on Ink, not on the outline, so the Pressed
-                // layer is painted over it and can be seen.
-                child: Ink(
-                  padding: CoreCalculatorChipTheme.padding,
-                  decoration: BoxDecoration(
-                    color: CoreCalculatorChipTheme.background(
-                      type: type,
-                      colors: colors,
-                    ),
-                    borderRadius: CoreCalculatorChipTheme.borderRadius,
-                    border: Border.fromBorderSide(
-                      BorderSide(
-                          color: CoreCalculatorChipTheme.borderColor(
-                            type: type,
-                            colors: colors,
-                          ),
-                          width: CoreCalculatorChipTheme.borderWidth),
-                    ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: _ChipTapTarget(
+            onTap: effectiveOnTap,
+            onLongPress: effectiveOnLongPress,
+            builder: (isPressed) => _ChipOutline(
+              type: type,
+              colors: colors,
+              child: Container(
+                key: CoreCalculatorChip.pillKey,
+                padding: CoreCalculatorChipTheme.padding,
+                decoration: BoxDecoration(
+                  color: CoreCalculatorChipTheme.background(
+                    type: type,
+                    colors: colors,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (factor != null && _isInteractive)
-                        ExcludeSemantics(
-                          child: CoreIconWidget(
-                            icon: factor,
-                            size: CoreSpacing.space5,
-                            color: CoreCalculatorChipTheme.factorColor(
-                              type: type,
-                              colors: colors,
-                              inert: inert,
-                            ),
-                          ),
+                  borderRadius: CoreCalculatorChipTheme.borderRadius,
+                  boxShadow: CoreCalculatorChipTheme.shadow(type),
+                  border: Border.fromBorderSide(
+                    BorderSide(
+                        color: CoreCalculatorChipTheme.borderColor(
+                          type: type,
+                          colors: colors,
                         ),
-                      if (label != null)
-                        ExcludeSemantics(
-                          child: Text(
-                            label,
-                            style: CoreCalculatorChipTheme.labelStyle(
-                              type: type,
-                              colors: colors,
-                              typography: typography,
-                            ),
-                          ),
-                        ),
-                      if (value != null) ...[
-                        if (hasLeading)
-                          const SizedBox(width: CoreSpacing.space1),
-                        ExcludeSemantics(
-                          child: Text(
-                            value,
-                            style: CoreCalculatorChipTheme.valueStyle(
-                              type: type,
-                              colors: colors,
-                              typography: typography,
-                            ),
-                          ),
-                        ),
-                      ]
-                    ],
+                        width: CoreCalculatorChipTheme.borderWidth),
                   ),
                 ),
+                foregroundDecoration: isPressed
+                    ? BoxDecoration(
+                        color: colors.backgroundDarkGray.withValues(
+                          alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
+                        ),
+                        borderRadius: CoreCalculatorChipTheme.borderRadius,
+                      )
+                    : null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (factor != null && _isInteractive)
+                    ExcludeSemantics(
+                      child: CoreIconWidget(
+                        icon: factor,
+                        size: CoreSpacing.space5,
+                        color: CoreCalculatorChipTheme.factorColor(
+                          type: type,
+                          colors: colors,
+                          inert: inert,
+                        ),
+                      ),
+                    ),
+                  if (label != null)
+                    ExcludeSemantics(
+                      child: Text(
+                        label,
+                        style: CoreCalculatorChipTheme.labelStyle(
+                          type: type,
+                          colors: colors,
+                          typography: typography,
+                        ),
+                      ),
+                    ),
+                  if (value != null) ...[
+                    if (hasLeading)
+                      const SizedBox(width: CoreSpacing.space1),
+                    ExcludeSemantics(
+                      child: Text(
+                        value,
+                        style: CoreCalculatorChipTheme.valueStyle(
+                          type: type,
+                          colors: colors,
+                          typography: typography,
+                        ),
+                      ),
+                    ),
+                  ]
+                ],
+              ),
               ),
             ),
           ),
@@ -380,6 +379,59 @@ class _ChipOutline extends StatelessWidget {
       position: DecorationPosition.foreground,
       decoration: outline,
       child: child,
+    );
+  }
+}
+
+class _ChipTapTarget extends StatefulWidget {
+  const _ChipTapTarget({
+    required this.onTap,
+    required this.onLongPress,
+    required this.builder,
+  });
+
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final Widget Function(bool isPressed) builder;
+
+  @override
+  State<_ChipTapTarget> createState() => _ChipTapTargetState();
+}
+
+class _ChipTapTargetState extends State<_ChipTapTarget> {
+  final _states = WidgetStatesController();
+
+  @override
+  void dispose() {
+    _states.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      statesController: _states,
+      splashFactory: NoSplash.splashFactory,
+      overlayColor: WidgetStateProperty.all(
+        AppColorsExtension.of(context).transparent,
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: CoreCalculatorChip.minTapTargetSize,
+          minHeight: CoreCalculatorChip.minTapTargetSize,
+        ),
+        child: Center(
+          widthFactor: 1,
+          heightFactor: 1,
+          child: ListenableBuilder(
+            listenable: _states,
+            builder: (context, _) =>
+                widget.builder(_states.value.contains(WidgetState.pressed)),
+          ),
+        ),
+      ),
     );
   }
 }
