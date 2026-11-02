@@ -3,33 +3,46 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A widget that allows the user to select a single item from a list of items
 /// This widget uses a bottom sheet to display the list of items for selection.
-///
-/// [labelText] is the label for the selector
-/// [hintText] is the hint text displayed when no item is selected
-/// [modalTitle] is the title of the modal that appears when the selector is tapped
-/// [selectedItem] is the currently selected item
-/// [items] is the list of items to select from
-/// [onItemSelected] is called when an item is selected
-/// [itemToString] is a function that converts an item to a string for display
-/// [suffixIcon] is an optional icon displayed at the end of the selector
-/// [selectedColor] is the color of the check mark when an item is selected
-/// [selectedBackgroundColor] is the background color of the selected item
-/// [isDisabled] indicates if the selector is disabled
-/// [onOpen] is an optional callback that is called when the selector is opened
 class SingleItemSelector<T> extends StatefulWidget {
+  /// Label of the field, floated above it. Also the screen-reader label.
   final String? labelText;
+
+  /// Text shown in the field while [selectedItem] is null.
   final String? hintText;
+
+  /// Heading at the top of the bottom sheet the field opens.
   final String modalTitle;
+
+  /// The item the field shows and the sheet ticks. Null shows [hintText].
   final T? selectedItem;
+
+  /// Items listed in the sheet, in this order.
   final List<T> items;
+
+  /// Called with the tapped item after the sheet closes. The caller then
+  /// passes it back as [selectedItem].
   final ValueChanged<T?> onItemSelected;
+
+  /// Text for an item in the field and the sheet. When null the item's
+  /// `toString()` is used.
   final String Function(T?)? itemToString;
+
+  /// Widget at the end of the field. Defaults to a down arrow.
   final Widget? suffixIcon;
+
+  /// Colour of the tick on the selected item. Defaults to `textSuccess`.
   final Color? selectedColor;
+
+  /// Fill behind the selected item. Defaults to `backgroundBlueLight`.
   final Color? selectedBackgroundColor;
+
+  /// Draws the disabled look and stops a tap from opening the sheet.
   final bool isDisabled;
+
+  /// Called on a tap, just before the sheet opens.
   final VoidCallback? onOpen;
 
+  /// Creates a field that opens a bottom sheet of [items] to pick from.
   const SingleItemSelector({
     super.key,
     this.labelText,

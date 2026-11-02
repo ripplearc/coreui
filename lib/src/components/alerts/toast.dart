@@ -44,7 +44,12 @@ enum _ToastType {
 /// readers. [actionLabel] adds a text button beside it; taking it fires
 /// [onAction], then [onClose].
 class Toast extends StatefulWidget {
+  /// Bold first line of an alert, above [description]. When null, the alert
+  /// is the small one-line look that shows [description] alone.
   final String? title;
+
+  /// The message. In an alert it sits under [title], or alone when [title] is
+  /// null; in the receipt it is the bold lead before [highlight].
   final String description;
 
   /// The receipt's tail, set after a middot in the lighter weight: what was
@@ -55,6 +60,9 @@ class Toast extends StatefulWidget {
   /// a receipt's [duration] runs out. Without it, the close x pops the current
   /// route; an action never pops one, because it may have just opened a page.
   final VoidCallback? onClose;
+
+  /// Screen-reader label of an alert's close x; it is not drawn. Null on the
+  /// receipt and the acknowledgement, which have no close x.
   final String? closeLabel;
 
   /// Label of the toast's action — the receipt's `Undo`, or an alert's text
@@ -136,6 +144,7 @@ class Toast extends StatefulWidget {
         ),
         _type = type;
 
+  /// Creates a red alert with the error icon, for a problem to fix.
   factory Toast.error({
     required String description,
     required String closeLabel,
@@ -155,6 +164,7 @@ class Toast extends StatefulWidget {
     );
   }
 
+  /// Creates an orange alert with the warning icon, for a risk to check.
   factory Toast.warning({
     required String description,
     required String closeLabel,
@@ -174,6 +184,7 @@ class Toast extends StatefulWidget {
     );
   }
 
+  /// Creates a blue alert with the info icon, for general news.
   factory Toast.info({
     required String description,
     required String closeLabel,
@@ -193,6 +204,7 @@ class Toast extends StatefulWidget {
     );
   }
 
+  /// Creates a green alert with the success icon, for something that worked.
   factory Toast.success({
     required String description,
     required String closeLabel,

@@ -85,6 +85,8 @@ class CoreChip extends StatefulWidget {
   /// Key of the focus ring drawn around the close (×) icon.
   static const Key closeFocusRingKey = Key('core_chip_close_focus_ring');
 
+  /// Creates a selectable chip. At least one of [label], [value] or [unit]
+  /// must be set.
   const CoreChip({
     super.key,
     this.label,
@@ -155,6 +157,8 @@ class CoreChip extends StatefulWidget {
   /// The caller is responsible for removing the chip from the widget tree.
   final VoidCallback? onRemove;
 
+  /// Draws the close (×) button after the text. It shows only when
+  /// [onRemove] is also set. Defaults to false.
   final bool withCloseIcon;
 
   /// Overrides the label screen readers announce for the close (×) button.

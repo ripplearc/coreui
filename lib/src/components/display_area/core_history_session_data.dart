@@ -2,6 +2,7 @@ import '../calculator_chips/core_calculator_chip.dart';
 
 /// Data model representing a prior calculation session in the history view.
 class CoreHistorySessionData {
+  /// Creates one past session for the history list.
   const CoreHistorySessionData({
     required this.dateLabel,
     required this.chipsList,
