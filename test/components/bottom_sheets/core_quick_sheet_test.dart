@@ -274,6 +274,7 @@ void main() {
       required Widget child,
       bool isFixedHeight = true,
       bool useSafeArea = false,
+      double? fixedHeightRatio,
     }) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -285,6 +286,7 @@ void main() {
                   context: context,
                   isFixedHeight: isFixedHeight,
                   useSafeArea: useSafeArea,
+                  fixedHeightRatio: fixedHeightRatio,
                   child: child,
                 ),
                 child: const Text('Open Sheet'),
@@ -332,6 +334,80 @@ void main() {
         tester.getRect(find.byType(BottomSheet)).height,
         closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
       );
+    });
+
+    testWidgets('is the caller\'s ratio of the screen when one is passed',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * 0.64, 0.01),
+      );
+    });
+
+    testWidgets('keeps the caller\'s ratio when the safe area has a bottom inset',
+        (WidgetTester tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+
+      await openSheet(
+        tester,
+        useSafeArea: true,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * 0.64, 0.01),
+      );
+    });
+
+    testWidgets('caps a ratio above 90% at 90% of the screen',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.95,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
+      );
+    });
+
+    testWidgets('a ratio without the option is an error',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        isFixedHeight: false,
+        fixedHeightRatio: 0.64,
+        child: const SizedBox(height: 100),
+      );
+
+      expect(tester.takeException(), isAssertionError);
+    });
+
+    testWidgets('a ratio of 0 is an error', (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0,
+        child: const SizedBox(height: 100),
+      );
+
+      expect(tester.takeException(), isAssertionError);
     });
 
     testWidgets('keeps its height when the content changes',

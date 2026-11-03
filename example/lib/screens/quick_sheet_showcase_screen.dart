@@ -306,6 +306,8 @@ class QuickSheetShowcaseScreen extends StatelessWidget {
     CoreQuickSheet.show(
       context: context,
       isFixedHeight: true,
+      fixedHeightRatio: 0.64,
+      useSafeArea: true,
       child: const _FixedHeightDemo(),
     );
   }
