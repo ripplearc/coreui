@@ -12,6 +12,7 @@ import 'package:example/screens/display_area_showcase_screen.dart';
 import 'package:example/screens/divider_showcase_screen.dart';
 import 'package:example/screens/estimate_summary_card_showcase_screen.dart';
 import 'package:example/screens/geometry_area_showcase_screen.dart';
+import 'package:example/screens/inline_error_row_showcase_screen.dart';
 import 'package:example/screens/keyboard_showcase_screen.dart';
 import 'package:example/screens/list_row_showcase_screen.dart';
 import 'package:example/screens/loading_indicator_showcase_screen.dart';
@@ -278,6 +279,12 @@ class ComponentsScreen extends StatelessWidget {
                 context,
                 'Sheet Header Component',
                 const SheetHeaderShowcaseScreen(),
+              ),
+              const SizedBox(height: CoreSpacing.space4),
+              _buildShowcaseButton(
+                context,
+                'Inline Error Row Component',
+                const InlineErrorRowShowcaseScreen(),
               ),
               // Add more component showcases here as they become available
             ],
