@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -378,4 +379,75 @@ void main() {
     }
     debugDisableShadows = true;
   });
+
+  // One chip, focused with Tab, on a small canvas.
+  Future<void> pumpFocused(
+    WidgetTester tester,
+    ThemeData theme,
+    CoreCalculatorChip chip,
+  ) async {
+    // 320x120 @ 2.0 => 160x60 logical: one chip with space4 padding.
+    tester.view.physicalSize = const Size(320, 120);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home: Scaffold(
+          backgroundColor: theme.coreColors.pageBackground,
+          body: Padding(
+            padding: const EdgeInsets.all(CoreSpacing.space4),
+            child: Align(alignment: Alignment.topLeft, child: chip),
+          ),
+        ),
+      ),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+  }
+
+  final focusedChips = <String, CoreCalculatorChip>{
+    'editable': CoreCalculatorChip(
+      type: CoreCalculatorChipType.editable,
+      label: 'Length',
+      value: '22ft',
+      onTap: () {},
+    ),
+    'active': CoreCalculatorChip(
+      type: CoreCalculatorChipType.active,
+      label: 'Width',
+      value: '10ft',
+      onTap: () {},
+    ),
+    'dashed': CoreCalculatorChip(
+      type: CoreCalculatorChipType.dashed,
+      label: 'Height',
+      value: '8ft ?',
+      onTap: () {},
+    ),
+  };
+
+  for (final MapEntry(key: name, value: chip) in focusedChips.entries) {
+    for (final (themeName, theme) in [
+      ('light', CoreTheme.light()),
+      ('dark', CoreTheme.dark()),
+    ]) {
+      testWidgets('CoreCalculatorChip $name Focused - $themeName',
+          (WidgetTester tester) async {
+        await pumpFocused(tester, _withRoboto(theme), chip);
+
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile(
+            'goldens/core_calculator_chip_${name}_focused_$themeName.png',
+          ),
+        );
+      });
+    }
+  }
 }

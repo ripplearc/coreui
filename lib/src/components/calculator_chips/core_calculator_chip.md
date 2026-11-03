@@ -66,6 +66,12 @@ the press ends or is cancelled. All eight tappable types get it (`editable`, `ac
 Figma Pressed variant's "State layer" (Editable `66782:201545`, Active `66782:201549`). The chip's fill is drawn with
 `Ink`, so the layer is painted on top of it.
 
+**Focused.** When Tab moves to a chip that takes input, an `outlineFocus` edge 2 px wide
+(`CoreCalculatorChipTheme.focusOutline`, twice the 1 px border, as on the other chips) is drawn over the chip's own
+edge: dashed on the dashed variants (`dashed`, `bracketOpen`, `stale`), solid on the rest. It is drawn over the chip,
+so the chip keeps its size. A touch tap does not focus the chip, so it draws no outline. Tab skips a `disabled` or
+`inert` chip. `CoreCalculatorChip.outlineKey` finds the outline in tests.
+
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
 `CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
 resolves it, and the solid border is painted transparent at the same width so every variant measures the same.

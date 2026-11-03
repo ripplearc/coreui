@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.78.0] - CoreCalculatorChip focus look
+
+### ✨ Features
+
+- **CoreCalculatorChip focus**: Tab could move to a chip but it showed no change. A focused chip now draws a 2 px `outlineFocus` edge over its own edge, dashed on the dashed variants and solid on the rest, like the other chips' focus look. The chip keeps its size. A touch tap draws no outline; Tab skips a disabled or inert chip. New `CoreCalculatorChipTheme.focusOutline` and `focusOutlineWidth`, and `CoreCalculatorChip.outlineKey` to find the outline in tests
+
+### 🧪 Tests
+
+- Each of the eight types that take input draws the focus outline on Tab; the outline goes away when focus leaves; a touch tap draws none; Tab skips a disabled and an inert chip. New focused goldens for an editable, an active and a dashed chip, light and dark
+
 ## [0.77.0] - CoreCalculatorChip with a factor keeps its height
 
 ### 🔧 Fixes
