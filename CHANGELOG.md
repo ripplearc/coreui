@@ -6,10 +6,12 @@
 
 - **Toast.receipt** second action (`View`): it had no `Material` of its own, so it threw "No Material widget found" on a parent without one, and it showed no press look and only Material's grey focus tint over the whole 48 dp box. It now has its own `Material`, and like the alert's text button its label turns `buttonPress` while pressed and Tab focus draws the 3 px `outlineFocus` ring around the label (CA-1321)
 - **Toast text button focus ring**: the ring is a `StadiumBorder`, not a 40 px spacing value used as a radius. It looks the same (CA-1321)
+- **Toast text with no Material**: a `Toast` placed with no `Material` above it (a `MaterialApp` without a `Scaffold`, for example) drew its title, description and receipt text in monospace with a yellow double underline. The toast's row now has its own transparent `Material`, so every toast type draws its text as it does under a `Scaffold`. `CoreToast` was not affected: its overlay already wraps the toast in a `Material` (CA-1321)
 
 ### 🧪 Tests
 
 - View turns Button Press while pressed and fires once over two presses; Tab rings its label and Enter takes it; it works in a coloured parent with no `Material`; with the short label and a long one its ring stays clear of Undo and of the message text, and the alert View ring stays clear of the close x. New goldens: receipt View pressed and focused, light and dark; the alert View focused goldens are redrawn for the stadium ring
+- Every toast type (error with a title, warning, info with a title, success, receipt with Undo, acknowledgement) with no `Material` above it: each text has the same style as under a `Scaffold`, not monospace and no double underline. All 6 fail without the fix
 
 ## [0.80.0] - Alert text button
 

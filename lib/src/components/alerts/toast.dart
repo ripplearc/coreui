@@ -553,7 +553,7 @@ class _ToastState extends State<Toast> {
     final titleLineInset = EdgeInsets.only(
       top: _hasTitledControls ? Toast._iconToTargetInset : 0,
     );
-    return Row(
+    final row = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: _hasTitledControls
           ? CrossAxisAlignment.start
@@ -568,6 +568,9 @@ class _ToastState extends State<Toast> {
         ],
       ],
     );
+    // Its own Material, so the title and text draw the same with no Material
+    // above the toast.
+    return Material(type: MaterialType.transparency, child: row);
   }
 
   Widget _buildLeading(AppColorsExtension colors) {

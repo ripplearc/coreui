@@ -1690,6 +1690,90 @@ void main() {
       }
     });
   });
+
+  group('Toast with no Material above it', () {
+    final toasts = <String, Toast Function()>{
+      'error': () => Toast.error(
+            title: 'Upload',
+            description: 'Upload failed',
+            closeLabel: 'Close',
+            actionLabel: 'View',
+            onAction: _noop,
+            onClose: _noop,
+          ),
+      'warning': () => Toast.warning(
+            description: 'Rate is high',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'info': () => Toast.info(
+            title: 'Heads up',
+            description: 'Prices changed',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'success': () => Toast.success(
+            description: 'Saved',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'receipt': () => Toast.receipt(
+            description: 'Item added',
+            highlight: 'to Kitchen',
+            actionLabel: 'View',
+            onAction: _noop,
+            secondaryLabel: 'Undo',
+            onSecondary: _noop,
+            onClose: _noop,
+          ),
+      'acknowledgement': () => Toast.acknowledgement(description: 'Copied'),
+    };
+
+    for (final entry in toasts.entries) {
+      testWidgets('${entry.key} draws its text as under a Scaffold',
+          (WidgetTester tester) async {
+        Map<String, TextStyle?> textStyles() => {
+              for (final text in tester.widgetList<RichText>(
+                find.descendant(
+                  of: find.byType(Toast),
+                  matching: find.byType(RichText),
+                ),
+              ))
+                if (text.text.toPlainText().trim().isNotEmpty)
+                  text.text.toPlainText(): text.text.style,
+            };
+
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(body: Center(child: entry.value())),
+        ));
+        final underScaffold = textStyles();
+        expect(underScaffold, isNotEmpty);
+
+        // With no Material, Flutter draws text in monospace with a yellow
+        // double underline.
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Center(child: entry.value()),
+        ));
+        expect(find.byType(Scaffold), findsNothing);
+        final bare = textStyles();
+
+        expect(bare.keys, underScaffold.keys);
+        for (final text in bare.keys) {
+          expect(
+            bare[text],
+            isA<TextStyle>()
+                .having((s) => s.fontFamily, 'fontFamily', isNot('monospace'))
+                .having((s) => s.decorationStyle, 'decorationStyle',
+                    isNot(TextDecorationStyle.double)),
+            reason: '"$text"',
+          );
+          expect(bare[text], underScaffold[text], reason: '"$text"');
+        }
+      });
+    }
+  });
 }
 
 void _noop() {}
