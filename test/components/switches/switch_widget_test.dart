@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -229,10 +230,11 @@ void main() {
       String? activeLabel,
       String? inactiveLabel,
       String? semanticLabel,
+      bool dark = false,
     }) {
       return tester.pumpWidget(
         MaterialApp(
-          theme: CoreTheme.light(),
+          theme: dark ? CoreTheme.dark() : CoreTheme.light(),
           home: Scaffold(
             body: CoreSwitch(
               type: type,
@@ -297,7 +299,7 @@ void main() {
         value: false,
         onChanged: (_) {},
       );
-      expect(offKnobColor(tester), colors.iconGrayLight);
+      expect(offKnobColor(tester), colors.iconGrayMid);
       expect(offBorderColor(tester), colors.lineMid);
       expect(tester.widget<Text>(find.text('Hide')).style!.color,
           colors.textDark);
@@ -315,9 +317,103 @@ void main() {
       final decoration = track.decoration! as BoxDecoration;
       expect(decoration.color, colors.buttonSurface);
       expect(decoration.border, isNull);
-      expect(offKnobColor(tester), colors.iconWhite);
+      expect(offKnobColor(tester), colors.textInverse);
       expect(tester.widget<Text>(find.text('Show')).style!.color,
           colors.textInverse);
+    });
+
+    for (final dark in [false, true]) {
+      for (final type in CoreSwitchType.values) {
+        testWidgets('${type.name} on knob is textInverse in '
+            '${dark ? 'dark' : 'light'} mode', (WidgetTester tester) async {
+          final colors =
+              (dark ? CoreTheme.dark() : CoreTheme.light()).coreColors;
+          await pumpSwitch(
+            tester,
+            type: type,
+            value: true,
+            onChanged: (_) {},
+            dark: dark,
+          );
+          await tester.pumpAndSettle();
+
+          expect(offKnobColor(tester), colors.textInverse);
+        });
+      }
+    }
+
+    testWidgets('show hide off knob differs from a disabled knob in dark mode',
+        (WidgetTester tester) async {
+      final colors = CoreTheme.dark().coreColors;
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+        dark: true,
+      );
+      await tester.pumpAndSettle();
+
+      expect(offKnobColor(tester), colors.iconGrayMid);
+      expect(offKnobColor(tester), isNot(colors.iconGrayLight));
+    });
+
+    Rect thumbRect(WidgetTester tester) => tester.getRect(
+          find.byWidgetPredicate((w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration! as BoxDecoration).shape == BoxShape.circle),
+        );
+
+    Rect trackRect(WidgetTester tester) => tester.getRect(find.descendant(
+          of: find.byType(CoreSwitch),
+          matching: find.byType(AnimatedContainer),
+        ));
+
+    for (final type in CoreSwitchType.values) {
+      for (final labelled in [false, true]) {
+        if (type == CoreSwitchType.showHide && !labelled) continue;
+        testWidgets(
+            'disabled ${type.name}${labelled ? ' labelled' : ' compact'} on '
+            'thumb keeps the gap of an enabled one', (tester) async {
+          Future<double> rightGap({required bool enabled}) async {
+            await pumpSwitch(
+              tester,
+              type: type,
+              value: true,
+              onChanged: enabled ? (_) {} : null,
+              activeLabel: labelled ? 'On' : null,
+              inactiveLabel: labelled ? 'Off' : null,
+            );
+            await tester.pumpAndSettle();
+            return trackRect(tester).right - thumbRect(tester).right;
+          }
+
+          final enabledGap = await rightGap(enabled: true);
+          final disabledGap = await rightGap(enabled: false);
+          expect(disabledGap, moreOrLessEquals(enabledGap));
+        });
+      }
+    }
+
+    testWidgets('show hide thumb sits at the Figma gaps', (tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      expect(thumbRect(tester).left - trackRect(tester).left, 9);
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      expect(trackRect(tester).right - thumbRect(tester).right, 8);
     });
 
     for (final type in CoreSwitchType.values) {
@@ -715,7 +811,15 @@ void main() {
               matching: find.byType(AnimatedContainer),
             ));
             final label = tester.getRect(find.byType(Text));
+            final text =
+                tester.renderObject<RenderParagraph>(find.byType(RichText));
             expect(tester.takeException(), isNull);
+            expect(
+              text.size.width,
+              greaterThanOrEqualTo(
+                  text.getMaxIntrinsicWidth(double.infinity) - 0.01),
+            );
+            expect(text.didExceedMaxLines, isFalse);
             expect(label.left, greaterThanOrEqualTo(track.left));
             expect(label.right, lessThanOrEqualTo(track.right));
             expect(label.top, greaterThanOrEqualTo(track.top));

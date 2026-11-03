@@ -32,7 +32,7 @@ class _SwitchConstants {
   static const double widthShowHide = 72.0;
   static const double heightShowHide = 32.0;
   static const double thumbSizeShowHide = 14.0;
-  static const double thumbPaddingShowHide = 9.0;
+  static const double thumbPaddingShowHide = 8.0;
   static const double thumbSizeLargeActive = 18.0; // Large thumb when active
   static const double thumbSizeLargeInactive =
       14.0; // Large thumb when inactive
@@ -193,7 +193,7 @@ class CoreSwitch extends StatelessWidget {
           CoreSwitchType.lock => colors.statusError,
           CoreSwitchType.imperial => colors.iconGreen,
           CoreSwitchType.normal => colors.iconGrayMid,
-          CoreSwitchType.showHide => colors.iconGrayLight,
+          CoreSwitchType.showHide => colors.iconGrayMid,
         });
   }
 
@@ -303,9 +303,7 @@ class CoreSwitch extends StatelessWidget {
             : effectiveInactiveTextColor;
     final Color thumbColor = !_isEnabled
         ? colors.iconGrayLight
-        : value
-            ? (_isShowHide ? colors.iconWhite : colors.textInverse)
-            : effectiveInactiveThumbColor;
+        : (value ? colors.textInverse : effectiveInactiveThumbColor);
 
     final double effectiveWidth = switchWidth < 48.0 ? 48.0 : switchWidth;
     final double effectiveHeight = switchHeight < 48.0 ? 48.0 : switchHeight;
@@ -367,8 +365,10 @@ class CoreSwitch extends StatelessWidget {
                 AnimatedPositioned(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
+                  // The border takes 1 px from each side of the Stack.
                   left: value
-                      ? switchWidth - thumbSize - thumbPadding
+                      ? switchWidth - thumbSize - thumbPadding -
+                          (showBorder ? 1 : 0)
                       : thumbPadding,
                   top: 0,
                   bottom: 0,
