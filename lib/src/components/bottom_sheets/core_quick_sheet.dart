@@ -47,14 +47,14 @@ class CoreQuickSheet {
   /// - [isFixedHeight]: Whether the sheet keeps one height (default: false).
   ///   When true the sheet is always [fixedHeightRatio] of the screen height,
   ///   so it does not grow or shrink when the content changes and the controls
-  ///   at the top stay where they are. The [child] gets the full height below the drag
-  ///   handle as tight constraints, so a caller can wrap a part in [Expanded]
-  ///   to fill the spare height and keep a footer at the bottom. Content that
-  ///   does not fit does not scroll by itself: put the scrollable part in an
-  ///   [Expanded], for example `Column(children: [Expanded(child: ListView()),
-  ///   footer])`. If the child has a footer, also set [useSafeArea] to true,
-  ///   so the footer stays above the home bar. When false the sheet sizes to
-  ///   its content as before.
+  ///   at the top stay where they are. The [child] gets the full height below
+  ///   the drag handle as tight constraints, so a caller can wrap a part in
+  ///   [Expanded] to fill the spare height and keep a footer at the bottom.
+  ///   Content that does not fit does not scroll by itself: put the scrollable
+  ///   part in an [Expanded], for example
+  ///   `Column(children: [Expanded(child: ListView()), footer])`. If the child
+  ///   has a footer, also set [useSafeArea] to true, so the footer stays above
+  ///   the home bar. When false the sheet sizes to its content as before.
   /// - [fixedHeightRatio]: The height of a fixed sheet as a share of the screen
   ///   height, for example 0.64 for 64% (default: 0.9). Values above 0.9 are
   ///   capped at 0.9. Only used when [isFixedHeight] is true.

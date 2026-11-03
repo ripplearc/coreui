@@ -331,10 +331,13 @@ class _FixedHeightDemoState extends State<_FixedHeightDemo> {
       padding: const EdgeInsets.all(CoreSpacing.space4),
       child: Column(
         children: [
-          SwitchListTile(
-            title: const Text('Show more content'),
-            value: _more,
-            onChanged: (value) => setState(() => _more = value),
+          Material(
+            type: MaterialType.transparency,
+            child: SwitchListTile(
+              title: const Text('Show more content'),
+              value: _more,
+              onChanged: (value) => setState(() => _more = value),
+            ),
           ),
           Expanded(
             child: ColoredBox(
