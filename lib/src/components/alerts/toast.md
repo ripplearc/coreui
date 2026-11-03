@@ -221,6 +221,9 @@ The Toast component includes semantic labels for accessibility:
 - Border Radius: 8 pixels
 - Shadow: `CoreShadows.medium`
 - Icon Size: 24 pixels
+- Text colour: the title and body of the four alerts use `textDark`, so they
+  can be read in the sun. The icon keeps its kind colour. The receipt is not
+  one of the four alerts. It uses `textLink`, as listed below
 - Typography:
     - Title/Description: `CoreTypography.bodyLargeMedium`
     - Description (when title present): `CoreTypography.bodySmallRegular`

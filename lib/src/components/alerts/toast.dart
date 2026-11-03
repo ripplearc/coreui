@@ -596,7 +596,7 @@ class _ToastState extends State<Toast> {
             child: Text(
               widget.description,
               style: typography.bodySmallRegular.copyWith(
-                color: colors.textBody,
+                color: colors.textDark,
               ),
             ),
           ),
