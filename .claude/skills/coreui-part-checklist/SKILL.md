@@ -50,9 +50,10 @@ match the library's Pressed and Focused states.
   even with `canRequestFocus: false`. If you draw your own ring, set
   `focusColor` to transparent (#252).
 - Read press and focus pixels on the real page colour, not a transparent
-  box. In coreui `backgroundGrayLight` *is* `pageBackground`, so a Grey Light
-  press is invisible on the page; a test on a transparent background still
-  passes (#252, see CA-1373).
+  box. In the light theme `backgroundGrayLight` and `pageBackground` are the
+  same colour (gray50; in dark they differ, gray800 and gray900), so a Grey
+  Light press is invisible on the page; a test on a transparent background
+  still passes (#252, see CA-1373).
 
 ### 2. A coloured parent
 
@@ -80,9 +81,10 @@ Every tap target is at least 48 × 48 dp, for **every value of the size enum**
 (#262: the small chip's x was 42 dp; the test only built the default size).
 Measure it in a test of your own:
 
-- The shared tap-size guideline skips parts inside a scroll view (#234).
-- It also skips a node that touches the screen edge, so a part at (0, 0)
-  passes when it is broken (#253). Pad the part, or read the node's rect.
+- The shared tap-size guideline skips a node that touches the screen edge,
+  so a part at (0, 0) passes when it is broken (#253). A target away from
+  the edge is checked, also inside a scroll view. Pad the part, or read the
+  node's rect.
 
 - Keep the library look and add the touch area around it: a 32 dp segment
   inside a 48 dp hit box, `HitTestBehavior.opaque`.
@@ -113,10 +115,13 @@ in light and dark. Look at every golden you regenerate before you commit it.
 ## Run the probe first
 
 `scripts/checklist_probe.dart.tmpl` measures checks 1 to 4 for a list of
-parts in one run. It prints, per part: the tap target sizes, how many pixels
-change on press and on Tab and inside which box, whether a coloured parent
-changes the part, whether it throws without a `Material`, and at 1.5 and 2.0
-text whether a label is cut or overlaps an icon.
+parts in one run, in the light theme. It prints, per part: the tap target
+sizes; how many pixels change when each tap target is pressed, and inside
+which box; the same for each Tab stop (up to 6), and whether each stop
+differs from the one before; whether a coloured parent changes the part; whether it
+throws or draws text in the fallback style without a `Material`; and at 1.5
+and 2.0 text whether a label is cut (in height or sideways) or overlaps an
+icon. Press and focus are read on the page colour.
 
 ```sh
 .claude/skills/coreui-part-checklist/scripts/run_probe.sh \
@@ -125,21 +130,31 @@ text whether a label is cut or overlaps an icon.
 ```
 
 If an expression does not compile, the probe measures nothing; it then
-prints flutter test's errors and exits 1.
+prints flutter test's errors and exits 1. If one part's test fails (a
+looping animation makes `pumpAndSettle` time out), the other parts still
+print, and the script names the failed part with its error and exits 1.
+An error is printed at the end of the line of the step that raised it.
 
 Read the output like this:
 
 | Line | Pass | Fail |
 |---|---|---|
-| `tap targets` | every entry ≥ 48x48 | any side < 48 |
-| `PRESS` / `TAB1` | pixels change, box inside the part | `NO CHANGE`, or a box larger than the visible shape |
+| `tap targets` | every entry ≥ 48x48 | any side < 48, or `NONE FOUND` on a part you can tap: the probe sees only `InkWell`, `InkResponse` and `GestureDetector`, so measure it yourself |
+| `PRESS n` | pixels change, box inside the visible shape | `NO CHANGE` (also when the press is the page colour), or a box larger than the visible shape |
+| `TAB1` | pixels change, box inside the visible shape | `NO CHANGE` |
+| `TAB2`, `TAB3` … `vs TAB n-1` | pixels change | `NO CHANGE`: two focus stops look the same |
+| `focus stops` | the number of stops the part should have | fewer, or `NONE FOUND` on a part you can tap |
 | `COLOURED PARENT` | `NO CHANGE` | any change: a fill vanished |
-| `NO MATERIAL` | `ok` | an exception |
-| `TEXT x1.5` / `x2.0` | no overlaps, nothing cut | `overlaps` > 0, or a `CUT` line |
+| `NO MATERIAL` | `ok` | an exception, or `fallback text style on:` (yellow double underline) |
+| `TEXT x1.5` / `x2.0` | no overlaps, nothing cut | `overlaps` > 0, a `CUT` line, or a `CUT SIDEWAYS` line you did not mean (an ellipsis can be on purpose) |
+| any line | no `EXCEPTION` | `EXCEPTION …`: read it, it belongs to that step |
 
 The probe uses the test block font, so text is black boxes; sizes are still
-right. It writes pictures of each state to `$PROBE_OUT` (default `/tmp`);
-look at them. The script deletes the probe file afterwards. Never commit it.
+right. It writes a picture of each run (`rest`, `pressed1` …, `tab1` …,
+`coloured`, `nomaterial`, `text1.5`, `text2.0`) to `$PROBE_OUT`, or to a new
+empty folder it prints at the end; look at them. The script deletes the
+probe file afterwards, and refuses to run if `test/zz_checklist_probe_test.dart`
+already exists. Never commit it.
 
 The probe finds problems. It does not replace the tests: write the recipe
 tests for each check and keep them in the PR.
@@ -172,8 +187,11 @@ These came up in the same review rounds:
   found" that main already had).
 - **Every "later" item** has a ticket you filed yourself, named in the PR
   text.
-- **Size line** in the PR text is the rule 01 insertions count on the pushed
-  branch.
+- **Size line** in the PR text counts production lines: the insertions in
+  `lib/**/*.dart` (not generated files, tests or docs) on the pushed branch,
+  `git diff --numstat origin/main...HEAD -- 'lib/**/*.dart'`. Over 200 is
+  too large for one PR. This is the team's Digestible PR rule
+  (`construculator-app/.claude/rules/01-digestible-pr.md`).
 
 ## After each review round
 

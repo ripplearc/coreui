@@ -1,32 +1,86 @@
 # Test recipes for the 6 checks
 
 Copy these into the part's test file and change the part. Each recipe is a
-test that stays in the PR. `pumpPart` is the usual harness:
+test that stays in the PR. `pumpPart` is the usual harness. The part sits on
+a `Material` in the page colour inside a `RepaintBoundary`, so `pixels`
+reads it on the real page colour, not on a transparent box:
 
 ```dart
+const partBoundary = Key('part-boundary');
+
 Future<void> pumpPart(
   WidgetTester tester,
   Widget part, {
   double textScale = 1,
   Color? parentColour,
 }) async {
+  final theme = CoreTheme.light();
   await tester.pumpWidget(
     MaterialApp(
-      theme: CoreTheme.light(),
+      theme: theme,
       home: MediaQuery(
         data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
         child: Scaffold(
           body: Center(
-            child: parentColour == null
-                ? part
-                : Container(color: parentColour, child: part),
+            child: RepaintBoundary(
+              key: partBoundary,
+              child: Material(
+                color: theme.scaffoldBackgroundColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: parentColour == null
+                      ? part
+                      : Container(color: parentColour, child: part),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     ),
   );
+  await tester.pumpAndSettle();
+}
+
+/// The drawn pixels inside [partBoundary], as RGBA bytes.
+Future<Uint8List> pixels(WidgetTester tester) async {
+  final boundary =
+      tester.renderObject<RenderRepaintBoundary>(find.byKey(partBoundary));
+  final bytes = await tester.runAsync(() async {
+    final image = await boundary.toImage();
+    return image.toByteData(format: ui.ImageByteFormat.rawRgba);
+  });
+  return bytes!.buffer.asUint8List();
+}
+
+/// The box around every pixel that differs, in global coordinates, or
+/// [Rect.zero] if none does.
+Rect changedBox(WidgetTester tester, Uint8List a, Uint8List b) {
+  final origin = tester.getTopLeft(find.byKey(partBoundary));
+  final width = tester.getSize(find.byKey(partBoundary)).width.round();
+  var left = 1 << 30, top = 1 << 30, right = -1, bottom = -1;
+  for (var i = 0; i < a.length; i += 4) {
+    if (a[i] != b[i] || a[i + 1] != b[i + 1] || a[i + 2] != b[i + 2]) {
+      final x = (i ~/ 4) % width, y = (i ~/ 4) ~/ width;
+      if (x < left) left = x;
+      if (y < top) top = y;
+      if (x > right) right = x;
+      if (y > bottom) bottom = y;
+    }
+  }
+  if (right < 0) return Rect.zero;
+  return Rect.fromLTRB(
+    origin.dx + left,
+    origin.dy + top,
+    origin.dx + right + 1,
+    origin.dy + bottom + 1,
+  );
 }
 ```
+
+Imports: `dart:typed_data`, `dart:ui as ui`, `package:flutter/rendering.dart`,
+`package:flutter/foundation.dart` (for `listEquals`) and
+`package:flutter/services.dart` (for `LogicalKeyboardKey`).
 
 ## 1. Pressed and focused looks
 
@@ -59,16 +113,51 @@ testWidgets('focused with Tab', (tester) async {
 });
 ```
 
-**The tint stays inside the shape.** Find the ink's rect and compare it with
-the visible shape, not the touch area:
+**The press shows on the page, and the tint stays inside the shape.** Read
+the tint from pixels, not from the `InkWell`: the `InkWell` is the 48 dp
+touch area, and the tint must stay inside the smaller visible shape. Because
+`pumpPart` paints the page colour, a press in the page colour gives
+`Rect.zero` and fails the first `expect` (#252):
 
 ```dart
-final ink = tester.widget<InkWell>(find.byType(InkWell));
-expect(ink.customBorder, isNotNull); // or a borderRadius matching the pill
-expect(
-  tester.getSize(find.byType(InkWell)).height,
-  32, // the pill, not the 48 dp touch box
-);
+testWidgets('the press shows on the page and stays inside the pill',
+    (tester) async {
+  await pumpPart(tester, part);
+  final rest = await pixels(tester);
+  final gesture = await tester.startGesture(
+    tester.getCenter(find.byType(CoreFilterChip)),
+  );
+  await tester.pump(const Duration(milliseconds: 300));
+  final tint = changedBox(tester, rest, await pixels(tester));
+  await gesture.up();
+
+  expect(tint, isNot(Rect.zero)); // the press shows on the page colour
+  final pill = tester.getRect(find.byKey(CoreFilterChip.pillKey));
+  expect(tint.left, greaterThanOrEqualTo(pill.left));
+  expect(tint.top, greaterThanOrEqualTo(pill.top));
+  expect(tint.right, lessThanOrEqualTo(pill.right));
+  expect(tint.bottom, lessThanOrEqualTo(pill.bottom));
+});
+```
+
+**Two focus stops look different.** Tab, read the pixels, Tab again. Focus
+must move, and the second look must differ from the first (#237, #262):
+
+```dart
+testWidgets('the chip and its x look different when focused',
+    (tester) async {
+  await pumpPart(tester, chipWithClose(CoreChipSize.medium));
+  await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+  await tester.pumpAndSettle();
+  final firstStop = FocusManager.instance.primaryFocus;
+  final first = await pixels(tester);
+
+  await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+  await tester.pumpAndSettle();
+
+  expect(FocusManager.instance.primaryFocus, isNot(firstStop));
+  expect(listEquals(first, await pixels(tester)), isFalse);
+});
 ```
 
 **The ink is not covered.** If the part has a fill, the `InkWell` must be
@@ -103,6 +192,12 @@ testWidgets('does not need a Material above it', (tester) async {
     ),
   );
   expect(tester.takeException(), isNull);
+  // With no Material, Text does not throw: it draws in the fallback style,
+  // a yellow double underline (#253).
+  final fallback = tester
+      .widgetList<RichText>(find.byType(RichText))
+      .where((r) => r.text.style?.decorationStyle == TextDecorationStyle.double);
+  expect(fallback, isEmpty);
 });
 ```
 
@@ -126,19 +221,35 @@ for (final scale in [1.5, 2.0]) {
 
 ## 4. Tap size
 
-Measure every tap target yourself. Do not rely on
-`meetsGuideline(androidTapTargetGuideline)`: it skips parts inside a scroll
-view.
+Measure every tap target yourself, for every value of the size enum. Do not
+rely on `meetsGuideline(androidTapTargetGuideline)`: it skips a node that
+touches the screen edge. First check that the finder finds the targets, or
+the loop passes with nothing checked. Change the finder to what the part
+uses: `CoreSwitch` has no `InkWell`.
 
 ```dart
-testWidgets('every tap target is at least 48 x 48', (tester) async {
-  await pumpPart(tester, part);
-  for (final target in find.byType(InkWell).evaluate()) {
-    final size = tester.getSize(find.byWidget(target.widget));
-    expect(size.width, greaterThanOrEqualTo(48));
-    expect(size.height, greaterThanOrEqualTo(48));
-  }
-});
+Widget chipWithClose(CoreChipSize size) => CoreChip(
+      label: 'Tags',
+      size: size,
+      selected: ValueNotifier(false),
+      withCloseIcon: true,
+      onTap: () {},
+      onRemove: () {},
+    );
+
+for (final size in CoreChipSize.values) {
+  testWidgets('every tap target is at least 48 x 48 at $size',
+      (tester) async {
+    await pumpPart(tester, chipWithClose(size));
+    final targets = find.byType(InkWell);
+    expect(targets, findsWidgets);
+    for (final target in targets.evaluate()) {
+      final box = tester.getSize(find.byElementPredicate((e) => e == target));
+      expect(box.width, greaterThanOrEqualTo(48));
+      expect(box.height, greaterThanOrEqualTo(48));
+    }
+  });
+}
 ```
 
 ## 5. The end of each action
