@@ -93,16 +93,17 @@ CoreUnderlineTextField(
 )
 ```
 
-- The value row grows with its text, one 24px line at a time, up to `maxLines`
-  lines. Past that the text scrolls inside the field.
-- The underline sits 8px under the last line of text, as on one line. A
-  `large` field keeps its own gap.
+- The value row grows with its text, one line at a time (24px, or 32px at
+  `large`), up to `maxLines` lines. Past that the text scrolls inside the
+  field.
+- The underline sits 8px under the last line of text, as on one line, at
+  every size.
 - The return key adds a new line, so `onSubmitted` does not fire on it. Pass
   `textInputAction` to change that.
-- A hint or error line sits under the underline as usual and replaces nothing
-  but the hint.
-- As on one line, the text area is at least 48px tall for touch and screen
-  readers, while the row is drawn as tall as its lines.
+- A hint or error line sits under the underline as usual. An error line
+  replaces the hint line.
+- As on one line, the screen reader node is at least 48px tall, while the
+  row is drawn as tall as its lines.
 - The default, `maxLines: 1`, is unchanged: one line that scrolls sideways.
 
 ## Underline and focus

@@ -213,6 +213,94 @@ void main() {
     });
   });
 
+  group('CoreUnderlineTextField – height asked before layout', () {
+    const bar = ValueKey('bar');
+
+    Future<void> pumpInRow(
+      WidgetTester tester,
+      CoreUnderlineTextField field,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          SizedBox(
+            width: 382,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: field),
+                  const SizedBox(key: bar, width: 10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    for (final maxLines in [1, 4]) {
+      testWidgets('maxLines $maxLines with one line is 53px in IntrinsicHeight',
+          (tester) async {
+        await pumpInRow(
+          tester,
+          CoreUnderlineTextField(
+            label: 'Scope of work',
+            maxLines: maxLines,
+            initialValue: shortText,
+          ),
+        );
+
+        expect(tester.getSize(fieldFinder).height, 53);
+        expect(tester.getSize(find.byKey(bar)).height, 53);
+      });
+    }
+
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      testWidgets('${size.name}: every height question matches layout',
+          (tester) async {
+        await pumpField(
+          tester,
+          CoreUnderlineTextField(
+            label: 'Scope of work',
+            size: size,
+            initialValue: shortText,
+          ),
+        );
+        final oneLine = tester.getSize(fieldFinder);
+
+        await pumpInRow(
+          tester,
+          CoreUnderlineTextField(
+            key: const ValueKey('row'),
+            label: 'Scope of work',
+            size: size,
+            maxLines: 4,
+            initialValue: shortText,
+          ),
+        );
+        expect(tester.getSize(fieldFinder).height, oneLine.height);
+
+        await pumpField(
+          tester,
+          CoreUnderlineTextField(
+            key: const ValueKey('plain'),
+            label: 'Scope of work',
+            size: size,
+            maxLines: 4,
+            initialValue: shortText,
+          ),
+        );
+        final box = tester.renderObject<RenderBox>(fieldFinder);
+        const width = BoxConstraints(maxWidth: 372);
+
+        expect(box.getDryLayout(width), oneLine);
+        expect(box.getMinIntrinsicHeight(372), oneLine.height);
+        expect(box.getMaxIntrinsicHeight(372), oneLine.height);
+      });
+    }
+  });
+
   group('CoreUnderlineTextField – message with several lines', () {
     testWidgets('an error replaces the hint and turns the line red',
         (tester) async {

@@ -194,8 +194,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// the return key adds a new line and the underline sits 8px under the last
   /// line. Defaults to 1, a single line that does not wrap.
   ///
-  /// As on one line, the text area is at least 48px tall for touch and screen
-  /// readers while the row is drawn as tall as its lines.
+  /// As on one line, the screen reader node is at least 48px tall while the
+  /// row is drawn as tall as its lines.
   final int maxLines;
 
   /// Whether the field takes focus when it is first built.
@@ -412,6 +412,12 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   @override
   Widget build(BuildContext context) {
+    // Its own Material, so the field and all its text draw the same with no
+    // Material above it.
+    return Material(type: MaterialType.transparency, child: _buildField());
+  }
+
+  Widget _buildField() {
     final theme = Theme.of(context);
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
@@ -615,22 +621,19 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
       ),
     );
 
-    // Its own Material, so the field works with no Material above it.
-    final field = Material(type: MaterialType.transparency, child: textField);
-
     // The text area is padded to 48px; the row is drawn without that padding.
     // One line knows its height, so an OverflowBox does it. Several lines do
     // not, so the padding is taken back off the measured height.
     if (_isMultiLine) {
       return _UnpaddedHeight(
         padding: (fieldHeight - rowHeight) / 2,
-        child: field,
+        child: textField,
       );
     }
 
     return SizedBox(
       height: rowHeight,
-      child: OverflowBox(maxHeight: fieldHeight, child: field),
+      child: OverflowBox(maxHeight: fieldHeight, child: textField),
     );
   }
 }
@@ -664,6 +667,44 @@ class _RenderUnpaddedHeight extends RenderShiftedBox {
     markNeedsLayout();
   }
 
+  BoxConstraints _childConstraints(BoxConstraints constraints) =>
+      constraints.copyWith(minHeight: 0, maxHeight: double.infinity);
+
+  Size _unpadded(BoxConstraints constraints, Size childSize) =>
+      constraints.constrain(
+        Size(childSize.width, childSize.height - 2 * _padding),
+      );
+
+  @override
+  double computeMinIntrinsicHeight(double width) =>
+      math.max(0, super.computeMinIntrinsicHeight(width) - 2 * _padding);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) =>
+      math.max(0, super.computeMaxIntrinsicHeight(width) - 2 * _padding);
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    final child = this.child;
+    if (child == null) return constraints.smallest;
+    return _unpadded(
+      constraints,
+      child.getDryLayout(_childConstraints(constraints)),
+    );
+  }
+
+  @override
+  double? computeDryBaseline(
+    BoxConstraints constraints,
+    TextBaseline baseline,
+  ) {
+    final childBaseline = child?.getDryBaseline(
+      _childConstraints(constraints),
+      baseline,
+    );
+    return childBaseline == null ? null : childBaseline - _padding;
+  }
+
   @override
   void performLayout() {
     final child = this.child;
@@ -671,16 +712,11 @@ class _RenderUnpaddedHeight extends RenderShiftedBox {
       size = constraints.smallest;
       return;
     }
-    child.layout(
-      constraints.copyWith(minHeight: 0, maxHeight: double.infinity),
-      parentUsesSize: true,
-    );
+    child.layout(_childConstraints(constraints), parentUsesSize: true);
     final parentData = child.parentData;
     if (parentData is BoxParentData) {
       parentData.offset = Offset(0, -_padding);
     }
-    size = constraints.constrain(
-      Size(child.size.width, child.size.height - 2 * _padding),
-    );
+    size = _unpadded(constraints, child.size);
   }
 }
