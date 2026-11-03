@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.83.0] - CoreInlineErrorRow
+
+### ✨ Features
+
+- **CoreInlineErrorRow**: a one-line error row. A `CoreIcons.error` icon at 14 dp (the storyboard draws about 14 dp; the ticket said 16) and the message in `bodySmallRegular`, both in `textError`, with 8 dp between them, as the storyboard draws it; the icon is centred on the message's first line, also when the message wraps. The icon and message are one live region, so a screen reader announces the message when the row appears. An optional `actionLabel` with `onAction` adds a `textLink` action such as "Try again" in `bodyLargeSemiBold`, as the storyboard draws it, in its own button node, with a tap zone of at least 48 x 48 dp; one without the other is rejected. The action is at most half the row wide and wraps beyond that. Tab reaches the action and Enter or Space calls `onAction`; focus draws a 2 dp `outlineFocus` ring around the zone, pressed fills it with `backgroundGrayMid`; both are painted 8 dp wider at each side than the zone, so they never move the layout, and a touch tap draws no ring. The label and the whole zone end at the row's end edge. `actionKey` puts a `Key` on the action's tap zone so a test can find it (CA-1316)
+- Showcase: an Inline Error Row screen in the example app, and a component doc
+
+### 🧪 Tests
+
+- Message and action styles and colours, the icon's size and colour in both themes, the 8 dp gap, the label ending at the row's edge in both directions and the last 2 dp of the zone tappable, no action unless given, one `onAction` call per tap on the action and none on the message, the 48 x 48 dp zone, wrapping with the icon centred on the first line, a one-line message's icon on the line's centre, the two asserts, `actionKey` finding the action, a short label's 48 dp wide zone and a tap beside it, the row's height under a loose-height parent, no overflow at twice the text size, the message keeping at least half of a 320 dp row at twice the text size, and the icon on the start side in right-to-left; the message announced as a live region, with the unlabelled icon adding nothing to it, and the action as a separate button outside it. Keyboard: Tab then Enter, Tab then Space, the ring's pixel and nothing moving, no ring on a touch tap, the pressed fill and its release. A11y: tap target, label and text contrast guidelines in both themes. Goldens: light and dark, with every variant, and the focused action
+
 ## [0.89.0] - CoreQuickSheet fixed height
 
 ### ✨ Features
