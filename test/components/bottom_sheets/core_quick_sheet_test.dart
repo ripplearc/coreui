@@ -304,12 +304,7 @@ void main() {
 
     testWidgets('is 90% of the screen for short content',
         (WidgetTester tester) async {
-      await openSheet(
-        tester,
-        child: const Column(
-          children: [Expanded(child: SizedBox(key: Key('content')))],
-        ),
-      );
+      await openSheet(tester, child: const SizedBox(height: 100));
 
       expect(
         tester.getRect(find.byType(BottomSheet)).height,
@@ -377,9 +372,7 @@ void main() {
       await openSheet(
         tester,
         fixedHeightRatio: 0.95,
-        child: const Column(
-          children: [Expanded(child: SizedBox(key: Key('content')))],
-        ),
+        child: const SizedBox(height: 100),
       );
 
       expect(
@@ -418,10 +411,10 @@ void main() {
         child: ValueListenableBuilder<bool>(
           valueListenable: showMore,
           builder: (context, more, _) => Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 100),
               if (more) const SizedBox(height: 200, child: Text('More')),
-              const Expanded(child: SizedBox(key: Key('content'))),
-              const Text('Footer'),
             ],
           ),
         ),
@@ -439,6 +432,7 @@ void main() {
         (WidgetTester tester) async {
       await openSheet(
         tester,
+        fixedHeightRatio: 0.64,
         child: const Column(
           children: [
             Expanded(child: SizedBox(key: Key('content'))),
@@ -448,17 +442,19 @@ void main() {
       );
 
       final sheet = tester.getRect(find.byType(BottomSheet));
+      expect(sheet.height, closeTo(screenHeight(tester) * 0.64, 0.01));
       expect(tester.getRect(find.text('Footer')).bottom,
           lessThanOrEqualTo(sheet.bottom));
       expect(tester.getRect(find.byKey(const Key('content'))).bottom,
           closeTo(sheet.bottom - footerHeight, 0.01));
-      expect(contentHeight(tester), greaterThan(300));
+      expect(contentHeight(tester), greaterThan(sheet.height / 2));
     });
 
     testWidgets('long content scrolls inside the sheet',
         (WidgetTester tester) async {
       await openSheet(
         tester,
+        fixedHeightRatio: 0.64,
         child: ListView.builder(
           key: const Key('long_list'),
           itemCount: 100,
@@ -470,6 +466,7 @@ void main() {
       );
 
       final sheetBefore = tester.getRect(find.byType(BottomSheet));
+      expect(sheetBefore.height, closeTo(screenHeight(tester) * 0.64, 0.01));
       expect(find.text('Item 60'), findsNothing);
 
       await tester.drag(find.byKey(const Key('long_list')), const Offset(0, -2000));
