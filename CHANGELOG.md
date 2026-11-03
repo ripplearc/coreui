@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.76.0] - White page background in the light theme
+
+### 🎨 Visual changes
+
+- **pageBackground**: the light theme's `pageBackground` is now `gray25` (#FFFFFF), the Figma `Background/Page BG`. It was `gray50` (#F9FAFB), the same colour as `backgroundGrayLight`. The dark theme does not change. Every screen background (`scaffoldBackgroundColor`) and every part filled with `pageBackground` turns white: app bar, bottom nav bar, quick sheet, keyboard, function key sheet, value editor sheet, text field, search box, chips, calculator chip, select button, date picker, single item selector, geometry area, success modal and preference value view (CA-1373)
+- **Preference rows**: the row fill is now `backgroundGrayLight` (Grey Light), with its `lineLight` bottom line, as in the Figma Setting List. It was `backgroundGrayMid`, because `pageBackground` and `backgroundGrayLight` were the same colour. In the dark theme the row moves from `gray700` to `gray800`, which still stands apart from the `gray900` page (CA-1373)
+- **For the app**: screens turn white once the app moves to this version, and app goldens that show the page need re-rendering then
+
+### 🧪 Tests
+
+- The light `pageBackground` is #FFFFFF, the dark one stays #101828, and the light `pageBackground` differs from `backgroundGrayLight`. The preference row's fill is `backgroundGrayLight` and differs from the page. Goldens re-rendered: only the preference sheet's dark goldens change in the dark theme
+
 ## [0.75.0] - CoreCalculatorChip Pressed look
 
 ### ✨ Features

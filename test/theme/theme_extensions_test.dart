@@ -132,6 +132,28 @@ void main() {
     });
   });
 
+  group('page background', () {
+    test('light theme resolves pageBackground to white (#FFFFFF)', () {
+      expect(
+        AppColorsExtension.create().pageBackground,
+        const Color(0xFFFFFFFF),
+      );
+    });
+
+    test('dark theme keeps pageBackground at gray900 (#101828)', () {
+      expect(
+        AppColorsExtension.createDark().pageBackground,
+        const Color(0xFF101828),
+      );
+    });
+
+    test('light pageBackground differs from backgroundGrayLight', () {
+      final light = AppColorsExtension.create();
+
+      expect(light.pageBackground, isNot(light.backgroundGrayLight));
+    });
+  });
+
   group('status badge colour tokens', () {
     final light = AppColorsExtension.create();
     final dark = AppColorsExtension.createDark();
