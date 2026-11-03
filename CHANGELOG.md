@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.77.0] - CoreCalculatorChip with a factor keeps its height
+
+### 🔧 Fixes
+
+- **CoreCalculatorChip factor**: a chip with a `factor` filled the full height its parent allowed, for example 600 dp when placed straight in a `Scaffold`, because its factor icon sat in a `Center`. The icon now sits in the chip's `Row`, which already centres it, so the chip is as high as one without a factor. Chips in a `Wrap`, as on the calculator tape, looked right before and do not change
+
+### 🧪 Tests
+
+- A chip with a factor placed straight in a `Scaffold` is as high as the same chip without one
+
 ## [0.76.0] - White page background in the light theme
 
 ### 🎨 Visual changes
