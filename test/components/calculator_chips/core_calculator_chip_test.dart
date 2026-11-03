@@ -1001,8 +1001,6 @@ void main() {
           onTap: () {},
         ),
         chipFinder,
-        checkTapTargetSize: false,
-        checkLabeledTapTarget: false,
         checkTextContrast: true,
       );
     });
@@ -1030,8 +1028,6 @@ void main() {
             onTap: () {},
           ),
           find.byType(CoreCalculatorChip),
-          checkTapTargetSize: false,
-          checkLabeledTapTarget: false,
           checkTextContrast: true,
         );
       });
@@ -1098,8 +1094,6 @@ void main() {
           ],
         ),
         find.byType(Wrap),
-        checkTapTargetSize: false,
-        checkLabeledTapTarget: false,
         checkTextContrast: true,
       );
     });
@@ -1296,7 +1290,7 @@ void main() {
           alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
         );
 
-    // Compares the 32-bit colour: the canvas keeps the highlight's alpha as a
+    // Compares the 32-bit colour: the canvas keeps the layer's alpha as a
     // whole number out of 255.
     bool drawsRRect(
       Symbol method,
@@ -1311,15 +1305,8 @@ void main() {
     PaintPattern drawsLayer() => paints
       ..something((method, args) => drawsRRect(method, args, layer));
 
-    // The chip's own Material, which paints the fill and the layer.
-    RenderObject inkLayer(WidgetTester tester) => Material.of(
-          tester.element(
-            find.descendant(
-              of: find.byType(CoreCalculatorChip),
-              matching: find.byType(Ink),
-            ),
-          ),
-        ) as RenderObject;
+    RenderObject pill(WidgetTester tester) =>
+        tester.renderObject(find.byKey(CoreCalculatorChip.pillKey));
 
     Future<TestGesture> pressAndHold(WidgetTester tester) async {
       final gesture = await tester.startGesture(
@@ -1331,10 +1318,10 @@ void main() {
     }
 
     for (final MapEntry(key: type, value: chip) in tappable.entries) {
-      testWidgets('$type draws the layer over the whole chip while pressed',
+      testWidgets('$type draws the layer over the visible chip while pressed',
           (WidgetTester tester) async {
         await pumpChip(tester, chip);
-        final size = tester.getSize(find.byType(CoreCalculatorChip));
+        final size = tester.getSize(find.byKey(CoreCalculatorChip.pillKey));
 
         final gesture = await pressAndHold(tester);
 
@@ -1345,7 +1332,7 @@ void main() {
 
         // The chip's fill first, then the layer on top of it.
         expect(
-          inkLayer(tester),
+          pill(tester),
           paints
             ..something((method, args) => drawsRRect(method, args, fill))
             ..something(
@@ -1377,7 +1364,7 @@ void main() {
 
       final gesture = await pressAndHold(tester);
 
-      expect(inkLayer(tester), drawsLayer());
+      expect(pill(tester), drawsLayer());
       await gesture.up();
     });
 
@@ -1389,7 +1376,7 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
 
-      expect(inkLayer(tester), isNot(drawsLayer()));
+      expect(pill(tester), isNot(drawsLayer()));
     });
 
     testWidgets('the layer goes away when the press is cancelled',
@@ -1400,7 +1387,7 @@ void main() {
       await gesture.cancel();
       await tester.pumpAndSettle();
 
-      expect(inkLayer(tester), isNot(drawsLayer()));
+      expect(pill(tester), isNot(drawsLayer()));
     });
 
     testWidgets('a disabled chip does not change when pressed',
@@ -1418,7 +1405,7 @@ void main() {
 
       final gesture = await pressAndHold(tester);
 
-      expect(inkLayer(tester), isNot(drawsLayer()));
+      expect(pill(tester), isNot(drawsLayer()));
       await gesture.up();
     });
 
@@ -1437,7 +1424,7 @@ void main() {
 
       final gesture = await pressAndHold(tester);
 
-      expect(inkLayer(tester), isNot(drawsLayer()));
+      expect(pill(tester), isNot(drawsLayer()));
       await gesture.up();
     });
   });
@@ -1528,6 +1515,126 @@ void main() {
       await tester.pump();
 
       expect(outlineOf(tester), isNull);
+    });
+  });
+
+  group('CoreCalculatorChip tap target', () {
+    final everyType = <CoreCalculatorChipType, CoreCalculatorChip>{
+      ...tappable,
+      CoreCalculatorChipType.disabled: const CoreCalculatorChip(
+        type: CoreCalculatorChipType.disabled,
+        label: 'Area',
+        value: '410.67ft²',
+      ),
+    };
+
+    test('covers every type', () {
+      expect(everyType.keys, unorderedEquals(CoreCalculatorChipType.values));
+    });
+
+    for (final MapEntry(key: type, value: chip) in everyType.entries) {
+      testWidgets('$type takes up at least 48 x 48 dp around its visible chip',
+          (WidgetTester tester) async {
+        await pumpChip(tester, chip);
+
+        final target = tester.getRect(find.byType(CoreCalculatorChip));
+        final visible = tester.getRect(find.byKey(CoreCalculatorChip.pillKey));
+
+        expect(target.width, greaterThanOrEqualTo(48));
+        expect(target.height, greaterThanOrEqualTo(48));
+        expect(visible.height, lessThan(48));
+        expect(visible.center, target.center);
+      });
+    }
+
+    testWidgets('a factor chip with a one-digit value is 48 dp wide too',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '5',
+          onTap: () {},
+        ),
+      );
+
+      expect(
+        tester.getSize(find.byType(CoreCalculatorChip)).width,
+        greaterThanOrEqualTo(48),
+      );
+    });
+
+    testWidgets('a tap above the visible chip, inside the target, reaches it',
+        (WidgetTester tester) async {
+      var taps = 0;
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '22ft',
+          onTap: () => taps++,
+        ),
+      );
+      final target = tester.getRect(find.byType(CoreCalculatorChip));
+      final visible = tester.getRect(find.byKey(CoreCalculatorChip.pillKey));
+
+      await tester.tapAt(
+        Offset(visible.center.dx, (target.top + visible.top) / 2),
+      );
+      await tester.pump();
+
+      expect(taps, 1);
+    });
+
+    testWidgets('a press outside the visible chip tints only the chip',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.editable]!);
+      final target = tester.getRect(find.byType(CoreCalculatorChip));
+      final visible = tester.getRect(find.byKey(CoreCalculatorChip.pillKey));
+
+      final gesture = await tester.startGesture(
+        Offset(visible.center.dx, (target.top + visible.top) / 2),
+      );
+      await tester.pump(kPressTimeout);
+
+      final pill = tester.widget<Container>(
+        find.byKey(CoreCalculatorChip.pillKey),
+      );
+      expect(
+        pill.foregroundDecoration,
+        BoxDecoration(
+          color: CoreTheme.light().coreColors.backgroundDarkGray.withValues(
+                alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
+              ),
+          borderRadius: CoreCalculatorChipTheme.borderRadius,
+        ),
+      );
+      await gesture.up();
+    });
+
+    testWidgets('the layer goes when a held chip turns inert',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.editable]!);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(CoreCalculatorChip)),
+      );
+      await tester.pump(kPressTimeout);
+
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '22ft',
+          inert: true,
+          onTap: () {},
+        ),
+      );
+
+      final pill = tester.widget<Container>(
+        find.byKey(CoreCalculatorChip.pillKey),
+      );
+      expect(pill.foregroundDecoration, isNull);
+      await gesture.up();
     });
   });
 }

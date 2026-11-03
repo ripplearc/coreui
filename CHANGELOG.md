@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.79.0] - CoreCalculatorChip 48 dp tap area
+
+### 🔧 Fixes
+
+- **CoreCalculatorChip tap area**: the chip was 30 dp high, so it could only be tapped across 30 dp, and its accessibility tests had the tap-size check turned off. Every chip now takes up at least 48 x 48 dp, with the 30 dp chip centred in it, as `CoreFilterChip` and the `CoreChip` × do. A tap anywhere in the box reaches the chip. `CoreCalculatorChip.minTapTargetSize` holds the 48 dp and `CoreCalculatorChip.pillKey` finds the visible chip
+- **Pressed look**: the layer is now drawn on the visible chip from the `InkWell`'s pressed state, so a press in the larger box tints only the chip. The chip's fill is a plain `Container` again, with its shadow
+- **Visual change on the tape**: chip rows are now 56 dp apart (48 + 8 run spacing) instead of 38 dp. The collapsed history keeps two rows: its height is now two 48 dp rows plus the 8 dp gap. Chip and display-area goldens change; app goldens that show the tape change once the app moves to this version
+
+### 🧪 Tests
+
+- Every chip type takes up at least 48 x 48 dp with the visible chip centred in it; a one-digit chip is 48 dp wide; a tap above the visible chip reaches it; a press there tints only the chip; the layer goes away when a held chip turns inert. The chip accessibility tests now run the tap-size and labelled-tap-target guidelines
+
 ## [0.78.0] - CoreCalculatorChip focus look
 
 ### ✨ Features

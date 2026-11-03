@@ -63,14 +63,19 @@ A screen reader skips brackets and coreui has no localised words of its own, so 
 (`CoreCalculatorChipTheme.pressedOverlayOpacity`) covers the whole chip, with the chip's own corners. It goes away when
 the press ends or is cancelled. All eight tappable types get it (`editable`, `active`, `result`, `error`, `dashed`,
 `bracketOpen`, `bracketClosed`, `stale`); a `disabled` or `inert` chip does not change when pressed. This is the
-Figma Pressed variant's "State layer" (Editable `66782:201545`, Active `66782:201549`). The chip's fill is drawn with
-`Ink`, so the layer is painted on top of it.
+Figma Pressed variant's "State layer" (Editable `66782:201545`, Active `66782:201549`). The layer is drawn on the
+visible chip only, never on the larger tap area around it.
 
 **Focused.** When Tab moves to a chip that takes input, an `outlineFocus` edge 2 px wide
 (`CoreCalculatorChipTheme.focusOutline`, twice the 1 px border, as on the other chips) is drawn over the chip's own
 edge: dashed on the dashed variants (`dashed`, `bracketOpen`, `stale`), solid on the rest. It is drawn over the chip,
 so the chip keeps its size. A touch tap does not focus the chip, so it draws no outline. Tab skips a `disabled` or
 `inert` chip. `CoreCalculatorChip.outlineKey` finds the outline in tests.
+
+**Tap area.** The visible chip is 30 px high, but every chip takes up at least 48 x 48 px
+(`CoreCalculatorChip.minTapTargetSize`), with the visible chip centred in it, so it meets the 48 dp tap-target guideline.
+A tap anywhere in that box reaches the chip. On the calculator tape this puts the rows 56 px apart (48 px plus the 8 px
+run spacing) instead of 38 px. `CoreCalculatorChip.pillKey` finds the visible chip in tests.
 
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
 `CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
