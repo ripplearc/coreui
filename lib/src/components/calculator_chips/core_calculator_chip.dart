@@ -258,81 +258,97 @@ class CoreCalculatorChip extends StatelessWidget {
           effectiveOnLongPress != null ? longPressSemanticLabel : null,
       child: Opacity(
         opacity: effectiveOpacity,
-        child: Material(
-          color: colors.transparent,
-          child: InkWell(
-            onTap: effectiveOnTap,
-            onLongPress: effectiveOnLongPress,
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: WidgetStateProperty.all(
-              colors.transparent,
-            ),
+        // The shadow sits outside the Material: ink is clipped to the
+        // Material's bounds, which would cut the shadow off.
+        child: DecoratedBox(
+          decoration: BoxDecoration(
             borderRadius: CoreCalculatorChipTheme.borderRadius,
-            child: Container(
-              padding: CoreCalculatorChipTheme.padding,
-              foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
-                type: type,
-                colors: colors,
+            boxShadow: CoreCalculatorChipTheme.shadow(type),
+          ),
+          child: Material(
+            color: colors.transparent,
+            child: InkWell(
+              onTap: effectiveOnTap,
+              onLongPress: effectiveOnLongPress,
+              splashFactory: NoSplash.splashFactory,
+              overlayColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.pressed)
+                    ? colors.backgroundDarkGray.withValues(
+                        alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
+                      )
+                    : colors.transparent,
               ),
-              decoration: BoxDecoration(
-                color: CoreCalculatorChipTheme.background(
+              borderRadius: CoreCalculatorChipTheme.borderRadius,
+              child: Container(
+                foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
                   type: type,
                   colors: colors,
                 ),
-                borderRadius: CoreCalculatorChipTheme.borderRadius,
-                boxShadow: CoreCalculatorChipTheme.shadow(type),
-                border: Border.fromBorderSide(
-                  BorderSide(
-                      color: CoreCalculatorChipTheme.borderColor(
-                        type: type,
-                        colors: colors,
-                      ),
-                      width: CoreCalculatorChipTheme.borderWidth),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (factor != null && _isInteractive)
-                    ExcludeSemantics(
-                      child: Center(
-                        child: CoreIconWidget(
-                          icon: factor,
-                          size: CoreSpacing.space5,
-                          color: CoreCalculatorChipTheme.factorColor(
+                // The fill is on Ink, not on the Container, so the Pressed
+                // layer is painted over it and can be seen.
+                child: Ink(
+                  padding: CoreCalculatorChipTheme.padding,
+                  decoration: BoxDecoration(
+                    color: CoreCalculatorChipTheme.background(
+                      type: type,
+                      colors: colors,
+                    ),
+                    borderRadius: CoreCalculatorChipTheme.borderRadius,
+                    border: Border.fromBorderSide(
+                      BorderSide(
+                          color: CoreCalculatorChipTheme.borderColor(
                             type: type,
                             colors: colors,
-                            inert: inert,
+                          ),
+                          width: CoreCalculatorChipTheme.borderWidth),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (factor != null && _isInteractive)
+                        ExcludeSemantics(
+                          child: Center(
+                            child: CoreIconWidget(
+                              icon: factor,
+                              size: CoreSpacing.space5,
+                              color: CoreCalculatorChipTheme.factorColor(
+                                type: type,
+                                colors: colors,
+                                inert: inert,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  if (label != null)
-                    ExcludeSemantics(
-                      child: Text(
-                        label,
-                        style: CoreCalculatorChipTheme.labelStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                      if (label != null)
+                        ExcludeSemantics(
+                          child: Text(
+                            label,
+                            style: CoreCalculatorChipTheme.labelStyle(
+                              type: type,
+                              colors: colors,
+                              typography: typography,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  if (value != null) ...[
-                    if (hasLeading) const SizedBox(width: CoreSpacing.space1),
-                    ExcludeSemantics(
-                      child: Text(
-                        value,
-                        style: CoreCalculatorChipTheme.valueStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                      if (value != null) ...[
+                        if (hasLeading)
+                          const SizedBox(width: CoreSpacing.space1),
+                        ExcludeSemantics(
+                          child: Text(
+                            value,
+                            style: CoreCalculatorChipTheme.valueStyle(
+                              type: type,
+                              colors: colors,
+                              typography: typography,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ]
-                ],
+                      ]
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

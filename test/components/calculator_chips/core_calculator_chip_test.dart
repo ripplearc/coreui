@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,9 +10,20 @@ import 'package:ripplearc_coreui/src/components/calculator_chips/core_calculator
 import '../../utils/a11y_guidelines.dart';
 import '../../utils/test_harness.dart';
 
-Future<void> pumpChip(WidgetTester tester, CoreCalculatorChip chip) {
+Future<void> pumpChip(
+  WidgetTester tester,
+  CoreCalculatorChip chip, {
+  Color? parentColor,
+}) {
   return tester.pumpWidget(
-    MaterialApp(theme: CoreTheme.light(), home: Scaffold(body: chip)),
+    MaterialApp(
+      theme: CoreTheme.light(),
+      home: Scaffold(
+        body: parentColor == null
+            ? chip
+            : ColoredBox(color: parentColor, child: chip),
+      ),
+    ),
   );
 }
 
@@ -1196,6 +1208,206 @@ void main() {
         isFalse,
       );
       expect(semantics.hintOverrides, isNull);
+    });
+  });
+
+  group('CoreCalculatorChip pressed', () {
+    // The chips that take input. Each one has a callback, so a press reaches
+    // its InkWell.
+    final tappable = <CoreCalculatorChipType, CoreCalculatorChip>{
+      CoreCalculatorChipType.editable: CoreCalculatorChip(
+        type: CoreCalculatorChipType.editable,
+        value: '22ft',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.active: CoreCalculatorChip(
+        type: CoreCalculatorChipType.active,
+        value: '10ft',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.result: CoreCalculatorChip(
+        type: CoreCalculatorChipType.result,
+        label: 'Area',
+        value: '410.67ft²',
+        onLongPress: () {},
+      ),
+      CoreCalculatorChipType.error: CoreCalculatorChip(
+        type: CoreCalculatorChipType.error,
+        value: 'Dimension error',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.dashed: CoreCalculatorChip(
+        type: CoreCalculatorChipType.dashed,
+        value: '8ft ?',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.bracketOpen: CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketOpen,
+        value: '3×4',
+        semanticsLabel: 'open bracket, 3 times 4',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.bracketClosed: CoreCalculatorChip(
+        type: CoreCalculatorChipType.bracketClosed,
+        value: '3×4',
+        semanticsLabel: 'bracket, 3 times 4',
+        onTap: () {},
+      ),
+      CoreCalculatorChipType.stale: CoreCalculatorChip(
+        type: CoreCalculatorChipType.stale,
+        label: 'Calc',
+        semanticsLabel: 'Calc, pending',
+        onTap: () {},
+      ),
+    };
+
+    final layer = CoreTheme.light().coreColors.backgroundDarkGray.withValues(
+          alpha: CoreCalculatorChipTheme.pressedOverlayOpacity,
+        );
+
+    // Compares the 32-bit colour: the canvas keeps the highlight's alpha as a
+    // whole number out of 255.
+    bool drawsRRect(
+      Symbol method,
+      List<dynamic> args,
+      Color color, [
+      RRect? rrect,
+    ]) =>
+        method == #drawRRect &&
+        (args[1] as Paint).color.toARGB32() == color.toARGB32() &&
+        (rrect == null || args[0] == rrect);
+
+    PaintPattern drawsLayer() => paints
+      ..something((method, args) => drawsRRect(method, args, layer));
+
+    // The chip's own Material, which paints the fill and the layer.
+    RenderObject inkLayer(WidgetTester tester) => Material.of(
+          tester.element(
+            find.descendant(
+              of: find.byType(CoreCalculatorChip),
+              matching: find.byType(Ink),
+            ),
+          ),
+        ) as RenderObject;
+
+    Future<TestGesture> pressAndHold(WidgetTester tester) async {
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(CoreCalculatorChip)),
+      );
+      await tester.pump(kPressTimeout);
+      await tester.pump(const Duration(milliseconds: 200));
+      return gesture;
+    }
+
+    for (final MapEntry(key: type, value: chip) in tappable.entries) {
+      testWidgets('$type draws the layer over the whole chip while pressed',
+          (WidgetTester tester) async {
+        await pumpChip(tester, chip);
+        final size = tester.getSize(find.byType(CoreCalculatorChip));
+
+        final gesture = await pressAndHold(tester);
+
+        final fill = CoreCalculatorChipTheme.background(
+          type: type,
+          colors: CoreTheme.light().coreColors,
+        );
+
+        // The chip's fill first, then the layer on top of it.
+        expect(
+          inkLayer(tester),
+          paints
+            ..something((method, args) => drawsRRect(method, args, fill))
+            ..something(
+              (method, args) => drawsRRect(
+                method,
+                args,
+                layer,
+                CoreCalculatorChipTheme.borderRadius
+                    .toRRect(Offset.zero & size),
+              ),
+            ),
+        );
+        await gesture.up();
+        await tester.pumpAndSettle();
+      });
+    }
+
+    testWidgets('the layer shows on a coloured parent',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '22ft',
+          onTap: () {},
+        ),
+        parentColor: CoreTheme.light().coreColors.backgroundBlueMid,
+      );
+
+      final gesture = await pressAndHold(tester);
+
+      expect(inkLayer(tester), drawsLayer());
+      await gesture.up();
+    });
+
+    testWidgets('the layer goes away when the press ends',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.editable]!);
+
+      final gesture = await pressAndHold(tester);
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(inkLayer(tester), isNot(drawsLayer()));
+    });
+
+    testWidgets('the layer goes away when the press is cancelled',
+        (WidgetTester tester) async {
+      await pumpChip(tester, tappable[CoreCalculatorChipType.editable]!);
+
+      final gesture = await pressAndHold(tester);
+      await gesture.cancel();
+      await tester.pumpAndSettle();
+
+      expect(inkLayer(tester), isNot(drawsLayer()));
+    });
+
+    testWidgets('a disabled chip does not change when pressed',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.disabled,
+          label: 'Area',
+          value: '410.67ft²',
+          onTap: () {},
+          onLongPress: () {},
+        ),
+      );
+
+      final gesture = await pressAndHold(tester);
+
+      expect(inkLayer(tester), isNot(drawsLayer()));
+      await gesture.up();
+    });
+
+    testWidgets('an inert chip does not change when pressed',
+        (WidgetTester tester) async {
+      await pumpChip(
+        tester,
+        CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          value: '5',
+          inert: true,
+          onTap: () {},
+          onLongPress: () {},
+        ),
+      );
+
+      final gesture = await pressAndHold(tester);
+
+      expect(inkLayer(tester), isNot(drawsLayer()));
+      await gesture.up();
     });
   });
 }

@@ -59,6 +59,13 @@ A screen reader skips brackets and coreui has no localised words of its own, so 
 | `bracketClosed` | `backgroundBlueMid` | `outlineFocus`           | `textLink`        | `iconOrient`   | `null`  |
 | `stale`    | `backgroundGrayMid`   | dashed `lineDarkOutline`    | `textDark`        | `iconGrayDark` | `null`  |
 
+**Pressed.** While a finger is down on a chip that takes input, a `backgroundDarkGray` layer at 8 %
+(`CoreCalculatorChipTheme.pressedOverlayOpacity`) covers the whole chip, with the chip's own corners. It goes away when
+the press ends or is cancelled. All eight tappable types get it (`editable`, `active`, `result`, `error`, `dashed`,
+`bracketOpen`, `bracketClosed`, `stale`); a `disabled` or `inert` chip does not change when pressed. This is the
+Figma Pressed variant's "State layer" (Editable `66782:201545`, Active `66782:201549`). The chip's fill is drawn with
+`Ink`, so the layer is painted on top of it.
+
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
 `CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
 resolves it, and the solid border is painted transparent at the same width so every variant measures the same.
