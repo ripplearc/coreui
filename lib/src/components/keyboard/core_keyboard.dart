@@ -6,21 +6,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A comprehensive keyboard widget for calculator input with unit selection, operators, and function keys.
 ///
-/// [currentGroup] is the currently active function group.
-/// [allGroups] is the list of all available function groups.
-/// [onDigitPressed] is called when a digit button is pressed.
-/// [onUnitSelected] is called when a unit button is selected.
-/// [onOperatorPressed] is called when an operator button is pressed.
-/// [onControlAction] is called when a control action is triggered.
-/// [onResultTapped] is called when the result button is tapped.
-/// [onGroupSelected] is called when a function group is selected.
-/// [onKeyTapped] is called when a function key is tapped.
-/// [onUnitSystemChanged] is called when the unit system changes.
-/// [result] is the type of result to display on the result button.
-/// [currentUnitSystem] is the current unit system (imperial or metric).
-/// [groupAccentColors] is a map of group names to their accent colors.
-/// [customResultLabel] is an optional custom label for the result button.
-///
 /// ## Group swipe
 /// A horizontal swipe on the function-key strip selects the previous (swipe
 /// right) or next (swipe left) group in [allGroups] through [onGroupSelected],
@@ -39,6 +24,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [KeyType.resolvedTestKey] — `calc_key_<id>` unless [KeyType.testKey] is
 /// set — on the strip and in the "View all" sheet alike.
 class CoreKeyboard extends StatefulWidget {
+  /// Creates the calculator keyboard. The caller keeps [currentGroup] and
+  /// [currentUnitSystem] and updates them from their callbacks.
   const CoreKeyboard({
     super.key,
     required this.currentGroup,
@@ -68,19 +55,56 @@ class CoreKeyboard extends StatefulWidget {
   /// changes the group.
   static const double groupSwipeThreshold = CoreSpacing.space16;
 
+  /// The group whose keys fill the function-key strip. When it is not in
+  /// [allGroups] the strip shows the first group.
   final GroupNameType currentGroup;
+
+  /// Every function group, in the order the swipe and the "View all" sheet
+  /// use.
   final List<FunctionGroup> allGroups;
+
+  /// Called with the digit when a digit key is tapped.
   final ValueChanged<DigitType> onDigitPressed;
+
+  /// Called with the unit when a unit key is tapped.
   final ValueChanged<UnitType> onUnitSelected;
+
+  /// Called with the operator when an operator key is tapped.
   final ValueChanged<OperatorType> onOperatorPressed;
+
+  /// Called with the action when clear all, delete or `( )` is tapped.
+  /// The keyboard draws no more-options key.
   final ValueChanged<ControlAction> onControlAction;
+
+  /// Called when the result key is tapped.
   final VoidCallback onResultTapped;
+
+  /// Called with a group's name after a swipe on the strip or a tap on a
+  /// group in the "View all" sheet, which then closes.
   final ValueChanged<GroupNameType> onGroupSelected;
+
+  /// Called with the key when a function key is tapped, on the strip or in
+  /// the "View all" sheet, which then closes. The key's own
+  /// [KeyType.action] runs right after.
   final ValueChanged<KeyType> onKeyTapped;
+
+  /// What the result key computes. Defaults to `=`.
   final ResultType result;
+
+  /// Picks the unit keys: Yards, Feet and Inch for imperial (the default),
+  /// or M, CM and MM for metric.
   final UnitSystem currentUnitSystem;
+
+  /// Called with the new system when the switch in the "View all" sheet is
+  /// flipped.
   final ValueChanged<UnitSystem> onUnitSystemChanged;
+
+  /// Colour of each group's dot. A group with no entry gets
+  /// `keyboardFunctions` on the strip and `keyboardUnits` in the sheet.
   final Map<GroupNameType, Color> groupAccentColors;
+
+  /// Replaces [result]'s label on the result key and is shown as written,
+  /// such as "Update". An empty string counts as null.
   final String? customResultLabel;
 
   /// Whether the `( )` key bottom-left answers taps. `false` dims it and drops
@@ -97,6 +121,8 @@ class CoreKeyboard extends StatefulWidget {
   /// Pass a localised string from the app layer.
   final String? parenSemanticHint;
 
+  /// Called with true when a drag or tap on the handle hides the keys, and
+  /// with false when one shows them again.
   final ValueChanged<bool>? onCollapseChanged;
 
   /// Called when the user drags a group to a new position in the "View all"

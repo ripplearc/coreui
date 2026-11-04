@@ -13,7 +13,11 @@ enum SizeOperationIntent {
   edit,
 }
 
+/// What [CoreValueEditorSheet.show] returns when the user commits: one
+/// value per field, and whether it adds a row or edits one.
 class SizeEntryResult {
+  /// Creates a result; [index] is the `initialIndex` passed to
+  /// [CoreValueEditorSheet.show], unchanged.
   const SizeEntryResult({
     required this.values,
     required this.intent,
@@ -33,6 +37,7 @@ class SizeEntryResult {
 /// The result of a single-value edit, handed to
 /// [CoreValueEditorSheet.showSingleValue]'s caller when the user commits.
 class CoreValueEditorResult {
+  /// Creates a result with the entered [value] and the picked [unit].
   const CoreValueEditorResult({
     required this.value,
     this.unit,

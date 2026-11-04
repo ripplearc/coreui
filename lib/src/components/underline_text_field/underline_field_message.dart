@@ -17,6 +17,7 @@ class UnderlineFieldMessage extends StatelessWidget {
   /// and is announced by screen readers when it appears.
   final bool isError;
 
+  /// Creates a helper line, or an error line when [isError] is true.
   const UnderlineFieldMessage({
     super.key,
     required this.text,
