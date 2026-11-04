@@ -1,6 +1,9 @@
 // File: test/components/navigation/core_bottom_nav_bar_test.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -41,6 +44,7 @@ class _Harness extends StatelessWidget {
 Future<void> _mount(
   WidgetTester tester, {
   required int selectedIndex,
+  List<BottomNavTab> tabs = _tabs,
   VoidCallback? onAction,
   ValueChanged<int>? onTabSelected,
   String? actionButtonSemanticLabel,
@@ -48,7 +52,7 @@ Future<void> _mount(
   await tester.pumpWidget(
     _Harness(
       child: CoreBottomNavBar(
-        tabs: _tabs,
+        tabs: tabs,
         selectedIndex: selectedIndex,
         onTabSelected: onTabSelected ?? (_) {},
         onActionButtonPressed: onAction,
@@ -64,6 +68,11 @@ void main() {
     try {
       await loadFonts();
     } catch (_) {}
+    // The tab label asks for the package font; without it the test draws
+    // square glyphs, so label widths would not match a real phone.
+    await (FontLoader('packages/ripplearc_coreui/Roboto')
+          ..addFont(rootBundle.load('test/assets/fonts/Roboto-Medium.ttf')))
+        .load();
   });
 
   group('CoreBottomNavBar – API contract', () {
@@ -211,6 +220,131 @@ void main() {
 
       handle.dispose();
     });
+
+    for (final tabs in [_tabs, _tabs2]) {
+      testWidgets(
+          '${tabs.length}-tab: a screen reader double tap selects each tab',
+          (tester) async {
+        final handle = tester.ensureSemantics();
+        try {
+          final selected = <int>[];
+          await _mount(
+            tester,
+            selectedIndex: 0,
+            tabs: tabs,
+            onTabSelected: selected.add,
+          );
+
+          for (var index = 0; index < tabs.length; index++) {
+            final node =
+                tester.getSemantics(find.bySemanticsLabel(tabs[index].label));
+            expect(node.getSemanticsData().hasAction(SemanticsAction.tap),
+                isTrue);
+            tester.semantics.tap(find.semantics.byLabel(tabs[index].label));
+            await tester.pump();
+          }
+
+          expect(selected, List.generate(tabs.length, (i) => i));
+        } finally {
+          handle.dispose();
+        }
+      });
+    }
+
+    testWidgets('a screen reader double tap presses the action button once',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        var presses = 0;
+        await _mount(
+          tester,
+          selectedIndex: 0,
+          onAction: () => presses++,
+          actionButtonSemanticLabel: 'Calculator',
+        );
+
+        final node = tester.getSemantics(find.bySemanticsLabel('Calculator'));
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        tester.semantics.tap(find.semantics.byLabel('Calculator'));
+        await tester.pump();
+
+        expect(presses, 1);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('the action button with no callback has no tap action',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await _mount(
+          tester,
+          selectedIndex: 0,
+          actionButtonSemanticLabel: 'Calculator',
+        );
+
+        final node = tester.getSemantics(find.bySemanticsLabel('Calculator'));
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+      } finally {
+        handle.dispose();
+      }
+    });
+  });
+
+  group('CoreBottomNavBar – narrow screens', () {
+    for (final width in [320.0, 360.0, 375.0]) {
+      for (final selected in [0, _tabs.length - 1]) {
+        testWidgets(
+            '${width.toInt()} dp, tab $selected selected: every inactive tab '
+            'is at least 48 dp', (tester) async {
+          final handle = tester.ensureSemantics();
+          try {
+            tester.view.devicePixelRatio = 1;
+            tester.view.physicalSize = Size(width, 667);
+            addTearDown(tester.view.reset);
+            await _mount(tester, selectedIndex: selected, onAction: () {});
+
+            final active = tester
+                .getSemantics(find.bySemanticsLabel(_tabs[selected].label));
+            for (final tab in _tabs.where((t) => t != _tabs[selected])) {
+              final node =
+                  tester.getSemantics(find.bySemanticsLabel(tab.label));
+              // Same float slack as Flutter's own tap-target guideline.
+              expect(
+                  node.rect.width,
+                  greaterThanOrEqualTo(
+                      kMinInteractiveDimension - precisionErrorTolerance),
+                  reason: tab.label);
+              expect(active.rect.width, greaterThan(node.rect.width));
+            }
+            expect(tester.takeException(), isNull);
+          } finally {
+            handle.dispose();
+          }
+        });
+      }
+    }
+  });
+
+  group('CoreBottomNavBar – narrow screens, active label', () {
+    for (final width in [360.0, 375.0, 393.0]) {
+      for (var selected = 0; selected < _tabs.length; selected++) {
+        testWidgets(
+            '${width.toInt()} dp: the active label '
+            '"${_tabs[selected].label}" is not cut', (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = Size(width, 667);
+          addTearDown(tester.view.reset);
+          await _mount(tester, selectedIndex: selected, onAction: () {});
+
+          final label = tester.renderObject<RenderParagraph>(
+              find.text(_tabs[selected].label));
+          expect(label.size.width,
+              greaterThanOrEqualTo(label.getMaxIntrinsicWidth(double.infinity)));
+        });
+      }
+    }
   });
 
   group('CoreBottomNavBar – accessibility', () {
