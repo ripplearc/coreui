@@ -84,7 +84,8 @@ class CoreKeyboard extends StatefulWidget {
   final ValueChanged<GroupNameType> onGroupSelected;
 
   /// Called with the key when a function key is tapped, on the strip or in
-  /// the "View all" sheet, which then closes.
+  /// the "View all" sheet, which then closes. The key's own
+  /// [KeyType.action] runs right after.
   final ValueChanged<KeyType> onKeyTapped;
 
   /// What the result key computes. Defaults to `=`.
