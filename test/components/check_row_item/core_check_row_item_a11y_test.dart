@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -40,5 +41,29 @@ void main() {
         checkLabeledTapTarget: false,
       );
     });
+
+    for (final selected in [false, true]) {
+      testWidgets(
+          'Check row ${selected ? 'selected' : 'unselected'} meets tap target '
+          'and label guidelines', (tester) async {
+        await setupA11yTest(tester);
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (theme) => Padding(
+            // The tap target guideline skips a node at the screen edge.
+            padding: const EdgeInsets.all(16),
+            child: CoreCheckRowItem.checkRow(
+              title: 'John Doe',
+              subtitle: 'john@acme.com',
+              selected: selected,
+              onChanged: (_) {},
+            ),
+          ),
+          find.byType(CoreCheckRowItem),
+          checkLabeledTapTarget: false,
+        );
+      });
+    }
   });
 }

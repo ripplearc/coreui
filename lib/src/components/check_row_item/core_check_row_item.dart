@@ -6,9 +6,10 @@ import '../../../ripplearc_coreui.dart';
 /// subtitle), and a trailing checkbox.
 ///
 /// Tapping anywhere on the row toggles [selected] via [onChanged]. The leading
-/// area defaults to a 24×24 [CoreAvatar] showing the first initial of [title],
-/// but any widget can be supplied via [leading]. Designed for multi-select
-/// sheets such as an owner / assignee filter.
+/// area defaults to a [CoreAvatar] showing the initials of [title], but any
+/// widget can be supplied via [leading]. [CoreCheckRowItem.new] draws the
+/// library Dropdown cell; [CoreCheckRowItem.checkRow] draws the library Check
+/// row (Figma 62505:74872). Sizes and states: `core_check_row_item.md`.
 class CoreCheckRowItem extends StatelessWidget {
   /// Primary text for the row (e.g. an owner name).
   ///
@@ -25,9 +26,17 @@ class CoreCheckRowItem extends StatelessWidget {
   /// Called with the toggled value when the row or checkbox is activated.
   final ValueChanged<bool> onChanged;
 
+  /// Whether the row reacts to taps; `core_check_row_item.md` has the look.
+  final bool enabled;
+
+  /// Whether a [CoreCheckRowItem.checkRow] draws its bottom divider.
+  final bool showDivider;
+
+  final bool _isCheckRow;
+
   /// Leading widget shown before the text.
   ///
-  /// Defaults to a 24×24 circle showing the first initial of [title]. When
+  /// Defaults to a circle showing the initials of [title]. When
   /// provided, [avatarBackgroundColor] and [avatarTextColor] are ignored.
   final Widget? leading;
 
@@ -43,26 +52,45 @@ class CoreCheckRowItem extends StatelessWidget {
 
   /// Full override of the default leading avatar's initial text style.
   ///
-  /// Ignored when [leading] is supplied. Null uses the theme's `bodySmallMedium`.
+  /// Ignored when [leading] is supplied. Null uses the theme's `bodySmallMedium`
+  /// (`bodyLargeSemiBold` in the Check row).
   /// The effective [avatarTextColor] is always applied on top of this style.
   final TextStyle? avatarTextStyle;
 
-  /// Accessibility label for the row. Defaults to [title].
+  /// Accessibility label. Defaults to [title]; Check row: "title, subtitle".
   final String? semanticLabel;
 
-  /// Creates a selectable checkbox row.
+  /// Creates a selectable checkbox row drawn as the library Dropdown cell.
   const CoreCheckRowItem({
     super.key,
     required this.title,
     required this.selected,
     required this.onChanged,
+    this.enabled = true,
     this.subtitle,
     this.leading,
     this.avatarBackgroundColor,
     this.avatarTextColor,
     this.avatarTextStyle,
     this.semanticLabel,
-  });
+  })  : showDivider = false,
+        _isCheckRow = false;
+
+  /// Creates a selectable checkbox row drawn as the library Check row.
+  const CoreCheckRowItem.checkRow({
+    super.key,
+    required this.title,
+    required this.selected,
+    required this.onChanged,
+    this.enabled = true,
+    this.showDivider = true,
+    this.subtitle,
+    this.leading,
+    this.avatarBackgroundColor,
+    this.avatarTextColor,
+    this.avatarTextStyle,
+    this.semanticLabel,
+  }) : _isCheckRow = true;
 
   static const double _rowRadius = CoreSpacing.space12;
 
@@ -76,21 +104,40 @@ class CoreCheckRowItem extends StatelessWidget {
     return trimmed.characters.first.toUpperCase();
   }
 
+  /// Derives the Check row's initials: the first character of each of the
+  /// first two words, uppercased ("Judy Smith" gives "JS").
+  static String initialsFor(String name) => name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .take(2)
+      .map((word) => word.characters.first.toUpperCase())
+      .join();
+
   Widget _buildDefaultAvatar(
     AppColorsExtension colors,
     AppTypographyExtension typography,
   ) {
-    final effectiveBackground = avatarBackgroundColor ?? colors.backgroundBlueMid;
-    final effectiveTextColor = avatarTextColor ?? colors.textHeadline;
-    final effectiveStyle = (avatarTextStyle ?? typography.bodySmallMedium)
+    final effectiveBackground = avatarBackgroundColor ??
+        (_isCheckRow ? colors.backgroundBlueLight : colors.backgroundBlueMid);
+    final effectiveTextColor = avatarTextColor ??
+        (!enabled
+            ? colors.textDisable
+            : _isCheckRow
+                ? colors.textLink
+                : colors.textHeadline);
+    final effectiveStyle = (avatarTextStyle ??
+            (_isCheckRow
+                ? typography.bodyLargeSemiBold
+                : typography.bodySmallMedium))
         .copyWith(color: effectiveTextColor);
-    final initial = initialFor(title);
+    final initial = _isCheckRow ? initialsFor(title) : initialFor(title);
 
     return CoreAvatar(
-      radius: 12,
+      radius: _isCheckRow ? CoreSpacing.space5 : CoreSpacing.space3,
       backgroundColor: effectiveBackground,
-      // Scales down so a large text size keeps the initial inside the 24 dp
-      // circle instead of cutting it.
+      // Scales down so a large text size keeps the initial inside the circle
+      // instead of cutting it.
       child: initial.isEmpty
           ? null
           : FittedBox(
@@ -104,9 +151,16 @@ class CoreCheckRowItem extends StatelessWidget {
     AppColorsExtension colors,
     AppTypographyExtension typography,
   ) {
+    final titleStyle = _isCheckRow
+        ? typography.bodyLargeMedium.copyWith(color: colors.textHeadline)
+        : typography.bodyMediumRegular.copyWith(color: colors.textDark);
+    final subtitleStyle = (_isCheckRow
+            ? typography.bodyMediumRegular
+            : typography.bodySmallRegular)
+        .copyWith(color: colors.textBody);
     final titleText = Text(
       title,
-      style: typography.bodyMediumRegular.copyWith(color: colors.textDark),
+      style: enabled ? titleStyle : titleStyle.copyWith(color: colors.textDisable),
     );
 
     final subtitleValue = subtitle;
@@ -121,7 +175,9 @@ class CoreCheckRowItem extends StatelessWidget {
         titleText,
         Text(
           subtitleValue,
-          style: typography.bodySmallRegular.copyWith(color: colors.textBody),
+          style: enabled
+              ? subtitleStyle
+              : subtitleStyle.copyWith(color: colors.textDisable),
         ),
       ],
     );
@@ -133,45 +189,143 @@ class CoreCheckRowItem extends StatelessWidget {
     final typography = AppTypographyExtension.of(context);
 
     final effectiveLeading = leading ?? _buildDefaultAvatar(colors, typography);
+    final gap = _isCheckRow ? CoreSpacing.space3 : CoreSpacing.space2;
+    final tickColor = _isCheckRow ? colors.iconDark : colors.outlineFocus;
+    final radius = BorderRadius.circular(_isCheckRow ? 0 : _rowRadius);
 
-    return Semantics(
-      label: semanticLabel ?? title,
-      button: true,
-      checked: selected,
-      child: Material(
-        color: selected ? colors.backgroundBlueLight : colors.transparent,
-        borderRadius: BorderRadius.circular(_rowRadius),
-        child: InkWell(
-          onTap: () => onChanged(!selected),
-          borderRadius: BorderRadius.circular(_rowRadius),
-          splashFactory: NoSplash.splashFactory,
-          // The library Dropdown cell has no pressed or hover state.
-          highlightColor: colors.transparent,
-          hoverColor: colors.transparent,
-          // The whole row is the tap target: 12 dp padding around the 24 dp
-          // check box keeps it at least 48 dp high.
-          child: Padding(
-            padding: const EdgeInsets.all(CoreSpacing.space3),
-            child: Row(
-              children: [
-                ExcludeSemantics(child: effectiveLeading),
-                const SizedBox(width: CoreSpacing.space2),
-                Expanded(
-                  child: ExcludeSemantics(
-                    child: _buildText(colors, typography),
-                  ),
-                ),
-                ExcludeSemantics(
-                  child: CoreIconWidget(
-                    icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
-                    size: CoreIconSize.size24,
-                    color: selected ? colors.outlineFocus : colors.iconGrayMid,
-                  ),
-                ),
-              ],
+    // The whole row is the tap target: 12 dp above and below the 24 dp check
+    // box keeps it at least 48 dp high.
+    Widget row = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: _isCheckRow ? CoreSpacing.space5 : CoreSpacing.space3,
+        vertical: CoreSpacing.space3,
+      ),
+      child: Row(
+        children: [
+          ExcludeSemantics(child: effectiveLeading),
+          SizedBox(width: gap),
+          Expanded(
+            child: ExcludeSemantics(child: _buildText(colors, typography)),
+          ),
+          if (_isCheckRow) SizedBox(width: gap),
+          ExcludeSemantics(
+            child: CoreIconWidget(
+              icon: selected ? CoreIcons.check : CoreIcons.checkBlank,
+              size: CoreIconSize.size24,
+              color: selected ? tickColor : colors.iconGrayMid,
             ),
           ),
+        ],
+      ),
+    );
+    // The divider lies over the bottom edge, so it adds no height.
+    if (showDivider) {
+      row = Stack(
+        children: [
+          row,
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: CoreDivider(
+              indent: CoreSpacing.space5,
+              endIndent: CoreSpacing.space5,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Semantics(
+      label: semanticLabel ??
+          (_isCheckRow && subtitle != null ? '$title, $subtitle' : title),
+      button: true,
+      enabled: enabled,
+      checked: selected,
+      child: Material(
+        color: selected && !_isCheckRow
+            ? colors.backgroundBlueLight
+            : colors.transparent,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: enabled ? () => onChanged(!selected) : null,
+          canRequestFocus: false,
+          borderRadius: radius,
+          splashFactory: NoSplash.splashFactory,
+          // Dropdown cell: no press. Check row: the library's Grey Mid.
+          highlightColor:
+              _isCheckRow ? colors.backgroundGrayMid : colors.transparent,
+          hoverColor: colors.transparent,
+          // _RowFocus draws the focus look; the ink adds no grey on top.
+          focusColor: colors.transparent,
+          child: _RowFocus(
+            onActivate: enabled ? () => onChanged(!selected) : null,
+            radius: radius,
+            child: row,
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _RowFocus extends StatefulWidget {
+  const _RowFocus({
+    required this.onActivate,
+    required this.radius,
+    required this.child,
+  });
+
+  final VoidCallback? onActivate;
+  final BorderRadius radius;
+  final Widget child;
+
+  @override
+  State<_RowFocus> createState() => _RowFocusState();
+}
+
+class _RowFocusState extends State<_RowFocus> {
+  static const double _ringWidth = 2;
+
+  bool _showsRing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final onActivate = widget.onActivate;
+
+    // Tab reaches the row and Enter or Space toggles it. Keyboard focus draws
+    // a 2 dp outlineFocus ring inside the row, as on the other coreui parts.
+    return FocusableActionDetector(
+      enabled: onActivate != null,
+      onShowFocusHighlight: (showsRing) =>
+          setState(() => _showsRing = showsRing),
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            onActivate?.call();
+            return null;
+          },
+        ),
+      },
+      child: Stack(
+        children: [
+          widget.child,
+          if (_showsRing)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: colors.outlineFocus,
+                      width: _ringWidth,
+                    ),
+                    borderRadius: widget.radius,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -14,6 +14,7 @@ class _CheckRowItemShowcaseScreenState
   final Set<String> _selectedOwners = {'John Doe'};
   bool _customLeadingSelected = false;
   bool _customAvatarColorsSelected = false;
+  final Set<String> _recipients = {'Floyd Miles'};
 
   static const _owners = [
     'John Doe',
@@ -35,7 +36,23 @@ class _CheckRowItemShowcaseScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Owner list (default avatar)',
+            Text('Send to (Check row)', style: typography.bodyLargeSemiBold),
+            const SizedBox(height: CoreSpacing.space2),
+            for (final (index, owner) in _owners.indexed)
+              CoreCheckRowItem.checkRow(
+                title: owner,
+                subtitle: '${owner.split(' ').first.toLowerCase()}@acme.com',
+                selected: _recipients.contains(owner),
+                enabled: owner != 'Esther Howard',
+                showDivider: index != _owners.length - 1,
+                onChanged: (value) => setState(
+                  () => value
+                      ? _recipients.add(owner)
+                      : _recipients.remove(owner),
+                ),
+              ),
+            const SizedBox(height: CoreSpacing.space6),
+            Text('Owner list (Dropdown cell)',
                 style: typography.bodyLargeSemiBold),
             const SizedBox(height: CoreSpacing.space2),
             for (final owner in _owners)
