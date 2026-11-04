@@ -72,8 +72,8 @@ class CoreKeyboard extends StatefulWidget {
   /// Called with the operator when an operator key is tapped.
   final ValueChanged<OperatorType> onOperatorPressed;
 
-  /// Called with the action when delete, clear all, `( )` or more options
-  /// is tapped.
+  /// Called with the action when clear all, delete or `( )` is tapped.
+  /// The keyboard draws no more-options key.
   final ValueChanged<ControlAction> onControlAction;
 
   /// Called when the result key is tapped.
@@ -90,8 +90,8 @@ class CoreKeyboard extends StatefulWidget {
   /// What the result key computes. Defaults to `=`.
   final ResultType result;
 
-  /// Picks the unit keys: yd, ft, in for imperial (the default) or m, cm,
-  /// mm for metric.
+  /// Picks the unit keys: Yards, Feet and Inch for imperial (the default),
+  /// or M, CM and MM for metric.
   final UnitSystem currentUnitSystem;
 
   /// Called with the new system when the switch in the "View all" sheet is
