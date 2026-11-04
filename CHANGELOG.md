@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.82.0] - CoreCheckRowItem.checkRow, disabled rows and a keyboard focus ring
+
+### ✨ Features
+
+- **CoreCheckRowItem.checkRow**: a second look for the row, the Figma List item "Check row" (62505:74872) for lists such as the CUJ 8 "Send to" sheet: 40 dp avatar (`backgroundBlueLight`, initial `bodyLargeSemiBold` `textLink`), name `bodyLargeMedium` `textHeadline`, second line `bodyMediumRegular` `textBody`, 12 dp above and below, 20 dp at the sides, 12 dp gaps, `iconDark` tick, no fill when selected, and a 1 dp `lineLight` divider inset 20 dp on the bottom edge that adds no height. `showDivider: false` drops it on the last row; only this constructor takes `showDivider`, so a Dropdown cell cannot get one. The default `CoreCheckRowItem(...)` keeps the library Dropdown cell look of 0.46.0 (CA-1318), so current callers do not change (CA-1344)
+- **CoreCheckRowItem.enabled** (both looks, default `true`): `false` ignores taps, Tab skips the row, a screen reader reads it as disabled, and the name, second line and default initial use `textDisable`. A custom `leading` or `avatarTextColor` is not dimmed; the box keeps its look (CA-1344)
+
+### 🔧 Fixes
+
+- **CoreCheckRowItem keyboard focus**: Tab used to show Material's grey focus overlay, which is not a library colour. Both looks now draw the 2 dp `outlineFocus` ring other coreui parts use, just inside the row and following its radius, for keyboard focus only; a touch after Tab clears it. Enter or Space toggles the row
+
+### 📐 Design notes
+
+The Check row's pressed fill is `backgroundGrayMid`, not Figma's Background Grey Light: in coreui Grey Light is the page colour, so the press would not show. The preference rows made the same choice (CA-1318) until the page colour is settled. Neither library part draws a focused state.
+
+### 🧪 Tests
+
+- Widget tests: the Check row's styles, sizes (64 dp, 68 dp with a second line), tick colours, divider, no selected fill; press fill read as pixels on the page and inside a coloured parent; for both looks two taps toggle twice, a disabled row ignores two taps and dims its text, reads as disabled, Tab draws the ring with no grey, Enter toggles, a touch after Tab clears the ring, Tab skips a disabled row; at least 48 dp high for each look, also with a small leading widget; the initial stays inside the 40 dp avatar at 200% text
+- Accessibility tests: the Check row (selected and not, padded off the screen edge) and a disabled Check row meet the tap target and contrast guidelines in both themes
+- Goldens (light and dark): Check row default, selected, disabled, disabled selected, last row, Dropdown cell disabled and disabled selected; Check row pressed; Check row and Dropdown cell focused
+
 ## [0.81.0] - Receipt toast View: press and focus looks
 
 ### 🔧 Fixes
