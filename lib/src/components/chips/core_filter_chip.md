@@ -19,7 +19,7 @@ CoreFilterChip(
 | Property        | Type            | Required | Description                                                     |
 |-----------------|-----------------|----------|-----------------------------------------------------------------|
 | `label`         | `String`        | Yes      | The text on the chip.                                           |
-| `onTap`         | `VoidCallback?` | No       | Called when the chip is tapped. Null draws a chip that does not respond. |
+| `onTap`         | `VoidCallback?` | No       | Called when the chip is tapped. Null disables the chip (see Disabled). |
 | `semanticLabel` | `String?`       | No       | Accessibility label. Defaults to `label`.                       |
 
 `CoreFilterChip.pillKey` finds the outlined pill in widget tests.
@@ -41,6 +41,11 @@ CoreFilterChip(
   (2 dp). The chip keeps its size, and no tint covers the touch area.
 - **Large text**: the pill height is a minimum, so at 200% text the pill grows
   and the label is not cut.
+- **Disabled** (`onTap` is null): the library Unit chip's State=Disable look
+  (Figma 66489:59599), as the library draws no disabled Filter chip. The border
+  is `lineLight`, the label `textDisable` and the arrow `iconGrayLight`. The
+  fill, label style and size do not change. The chip shows no press fill, Tab
+  skips it, and a screen reader reads it as disabled.
 
 The chip brings its own transparent `Material`, so it draws the same on a
 coloured parent, or with no `Material` above it.

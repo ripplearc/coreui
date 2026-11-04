@@ -7,7 +7,9 @@ import 'core_chip_theme.dart';
 ///
 /// Renders as the Figma Filter chip: a 32 dp outlined pill with a label and
 /// trailing dropdown arrow, centred in a 48 x 48 dp minimum touch area.
-/// When [onTap] is null the chip is rendered in a non-interactive state.
+/// When [onTap] is null the chip is disabled and draws the library Unit
+/// chip's State=Disable look: a `lineLight` border, a `textDisable` label and
+/// an `iconGrayLight` arrow.
 /// Keyboard focus draws the pill border in `outlineFocus` at the chip focus
 /// width. Pressed, the pill fills `backgroundGrayMid`.
 class CoreFilterChip extends StatefulWidget {
@@ -90,7 +92,9 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
                   border: Border.all(
                     color: _isFocused
                         ? colors.outlineFocus
-                        : colors.lineDarkOutline,
+                        : isEnabled
+                            ? colors.lineDarkOutline
+                            : colors.lineLight,
                     width: borderWidth,
                   ),
                 ),
@@ -101,7 +105,9 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
                       child: Text(
                         widget.label,
                         style: typography.bodyMediumRegular.copyWith(
-                          color: colors.textDark,
+                          color: isEnabled
+                              ? colors.textDark
+                              : colors.textDisable,
                         ),
                       ),
                     ),
@@ -109,7 +115,9 @@ class _CoreFilterChipState extends State<CoreFilterChip> {
                     ExcludeSemantics(
                       child: CoreIconWidget(
                         icon: CoreIcons.arrowDropDown,
-                        color: colors.textDark,
+                        color: isEnabled
+                            ? colors.textDark
+                            : colors.iconGrayLight,
                         size: CoreIconSize.size24,
                       ),
                     ),
