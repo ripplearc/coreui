@@ -68,8 +68,9 @@ class CoreSizesColumn {
 /// no add action. That lets the same widget express a reorderable, extendable
 /// sizes table and a fixed, read-only rates table.
 class CoreSizesTableData {
-  /// Creates a table. [id] must not be empty, and each callback needs its
-  /// labels: [onReordered] a [dragHandleLabel], [onSaved] the edit labels.
+  /// Creates a table. [id] must not be empty, and each callback and
+  /// [unitOptions] needs the labels its assert names, such as
+  /// [dragHandleLabel] for [onReordered] and [addLabel] for [onAdd].
   const CoreSizesTableData({
     required this.id,
     required this.title,
