@@ -703,6 +703,101 @@ void main() {
       });
     });
 
+    group('alert text button', () {
+      final actionFinder = find.byKey(const Key('toast_action_button'));
+      final helpers = <(
+        String,
+        void Function(
+          BuildContext context,
+          String message,
+          String closeLabel, {
+          String? actionLabel,
+          VoidCallback? onAction,
+        }),
+      )>[
+        ('showError', CoreToast.showError),
+        ('showSuccess', CoreToast.showSuccess),
+        ('showWarning', CoreToast.showWarning),
+      ];
+
+      Widget buildHost(void Function(BuildContext context) show) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => show(context),
+                child: const Text('Show Toast'),
+              ),
+            ),
+          ),
+        );
+      }
+
+      for (final (name, show) in helpers) {
+        testWidgets('$name without actionLabel shows no text button',
+            (tester) async {
+          await tester.pumpWidget(
+            buildHost((context) => show(context, 'Upload failed', 'Close')),
+          );
+
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Upload failed'), findsOneWidget);
+          expect(actionFinder, findsNothing);
+        });
+
+        testWidgets('$name View fires onAction once and closes the toast',
+            (tester) async {
+          var actions = 0;
+          await tester.pumpWidget(
+            buildHost(
+              (context) => show(
+                context,
+                'Upload failed',
+                'Close',
+                actionLabel: 'View',
+                onAction: () => actions++,
+              ),
+            ),
+          );
+
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
+          expect(
+            find.descendant(of: actionFinder, matching: find.text('View')),
+            findsOneWidget,
+          );
+
+          await tester.tap(actionFinder);
+          await tester.pumpAndSettle();
+
+          expect(actions, 1);
+          expect(find.byType(Toast), findsNothing);
+        });
+
+        testWidgets(
+            '$name with actionLabel and no onAction fails at the caller '
+            'and leaves the toast on screen', (tester) async {
+          await tester.pumpWidget(
+            buildHost((context) => show(context, 'First toast', 'Close')),
+          );
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
+          final context = tester.element(find.text('Show Toast'));
+
+          expect(
+            () => show(context, 'Second toast', 'Close', actionLabel: 'View'),
+            throwsAssertionError,
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.text('First toast'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        });
+      }
+    });
+
     group('overlay entry lifecycle', () {
       Widget buildHost() {
         return MaterialApp(
