@@ -44,12 +44,13 @@ enum _ToastType {
 /// readers. [actionLabel] adds a text button beside it; taking it fires
 /// [onAction], then [onClose].
 class Toast extends StatefulWidget {
-  /// Bold first line of an alert, above [description]. When null, the alert
-  /// is the small one-line look that shows [description] alone.
+  /// Larger first line of an alert, above [description]. When null, the
+  /// alert is the small one-line look that shows [description] alone.
   final String? title;
 
   /// The message. In an alert it sits under [title], or alone when [title] is
-  /// null; in the receipt it is the bold lead before [highlight].
+  /// null; in the receipt it is the lead, in the heavier weight, before
+  /// [highlight].
   final String description;
 
   /// The receipt's tail, set after a middot in the lighter weight: what was

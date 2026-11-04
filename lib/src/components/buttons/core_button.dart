@@ -37,11 +37,12 @@ class CoreButton extends StatefulWidget {
   /// show. The button does not style it.
   final Widget? child;
 
-  /// Called on tap, Enter or Space. When null the button is disabled.
+  /// Called on tap. When null the button is disabled.
   final VoidCallback? onPressed;
 
   /// Height of the button: 48, 40 or 36 px. Defaults to
-  /// [CoreButtonSize.large].
+  /// [CoreButtonSize.large]. A [CoreButtonVariant.social] button must be
+  /// large, or the build throws.
   final CoreButtonSize size;
 
   /// Look of the button. Defaults to [CoreButtonVariant.primary].
