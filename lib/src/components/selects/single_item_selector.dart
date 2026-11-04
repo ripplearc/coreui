@@ -19,8 +19,8 @@ class SingleItemSelector<T> extends StatefulWidget {
   /// Items listed in the sheet, in this order.
   final List<T> items;
 
-  /// Called with the tapped item after the sheet closes. The caller then
-  /// passes it back as [selectedItem].
+  /// Called with the tapped item as the sheet starts to close. The caller
+  /// then passes it back as [selectedItem].
   final ValueChanged<T?> onItemSelected;
 
   /// Text for an item in the field and the sheet. When null the item's
