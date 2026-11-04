@@ -22,7 +22,8 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   /// Called with a group's name when its header is tapped.
   final ValueChanged<GroupNameType> onGroupSelected;
 
-  /// Called with the key when a function key is tapped.
+  /// Called with the key when a function key is tapped. The key's own
+  /// [KeyType.action] runs right after.
   final ValueChanged<KeyType> onKeyTapped;
 
   /// Called with the dragged group's old index and its final index once it
