@@ -4,25 +4,34 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A button widget for numeric digit input on the keyboard.
 ///
-/// [digit] is the type of digit to display (0-9, decimal, or divide symbol).
-/// [onDigitPressed] is called when the button is pressed.
-/// [isEmphasized] determines if the button uses emphasized styling.
-/// [size] is the width and height of the button (defaults to 64px).
-/// [textStyle] replaces the label style, which by default is
-/// `titleLargeMedium` scaled to the button's height. The colour stays
-/// `textHeadline` either way.
-///
 /// The rendered button carries [DigitTypeX.testKey] (`calc_key_seven`) for
 /// Patrol and widget tests.
 class CoreDigitInput extends StatelessWidget {
+  /// The key's digit, decimal point or divide sign, shown as its label.
   final DigitType digit;
+
+  /// Called with [digit] when the key is tapped.
   final ValueChanged<DigitType> onDigitPressed;
+
+  /// Draws the key in the operator keys' `keyboardCalculate` colour in place
+  /// of the digit grey. Defaults to false.
   final bool isEmphasized;
+
+  /// Width and height in px when [width] or [height] is null. Defaults to
+  /// 64.
   final double? size;
+
+  /// Width in px. When null the key is [size] wide.
   final double? width;
+
+  /// Height in px. When null the key is [size] tall.
   final double? height;
+
+  /// Replaces the label style, which by default is `titleLargeMedium`
+  /// scaled to the key's height. The colour stays `textHeadline` either way.
   final TextStyle? textStyle;
 
+  /// Creates a round digit key.
   const CoreDigitInput({
     super.key,
     required this.digit,
@@ -71,19 +80,26 @@ class CoreDigitInput extends StatelessWidget {
 
 /// A button widget for mathematical operators on the keyboard.
 ///
-/// [operatorType] is the type of operator to display (+, −, ×, ÷, %).
-/// [onOperatorPressed] is called when the button is pressed.
-/// [size] is the width and height of the button (defaults to 64px).
-///
 /// The rendered button carries [OperatorTypeX.testKey] (`calc_key_add`) for
 /// Patrol and widget tests.
 class CoreOperatorButton extends StatelessWidget {
+  /// The operator the key shows as its icon: +, −, ×, ÷ or %.
   final OperatorType operatorType;
+
+  /// Called with [operatorType] when the key is tapped.
   final ValueChanged<OperatorType> onOperatorPressed;
+
+  /// Width and height in px when [width] or [height] is null. Defaults to
+  /// 64.
   final double? size;
+
+  /// Width in px. When null the key is [size] wide.
   final double? width;
+
+  /// Height in px. When null the key is [size] tall.
   final double? height;
 
+  /// Creates a round operator key.
   const CoreOperatorButton({
     super.key,
     required this.operatorType,
@@ -120,19 +136,24 @@ class CoreOperatorButton extends StatelessWidget {
 
 /// A button widget for measurement units on the keyboard.
 ///
-/// [unit] is the type of unit to display (yards, feet, inch, meters, etc.).
-/// [onUnitSelected] is called when the button is pressed.
-/// [width] is the width of the button.
-/// [height] is the height of the button. If not provided, defaults to 78% of width or 60px.
-///
 /// The rendered button carries [UnitTypeX.testKey] (`calc_key_feet`) for
 /// Patrol and widget tests.
 class CoreUnitButton extends StatelessWidget {
+  /// The unit the key shows, such as ft or m. [UnitType.divideSymbol]
+  /// draws a round key with a slash icon in place of a label.
   final UnitType unit;
+
+  /// Called with [unit] when the key is tapped.
   final ValueChanged<UnitType> onUnitSelected;
+
+  /// Width in px. When null the key is 64 px wide.
   final double? width;
+
+  /// Height in px. When null the key takes the height its parent gives,
+  /// and the label keeps its theme size.
   final double? height;
 
+  /// Creates a unit key.
   const CoreUnitButton({
     super.key,
     required this.unit,
@@ -185,32 +206,41 @@ class CoreUnitButton extends StatelessWidget {
 
 /// A button widget for control actions on the keyboard.
 ///
-/// [action] is the type of control action (delete, clear all, bracket).
-/// [onControlAction] is called when the button is pressed.
-/// [enabled] is whether the button answers taps; `false` dims it, drops its
-/// tap action and reports it disabled to a screen reader.
-/// [isNeutral] draws the button on the digit keys' grey with a dark grey
-/// face, in place of its action's colour, so it does not compete with a
-/// filled commit button beside it.
-/// [semanticLabel] replaces the English screen-reader label built for
-/// [action] with the app's localised one.
-/// [semanticHint] does the same for the hint, and is withheld while the
-/// button is not [enabled].
-/// [width] is the width of the button.
-/// [height] is the height of the button.
-///
 /// The rendered button carries [ControlActionX.testKey] (`calc_key_clearAll`)
 /// for Patrol and widget tests.
 class CoreControlButton extends StatelessWidget {
+  /// What the key does: delete, clear all, more options or bracket. It also
+  /// picks the key's colour, label or icon.
   final ControlAction action;
+
+  /// Called with [action] when the key is tapped.
   final ValueChanged<ControlAction> onControlAction;
+
+  /// Whether the key answers taps; `false` dims it, drops its tap action
+  /// and reports it disabled to a screen reader. Defaults to true.
   final bool enabled;
+
+  /// Draws the key on the digit keys' grey with a dark grey face, in place
+  /// of its action's colour, so it does not compete with a filled commit
+  /// key beside it. Defaults to false.
   final bool isNeutral;
+
+  /// Replaces the English screen-reader label built for [action] with the
+  /// app's localised one.
   final String? semanticLabel;
+
+  /// Replaces the English screen-reader hint built for [action]. No hint
+  /// is announced while the key is not [enabled].
   final String? semanticHint;
+
+  /// Width in px. When null the key is 64 px wide.
   final double? width;
+
+  /// Height in px. When null the key takes the height its parent gives,
+  /// and the label keeps its theme size.
   final double? height;
 
+  /// Creates a round control key.
   const CoreControlButton({
     super.key,
     required this.action,
@@ -303,23 +333,29 @@ class CoreControlButton extends StatelessWidget {
 
 /// A button widget for result actions on the keyboard.
 ///
-/// [resultType] is the type of result to display (equals, area, volume, density, or custom).
-/// [onTap] is called when the button is pressed.
-/// [customLabel] overrides [resultType]'s label and is rendered verbatim.
-/// [width] is the width of the button.
-/// [height] is the height of the button. If not provided, defaults to 53% of width or 56px.
-///
 /// The rendered button carries [testKey] for Patrol and widget tests.
 class CoreResultButton extends StatelessWidget {
   /// The [Key] the rendered result button carries: `calc_key_result`.
   static const Key testKey = ValueKey('calc_key_result');
 
+  /// The result the key computes; its label is shown in capitals.
   final ResultType resultType;
+
+  /// Called when the key is tapped.
   final VoidCallback onTap;
+
+  /// Replaces [resultType]'s label and is shown as written, for a commit
+  /// key such as "Update". An empty string counts as null.
   final String? customLabel;
+
+  /// Width in px. When null the key is 64 px wide.
   final double? width;
+
+  /// Height in px. When null the key takes the height its parent gives,
+  /// and the label keeps its theme size.
   final double? height;
 
+  /// Creates the round result key.
   const CoreResultButton({
     super.key,
     required this.resultType,
