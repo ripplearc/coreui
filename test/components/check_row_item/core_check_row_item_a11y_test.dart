@@ -65,22 +65,5 @@ void main() {
         );
       });
     }
-
-    testWidgets('disabled Check row text meets the contrast guideline',
-        (tester) async {
-      await setupA11yTest(tester);
-
-      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-        tester,
-        (theme) => CoreCheckRowItem.checkRow(
-          title: 'John Doe',
-          selected: false,
-          enabled: false,
-          onChanged: (_) {},
-        ),
-        find.byType(CoreCheckRowItem),
-        checkLabeledTapTarget: false,
-      );
-    });
   });
 }

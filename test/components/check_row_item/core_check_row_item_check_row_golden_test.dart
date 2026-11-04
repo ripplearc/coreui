@@ -50,10 +50,16 @@ void main() {
   for (final MapEntry(key: mode, value: theme) in themes.entries) {
     testWidgets('Check row states and disabled Dropdown cell - $mode',
         (tester) async {
-      await pumpRows(tester, theme, const Size(360, 440), const [
+      await pumpRows(tester, theme, const Size(360, 528), const [
         CoreCheckRowItem.checkRow(
           title: 'John Doe',
           subtitle: 'john@acme.com',
+          selected: false,
+          onChanged: _noop,
+        ),
+        CoreCheckRowItem.checkRow(
+          title: 'Judy Smith',
+          subtitle: 'Homeowner · judy.smith@gmail.com',
           selected: false,
           onChanged: _noop,
         ),

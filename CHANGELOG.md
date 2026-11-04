@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-- **CoreCheckRowItem.checkRow**: a second look for the row, the Figma List item "Check row" (62505:74872) for lists such as the CUJ 8 "Send to" sheet: 40 dp avatar (`backgroundBlueLight`, two initials such as "JS" in `bodyLargeSemiBold` `textLink`, as the storyboard's Send to list draws them; new `CoreCheckRowItem.initialsFor`), name `bodyLargeMedium` `textHeadline`, second line `bodyMediumRegular` `textBody`, 12 dp above and below, 20 dp at the sides, 12 dp gaps, `iconDark` tick, no fill when selected, and a 1 dp `lineLight` divider inset 20 dp on the bottom edge that adds no height. `showDivider: false` drops it on the last row; only this constructor takes `showDivider`, so a Dropdown cell cannot get one. The default `CoreCheckRowItem(...)` keeps the library Dropdown cell look of 0.46.0 (CA-1318), so current callers do not change (CA-1344)
+- **CoreCheckRowItem.checkRow**: a second look for the row, the Figma List item "Check row" (62505:74872) for lists such as the CUJ 8 "Send to" sheet: 40 dp avatar (`backgroundBlueLight`, two initials such as "JS" in `bodyLargeSemiBold` `textLink`, as the storyboard's Send to list draws them; new `CoreCheckRowItem.initialsFor`), name `bodyLargeMedium` `textHeadline`, second line `bodyMediumRegular` `textBody`, 12 dp above and below, 20 dp at the sides, 12 dp gaps, `iconDark` tick, no fill when selected, and a 1 dp `lineLight` divider inset 20 dp on the bottom edge that adds no height. `showDivider: false` drops it on the last row; only this constructor takes `showDivider`, so a Dropdown cell cannot get one. The default `CoreCheckRowItem(...)` keeps the library Dropdown cell look of 0.46.0 (CA-1318), so current callers do not change. A screen reader reads the Check row's name and second line ("Judy Smith, Homeowner · judy.smith@gmail.com"), so two people with the same name sound different; `semanticLabel` still overrides it (CA-1344)
 - **CoreCheckRowItem.enabled** (both looks, default `true`): `false` ignores taps, Tab skips the row, a screen reader reads it as disabled, and the name, second line and default initial use `textDisable`. A custom `leading` or `avatarTextColor` is not dimmed; the box keeps its look (CA-1344)
 
 ### 🔧 Fixes
@@ -13,14 +13,14 @@
 
 ### 📐 Design notes
 
-The Check row's pressed fill is `backgroundGrayMid`, not Figma's Background Grey Light: in coreui Grey Light is the page colour, so the press would not show. The preference rows made the same choice (CA-1318). CA-1373 (white page background) moves the press to Grey Light. Neither library part draws a focused state.
+The Check row's pressed fill is `backgroundGrayMid`, Background/Grey Mid as the library draws it (node 66801:224029). Neither library part draws a focused state.
 
 ### 🧪 Tests
 
 - Unit tests: `initialsFor` for two words, three words, one word, extra spaces and a blank name
-- Widget tests: the Check row shows two initials and the Dropdown cell one; the Check row's styles, sizes (64 dp, 68 dp with a second line), tick colours, divider, no selected fill; press fill read as pixels on the page and inside a coloured parent; for both looks two taps toggle twice, a disabled row ignores two taps and dims its text, reads as disabled, Tab draws the ring with no grey, Enter toggles, a touch after Tab clears the ring, Tab skips a disabled row; at least 48 dp high for each look, also with a small leading widget; the initial stays inside the 40 dp avatar at 200% text
-- Accessibility tests: the Check row (selected and not, padded off the screen edge) and a disabled Check row meet the tap target and contrast guidelines in both themes
-- Goldens (light and dark): Check row default, selected, disabled, disabled selected, last row, Dropdown cell disabled and disabled selected; Check row pressed; Check row and Dropdown cell focused
+- Widget tests: the Check row shows two initials and the Dropdown cell one; the Check row's styles, sizes (64 dp, 68 dp with a second line), tick colours, divider, no selected fill; press fill read as pixels on the page and inside a coloured parent; the screen reader label (name and second line in the Check row, name only in the Dropdown cell, `semanticLabel` wins); for both looks two taps toggle twice, a disabled row ignores two taps and dims its text, reads as disabled, Tab draws the ring with no grey, Enter toggles, a touch after Tab clears the ring, Tab skips a disabled row; at least 48 dp high for each look, also with a small leading widget; the initial stays inside the 40 dp avatar at 200% text
+- Accessibility tests: the Check row (selected and not, padded off the screen edge) meets the tap target and contrast guidelines in both themes. A disabled row has no test here: Flutter's tap target and contrast guidelines skip disabled nodes, so it could not fail; the widget tests check its `textDisable` colour
+- Goldens (light and dark): Check row default, a second line that wraps at 360 dp ("Homeowner · judy.smith@gmail.com", 88 dp), selected, disabled, disabled selected, last row, Dropdown cell disabled and disabled selected; Check row pressed; Check row and Dropdown cell focused
 
 ## [0.81.0] - Receipt toast View: press and focus looks
 

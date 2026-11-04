@@ -57,7 +57,7 @@ class CoreCheckRowItem extends StatelessWidget {
   /// The effective [avatarTextColor] is always applied on top of this style.
   final TextStyle? avatarTextStyle;
 
-  /// Accessibility label for the row. Defaults to [title].
+  /// Accessibility label. Defaults to [title]; Check row: "title, subtitle".
   final String? semanticLabel;
 
   /// Creates a selectable checkbox row drawn as the library Dropdown cell.
@@ -237,7 +237,8 @@ class CoreCheckRowItem extends StatelessWidget {
     }
 
     return Semantics(
-      label: semanticLabel ?? title,
+      label: semanticLabel ??
+          (_isCheckRow && subtitle != null ? '$title, $subtitle' : title),
       button: true,
       enabled: enabled,
       checked: selected,
@@ -251,9 +252,7 @@ class CoreCheckRowItem extends StatelessWidget {
           canRequestFocus: false,
           borderRadius: radius,
           splashFactory: NoSplash.splashFactory,
-          // The library Dropdown cell has no pressed or hover state. The
-          // Check row's Grey Light press is the page colour in coreui, so it
-          // fills Grey Mid, as the preference rows do.
+          // Dropdown cell: no press. Check row: the library's Grey Mid.
           highlightColor:
               _isCheckRow ? colors.backgroundGrayMid : colors.transparent,
           hoverColor: colors.transparent,

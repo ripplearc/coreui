@@ -321,6 +321,60 @@ void main() {
     });
   });
 
+  group('CoreCheckRowItem – screen reader label', () {
+    final cases = <String, (CoreCheckRowItem, String)>{
+      'Check row with a second line reads both lines': (
+        CoreCheckRowItem.checkRow(
+          title: 'Judy Smith',
+          subtitle: 'Homeowner · judy.smith@gmail.com',
+          selected: false,
+          onChanged: (_) {},
+        ),
+        'Judy Smith, Homeowner · judy.smith@gmail.com',
+      ),
+      'Check row without a second line reads the name': (
+        CoreCheckRowItem.checkRow(
+          title: 'Judy Smith',
+          selected: false,
+          onChanged: (_) {},
+        ),
+        'Judy Smith',
+      ),
+      'Dropdown cell reads the name only': (
+        CoreCheckRowItem(
+          title: 'Judy Smith',
+          subtitle: 'judy.smith@gmail.com',
+          selected: false,
+          onChanged: (_) {},
+        ),
+        'Judy Smith',
+      ),
+      'semanticLabel overrides the Check row default': (
+        CoreCheckRowItem.checkRow(
+          title: 'Judy Smith',
+          subtitle: 'judy.smith@gmail.com',
+          semanticLabel: 'Judy, owner',
+          selected: false,
+          onChanged: (_) {},
+        ),
+        'Judy, owner',
+      ),
+    };
+
+    for (final MapEntry(key: name, value: (row, label)) in cases.entries) {
+      testWidgets(name, (tester) async {
+        final handle = tester.ensureSemantics();
+        await pumpRow(tester, row);
+
+        expect(
+          tester.getSemantics(rowFinder).getSemanticsData().label,
+          label,
+        );
+        handle.dispose();
+      });
+    }
+  });
+
   group('CoreCheckRowItem – tap size, every look', () {
     final cases = <String, CoreCheckRowItem>{
       'Dropdown cell': CoreCheckRowItem(

@@ -15,7 +15,7 @@ It draws one of two parts of the Figma library:
 | Second line | `bodySmallRegular`, `textBody` | `bodyMediumRegular`, `textBody` |
 | Box | `outlineFocus` ticked, `iconGrayMid` empty | `iconDark` ticked, `iconGrayMid` empty |
 | Selected | `backgroundBlueLight` fill, 48 dp radius | No fill; only the box changes |
-| Pressed | No tint (the library cell has none) | `backgroundGrayMid` fill. Figma draws Background Grey Light, but in coreui that is the page colour (`pageBackground`), so the press would not show; Grey Mid follows the preference rows (CA-1318) until CA-1373 makes the page white |
+| Pressed | No tint (the library cell has none) | `backgroundGrayMid` fill, Background/Grey Mid as the library draws it |
 | Divider | None | 1 dp `lineLight`, inset 20 dp, on the bottom edge (adds no height). `showDivider: false` on the last row |
 | Height | 48 dp | 64 dp with the default avatar, 68 dp with a second line; never under 48 dp |
 
@@ -84,7 +84,7 @@ CoreCheckRowItem(
 | `avatarBackgroundColor`  | `Color?`                 | No       | Background color for the default leading avatar. Ignored when `leading` is supplied.                  |
 | `avatarTextColor`        | `Color?`                 | No       | Initial-text color for the default leading avatar. Ignored when `leading` is supplied.                |
 | `avatarTextStyle`        | `TextStyle?`             | No       | Full override of the default leading avatar's initial text style. Ignored when `leading` is supplied. `avatarTextColor` is applied on top. |
-| `semanticLabel`          | `String?`                | No       | Accessibility label for the row. Defaults to `title`.                                                  |
+| `semanticLabel`          | `String?`                | No       | Accessibility label for the row. Defaults to `title`; in the Check row with a `subtitle`, to "title, subtitle". |
 
 ## Initial derivation
 
@@ -107,4 +107,4 @@ The Dropdown cell's default avatar shows **one initial** (`CoreCheckRowItem.init
 
 ## Accessibility
 
-The row exposes a `Semantics(button: true, enabled: enabled, checked: selected)` node with a label (defaulting to `title`); the trailing checkbox icon is excluded from the semantics tree to avoid a duplicate, separately-focusable element, since toggling is exposed at the row level.
+The row exposes a `Semantics(button: true, enabled: enabled, checked: selected)` node with a label (defaulting to `title`, or "title, subtitle" in the Check row when it has a second line, so two people with the same name sound different); the trailing checkbox icon is excluded from the semantics tree to avoid a duplicate, separately-focusable element, since toggling is exposed at the row level.
