@@ -13,6 +13,8 @@ Toast.error(
   closeLabel: 'Close',
   title: 'Error', // Optional
   onClose: () {}, // Optional
+  actionLabel: 'View', // Optional, travels with onAction
+  onAction: () {},
 );
 
 // Warning toast
@@ -57,7 +59,9 @@ Toast.acknowledgement(description: 'Added to Bedroom 2');
 | `description` | `String`        | Yes      | The main message to be displayed in the toast                         |
 | `closeLabel`  | `String`        | Yes      | The screen-reader label of the close x. It is not drawn               |
 | `title`       | `String?`       | No       | Optional title text displayed above the description                   |
-| `onClose`     | `VoidCallback?` | No       | Called when the close x is tapped. Without it, the close x pops the current route |
+| `onClose`     | `VoidCallback?` | No       | Called when the toast closes, from the close x or after the text button. Without it, the close x pops the current route; the text button never pops one, because its action may have just opened a page |
+| `actionLabel` | `String?`       | No       | A text button beside the close x — "View". At most 120 dp wide; a longer label ends in an ellipsis on one line, so the message and the x keep their room. Travels with `onAction` |
+| `onAction`    | `VoidCallback?` | No       | Fires when the text button is tapped, then `onClose` fires; with `onClose` it fires once. The text button never pops a route, so pass `onClose` to remove the alert; without it, `onAction` fires on every tap |
 
 ### Toast.receipt Properties
 
@@ -167,7 +171,8 @@ The Toast component includes semantic labels for accessibility:
 - The close button is marked as a button
 - The title (if present) is used as the primary label
 - The description is used as a hint when a title is present
-- The close x has its own semantics node, labelled with `closeLabel`
+- The close x has its own semantics node, labelled with `closeLabel`; the
+  alert's text button has its own node, labelled by its text
 - The close x takes keyboard focus: Tab reaches it and Enter or Space closes the
   alert. It is an `InkWell` with its own `Material`, so it works on any parent
 - A receipt's lead and highlight are read as one label ("Saved to history · Calc 60ft²")
@@ -208,10 +213,10 @@ The Toast component includes semantic labels for accessibility:
   (`CoreSpacing.space1` for a receipt, whose actions already stand 48 dp tall)
 - An alert without a title is the library's Small alert (Figma `7:2638`): its
   surface is drawn 40 dp high with `CoreSpacing.space3` at the sides, and its
-  text is `CoreTypography.bodyMediumMedium`. Its close x keeps a 48 dp
-  target, so they stand 4 dp past the surface's top and bottom edges.
+  text is `CoreTypography.bodyMediumMedium`. Its text button and close x keep
+  48 dp targets, so they stand 4 dp past the surface's top and bottom edges.
   An alert with a title keeps the Large alert text (Figma `7:2594`), with its
-  icon and close x on the first title line
+  icon, text button and close x on the first title line
 - Close: a plain `CoreIcons.cross` in `iconDark`, 48 dp target. The padding at
   the end puts the glyph where Figma does, 4 dp in from the side padding.
   Pressed, the x turns `buttonPress`, as a pressed Text button label does.
@@ -227,6 +232,11 @@ The Toast component includes semantic labels for accessibility:
 - Typography:
     - Title/Description: `CoreTypography.bodyLargeMedium`
     - Description (when title present): `CoreTypography.bodySmallRegular`
+    - Alert text button: `CoreTypography.bodyMediumSemiBold` in `textLink`.
+      It is the library Text button: pressed, the label turns `buttonPress`;
+      focused (Tab), a 3 dp `outlineFocus` pill ring sits 12 dp outside the
+      label at the sides and 5 dp above and below it. It has its own
+      `Material`, so it works on any parent, and no tint covers its target
     - Receipt lead: `CoreTypography.bodyLargeSemiBold` in `textLink`
     - Receipt highlight: `CoreTypography.bodyLargeRegular` in `textLink`
     - Receipt secondary label: `CoreTypography.bodyLargeSemiBold` in `textLink` at 85 % opacity
@@ -330,6 +340,12 @@ their natural width on a phone. The order it gives ground in:
 3. The message keeps 40 % of the width it shares with the action, less that
    reserved target when there is a second action, and ellipsises at two lines
    beyond that.
+
+An alert's `View` is capped at a fixed 120 dp, whatever the screen width or text
+size. Known limit: on a 320 dp screen at 200 % text, a label as long as
+"Details anzeigen" leaves the message 52 dp, so "Upload failed" breaks inside
+its words. Nothing overflows and the x still works; moving the label under the
+message at large text is a design call.
 
 ### Acknowledgement toast
 

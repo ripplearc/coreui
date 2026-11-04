@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -134,8 +134,12 @@ void main() {
     });
 
     group('alert controls', () {
+      final actionFinder = find.byKey(const Key('toast_action_button'));
+
       Widget buildAlert({
         String? title,
+        String? actionLabel,
+        VoidCallback? onAction,
         VoidCallback? onClose,
       }) {
         return MaterialApp(
@@ -147,6 +151,8 @@ void main() {
                   title: title,
                   description: 'Upload failed',
                   closeLabel: 'Close',
+                  actionLabel: actionLabel,
+                  onAction: onAction,
                   onClose: onClose,
                 ),
               ),
@@ -170,10 +176,133 @@ void main() {
         handle.dispose();
       });
 
-      testWidgets('with a title, the x sits on the first title line',
+      testWidgets('draws no text button without an actionLabel',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildAlert());
+
+        expect(actionFinder, findsNothing);
+      });
+
+      testWidgets('the text button fires onAction, then onClose',
+          (WidgetTester tester) async {
+        final calls = <String>[];
+        await tester.pumpWidget(buildAlert(
+          actionLabel: 'View',
+          onAction: () => calls.add('action'),
+          onClose: () => calls.add('close'),
+        ));
+
+        expect(
+          find.descendant(of: actionFinder, matching: find.text('View')),
+          findsOneWidget,
+        );
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(calls, ['action', 'close']);
+      });
+
+      for (final (label, textScale) in [
+        ('Voir les détails du téléchargement', 1.0),
+        ('Details anzeigen', 2.0),
+      ]) {
+        testWidgets('a long View label at ${textScale}x text ends in an '
+            'ellipsis and keeps the message and the x in the alert',
+            (WidgetTester tester) async {
+          tester.view.physicalSize = const Size(360, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.reset);
+          await tester.pumpWidget(MaterialApp(
+            home: MediaQuery(
+              data: MediaQueryData(
+                size: const Size(360, 800),
+                textScaler: TextScaler.linear(textScale),
+              ),
+              child: Scaffold(
+                body: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoreSpacing.space4,
+                  ),
+                  child: Center(
+                    child: Toast.error(
+                      description: 'Upload failed',
+                      closeLabel: 'Close',
+                      actionLabel: label,
+                      onAction: () {},
+                      onClose: () {},
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ));
+
+          expect(tester.takeException(), isNull);
+          final alert = tester.getRect(find.byType(Toast));
+          final close =
+              tester.getRect(find.byKey(const Key('toast_close_button')));
+          final action = tester.getRect(actionFinder);
+          final message = tester.getRect(find.text('Upload failed'));
+          expect(alert.contains(close.topLeft), isTrue);
+          expect(alert.contains(close.bottomRight), isTrue);
+          expect(action.width, lessThanOrEqualTo(120));
+          expect(message.width, greaterThan(0));
+          expect(message.right, lessThanOrEqualTo(action.left));
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find.descendant(of: actionFinder, matching: find.text(label)),
+          );
+          expect(paragraph.didExceedMaxLines, isTrue);
+        });
+      }
+
+      testWidgets('without onClose, View fires on every tap and the alert stays',
+          (WidgetTester tester) async {
+        var actions = 0;
+        await tester.pumpWidget(buildAlert(
+          actionLabel: 'View',
+          onAction: () => actions++,
+        ));
+
+        await tester.tap(actionFinder);
+        await tester.pump();
+        await tester.tap(actionFinder);
+        await tester.pump();
+
+        expect(actions, 2);
+        expect(actionFinder, findsOneWidget);
+      });
+
+      testWidgets('a View that opens a page leaves the page on screen',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Toast.error(
+                description: 'Upload failed',
+                closeLabel: 'Close',
+                actionLabel: 'View',
+                onAction: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const Scaffold(body: Text('Details')),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+
+        await tester.tap(actionFinder);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Details'), findsOneWidget);
+      });
+
+      testWidgets('with a title, View and the x sit on the first title line',
           (WidgetTester tester) async {
         await tester.pumpWidget(buildAlert(
           title: 'Upload failed on two files',
+          actionLabel: 'View',
+          onAction: _noop,
           onClose: _noop,
         ));
 
@@ -182,6 +311,8 @@ void main() {
             tester.getTopLeft(find.text('Upload failed on two files')).dy +
                 halfTitleLine;
         expect(tester.getCenter(closeButtonFinder).dy,
+            moreOrLessEquals(firstTitleLineCentre, epsilon: 1));
+        expect(tester.getCenter(actionFinder).dy,
             moreOrLessEquals(firstTitleLineCentre, epsilon: 1));
         expect(tester.getSize(closeButtonFinder), const Size(48, 48));
       });
@@ -271,6 +402,98 @@ void main() {
         expect(closed, isTrue);
       });
 
+      Widget buildThemedAlertWithView({
+        required VoidCallback onAction,
+        bool withMaterial = true,
+      }) {
+        final alert = Toast.error(
+          description: 'Upload failed',
+          closeLabel: 'Close',
+          actionLabel: 'View',
+          onAction: onAction,
+          onClose: _noop,
+        );
+        return MaterialApp(
+          theme: CoreTheme.light(),
+          home: withMaterial
+              ? Scaffold(body: alert)
+              : ColoredBox(
+                  color: CoreTheme.light().coreColors.pageBackground,
+                  child: Center(child: alert),
+                ),
+        );
+      }
+
+      Color actionLabelColor(WidgetTester tester) =>
+          tester.widget<Text>(find.text('View')).style!.color!;
+
+      testWidgets('View turns Button Press while pressed and fires once',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(actionFinder));
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.buttonPress);
+
+          await gesture.up();
+          await tester.pump();
+          expect(actionLabelColor(tester), colors.textLink);
+        }
+        expect(actions, 1);
+      });
+
+      testWidgets('Tab focuses View, rings its label and Enter takes it',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var actions = 0;
+        await tester.pumpWidget(
+          buildThemedAlertWithView(onAction: () => actions++),
+        );
+        final ringFinder = find.byKey(const Key('toast_action_focus_ring'));
+        expect(ringFinder, findsNothing);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final label = tester.getRect(find.text('View'));
+        final ring = tester.getRect(ringFinder);
+        expect(ring.left, label.left - CoreSpacing.space3);
+        expect(ring.right, label.right + CoreSpacing.space3);
+        expect(ring.top, label.top - 5);
+        expect(ring.bottom, label.bottom + 5);
+        final border = (tester
+                .widget<DecoratedBox>(find.descendant(
+                  of: ringFinder,
+                  matching: find.byType(DecoratedBox),
+                ))
+                .decoration as BoxDecoration)
+            .border! as Border;
+        expect(border.top.color, colors.outlineFocus);
+        expect(border.top.width, 3);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(actions, 1);
+      });
+
+      testWidgets('View works inside a coloured parent with no Material',
+          (WidgetTester tester) async {
+        var actions = 0;
+        await tester.pumpWidget(buildThemedAlertWithView(
+          onAction: () => actions++,
+          withMaterial: false,
+        ));
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(actionFinder);
+        expect(actions, 1);
+      });
+
       testWidgets('the close x works and draws inside a coloured parent '
           'with no Material', (WidgetTester tester) async {
         var closed = false;
@@ -296,12 +519,16 @@ void main() {
       testWidgets(
           'without a title the surface is 40 dp high and the controls 48 dp',
           (WidgetTester tester) async {
-        await tester.pumpWidget(buildAlert());
+        await tester.pumpWidget(
+          buildAlert(actionLabel: 'View', onAction: _noop),
+        );
 
         expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
             40);
         expect(tester.getSize(find.byType(Toast)).height, 48);
         expect(tester.getSize(closeButtonFinder), const Size(48, 48));
+        expect(tester.getSize(actionFinder).height, 48);
+        expect(tester.getSize(actionFinder).width, greaterThanOrEqualTo(48));
       });
 
       testWidgets('without a title the text is Body Medium Medium',

@@ -67,6 +67,22 @@ void main() {
       expect(semantics.label, contains('New updates are available'));
     });
 
+    testWidgets("an alert's text button meets accessibility guidelines",
+        (WidgetTester tester) async {
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => Toast.error(
+          description: 'Upload failed',
+          closeLabel: 'Close',
+          actionLabel: 'View',
+          onAction: _noop,
+        ),
+        actionFinder,
+      );
+    });
+
     testWidgets('acknowledgement toast meets accessibility guidelines',
         (WidgetTester tester) async {
       await setupA11yTest(tester);
