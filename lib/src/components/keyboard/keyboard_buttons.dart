@@ -139,7 +139,7 @@ class CoreOperatorButton extends StatelessWidget {
 /// The rendered button carries [UnitTypeX.testKey] (`calc_key_feet`) for
 /// Patrol and widget tests.
 class CoreUnitButton extends StatelessWidget {
-  /// The unit the key shows, such as ft or m. [UnitType.divideSymbol]
+  /// The unit the key shows, such as Feet or M. [UnitType.divideSymbol]
   /// draws a round key with a slash icon in place of a label.
   final UnitType unit;
 
