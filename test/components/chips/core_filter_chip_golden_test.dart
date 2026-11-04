@@ -117,6 +117,42 @@ void main() {
       );
     });
 
+    testWidgets('renders disabled chip correctly in dark theme', (
+      tester,
+    ) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await pumpFilterChip(tester: tester, label: 'Tags', dark: true);
+
+      await expectLater(
+        find.byType(CoreFilterChip),
+        matchesGoldenFile('goldens/core_filter_chip_disabled_dark.png'),
+      );
+    });
+
+    testWidgets('renders disabled chip on a coloured parent correctly', (
+      tester,
+    ) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await pumpFilterChip(
+        tester: tester,
+        label: 'Tags',
+        parentColor: AppColorsExtension.create().backgroundGrayMid,
+      );
+
+      await expectLater(
+        find.byType(CoreFilterChip),
+        matchesGoldenFile(
+          'goldens/core_filter_chip_disabled_coloured_parent.png',
+        ),
+      );
+    });
+
     testWidgets('renders focused chip correctly', (tester) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = ratio;
@@ -203,30 +239,41 @@ void main() {
       });
     }
 
-    testWidgets('renders chip at 200% text correctly', (tester) async {
-      tester.view.physicalSize = const Size(390, 72);
-      tester.view.devicePixelRatio = ratio;
-      addTearDown(() => tester.view.resetPhysicalSize());
+    for (final enabled in [true, false]) {
+      final state = enabled ? '' : 'disabled ';
+      final golden = enabled ? 'text_200' : 'disabled_text_200';
+      testWidgets('renders ${state}chip at 200% text correctly', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(390, 72);
+        tester.view.devicePixelRatio = ratio;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: _createTestTheme(),
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(2),
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: _createTestTheme(),
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: const TextScaler.linear(2),
+              ),
+              child: child!,
             ),
-            child: child!,
+            home: Material(
+              child: Center(
+                child: CoreFilterChip(
+                  label: 'Tags',
+                  onTap: enabled ? () {} : null,
+                ),
+              ),
+            ),
           ),
-          home: Material(
-            child: Center(child: CoreFilterChip(label: 'Tags', onTap: () {})),
-          ),
-        ),
-      );
+        );
 
-      await expectLater(
-        find.byType(CoreFilterChip),
-        matchesGoldenFile('goldens/core_filter_chip_text_200.png'),
-      );
-    });
+        await expectLater(
+          find.byType(CoreFilterChip),
+          matchesGoldenFile('goldens/core_filter_chip_$golden.png'),
+        );
+      });
+    }
   });
 }

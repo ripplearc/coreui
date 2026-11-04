@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -24,7 +26,9 @@ void main() {
       expect(node.flagsCollection.isButton, isTrue);
     });
 
-    testWidgets('does not expose button role when disabled', (tester) async {
+    testWidgets('is read as disabled, with no button role, with no onTap', (
+      tester,
+    ) async {
       await setupA11yTest(tester);
 
       await tester.pumpWidget(
@@ -37,6 +41,7 @@ void main() {
       final node = tester.getSemantics(find.byType(CoreFilterChip));
       expect(node.label, contains('Tags'));
       expect(node.flagsCollection.isButton, isFalse);
+      expect(node.flagsCollection.isEnabled, ui.Tristate.isFalse);
     });
 
     testWidgets('opens with Enter after a keyboard user tabs to it', (

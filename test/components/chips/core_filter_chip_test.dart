@@ -206,5 +206,149 @@ void main() {
 
       expect(focusNode.hasFocus, isTrue);
     });
+
+    group('disabled look', () {
+      ({Color border, TextStyle? label, Color? arrow, Color? fill}) lookOf(
+        WidgetTester tester,
+      ) {
+        final pill = find.byKey(CoreFilterChip.pillKey);
+        final decoration =
+            tester.widget<Container>(pill).decoration as BoxDecoration;
+        final arrow = tester.widget<CoreIconWidget>(
+          find.descendant(
+            of: find.byType(CoreFilterChip),
+            matching: find.byType(CoreIconWidget),
+          ),
+        );
+        return (
+          border: (decoration.border as Border).top.color,
+          label: tester.widget<Text>(find.text('Tags')).style,
+          arrow: arrow.color,
+          fill: decoration.color,
+        );
+      }
+
+      for (final (name, theme) in [
+        ('light', CoreTheme.light()),
+        ('dark', CoreTheme.dark()),
+      ]) {
+        testWidgets('draws the Unit chip disabled look ($name)', (
+          tester,
+        ) async {
+          await tester.pumpWidget(
+            buildTestApp(const CoreFilterChip(label: 'Tags'), theme: theme),
+          );
+
+          final colors = AppColorsExtension.of(
+            tester.element(find.byType(CoreFilterChip)),
+          );
+          final look = lookOf(tester);
+          expect(look.border, colors.lineLight);
+          expect(look.label, _hasColor(colors.textDisable));
+          expect(look.arrow, colors.iconGrayLight);
+          expect(look.fill, colors.pageBackground);
+        });
+
+        testWidgets('leaves a chip with onTap unchanged ($name)', (
+          tester,
+        ) async {
+          await tester.pumpWidget(
+            buildTestApp(
+              CoreFilterChip(label: 'Tags', onTap: () {}),
+              theme: theme,
+            ),
+          );
+
+          final colors = AppColorsExtension.of(
+            tester.element(find.byType(CoreFilterChip)),
+          );
+          final look = lookOf(tester);
+          expect(look.border, colors.lineDarkOutline);
+          expect(look.label, _hasColor(colors.textDark));
+          expect(look.arrow, colors.textDark);
+          expect(look.fill, colors.pageBackground);
+        });
+      }
+
+      testWidgets('keeps the 32 dp pill inside a 48 dp touch area', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const CoreFilterChip(label: 'Tags'),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        final chipSize = tester.getSize(find.byType(CoreFilterChip));
+        expect(chipSize.height, CoreSpacing.space12);
+        expect(chipSize.width, greaterThanOrEqualTo(CoreSpacing.space12));
+        expect(
+          tester.getSize(find.byKey(CoreFilterChip.pillKey)).height,
+          CoreSpacing.space8,
+        );
+      });
+
+      testWidgets('shows no press fill when pressed', (tester) async {
+        await tester.pumpWidget(
+          buildTestApp(
+            const CoreFilterChip(label: 'Tags'),
+            theme: CoreTheme.light(),
+          ),
+        );
+        final pill = find.byKey(CoreFilterChip.pillKey);
+        final colors = AppColorsExtension.of(tester.element(pill));
+
+        final gesture = await tester.startGesture(tester.getCenter(pill));
+        await tester.pump();
+        expect(lookOf(tester).fill, colors.pageBackground);
+        await gesture.up();
+      });
+
+      testWidgets('is skipped by Tab and draws no focus border', (
+        tester,
+      ) async {
+        final disabledNode = FocusNode();
+        final enabledNode = FocusNode();
+        addTearDown(disabledNode.dispose);
+        addTearDown(enabledNode.dispose);
+        await tester.pumpWidget(
+          buildTestApp(
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CoreFilterChip(label: 'Tags', focusNode: disabledNode),
+                CoreFilterChip(
+                  label: 'Owner',
+                  onTap: () {},
+                  focusNode: enabledNode,
+                ),
+              ],
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+
+        final colors = AppColorsExtension.of(
+          tester.element(find.text('Tags')),
+        );
+        expect(disabledNode.hasFocus, isFalse);
+        expect(enabledNode.hasFocus, isTrue);
+        final disabledPill = find.descendant(
+          of: find.widgetWithText(CoreFilterChip, 'Tags'),
+          matching: find.byKey(CoreFilterChip.pillKey),
+        );
+        final border = (tester.widget<Container>(disabledPill).decoration
+                as BoxDecoration)
+            .border as Border;
+        expect(border.top.color, colors.lineLight);
+      });
+    });
   });
 }
+
+Matcher _hasColor(Color color) =>
+    isA<TextStyle>().having((style) => style.color, 'color', color);

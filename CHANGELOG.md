@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.83.0] - CoreFilterChip: a disabled chip looks disabled
+
+### 🔧 Fixes
+
+- **CoreFilterChip disabled look**: a chip with no `onTap` could not be tapped but drew exactly like one that could; its golden was the same file as the default golden. It now draws the library Unit chip's State=Disable look: a `lineLight` border, a `textDisable` label and an `iconGrayLight` arrow. The fill, label style, 32 dp pill and 48 dp touch area do not change, and a chip with an `onTap` draws as before (CA-1378)
+
+### 📐 Design notes
+
+The library has no disabled Filter chip. The owner chose the disabled Unit chip in the same Chips set (node 66489:59599): Boarder Color/Line Light, Text Color/Disable, Icon Color/Grey Light, on Background/Page BG.
+
+### 🧪 Tests
+
+- Widget tests (light and dark): a disabled chip's border, label, arrow and fill colours; a chip with an `onTap` keeps `lineDarkOutline` / `textDark`; a disabled chip keeps the 32 dp pill in a 48 dp area, shows no press fill, and Tab skips it to the next chip with no focus border
+- Accessibility tests: a chip with no `onTap` is read as disabled, not only as "not a button". No guideline test for the disabled chip: Flutter's tap target and contrast guidelines skip disabled nodes, so it could not fail; the widget tests check the colours
+- Goldens: disabled re-rendered (now differs from default); new disabled dark, disabled on a coloured parent, disabled at 200% text. Every enabled golden is unchanged
+
 ## [0.82.0] - CoreCheckRowItem.checkRow, disabled rows and a keyboard focus ring
 
 ### ✨ Features
