@@ -8,20 +8,21 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [onGroupsReordered], and the consumer — who owns the order as a stored
 /// preference — reorders [groups] and rebuilds. Handles render only when the
 /// callback is set, so a read-only sheet offers no gesture it cannot honour.
-///
-/// [groups] is the list of function groups to display.
-/// [groupAccentColors] is a map of group names to their accent colors.
-/// [selectedGroup] is the currently selected function group.
-/// [onGroupSelected] is called when a group is selected.
-/// [onKeyTapped] is called when a function key is tapped.
-/// [showUnitToggle] determines whether to show the unit system toggle.
-/// [currentUnitSystem] is the current unit system (imperial or metric).
-/// [onUnitSystemChanged] is called when the unit system is changed.
 class CoreFunctionKeyBottomSheet extends StatefulWidget {
+  /// The groups and their keys, listed in this order.
   final List<FunctionGroup> groups;
+
+  /// Colour of each group's dot. A group with no entry gets
+  /// `keyboardUnits`.
   final Map<GroupNameType, Color> groupAccentColors;
+
+  /// The group drawn as selected.
   final GroupNameType selectedGroup;
+
+  /// Called with a group's name when its header is tapped.
   final ValueChanged<GroupNameType> onGroupSelected;
+
+  /// Called with the key when a function key is tapped.
   final ValueChanged<KeyType> onKeyTapped;
 
   /// Called with the dragged group's old index and its final index once it
@@ -35,10 +36,17 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   /// Defaults to [defaultReorderSemanticsLabel].
   final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
 
+  /// Shows the "Measurement System" row at the top. Defaults to true.
   final bool showUnitToggle;
+
+  /// The unit system the row's switch starts on. Defaults to imperial.
   final UnitSystem currentUnitSystem;
+
+  /// Called with the new system when the switch is flipped. When null the
+  /// row shows no switch.
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
 
+  /// Creates the "View all" sheet of function keys.
   const CoreFunctionKeyBottomSheet({
     super.key,
     required this.groups,

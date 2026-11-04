@@ -9,17 +9,6 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// The keypad knows nothing about the field it types into. It reports each
 /// key, and the caller edits the value and decides what the buttons do.
 ///
-/// [onDigitPressed] receives the digit pressed, 0 to 9.
-/// [onDecimalPressed] is called for the decimal point key.
-/// [onBackspacePressed] is called for the backspace key.
-/// [onClearPressed] is called for the outlined button on the left.
-/// [onConfirmPressed] is called for the filled button on the right.
-/// [clearLabel] is the outlined button's text, e.g. `Clear`, or the value it
-/// puts back, e.g. `Back to 10%`.
-/// [confirmLabel] is the filled button's text, e.g. `Add to estimate`.
-/// [isConfirmEnabled] is whether the filled button answers taps; `false`
-/// greys it out and reports it disabled to a screen reader.
-///
 /// Four rows of three pill keys, 68 dp tall with 4 dp gaps and a 16 dp inset
 /// on each side, then the two buttons 16 dp lower, splitting the width of the
 /// keys between them. On a 412 dp phone each key is 124 dp wide, each button
@@ -51,15 +40,33 @@ class CoreNumberKeypad extends StatelessWidget {
     [DigitType.one, DigitType.two, DigitType.three],
   ];
 
+  /// Receives the digit pressed, 0 to 9.
   final ValueChanged<int> onDigitPressed;
+
+  /// Called for the decimal point key.
   final VoidCallback onDecimalPressed;
+
+  /// Called for the backspace key.
   final VoidCallback onBackspacePressed;
+
+  /// Called for the outlined button on the left.
   final VoidCallback onClearPressed;
+
+  /// Called for the filled button on the right.
   final VoidCallback onConfirmPressed;
+
+  /// The outlined button's text, e.g. `Clear`, or the value it puts back,
+  /// e.g. `Back to 10%`.
   final String clearLabel;
+
+  /// The filled button's text, e.g. `Add to estimate`.
   final String confirmLabel;
+
+  /// Whether the filled button answers taps; `false` greys it out and
+  /// reports it disabled to a screen reader. Defaults to true.
   final bool isConfirmEnabled;
 
+  /// Creates the keypad; it never edits a value itself.
   const CoreNumberKeypad({
     super.key,
     required this.onDigitPressed,
