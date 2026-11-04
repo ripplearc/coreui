@@ -466,19 +466,36 @@ void main() {
         expect(ring.right, label.right + CoreSpacing.space3);
         expect(ring.top, label.top - 5);
         expect(ring.bottom, label.bottom + 5);
-        final border = (tester
+        final shape = (tester
                 .widget<DecoratedBox>(find.descendant(
                   of: ringFinder,
                   matching: find.byType(DecoratedBox),
                 ))
-                .decoration as BoxDecoration)
-            .border! as Border;
-        expect(border.top.color, colors.outlineFocus);
-        expect(border.top.width, 3);
+                .decoration as ShapeDecoration)
+            .shape as StadiumBorder;
+        expect(shape.side.color, colors.outlineFocus);
+        expect(shape.side.width, 3);
 
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pump();
         expect(actions, 1);
+      });
+
+      testWidgets('the View focus ring stays clear of the close x',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(buildThemedAlertWithView(onAction: _noop));
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        final ring = tester.getRect(
+          find.byKey(const Key('toast_action_focus_ring')),
+        );
+        // The ring may cross the x's invisible 48 dp target, never the x.
+        final closeIcon = tester.getRect(find.descendant(
+          of: find.byKey(const Key('toast_close_button')),
+          matching: find.byType(CoreIconWidget),
+        ));
+        expect(ring.overlaps(closeIcon), isFalse);
       });
 
       testWidgets('View works inside a coloured parent with no Material',
@@ -1425,6 +1442,136 @@ void main() {
       });
     });
 
+    group('receipt View looks', () {
+      final secondaryFinder = find.byKey(const Key('toast_secondary_button'));
+      final ringFinder = find.byKey(const Key('toast_secondary_focus_ring'));
+
+      Widget buildReceiptWithView({
+        required VoidCallback onSecondary,
+        bool withMaterial = true,
+        String secondaryLabel = 'View',
+      }) {
+        final receipt = Toast.receipt(
+          description: 'Saved to history',
+          highlight: 'Calc 60ft²',
+          actionLabel: 'Undo',
+          onAction: _noop,
+          secondaryLabel: secondaryLabel,
+          onSecondary: onSecondary,
+          onClose: _noop,
+        );
+        return MaterialApp(
+          theme: CoreTheme.light(),
+          home: withMaterial
+              ? Scaffold(body: receipt)
+              : ColoredBox(
+                  color: CoreTheme.light().coreColors.pageBackground,
+                  child: Center(child: receipt),
+                ),
+        );
+      }
+
+      Color viewColor(WidgetTester tester) =>
+          tester.widget<Text>(find.text('View')).style!.color!;
+
+      testWidgets('View turns Button Press while pressed and fires once',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var views = 0;
+        await tester.pumpWidget(
+          buildReceiptWithView(onSecondary: () => views++),
+        );
+        final restColor = viewColor(tester);
+        expect(restColor.toARGB32(), isNot(colors.buttonPress.toARGB32()));
+
+        for (var press = 1; press <= 2; press++) {
+          final gesture =
+              await tester.startGesture(tester.getCenter(secondaryFinder));
+          await tester.pump();
+          expect(viewColor(tester).r, colors.buttonPress.r);
+          expect(viewColor(tester).g, colors.buttonPress.g);
+          expect(viewColor(tester).b, colors.buttonPress.b);
+
+          await gesture.up();
+          await tester.pump();
+          expect(viewColor(tester), restColor);
+        }
+        expect(views, 1);
+      });
+
+      testWidgets('Tab focuses View, rings its label and Enter takes it',
+          (WidgetTester tester) async {
+        final colors = CoreTheme.light().coreColors;
+        var views = 0;
+        await tester.pumpWidget(
+          buildReceiptWithView(onSecondary: () => views++),
+        );
+        expect(ringFinder, findsNothing);
+
+        for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await tester.pump();
+        }
+        final label = tester.getRect(find.text('View'));
+        final ring = tester.getRect(ringFinder);
+        expect(ring.left, label.left - CoreSpacing.space3);
+        expect(ring.right, label.right + CoreSpacing.space3);
+        expect(ring.top, label.top - 5);
+        expect(ring.bottom, label.bottom + 5);
+        final shape = (tester
+                .widget<DecoratedBox>(find.descendant(
+                  of: ringFinder,
+                  matching: find.byType(DecoratedBox),
+                ))
+                .decoration as ShapeDecoration)
+            .shape as StadiumBorder;
+        expect(shape.side.color, colors.outlineFocus);
+        expect(shape.side.width, 3);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(views, 1);
+      });
+
+      // A long label fills the View box, so the ring reaches furthest out.
+      for (final label in ['View', 'View the whole calculation']) {
+        testWidgets('the "$label" focus ring stays clear of Undo and the text',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(
+            buildReceiptWithView(onSecondary: _noop, secondaryLabel: label),
+          );
+
+          for (var tab = 0; tab < 3 && ringFinder.evaluate().isEmpty; tab++) {
+            await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+            await tester.pump();
+          }
+          final ring = tester.getRect(ringFinder);
+          final undo = tester.getRect(
+            find.byKey(const Key('toast_action_button')),
+          );
+          final text = tester.getRect(
+            find.textContaining('Saved to history', findRichText: true),
+          );
+          expect(ring.overlaps(undo), isFalse);
+          expect(ring.overlaps(text), isFalse);
+        });
+      }
+
+      testWidgets('View works inside a coloured parent with no Material',
+          (WidgetTester tester) async {
+        var views = 0;
+        await tester.pumpWidget(buildReceiptWithView(
+          onSecondary: () => views++,
+          withMaterial: false,
+        ));
+
+        expect(tester.takeException(), isNull);
+        await tester.tap(secondaryFinder);
+        await tester.pump();
+        expect(views, 1);
+      });
+    });
+
     group('Acknowledgement Toast', () {
       const message = 'Added to Bedroom 2';
 
@@ -1542,6 +1689,90 @@ void main() {
         });
       }
     });
+  });
+
+  group('Toast with no Material above it', () {
+    final toasts = <String, Toast Function()>{
+      'error': () => Toast.error(
+            title: 'Upload',
+            description: 'Upload failed',
+            closeLabel: 'Close',
+            actionLabel: 'View',
+            onAction: _noop,
+            onClose: _noop,
+          ),
+      'warning': () => Toast.warning(
+            description: 'Rate is high',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'info': () => Toast.info(
+            title: 'Heads up',
+            description: 'Prices changed',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'success': () => Toast.success(
+            description: 'Saved',
+            closeLabel: 'Close',
+            onClose: _noop,
+          ),
+      'receipt': () => Toast.receipt(
+            description: 'Item added',
+            highlight: 'to Kitchen',
+            actionLabel: 'View',
+            onAction: _noop,
+            secondaryLabel: 'Undo',
+            onSecondary: _noop,
+            onClose: _noop,
+          ),
+      'acknowledgement': () => Toast.acknowledgement(description: 'Copied'),
+    };
+
+    for (final entry in toasts.entries) {
+      testWidgets('${entry.key} draws its text as under a Scaffold',
+          (WidgetTester tester) async {
+        Map<String, TextStyle?> textStyles() => {
+              for (final text in tester.widgetList<RichText>(
+                find.descendant(
+                  of: find.byType(Toast),
+                  matching: find.byType(RichText),
+                ),
+              ))
+                if (text.text.toPlainText().trim().isNotEmpty)
+                  text.text.toPlainText(): text.text.style,
+            };
+
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(body: Center(child: entry.value())),
+        ));
+        final underScaffold = textStyles();
+        expect(underScaffold, isNotEmpty);
+
+        // With no Material, Flutter draws text in monospace with a yellow
+        // double underline.
+        await tester.pumpWidget(MaterialApp(
+          theme: CoreTheme.light(),
+          home: Center(child: entry.value()),
+        ));
+        expect(find.byType(Scaffold), findsNothing);
+        final bare = textStyles();
+
+        expect(bare.keys, underScaffold.keys);
+        for (final text in bare.keys) {
+          expect(
+            bare[text],
+            isA<TextStyle>()
+                .having((s) => s.fontFamily, 'fontFamily', isNot('monospace'))
+                .having((s) => s.decorationStyle, 'decorationStyle',
+                    isNot(TextDecorationStyle.double)),
+            reason: '"$text"',
+          );
+          expect(bare[text], underScaffold[text], reason: '"$text"');
+        }
+      });
+    }
   });
 }
 
