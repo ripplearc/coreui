@@ -21,7 +21,7 @@ import '../core_icon.dart';
 /// [focusNode] The focus node for the text field
 /// [initialValue] The initial value for the text field
 /// [readOnly] Whether or not the text field is read-only
-/// [showsFocus] Draws the focused border and label without taking focus, for
+/// [showsFocus] Draws the focused border without taking focus, for
 /// a field that only shows a choice whose tap target holds the focus, such as
 /// [SingleItemSelector]
 /// [floatsLabel] Keeps the label above the field, so an empty field that
@@ -133,11 +133,7 @@ class CoreTextField extends StatelessWidget {
         floatingLabelBehavior:
             floatsLabel ? FloatingLabelBehavior.always : null,
         labelStyle: typography.bodyLargeRegular.copyWith(
-          color: isDisabled
-              ? colors.textDisable
-              : showsFocus
-                  ? colors.textDark
-                  : colors.textHeadline,
+          color: isDisabled ? colors.textDisable : colors.textHeadline,
         ),
         prefixIcon: prefixWidget,
         hintText: hintText,
