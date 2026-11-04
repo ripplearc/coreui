@@ -341,6 +341,12 @@ their natural width on a phone. The order it gives ground in:
    reserved target when there is a second action, and ellipsises at two lines
    beyond that.
 
+An alert's `View` is capped at a fixed 120 dp, whatever the screen width or text
+size. Known limit: on a 320 dp screen at 200 % text, a label as long as
+"Details anzeigen" leaves the message 52 dp, so "Upload failed" breaks inside
+its words. Nothing overflows and the x still works; moving the label under the
+message at large text is a design call.
+
 ### Acknowledgement toast
 
 The acknowledgement follows the Figma "Toast" component, node `65687:157849`
