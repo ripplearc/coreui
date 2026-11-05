@@ -42,7 +42,8 @@ class CoreInlineErrorRow extends StatelessWidget {
     final messageStyle = typography.bodySmallRegular.copyWith(
       color: colors.textError,
     );
-    final firstLineHeight = messageStyle.fontSize! * messageStyle.height!;
+    final firstLineHeight =
+        (messageStyle.fontSize ?? 0) * (messageStyle.height ?? 1);
 
     return LayoutBuilder(
       builder: (context, constraints) => Row(
