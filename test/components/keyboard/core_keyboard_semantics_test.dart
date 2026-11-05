@@ -48,25 +48,25 @@ void main() {
   });
 
   group('CoreKeyboardSemantics.english', () {
-    test('builds the strings the keyboard announced before 0.76.0', () {
+    test('builds the strings the keyboard announced before 0.85.0', () {
       const english = CoreKeyboardSemantics.english;
       expect(english.digitLabel(DigitType.seven), '7 button');
       expect(english.digitLabel(DigitType.decimal), '. button');
       expect(english.operatorLabel(OperatorType.add), '+ operator button');
       expect(english.unitLabel(UnitType.feet), 'Feet unit button');
       expect(english.unitLabel(UnitType.divideSymbol), '/ unit button');
-      expect(english.controlLabel(ControlAction.delete), 'Delete button');
-      expect(english.controlLabel(ControlAction.clearAll), 'Clear all button');
-      expect(english.controlLabel(ControlAction.paren), 'Bracket button');
-      expect(
-        english.controlHint(ControlAction.delete),
+      expect(ControlAction.values.map(english.controlLabel), [
+        'Delete button',
+        'Clear all button',
+        'More options button',
+        'Bracket button',
+      ]);
+      expect(ControlAction.values.map(english.controlHint), [
         'Deletes the last entered character',
-      );
-      expect(english.controlHint(ControlAction.clearAll), 'Clears all input');
-      expect(
-        english.controlHint(ControlAction.paren),
+        'Clears all input',
+        'Shows additional options',
         'Opens a bracket; the next press closes it',
-      );
+      ]);
       expect(english.resultLabel('='), '= button');
       expect(english.resultHint, 'Calculates and displays the result');
       expect(english.dragHandle, 'Keyboard drag handle');
@@ -99,7 +99,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(DigitType.seven.testKey));
-      expect(semantics.label, contains('Chiffre 7'));
+      expect(semantics.label, 'Chiffre 7');
     });
 
     testWidgets('operator key', (tester) async {
@@ -113,7 +113,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(OperatorType.multiply.testKey));
-      expect(semantics.label, contains('Opérateur ×'));
+      expect(semantics.label, 'Opérateur ×');
     });
 
     testWidgets('unit key', (tester) async {
@@ -126,7 +126,7 @@ void main() {
       )));
 
       final semantics = tester.getSemantics(find.byKey(UnitType.inch.testKey));
-      expect(semantics.label, contains('Unité Inch'));
+      expect(semantics.label, 'Unité Inch');
     });
 
     testWidgets('control key, label and hint', (tester) async {
@@ -140,7 +140,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(ControlAction.clearAll.testKey));
-      expect(semantics.label, contains('Commande clearAll'));
+      expect(semantics.label, 'Commande clearAll');
       expect(semantics.hint, 'Indice clearAll');
     });
 
@@ -157,7 +157,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(ControlAction.paren.testKey));
-      expect(semantics.label, contains('Touche parenthèse'));
+      expect(semantics.label, 'Touche parenthèse');
       expect(semantics.hint, 'Indice paren');
     });
 
@@ -174,7 +174,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(ControlAction.paren.testKey));
-      expect(semantics.label, contains('Commande paren'));
+      expect(semantics.label, 'Commande paren');
       expect(semantics.hint, 'Ouvre une parenthèse');
     });
 
@@ -189,7 +189,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(CoreResultButton.testKey));
-      expect(semantics.label, contains('Résultat ='));
+      expect(semantics.label, 'Résultat =');
       expect(semantics.hint, 'Calcule le résultat');
     });
 
@@ -206,7 +206,7 @@ void main() {
 
       final semantics =
           tester.getSemantics(find.byKey(CoreResultButton.testKey));
-      expect(semantics.label, contains('Résultat Mettre à jour'));
+      expect(semantics.label, 'Résultat Mettre à jour');
       expect(semantics.hint, isEmpty);
     });
   });
@@ -234,15 +234,15 @@ void main() {
 
       expect(
         tester.getSemantics(find.byKey(DigitType.nine.testKey)).label,
-        contains('Chiffre 9'),
+        'Chiffre 9',
       );
       expect(
         tester.getSemantics(find.byKey(DigitType.decimal.testKey)).label,
-        contains('Chiffre .'),
+        'Chiffre .',
       );
       expect(
         tester.getSemantics(find.byKey(ControlAction.delete.testKey)).label,
-        contains('Commande delete'),
+        'Commande delete',
       );
     });
   });
