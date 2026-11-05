@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -41,6 +43,76 @@ Widget _app(Widget child) => MaterialApp(
       theme: CoreTheme.light(),
       home: Scaffold(body: child),
     );
+
+const GroupNameType _basic =
+    GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
+
+final List<FunctionGroup> _groups = [
+  FunctionGroup(
+    name: _basic,
+    keys: [
+      KeyType(
+        groupName: 'Basic Geometry',
+        id: 'Area',
+        label: 'Area',
+        action: () {},
+      ),
+    ],
+  ),
+];
+
+Widget _keyboard({
+  CoreKeyboardSemantics semantics = CoreKeyboardSemantics.english,
+  UnitSystem currentUnitSystem = UnitSystem.imperial,
+  String? parenSemanticLabel,
+  String? parenSemanticHint,
+  String Function(String groupLabel)? reorderSemanticsLabelBuilder,
+}) =>
+    CoreKeyboard(
+      currentGroup: _basic,
+      allGroups: _groups,
+      currentUnitSystem: currentUnitSystem,
+      onDigitPressed: (_) {},
+      onUnitSelected: (_) {},
+      onOperatorPressed: (_) {},
+      onControlAction: (_) {},
+      onResultTapped: () {},
+      onGroupSelected: (_) {},
+      onKeyTapped: (_) {},
+      onUnitSystemChanged: (_) {},
+      onGroupsReordered: (_, __) {},
+      semantics: semantics,
+      parenSemanticLabel: parenSemanticLabel,
+      parenSemanticHint: parenSemanticHint,
+      reorderSemanticsLabelBuilder: reorderSemanticsLabelBuilder,
+    );
+
+Future<void> _pumpKeyboard(WidgetTester tester, Widget keyboard) async {
+  tester.view.physicalSize = const Size(1100, 1600);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(() => tester.view.resetPhysicalSize());
+  addTearDown(() => tester.view.resetDevicePixelRatio());
+  await tester.pumpWidget(_app(keyboard));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _pumpSheetOf(
+  WidgetTester tester,
+  Future<void> Function(BuildContext context) show,
+) async {
+  tester.view.physicalSize = const Size(600, 1400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(() => tester.view.resetPhysicalSize());
+  addTearDown(() => tester.view.resetDevicePixelRatio());
+  await tester.pumpWidget(_app(Builder(
+    builder: (context) => ElevatedButton(
+      onPressed: () => show(context),
+      child: const Text('Show'),
+    ),
+  )));
+  await tester.tap(find.text('Show'));
+  await tester.pumpAndSettle();
+}
 
 void main() {
   setUpAll(() async {
@@ -243,6 +315,238 @@ void main() {
       expect(
         tester.getSemantics(find.byKey(ControlAction.delete.testKey)).label,
         'Commande delete',
+      );
+    });
+  });
+
+  group('CoreKeyboard passes the set to everything it renders', () {
+    testWidgets('every key, the drag handle and View all', (tester) async {
+      await _pumpKeyboard(tester, _keyboard(semantics: _french));
+
+      String labelOf(Key key) => tester.getSemantics(find.byKey(key)).label;
+      String hintOf(Key key) => tester.getSemantics(find.byKey(key)).hint;
+
+      for (final digit in DigitType.values) {
+        expect(labelOf(digit.testKey), 'Chiffre ${digit.label}');
+      }
+      for (final operatorType in OperatorType.values) {
+        expect(
+          labelOf(operatorType.testKey),
+          'Opérateur ${operatorType.symbol}',
+        );
+      }
+      for (final unit in [
+        UnitType.divideSymbol,
+        UnitType.yards,
+        UnitType.feet,
+        UnitType.inch,
+      ]) {
+        expect(labelOf(unit.testKey), 'Unité ${unit.label}');
+      }
+      for (final action in [
+        ControlAction.clearAll,
+        ControlAction.delete,
+        ControlAction.paren,
+      ]) {
+        expect(labelOf(action.testKey), 'Commande ${action.name}');
+        expect(hintOf(action.testKey), 'Indice ${action.name}');
+      }
+      expect(labelOf(CoreResultButton.testKey), 'Résultat =');
+      expect(hintOf(CoreResultButton.testKey), 'Calcule le résultat');
+      expect(find.bySemanticsLabel('Poignée du clavier'), findsOneWidget);
+      expect(find.bySemanticsLabel('Keyboard drag handle'), findsNothing);
+    });
+
+    testWidgets('the metric unit keys', (tester) async {
+      await _pumpKeyboard(
+        tester,
+        _keyboard(semantics: _french, currentUnitSystem: UnitSystem.metric),
+      );
+
+      for (final unit in [
+        UnitType.meter,
+        UnitType.centimeter,
+        UnitType.millimeter,
+      ]) {
+        expect(
+          tester.getSemantics(find.byKey(unit.testKey)).label,
+          'Unité ${unit.label}',
+        );
+      }
+    });
+
+    testWidgets(
+        'the View all button is one node that carries the label and '
+        'the hint a screen reader lands on', (tester) async {
+      await _pumpKeyboard(tester, _keyboard(semantics: _french));
+
+      final viewAll = tester.getSemantics(find.text('View all'));
+      expect(viewAll.label, 'Toutes les touches de fonction');
+      expect(viewAll.hint, 'Ouvre la feuille des groupes');
+      expect(viewAll.flagsCollection.isButton, isTrue);
+      expect(viewAll.flagsCollection.isEnabled, ui.Tristate.isTrue);
+      expect(viewAll.flagsCollection.isFocused, ui.Tristate.isFalse);
+      expect(find.bySemanticsLabel('View all'), findsNothing);
+
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CoreFunctionKeyBottomSheet), findsOneWidget);
+    });
+
+    testWidgets('a screen reader tap on View all opens the sheet',
+        (tester) async {
+      await _pumpKeyboard(tester, _keyboard(semantics: _french));
+
+      tester.semantics
+          .tap(find.semantics.byLabel('Toutes les touches de fonction'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CoreFunctionKeyBottomSheet), findsOneWidget);
+    });
+
+    testWidgets('the View all sheet: switch, group header and drag handle',
+        (tester) async {
+      await _pumpKeyboard(tester, _keyboard(semantics: _french));
+
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+
+      expect(
+          find.bySemanticsLabel(RegExp('Système de mesure')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('En-tête Basic Geometry')),
+          findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('Déplacer Basic Geometry')),
+        findsOneWidget,
+      );
+      expect(find.bySemanticsLabel(RegExp('Unit system switch')), findsNothing);
+    });
+
+    testWidgets(
+        'the paren label, the paren hint and the reorder builder win '
+        'over the set', (tester) async {
+      await _pumpKeyboard(
+        tester,
+        _keyboard(
+          semantics: _french,
+          parenSemanticLabel: 'Touche parenthèse',
+          parenSemanticHint: 'Ouvre une parenthèse',
+          reorderSemanticsLabelBuilder: (label) => 'Réordonner $label',
+        ),
+      );
+
+      final paren =
+          tester.getSemantics(find.byKey(ControlAction.paren.testKey));
+      expect(paren.label, 'Touche parenthèse');
+      expect(paren.hint, 'Ouvre une parenthèse');
+
+      await tester.tap(find.text('View all'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.bySemanticsLabel(RegExp('Réordonner Basic Geometry')),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(RegExp('Déplacer Basic Geometry')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a keyboard built without a set keeps the English',
+        (tester) async {
+      await _pumpKeyboard(tester, _keyboard());
+
+      expect(
+        tester.getSemantics(find.byKey(DigitType.five.testKey)).label,
+        '5 button',
+      );
+      expect(find.bySemanticsLabel('Keyboard drag handle'), findsOneWidget);
+      final viewAll = tester.getSemantics(find.text('View all'));
+      expect(viewAll.label, 'View all function keys');
+      expect(
+        viewAll.hint,
+        'Opens a bottom sheet with all available function keys',
+      );
+    });
+  });
+
+  group('CoreFunctionKeyBottomSheet built on its own', () {
+    testWidgets('follows the set it is given', (tester) async {
+      tester.view.physicalSize = const Size(600, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() => tester.view.resetDevicePixelRatio());
+      final colors = AppColorsExtension.create();
+      await tester.pumpWidget(_app(CoreFunctionKeyBottomSheet(
+        groups: _groups,
+        groupAccentColors: {_basic: colors.orientMid},
+        selectedGroup: _basic,
+        onGroupSelected: (_) {},
+        onKeyTapped: (_) {},
+        onGroupsReordered: (_, __) {},
+        onUnitSystemChanged: (_) {},
+        semantics: _french,
+      )));
+      await tester.pumpAndSettle();
+
+      expect(
+          find.bySemanticsLabel(RegExp('Système de mesure')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('En-tête Basic Geometry')),
+          findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('Déplacer Basic Geometry')),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('CoreValueEditorSheet', () {
+    testWidgets(
+        'showSingleValue hands keyboardSemantics to the keyboard it '
+        'embeds', (tester) async {
+      await _pumpSheetOf(
+        tester,
+        (context) => CoreValueEditorSheet.showSingleValue(
+          context: context,
+          title: 'Rate',
+          label: 'Rate',
+          resultLabel: 'Update',
+          keyboardSemantics: _french,
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byKey(ControlAction.clearAll.testKey)).label,
+        'Commande clearAll',
+      );
+      expect(
+        tester.getSemantics(find.byKey(CoreResultButton.testKey)).label,
+        'Résultat Update',
+      );
+    });
+
+    testWidgets('show, the multi-column editor, hands it on too',
+        (tester) async {
+      await _pumpSheetOf(
+        tester,
+        (context) => CoreValueEditorSheet.show(
+          context: context,
+          titles: const ['Width', 'Height'],
+          addSizeTitle: 'Add size',
+          editSizeTitle: 'Edit size',
+          resultLabel: 'Add',
+          keyboardSemantics: _french,
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byKey(ControlAction.clearAll.testKey)).label,
+        'Commande clearAll',
+      );
+      expect(
+        tester.getSemantics(find.byKey(DigitType.seven.testKey)).label,
+        'Chiffre 7',
       );
     });
   });

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.86.0] - The keyboard's screen-reader strings come from the app (2/2: the keyboard, the sheet and the value editor)
+
+### ✨ Features
+
+- **CoreKeyboard**, **CoreFunctionKeyBottomSheet** and **CoreValueEditorSheet** (as `keyboardSemantics`, on both constructors and both `show` helpers) take a `CoreKeyboardSemantics` and hand it to every key, the drag handle, the "View all" button and its hint, the unit system switch, the group headers and their drag handles. With a set supplied, no screen-reader label or hint on the keyboard, the collapsed keyboard or the "View all" sheet is an English literal from coreui, except what is named here: the function-key tile's own words are 0.84.0's (CA-1195); the visible "Function keys", "… group" and "Measurement System" texts and the switch's "Imperial" / "Metric" faces are read as part of their nodes and are CA-1370's; the visible "View all" is seen and not read (CA-1198, 2/2)
+- The "View all" button's own node carries the set's label and hint, where before they merged into the strip and the focused button announced its visible "View all"; the node keeps the button's enabled and focusable state
+- **CoreSizesTableData.keyboardSemantics**: the entry sheet a `CoreGeometryArea` table opens hands it to the keyboard it embeds, so that path takes the app's set too
+- `parenSemanticLabel` / `parenSemanticHint` and `reorderSemanticsLabelBuilder` stay as they were and, when set, win over the set's `controlLabel`, `controlHint` and `reorderHandle`. `CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel` is deprecated: it is `CoreKeyboardSemantics.english.reorderHandle`
+- Showcase: the keyboard and value editor screens pass the showcase set
+
+### 🧪 Tests
+
+- Inside `CoreKeyboard` every digit, operator, unit (imperial and metric), control and result key, the drag handle, "View all" and its hint follow the set exactly, as do the sheet's switch, group header and drag handle, and a sheet built on its own; a screen reader tap on "View all" opens the sheet; the paren label, the paren hint and the reorder builder win over the set; a keyboard built without a set keeps the English; `CoreValueEditorSheet` passes the set on from `show` and `showSingleValue`, and a `CoreGeometryArea` table's entry sheet from `keyboardSemantics`. A11y: every key kind (found by its own key) and "View all" meet the tap target and label guidelines in both themes with caller-supplied labels, and their nodes measure at least 48 dp; the drag handle announces the caller's label (its 12 dp height is older code, outside this change). Keyboard and value editor goldens are unchanged
+
 ## [0.85.0] - The keyboard's screen-reader strings come from the app (1/2: the object and the keys)
 
 ### ✨ Features

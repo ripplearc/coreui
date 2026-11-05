@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../blocs/geometry_area_bloc.dart';
+import '../showcase_keyboard_semantics.dart';
 
 /// Showcase screen for [CoreGeometryArea].
 ///
@@ -190,6 +191,8 @@ class _GeometryAreaShowcaseScreenState
                                         editResultLabel: 'Update',
                                         unitOptions: const ['m', 'cm', 'mm'],
                                         unitGroupLabel: 'Unit',
+                                        keyboardSemantics:
+                                            showcaseKeyboardSemantics,
                                         dragHandleLabel: 'Reorder',
                                         editRowSemanticsLabelBuilder: (row) =>
                                             'Edit ${row.values.first}',
