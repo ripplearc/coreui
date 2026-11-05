@@ -12,6 +12,7 @@ CoreSizesTableData _table({
   String? addLabel = 'Add size',
   String? editLabel = 'Edit size',
   String? dragHandleLabel = 'Reorder',
+  CoreKeyboardSemantics keyboardSemantics = CoreKeyboardSemantics.english,
   VoidCallback? onAdd,
   void Function(SizeEntryResult result)? onSaved,
   void Function(String id)? onDeleted,
@@ -27,6 +28,7 @@ CoreSizesTableData _table({
     editResultLabel: 'Update',
     unitOptions: const ['m', 'cm', 'mm'],
     unitGroupLabel: 'Unit',
+    keyboardSemantics: keyboardSemantics,
     dragHandleLabel: dragHandleLabel,
     editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
     deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
@@ -41,6 +43,39 @@ CoreSizesTableData _table({
     onReordered: onReordered,
   );
 }
+
+const CoreKeyboardSemantics _frenchKeyboard = CoreKeyboardSemantics(
+  digitLabel: _digitLabel,
+  operatorLabel: _operatorLabel,
+  unitLabel: _unitLabel,
+  controlLabel: _controlLabel,
+  controlHint: _controlHint,
+  resultLabel: _resultLabel,
+  resultHint: 'Calcule le résultat',
+  dragHandle: 'Poignée du clavier',
+  viewAllLabel: 'Toutes les touches',
+  viewAllHint: 'Ouvre la feuille des groupes',
+  unitSystemSwitch: 'Système de mesure',
+  groupHeader: _groupHeader,
+  reorderHandle: _reorderHandle,
+);
+
+String _digitLabel(DigitType digit) => 'Chiffre ${digit.label}';
+
+String _operatorLabel(OperatorType operatorType) =>
+    'Opérateur ${operatorType.symbol}';
+
+String _unitLabel(UnitType unit) => 'Unité ${unit.label}';
+
+String _controlLabel(ControlAction action) => 'Commande ${action.name}';
+
+String _controlHint(ControlAction action) => 'Indice ${action.name}';
+
+String _resultLabel(String face) => 'Résultat $face';
+
+String _groupHeader(String groupLabel) => 'En-tête $groupLabel';
+
+String _reorderHandle(String groupLabel) => 'Déplacer $groupLabel';
 
 Widget _app(Widget child) => MaterialApp(
       theme: CoreTheme.light(),
@@ -88,7 +123,8 @@ Future<void> _dragFirstRowDown(WidgetTester tester, double rows) async {
   final rowHeight = tester
       .getSize(find.byWidgetPredicate((w) => w is Dismissible).first)
       .height;
-  final gesture = await tester.startGesture(tester.getCenter(_dragHandles.first));
+  final gesture =
+      await tester.startGesture(tester.getCenter(_dragHandles.first));
   await tester.pump(const Duration(milliseconds: 200));
   for (var i = 0; i < (rows * 2).round(); i++) {
     await gesture.moveBy(Offset(0, rowHeight / 2));
@@ -300,7 +336,9 @@ void main() {
           tables: [
             _table(
               columnTitles: const ['Col A', 'Col B'],
-              rows: const [CoreSizeCardData(id: '1', values: ['Val 1'])],
+              rows: const [
+                CoreSizeCardData(id: '1', values: ['Val 1'])
+              ],
             ),
           ],
         )),
@@ -655,7 +693,8 @@ void main() {
           )),
         );
 
-        await tester.tap(find.byKey(CoreGeometryArea.deleteRowKey('table', 'second')));
+        await tester
+            .tap(find.byKey(CoreGeometryArea.deleteRowKey('table', 'second')));
         await tester.pumpAndSettle();
 
         expect(deleted, ['second']);
@@ -691,7 +730,8 @@ void main() {
         expect(find.text('8ft'), findsWidgets);
       });
 
-      testWidgets('a horizontal drag starting on the delete button does not '
+      testWidgets(
+          'a horizontal drag starting on the delete button does not '
           'dismiss the row', (tester) async {
         final deleted = <String>[];
 
@@ -1005,7 +1045,38 @@ void main() {
         );
       });
 
-      testWidgets('the add action falls back to the sheet, which reports '
+      testWidgets('the entry sheet hands keyboardSemantics to its keyboard',
+          (tester) async {
+        _setTestViewport(tester);
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(keyboardSemantics: _frenchKeyboard)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .getSemantics(_inSheet(find.byKey(DigitType.seven.testKey)))
+              .label,
+          'Chiffre 7',
+        );
+        expect(
+          tester
+              .getSemantics(
+                  _inSheet(find.byKey(ControlAction.clearAll.testKey)))
+              .label,
+          'Commande clearAll',
+        );
+      });
+
+      testWidgets(
+          'the add action falls back to the sheet, which reports '
           'through onSaved', (tester) async {
         _setTestViewport(tester);
         final saved = <SizeEntryResult>[];
@@ -1050,8 +1121,7 @@ void main() {
         );
       });
 
-      testWidgets('tapping a row opens the sheet in edit mode',
-          (tester) async {
+      testWidgets('tapping a row opens the sheet in edit mode', (tester) async {
         _setTestViewport(tester);
         final saved = <SizeEntryResult>[];
 
@@ -1088,7 +1158,8 @@ void main() {
         expect(
           _inSheet(find.text('B2')),
           findsOneWidget,
-          reason: 'every column of the tapped row pre-fills, not just the first',
+          reason:
+              'every column of the tapped row pre-fills, not just the first',
         );
 
         await tester.tap(_sheetSubmit);

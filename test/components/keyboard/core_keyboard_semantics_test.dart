@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
@@ -61,6 +63,7 @@ final List<FunctionGroup> _groups = [
 
 Widget _keyboard({
   CoreKeyboardSemantics semantics = CoreKeyboardSemantics.english,
+  UnitSystem currentUnitSystem = UnitSystem.imperial,
   String? parenSemanticLabel,
   String? parenSemanticHint,
   String Function(String groupLabel)? reorderSemanticsLabelBuilder,
@@ -68,6 +71,7 @@ Widget _keyboard({
     CoreKeyboard(
       currentGroup: _basic,
       allGroups: _groups,
+      currentUnitSystem: currentUnitSystem,
       onDigitPressed: (_) {},
       onUnitSelected: (_) {},
       onOperatorPressed: (_) {},
@@ -316,35 +320,59 @@ void main() {
   });
 
   group('CoreKeyboard passes the set to everything it renders', () {
-    testWidgets('keys, drag handle and View all', (tester) async {
+    testWidgets('every key, the drag handle and View all', (tester) async {
       await _pumpKeyboard(tester, _keyboard(semantics: _french));
 
-      expect(
-        tester.getSemantics(find.byKey(DigitType.five.testKey)).label,
-        contains('Chiffre 5'),
-      );
-      expect(
-        tester.getSemantics(find.byKey(OperatorType.add.testKey)).label,
-        contains('Opérateur +'),
-      );
-      expect(
-        tester.getSemantics(find.byKey(UnitType.feet.testKey)).label,
-        contains('Unité Feet'),
-      );
-      expect(
-        tester.getSemantics(find.byKey(ControlAction.delete.testKey)).label,
-        contains('Commande delete'),
-      );
-      expect(
-        tester.getSemantics(find.byKey(ControlAction.paren.testKey)).hint,
-        'Indice paren',
-      );
-      expect(
-        tester.getSemantics(find.byKey(CoreResultButton.testKey)).label,
-        contains('Résultat ='),
-      );
+      String labelOf(Key key) => tester.getSemantics(find.byKey(key)).label;
+      String hintOf(Key key) => tester.getSemantics(find.byKey(key)).hint;
+
+      for (final digit in DigitType.values) {
+        expect(labelOf(digit.testKey), 'Chiffre ${digit.label}');
+      }
+      for (final operatorType in OperatorType.values) {
+        expect(
+          labelOf(operatorType.testKey),
+          'Opérateur ${operatorType.symbol}',
+        );
+      }
+      for (final unit in [
+        UnitType.divideSymbol,
+        UnitType.yards,
+        UnitType.feet,
+        UnitType.inch,
+      ]) {
+        expect(labelOf(unit.testKey), 'Unité ${unit.label}');
+      }
+      for (final action in [
+        ControlAction.clearAll,
+        ControlAction.delete,
+        ControlAction.paren,
+      ]) {
+        expect(labelOf(action.testKey), 'Commande ${action.name}');
+        expect(hintOf(action.testKey), 'Indice ${action.name}');
+      }
+      expect(labelOf(CoreResultButton.testKey), 'Résultat =');
+      expect(hintOf(CoreResultButton.testKey), 'Calcule le résultat');
       expect(find.bySemanticsLabel('Poignée du clavier'), findsOneWidget);
       expect(find.bySemanticsLabel('Keyboard drag handle'), findsNothing);
+    });
+
+    testWidgets('the metric unit keys', (tester) async {
+      await _pumpKeyboard(
+        tester,
+        _keyboard(semantics: _french, currentUnitSystem: UnitSystem.metric),
+      );
+
+      for (final unit in [
+        UnitType.meter,
+        UnitType.centimeter,
+        UnitType.millimeter,
+      ]) {
+        expect(
+          tester.getSemantics(find.byKey(unit.testKey)).label,
+          'Unité ${unit.label}',
+        );
+      }
     });
 
     testWidgets(
@@ -356,10 +384,23 @@ void main() {
       expect(viewAll.label, 'Toutes les touches de fonction');
       expect(viewAll.hint, 'Ouvre la feuille des groupes');
       expect(viewAll.flagsCollection.isButton, isTrue);
+      expect(viewAll.flagsCollection.isEnabled, ui.Tristate.isTrue);
+      expect(viewAll.flagsCollection.isFocused, ui.Tristate.isFalse);
       expect(find.bySemanticsLabel('View all'), findsNothing);
 
       await tester.tap(find.text('View all'));
       await tester.pumpAndSettle();
+      expect(find.byType(CoreFunctionKeyBottomSheet), findsOneWidget);
+    });
+
+    testWidgets('a screen reader tap on View all opens the sheet',
+        (tester) async {
+      await _pumpKeyboard(tester, _keyboard(semantics: _french));
+
+      tester.semantics
+          .tap(find.semantics.byLabel('Toutes les touches de fonction'));
+      await tester.pumpAndSettle();
+
       expect(find.byType(CoreFunctionKeyBottomSheet), findsOneWidget);
     });
 
@@ -396,7 +437,7 @@ void main() {
 
       final paren =
           tester.getSemantics(find.byKey(ControlAction.paren.testKey));
-      expect(paren.label, contains('Touche parenthèse'));
+      expect(paren.label, 'Touche parenthèse');
       expect(paren.hint, 'Ouvre une parenthèse');
 
       await tester.tap(find.text('View all'));
@@ -418,7 +459,7 @@ void main() {
 
       expect(
         tester.getSemantics(find.byKey(DigitType.five.testKey)).label,
-        contains('5 button'),
+        '5 button',
       );
       expect(find.bySemanticsLabel('Keyboard drag handle'), findsOneWidget);
       final viewAll = tester.getSemantics(find.text('View all'));
@@ -477,11 +518,11 @@ void main() {
 
       expect(
         tester.getSemantics(find.byKey(ControlAction.clearAll.testKey)).label,
-        contains('Commande clearAll'),
+        'Commande clearAll',
       );
       expect(
         tester.getSemantics(find.byKey(CoreResultButton.testKey)).label,
-        contains('Résultat Update'),
+        'Résultat Update',
       );
     });
 
@@ -501,11 +542,11 @@ void main() {
 
       expect(
         tester.getSemantics(find.byKey(ControlAction.clearAll.testKey)).label,
-        contains('Commande clearAll'),
+        'Commande clearAll',
       );
       expect(
         tester.getSemantics(find.byKey(DigitType.seven.testKey)).label,
-        contains('Chiffre 7'),
+        'Chiffre 7',
       );
     });
   });

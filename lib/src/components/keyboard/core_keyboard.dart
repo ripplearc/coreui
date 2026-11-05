@@ -783,24 +783,21 @@ class _FunctionKeyStrip extends StatelessWidget {
                   ],
                 ),
               ),
-              // One node of its own: without the container the label and
-              // hint merge into the strip and the focused button announces
-              // its visible text instead.
-              Semantics(
-                container: true,
-                excludeSemantics: true,
-                button: true,
-                label: semantics.viewAllLabel,
-                hint: semantics.viewAllHint,
-                onTap: onViewAll,
-                child: TextButton(
-                  onPressed: onViewAll,
-                  style: TextButton.styleFrom(
-                    minimumSize:
-                        const Size(CoreSpacing.space10, CoreSpacing.space12),
-                    padding: EdgeInsets.zero,
-                    tapTargetSize: MaterialTapTargetSize.padded,
-                  ),
+              TextButton(
+                onPressed: onViewAll,
+                style: TextButton.styleFrom(
+                  minimumSize:
+                      const Size(CoreSpacing.space10, CoreSpacing.space12),
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.padded,
+                ),
+                // Inside the button, so its node keeps the enabled and
+                // focusable flags; excluded, so the visible "View all" does
+                // not join the label the app supplied.
+                child: Semantics(
+                  excludeSemantics: true,
+                  label: semantics.viewAllLabel,
+                  hint: semantics.viewAllHint,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
