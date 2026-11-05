@@ -345,7 +345,9 @@ class CoreDarkKeyboardColors {
   static const Color transparent = _CoreColorPalette.transparent;
 
   /// The Basic geometry group's dot, 6.87:1 on the dark page background.
-  /// The prototype's deep teal reaches only 2.36:1 there.
+  /// The prototype's deep teal reaches only 2.36:1 there, and `orient700`,
+  /// the nearest step that passes, does so at 3.03:1 with no margin, so the
+  /// dot takes the teal the dark keyboard already uses for [main].
   static const Color groupGeometry = _CoreColorPalette.orient400;
 
   /// The Shapes group's dot, 3.93:1 on the dark page background.

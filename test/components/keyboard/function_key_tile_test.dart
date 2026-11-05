@@ -112,8 +112,7 @@ void _announcementTests() {
 
       final semantics =
           tester.getSemantics(find.byKey(const ValueKey('calc_key_Footing')));
-      expect(semantics.label, startsWith('Footing'));
-      expect(semantics.label, isNot(contains('function key')));
+      expect(semantics.label, 'Footing');
       expect(semantics.hint, isEmpty);
     });
 
@@ -123,8 +122,7 @@ void _announcementTests() {
 
       final semantics =
           tester.getSemantics(find.byKey(const ValueKey('calc_key_Length')));
-      expect(semantics.label, startsWith('Length'));
-      expect(semantics.label, isNot(contains('Function key')));
+      expect(semantics.label, 'Length');
       expect(semantics.hint, isEmpty);
     });
 
@@ -142,7 +140,28 @@ void _announcementTests() {
 
       final semantics =
           tester.getSemantics(find.byKey(const ValueKey('calc_key_Length')));
-      expect(semantics.label, startsWith('Length'));
+      expect(semantics.label, 'Length');
+    });
+
+    testWidgets('a screen reader tap presses the key once', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: CoreSpacing.space40,
+              height: CoreSpacing.space12,
+              child: FunctionKeyTile(keyType: _footing, onTap: () => taps++),
+            ),
+          ),
+        ),
+      ));
+
+      tester.semantics.tap(find.semantics.byLabel('Footing'));
+      await tester.pumpAndSettle();
+
+      expect(taps, 1);
     });
 
     testWidgets('the hint is the caller\'s words or nothing', (tester) async {
@@ -222,7 +241,7 @@ void _announcementTests() {
         of: find.byType(CoreKeyboard),
         matching: find.byKey(const ValueKey('calc_key_Footing')),
       );
-      expect(tester.getSemantics(strip).label, startsWith('Footing'));
+      expect(tester.getSemantics(strip).label, 'Footing');
 
       await tester.tap(find.text('View all'));
       await tester.pumpAndSettle();
@@ -231,7 +250,7 @@ void _announcementTests() {
         of: find.byType(CoreFunctionKeyBottomSheet),
         matching: find.byKey(const ValueKey('calc_key_Footing')),
       );
-      expect(tester.getSemantics(inSheet).label, startsWith('Footing'));
+      expect(tester.getSemantics(inSheet).label, 'Footing');
       expect(
         tester
             .getSemantics(find.descendant(
@@ -239,7 +258,7 @@ void _announcementTests() {
               matching: find.byKey(const ValueKey('calc_key_Length')),
             ))
             .label,
-        startsWith('Length'),
+        'Length',
       );
     });
   });

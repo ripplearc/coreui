@@ -16,8 +16,9 @@ import 'keyboard_models.dart';
 ///
 /// A screen reader announces [KeyType.semanticLabel] when the key has one —
 /// the full name behind an abbreviated face, `Footing` for `Footng` — and
-/// the face [KeyType.label] otherwise. The tile adds no words of its own, so
-/// nothing it announces is fixed English.
+/// the face [KeyType.label] otherwise. The face is left out of the node, so
+/// the name is announced once. The tile adds no words of its own, so nothing
+/// it announces is fixed English.
 ///
 /// The rendered tile carries [KeyType.resolvedTestKey] (`calc_key_<id>`, or
 /// [KeyType.testKey]) for Patrol and widget tests.
@@ -93,28 +94,30 @@ class _FunctionKeyTileState extends State<FunctionKeyTile>
         fullName == null || fullName.isEmpty ? widget.keyType.label : fullName;
 
     final staticChild = Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.keyType.icon != null) ...[
-            Icon(
-              widget.keyType.icon,
-              color: colors.textHeadline,
-              size: CoreSpacing.space4,
-            ),
-            const SizedBox(width: CoreSpacing.space1),
-          ],
-          Flexible(
-            child: Text(
-              widget.keyType.label,
-              style: typography.bodyMediumRegular.copyWith(
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.keyType.icon != null) ...[
+              Icon(
+                widget.keyType.icon,
                 color: colors.textHeadline,
+                size: CoreSpacing.space4,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+              const SizedBox(width: CoreSpacing.space1),
+            ],
+            Flexible(
+              child: Text(
+                widget.keyType.label,
+                style: typography.bodyMediumRegular.copyWith(
+                  color: colors.textHeadline,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
