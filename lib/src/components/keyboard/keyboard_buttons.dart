@@ -509,9 +509,11 @@ class _KeyboardButtonState extends State<_KeyboardButton>
 
     final staticChild = Center(
       child: widget.isLabel
-          ? Text(
-              widget.label ?? '',
-              style: widget.textStyle,
+          ? ExcludeSemantics(
+              child: Text(
+                widget.label ?? '',
+                style: widget.textStyle,
+              ),
             )
           : _buildIconContent(colors, effectiveHeight),
     );

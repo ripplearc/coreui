@@ -5,12 +5,16 @@
 ### ✨ Features
 
 - **CoreKeyboardSemantics**: one object for every string a screen reader announces on the keyboard — a builder per key kind (digit, operator, unit, control label and hint, result label from the key's face) and the strings of the result hint, the drag handle, the "View all" button and its hint, the unit system switch, the group headers and their drag handles. Each key widget (`CoreDigitInput`, `CoreOperatorButton`, `CoreUnitButton`, `CoreControlButton`, `CoreResultButton`) and `CoreNumberKeypad` take it as `semantics`; `CoreKeyboard`, its "View all" sheet and `CoreValueEditorSheet` take it in 0.92.0 (CA-1198, 1/2)
-- The parameter is optional and defaults to `CoreKeyboardSemantics.english`, the strings the keys announced before, so no caller breaks; the English now lives in that one constant and an app replaces it with its localisation in one place. A per-key `semanticLabel` / `semanticHint` on `CoreControlButton` stays as it was and, when set, wins over the object's `controlLabel` / `controlHint`
+- The parameter is optional and defaults to `CoreKeyboardSemantics.english`, the strings the keys announced before, so no caller breaks. That default is an exception to the 0.15.0 rule that a user-facing string reaches the screen only through the app's localisation, which CA-1198 allows: the English lives in one constant that an app replaces with its localisation in one place, at the cost that a call site which forgets the set stays English with no warning. A per-key `semanticLabel` / `semanticHint` on `CoreControlButton` stays as it was and, when set, wins over the object's `controlLabel` / `controlHint`
 - Showcase: the number keypad screen passes a showcase set
+
+### 🔧 Fixes
+
+- **A key's visible face is left out of its semantics node**: each key drew its face (`7`, `Feet`, `( )`, `=`) with a plain `Text`, which Flutter merged into the key's node, so a screen reader read the supplied label and then the English face ("Pieds, Feet"). The face is now excluded and the node carries the supplied label alone (CA-1198, 1/2)
 
 ### 🧪 Tests
 
-- Each key kind announces a caller-supplied label (and hint where it has one) when built alone; a per-key label or hint on a control key wins over the set; a result key with a caller-supplied face gets no hint; the English constant equals the former literals; `CoreNumberKeypad` passes the set to its digit and backspace keys. Keyboard goldens are unchanged
+- Each key kind announces exactly the caller-supplied label, the English face not read, and the hint where it has one, when built alone; a per-key label or hint on a control key wins over the set; a result key with a caller-supplied face gets no hint; the English constant equals the former literals, every `ControlAction` included; `CoreNumberKeypad` passes the set to its digit and backspace keys. Keyboard goldens are unchanged
 
 ## [0.89.0] - CoreQuickSheet fixed height
 

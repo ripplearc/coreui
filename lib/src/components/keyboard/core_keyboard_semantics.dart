@@ -5,15 +5,19 @@ import 'keyboard_models.dart';
 /// The strings a screen reader announces for a `CoreKeyboard`, its "View
 /// all" sheet and a `CoreNumberKeypad`: one object for the whole keyboard,
 /// passed as `semantics`, so the app supplies and translates every label and
-/// hint in one place. Since 0.15.0 a user-facing string belongs to the
-/// consumer, and these are the last ones the keyboard spoke on its own.
+/// hint in one place. A key's visible face (`7`, `Feet`, `( )`, `=`) is left
+/// out of its node, so a screen reader hears the label alone.
 ///
 /// Each field is a string, or a builder that receives what the key shows —
 /// a [DigitType], an [OperatorType], a [UnitType], a [ControlAction], the
 /// face of the result key or a group label — and returns the announcement.
-/// [english] is the set the package shipped before 0.76.0 and the default of
+/// [english] is the set the package shipped before 0.91.0 and the default of
 /// every `semantics` parameter, so a caller that passes nothing keeps the
-/// English it had. An app passes its own, built from its localisation.
+/// English it had. That default is an exception to the 0.15.0 rule that a
+/// user-facing string reaches the screen only through the app's
+/// localisation: CA-1198 allows it so that no existing caller breaks, at the
+/// cost that a call site which forgets the set stays English with no
+/// warning. An app passes its own, built from its localisation.
 ///
 /// Function keys are not here: a [KeyType] carries its own
 /// [KeyType.semanticLabel]. The `( )` key's `parenSemanticLabel` and
@@ -91,7 +95,7 @@ class CoreKeyboardSemantics {
   /// the group label: "Drag indicator for Materials group".
   final String Function(String groupLabel) reorderHandle;
 
-  /// The English strings the keyboard announced before 0.76.0, and the
+  /// The English strings the keyboard announced before 0.91.0, and the
   /// default wherever a `semantics` parameter is left out.
   static const CoreKeyboardSemantics english = CoreKeyboardSemantics(
     digitLabel: _englishDigitLabel,
