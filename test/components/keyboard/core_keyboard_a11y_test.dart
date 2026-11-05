@@ -41,6 +41,12 @@ String _groupHeader(String groupLabel) => 'En-tête $groupLabel';
 
 String _reorderHandle(String groupLabel) => 'Déplacer $groupLabel';
 
+void _expectTapTarget(WidgetTester tester, Finder finder) {
+  final size = tester.getSemantics(finder).rect.size;
+  expect(size.width, greaterThanOrEqualTo(kMinInteractiveDimension));
+  expect(size.height, greaterThanOrEqualTo(kMinInteractiveDimension));
+}
+
 void main() {
   setUpAll(() async {
     await loadFonts();
@@ -90,17 +96,21 @@ void main() {
       );
     }
 
-    final keyTypesToTest = <String, Key>{
-      'digit': DigitType.five.testKey,
-      'operator': OperatorType.add.testKey,
-      'unit': UnitType.feet.testKey,
-      'control': ControlAction.delete.testKey,
-      'result': CoreResultButton.testKey,
-    };
+    final keyTypesToTest = [
+      (kind: 'digit', key: DigitType.five.testKey, label: 'Touche 5'),
+      (kind: 'operator', key: OperatorType.add.testKey, label: 'Touche +'),
+      (kind: 'unit', key: UnitType.feet.testKey, label: 'Touche Feet'),
+      (
+        kind: 'control',
+        key: ControlAction.delete.testKey,
+        label: 'Touche delete',
+      ),
+      (kind: 'result', key: CoreResultButton.testKey, label: 'Touche ='),
+    ];
 
-    for (final entry in keyTypesToTest.entries) {
+    for (final keyType in keyTypesToTest) {
       testWidgets(
-        '${entry.key} keys meet tap target and label guidelines',
+        '${keyType.kind} keys meet tap target and label guidelines',
         (tester) async {
           await setupA11yTest(
             tester,
@@ -110,15 +120,16 @@ void main() {
           await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
             tester,
             (_) => buildTestKeyboard(),
-            find.byKey(entry.value),
+            find.byKey(keyType.key),
           );
+          _expectTapTarget(tester, find.byKey(keyType.key));
         },
       );
     }
 
-    for (final entry in keyTypesToTest.entries) {
+    for (final keyType in keyTypesToTest) {
       testWidgets(
-        '${entry.key} keys labelled by the caller meet the guidelines',
+        '${keyType.kind} keys labelled by the caller meet the guidelines',
         (tester) async {
           await setupA11yTest(
             tester,
@@ -128,17 +139,19 @@ void main() {
           await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
             tester,
             (_) => buildTestKeyboard(semantics: _callerSemantics),
-            find.byKey(entry.value),
+            find.byKey(keyType.key),
           );
+          _expectTapTarget(tester, find.byKey(keyType.key));
 
-          final semantics = tester.getSemantics(find.byKey(entry.value));
-          expect(semantics.label, startsWith('Touche'));
+          final semantics = tester.getSemantics(find.byKey(keyType.key));
+          expect(semantics.label, keyType.label);
         },
       );
     }
 
     testWidgets(
-      'the drag handle and View all labelled by the caller meet the guidelines',
+      'View all labelled by the caller meets the guidelines and is at least '
+      '48 dp',
       (tester) async {
         await setupA11yTest(
           tester,
@@ -148,13 +161,30 @@ void main() {
         await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
           tester,
           (_) => buildTestKeyboard(semantics: _callerSemantics),
-          find.bySemanticsLabel('Poignée du clavier'),
-        );
-        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-          tester,
-          (_) => buildTestKeyboard(semantics: _callerSemantics),
           find.bySemanticsLabel('Toutes les touches'),
         );
+        _expectTapTarget(tester, find.bySemanticsLabel('Toutes les touches'));
+      },
+    );
+
+    testWidgets(
+      'the drag handle announces the caller\'s label in both themes',
+      (tester) async {
+        await setupA11yTest(
+          tester,
+          screenSize: const Size(1100, 1600),
+        );
+
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(buildTestApp(
+            buildTestKeyboard(semantics: _callerSemantics),
+            theme: theme,
+          ));
+          await tester.pumpAndSettle();
+
+          expect(find.bySemanticsLabel('Poignée du clavier'), findsOneWidget);
+          expect(find.bySemanticsLabel('Keyboard drag handle'), findsNothing);
+        }
       },
     );
 
@@ -187,10 +217,11 @@ void main() {
           (_) => buildTestKeyboard(parenSemanticLabel: 'Touche parenthèse'),
           find.byKey(ControlAction.paren.testKey),
         );
+        _expectTapTarget(tester, find.byKey(ControlAction.paren.testKey));
 
         final semantics =
             tester.getSemantics(find.byKey(ControlAction.paren.testKey));
-        expect(semantics.label, contains('Touche parenthèse'));
+        expect(semantics.label, 'Touche parenthèse');
       },
     );
 

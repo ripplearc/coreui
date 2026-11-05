@@ -100,7 +100,6 @@ class _SizesTableState extends State<_SizesTable> {
 
   static const _highlightDuration = 500;
 
-
   List<String> get _titles =>
       widget.table.columns.map((column) => column.title).toList();
 
@@ -118,6 +117,7 @@ class _SizesTableState extends State<_SizesTable> {
           : (table.editResultLabel ?? ''),
       unitOptions: table.unitOptions,
       unitGroupLabel: table.unitGroupLabel,
+      keyboardSemantics: table.keyboardSemantics,
     );
     if (result != null) {
       widget.table.onSaved?.call(result);
@@ -234,7 +234,7 @@ class _SizesTableState extends State<_SizesTable> {
         // many of them the table's callbacks actually render.
         final actionsWidth =
             (table.onSaved == null ? 0.0 : _SizeCard.actionSize) +
-            (table.onDeleted == null ? 0.0 : _SizeCard.actionSize);
+                (table.onDeleted == null ? 0.0 : _SizeCard.actionSize);
 
         final totalWidth = leadingSpace +
             trailingSpace +
