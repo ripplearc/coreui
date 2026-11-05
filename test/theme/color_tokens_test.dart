@@ -81,7 +81,7 @@ void main() {
   }
 
   testWidgets('Core Color Tokens Golden Test', (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 2700));
+    await tester.binding.setSurfaceSize(const Size(1024, 2800));
 
     final widget = MaterialApp(
       home: Scaffold(
@@ -227,7 +227,7 @@ void main() {
 
   testWidgets('Core Dark Color Tokens Golden Test',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 2700));
+    await tester.binding.setSurfaceSize(const Size(1024, 2800));
 
     final widget = MaterialApp(
       home: Scaffold(

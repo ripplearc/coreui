@@ -271,23 +271,24 @@ void main() {
       }
     });
 
-    test('no two dots look the same in either theme', () {
+    test('the five dots are five different colours in either theme', () {
       for (final colors in [light, dark]) {
         expect(dots(colors).toSet().length, 5);
       }
     });
 
+    final fiveOtherDots = light.copyWith(
+      keyboardGroupGeometry: const Color(0xFF000001),
+      keyboardGroupShapes: const Color(0xFF000002),
+      keyboardGroupMaterials: const Color(0xFF000003),
+      keyboardGroupUnit: const Color(0xFF000004),
+      keyboardGroupTrigonometry: const Color(0xFF000005),
+    ) as AppColorsExtension;
+
     test('copyWith replaces each dot it is given and keeps the rest', () {
-      final changed = light.copyWith(
-        keyboardGroupGeometry: const Color(0xFF000001),
-        keyboardGroupShapes: const Color(0xFF000002),
-        keyboardGroupMaterials: const Color(0xFF000003),
-        keyboardGroupUnit: const Color(0xFF000004),
-        keyboardGroupTrigonometry: const Color(0xFF000005),
-      ) as AppColorsExtension;
       final same = light.copyWith() as AppColorsExtension;
 
-      expect(dots(changed), [
+      expect(dots(fiveOtherDots), [
         const Color(0xFF000001),
         const Color(0xFF000002),
         const Color(0xFF000003),
@@ -297,12 +298,15 @@ void main() {
       expect(dots(same), dots(light));
     });
 
-    test('lerp blends every dot between the two themes', () {
-      final halfway = light.lerp(dark, 0.5) as AppColorsExtension;
+    test('lerp blends every dot toward five other dots', () {
+      final halfway = light.lerp(fiveOtherDots, 0.5) as AppColorsExtension;
 
       for (var i = 0; i < 5; i++) {
         expect(
-            dots(halfway)[i], Color.lerp(dots(light)[i], dots(dark)[i], 0.5));
+          dots(halfway)[i],
+          Color.lerp(dots(light)[i], dots(fiveOtherDots)[i], 0.5),
+        );
+        expect(dots(halfway)[i], isNot(dots(light)[i]));
       }
     });
   });

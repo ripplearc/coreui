@@ -181,8 +181,7 @@ void main() {
       );
 
       final semantics = tester.getSemantics(find.text('sin'));
-      expect(semantics.label, startsWith('sin'));
-      expect(semantics.label, isNot(contains('Function key')));
+      expect(semantics.label, 'sin');
       expect(semantics.hint, isEmpty);
     });
 

@@ -347,8 +347,8 @@ class KeyType {
   final VoidCallback? action;
 
   /// What a screen reader announces for the key — the full name behind an
-  /// abbreviated face, `Footing` for the face `Footng`. Null announces
-  /// [label]. Localise it in the app layer with [label].
+  /// abbreviated face, `Footing` for the face `Footng`. Null or an empty
+  /// string announces [label]. Localise it in the app layer with [label].
   final String? semanticLabel;
 
   /// The [Key] the rendered tile carries, for Patrol and widget tests.
