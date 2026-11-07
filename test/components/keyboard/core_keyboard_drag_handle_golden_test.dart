@@ -19,14 +19,18 @@ void main() {
       GroupNameType(id: "Basic Geometry", label: "Basic Geometry");
   Finder dragHandle() => find.bySemanticsLabel('Keyboard drag handle');
 
-  Future<void> pumpKeyboard(WidgetTester tester, ThemeData theme) async {
+  Future<void> pumpKeyboard(
+    WidgetTester tester,
+    ThemeData theme,
+    TextTheme baseTextTheme,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(350, 550));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(
       MaterialApp(
         theme: theme.copyWith(
-          textTheme: theme.textTheme.apply(fontFamily: 'Roboto'),
+          textTheme: baseTextTheme.apply(fontFamily: 'Roboto'),
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -58,16 +62,16 @@ void main() {
   }
 
   final themes = {
-    'light': CoreTheme.light(),
-    'dark': CoreTheme.dark(),
+    'light': (CoreTheme.light(), ThemeData.light().textTheme),
+    'dark': (CoreTheme.dark(), ThemeData.dark().textTheme),
   };
 
-  for (final MapEntry(key: name, value: theme) in themes.entries) {
+  for (final MapEntry(key: name, value: (theme, baseTextTheme))
+      in themes.entries) {
     testWidgets('CoreKeyboard drag handle pressed - $name', (tester) async {
-      await pumpKeyboard(tester, theme);
+      await pumpKeyboard(tester, theme, baseTextTheme);
 
-      final gesture =
-          await tester.startGesture(tester.getCenter(dragHandle()));
+      final gesture = await tester.startGesture(tester.getCenter(dragHandle()));
       addTearDown(gesture.removePointer);
       await tester.pump(kPressTimeout);
       await tester.pump(const Duration(milliseconds: 300));
@@ -84,7 +88,7 @@ void main() {
     });
 
     testWidgets('CoreKeyboard drag handle focused - $name', (tester) async {
-      await pumpKeyboard(tester, theme);
+      await pumpKeyboard(tester, theme, baseTextTheme);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
