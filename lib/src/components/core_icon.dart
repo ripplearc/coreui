@@ -19,10 +19,12 @@ class CoreIconWidget extends StatelessWidget {
   /// Screen-reader label. When null the icon has no label.
   final String? semanticLabel;
 
-  /// Called on tap. When set the icon is wrapped in an [IconButton].
+  /// Called on tap. When set the icon is wrapped in an [IconButton]; when
+  /// null it does not react to taps.
   final VoidCallback? onTap;
 
-  /// Space around the icon, inside the tap area when [onTap] is set.
+  /// Space around the icon, inside the tap area when [onTap] is set. Null
+  /// adds none.
   final EdgeInsetsGeometry? padding;
   /// Controls the compactness of the [IconButton]. Defaults to null (platform default).
   final VisualDensity? visualDensity;

@@ -123,14 +123,15 @@ class CoreSwitch extends StatelessWidget {
   /// [CoreSwitchType.normal].
   final CoreSwitchType type;
 
-  /// Text inside the track while [value] is true. When neither label is
-  /// set the switch is the compact 32 px one.
+  /// Text inside the track while [value] is true; null shows none. When
+  /// neither label is set the switch is the compact 32 px one.
   final String? activeLabel;
 
-  /// Text inside the track while [value] is false.
+  /// Text inside the track while [value] is false; null shows none.
   final String? inactiveLabel;
 
-  /// Replaces the [type]'s colour for the off thumb, border and text.
+  /// Replaces the [type]'s colour for the off thumb, border and text. Null
+  /// keeps the [type]'s colours.
   final Color? inactiveColor;
 
   /// Creates a switch that the caller turns on and off through [value].
