@@ -13,7 +13,9 @@ void main() {
 
   testWidgets('CoreQuickSheet Golden Test - Basic Content',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -71,7 +73,9 @@ void main() {
 
   testWidgets('CoreQuickSheet Golden Test - Custom Background Color',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -125,7 +129,9 @@ void main() {
 
   testWidgets('CoreQuickSheet Golden Test - Long Content',
       (WidgetTester tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -166,6 +172,9 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
+    final sheet = tester.getRect(find.byType(BottomSheet));
+    expect(sheet.top, 80);
+    expect(sheet.height, 720);
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_quick_sheet_long_content.png'),
