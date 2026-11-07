@@ -201,6 +201,14 @@ class _CoreChipState extends State<CoreChip> {
   }
 
   @override
+  void didUpdateWidget(CoreChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The × leaves the tree without calling onFocusChange(false), so the
+    // ring would come back with it.
+    if (!_hasCloseIcon) _isCloseFocused = false;
+  }
+
+  @override
   void dispose() {
     _pressed.dispose();
     _highlighted.dispose();
@@ -429,7 +437,7 @@ class _CoreChipState extends State<CoreChip> {
     // draws a ring around the × and leaves the chip border at rest, so Tab
     // on the chip and Tab on the × look different. A small chip is under
     // 48 dp high, so the Stack is at least 48 dp high with the chip centred.
-    return ConstrainedBox(
+    final closable = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: CoreSpacing.space12),
       child: Stack(
         alignment: AlignmentDirectional.center,
@@ -465,5 +473,9 @@ class _CoreChipState extends State<CoreChip> {
         ],
       ),
     );
+    // A parent that forces a wider box (an Expanded) would stretch the
+    // Stack and move the target off the × to the far end. The Align keeps
+    // the Stack the chip's size.
+    return Align(widthFactor: 1, heightFactor: 1, child: closable);
   }
 }
