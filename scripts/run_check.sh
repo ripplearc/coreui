@@ -11,10 +11,13 @@
 #   2. fvm flutter analyze --no-fatal-infos
 #   3. ripplearc_linter with the CI rule list (scripts/ripplearc_lint_rules.txt)
 #      on every changed Dart file
-#   4. fvm flutter test on the changed tests and the tests next to changed lib/ files
+#   4. fvm flutter test on the changed tests and the tests next to changed lib/
+#      and test/ files. CI runs every test, so this is a subset.
 #
-# The script never rebases, checks out or commits. It exits 0 only when every
-# step passed, so it can run from a git pre-push hook.
+# The checks read the files on disk, so the script stops first when a Dart file
+# or the root pubspec differs from the last commit. It never rebases, checks
+# out or commits. It exits 0 only when every step passed, so it can run from a
+# git pre-push hook.
 
 set -euo pipefail
 
@@ -69,17 +72,33 @@ nearest_test_dir() {
 # test/ and test/components hold many components' tests, so there only the
 # tests named after the file count: core_icon.dart -> core_icon_test.dart,
 # core_icon_a11y_test.dart. A longer name with the same start also matches;
-# an extra test run is harmless, a missed one is not.
+# an extra test run is harmless, a missed one is not. When the folder has none,
+# the tests named after the file anywhere in test/ count: alerts/toast.dart has
+# its tests in test/components/toast.
 tests_for_lib_file() {
-  local dir name
+  local dir name found
   dir="$(nearest_test_dir "$1")"
-  [[ -d "$REPO_ROOT/$dir" ]] || return 0
+  name="$(basename "$1" .dart)"
   if [[ "$dir" == "test" || "$dir" == "test/components" ]]; then
-    name="$(basename "$1" .dart)"
-    (cd "$REPO_ROOT" && find "$dir" -maxdepth 1 \( -name "${name}_test.dart" -o -name "${name}_*_test.dart" \))
+    found="$(cd "$REPO_ROOT" && find "$dir" -maxdepth 1 \( -name "${name}_test.dart" -o -name "${name}_*_test.dart" \))"
   else
-    (cd "$REPO_ROOT" && find "$dir" -maxdepth 1 -name '*_test.dart')
+    found="$(cd "$REPO_ROOT" && find "$dir" -maxdepth 1 -name '*_test.dart')"
   fi
+  if [[ -z "$found" ]]; then
+    found="$(cd "$REPO_ROOT" && find test \( -name "${name}_test.dart" -o -name "${name}_*_test.dart" \))"
+  fi
+  [[ -z "$found" ]] || echo "$found"
+}
+
+# A changed golden PNG or helper under test/ selects the tests in its folder,
+# goldens/ dropped. A shared helper has no tests beside it, so it selects all.
+tests_for_test_file() {
+  local dir found
+  dir="$(dirname "$1")"
+  dir="${dir%%/goldens*}"
+  found="$(cd "$REPO_ROOT" && find "$dir" -name '*_test.dart' 2>/dev/null || true)"
+  [[ -n "$found" ]] || found="$(cd "$REPO_ROOT" && find test -name '*_test.dart')"
+  echo "$found"
 }
 
 # Reads changed paths on stdin and prints the test files to run, sorted and
@@ -90,6 +109,9 @@ select_tests() {
     case "$file" in
       test/*_test.dart)
         echo "$file"
+        ;;
+      test/*)
+        tests_for_test_file "$file"
         ;;
       lib/*.dart)
         found="$(tests_for_lib_file "$file")"
@@ -139,6 +161,12 @@ run_linter() {
   return "$failed"
 }
 
+# Dart files and the root pubspec that differ from the last commit, untracked
+# ones included. pub get rewrites example/pubspec.lock, so it is left out.
+differs_from_commit() {
+  git -C "$REPO_ROOT" status --porcelain -- '*.dart' pubspec.yaml pubspec.lock
+}
+
 golden_command() {
   printf 'docker compose run --rm --build flutter flutter test'
   printf ' %q' "$@"
@@ -157,15 +185,22 @@ main() {
   done
 
   cd "$REPO_ROOT"
+
+  # The checks read the disk and CI reads the commit, so both must match.
+  local dirty
+  dirty="$(differs_from_commit)"
+  if [[ -n "$dirty" ]]; then
+    echo "These files differ from your last commit:"
+    echo "$dirty"
+    echo "The checks read the disk, so the result can differ from CI. Commit or stash them first."
+    return 1
+  fi
+
   refresh_base "$base"
 
   local changed
   changed="$(changed_files "$base")"
   echo "Changed files against $base: $(grep -c . <<<"$changed" || true)"
-  # CI sees commits only, so this script does too.
-  if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
-    echo "Note: uncommitted changes are not checked. Commit them first."
-  fi
 
   step "1/4 fvm flutter pub get"
   fvm flutter pub get
@@ -177,7 +212,7 @@ main() {
   step "3/4 ripplearc_linter on changed Dart files"
   run_linter <<<"$changed"
 
-  step "4/4 fvm flutter test on changed tests"
+  step "4/4 fvm flutter test on the tests for the changed files"
   local tests=() goldens_found=() file
   while IFS= read -r file; do
     [[ -n "$file" ]] || continue
@@ -211,7 +246,7 @@ main() {
   fi
 
   echo
-  echo "All checks passed."
+  echo "Selected checks passed. CI runs all tests."
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

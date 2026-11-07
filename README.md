@@ -194,7 +194,7 @@ Run the CI checks on your machine first:
 ./scripts/run_check.sh
 ```
 
-It runs `pub get`, `analyze`, the ripplearc_linter rules on the Dart files you changed against `origin/main`, and the tests for the files you changed. It stops at the first failure and never rebases or changes your branch. Only committed changes are checked, as in CI.
+It runs `pub get`, `analyze`, the ripplearc_linter rules on the Dart files you changed against `origin/main`, and the tests for the files you changed. CI runs all tests, so a pass here covers only the selected ones. It stops at the first failure and never rebases or changes your branch. The checks read the files on disk and CI reads the commit, so the script stops first when a Dart file or the root pubspec differs from your last commit. Commit or stash them, then run it again.
 
 - `--base origin/<branch>`: for a stacked PR, compare against its base branch instead.
 - `--goldens`: run the golden tests in the Docker image that matches CI. On macOS they are skipped otherwise, because macOS renders text differently from the Ubuntu CI.
@@ -202,7 +202,8 @@ It runs `pub get`, `analyze`, the ripplearc_linter rules on the Dart files you c
 The lint rule list is in `scripts/ripplearc_lint_rules.txt`, which CI reads too. The script exits non-zero on failure, so it can run as a git pre-push hook:
 
 ```bash
-printf '#!/bin/sh\nexec ./scripts/run_check.sh\n' > .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+hook="$(git rev-parse --git-path hooks)/pre-push"
+printf '#!/bin/sh\nexec ./scripts/run_check.sh\n' > "$hook" && chmod +x "$hook"
 ```
 
 ### Running Tests

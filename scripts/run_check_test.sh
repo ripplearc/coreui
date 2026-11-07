@@ -48,6 +48,10 @@ add test/components/chips/old_chip_test.dart
 add test/components/core_icon_test.dart
 add test/components/core_icon_a11y_test.dart
 add test/theme/color_tokens_test.dart "expect(x, matchesGoldenFile('a.png'));"
+add test/components/toast/toast_widget_test.dart
+add test/components/chips/goldens/a.png
+add test/components/chips/chip_harness.dart
+add test/utils/test_harness.dart
 git -C "$WORK" add -A
 git -C "$WORK" commit -qm base
 git -C "$WORK" checkout -qb feature
@@ -79,10 +83,24 @@ expect "select: changed test, de-duplicated" \
 test/components/chips/core_chip_test.dart" \
   "$(select_tests <<<"lib/src/components/chips/core_chip.dart
 test/components/chips/core_chip_test.dart")"
-expect "select: non-test files ignored" "" \
+expect "select: files outside lib/ and test/ ignored" "" \
   "$(select_tests <<<"README.md
-test/components/chips/goldens/a.png
 example/lib/main.dart")"
+expect "select: golden PNG brings its folder's tests" \
+  "test/components/chips/core_chip_golden_test.dart
+test/components/chips/core_chip_test.dart" \
+  "$(select_tests <<<"test/components/chips/goldens/a.png")"
+expect "select: helper in a component folder brings that folder's tests" \
+  "test/components/chips/core_chip_golden_test.dart
+test/components/chips/core_chip_test.dart" \
+  "$(select_tests <<<"test/components/chips/chip_harness.dart")"
+expect "select: shared helper brings all tests" \
+  "$(cd "$WORK" && find test -name '*_test.dart' | sort)" \
+  "$(select_tests <<<"test/utils/test_harness.dart")"
+expect "select: a test/ path with no folder still selects, and the next file too" \
+  "$(cd "$WORK" && find test -name '*_test.dart' | sort)" \
+  "$(set -e; select_tests <<<"test/missing/goldens/x.png
+test/components/chips/core_chip_test.dart")"
 expect "select: parts/ file uses its component's tests" \
   "test/components/chips/core_chip_golden_test.dart
 test/components/chips/core_chip_test.dart" \
@@ -91,9 +109,24 @@ expect "select: file at test/components level takes only its own tests" \
   "test/components/core_icon_a11y_test.dart
 test/components/core_icon_test.dart" \
   "$(select_tests <<<"lib/src/components/core_icon.dart")"
-expect "select: no tests of its own warns, selects nothing" \
-  "warning: no tests found for lib/src/components/alerts/toast.dart, run its tests by hand" \
-  "$(select_tests <<<"lib/src/components/alerts/toast.dart" 2>&1)"
+expect "select: tests in another folder are found by file name" \
+  "test/components/toast/toast_widget_test.dart" \
+  "$(select_tests <<<"lib/src/components/alerts/toast.dart")"
+expect "select: no tests anywhere warns, selects nothing" \
+  "warning: no tests found for lib/src/components/alerts/lonely.dart, run its tests by hand" \
+  "$(select_tests <<<"lib/src/components/alerts/lonely.dart" 2>&1)"
+
+# --- differs_from_commit -----------------------------------------------------
+expect "differs: clean tree" "" "$(differs_from_commit)"
+add lib/src/components/chips/core_chip.dart "// fixed on disk only"
+add lib/src/new_file.dart
+add example/pubspec.lock "rewritten by pub get"
+expect "differs: changed and untracked Dart files, not example/pubspec.lock" \
+  " M lib/src/components/chips/core_chip.dart
+?? lib/src/new_file.dart" \
+  "$(differs_from_commit)"
+git -C "$WORK" checkout -q -- lib/src/components/chips/core_chip.dart
+rm "$WORK/lib/src/new_file.dart" "$WORK/example/pubspec.lock"
 
 # --- is_golden_test ----------------------------------------------------------
 golden() { if is_golden_test "$1"; then echo yes; else echo no; fi; }
