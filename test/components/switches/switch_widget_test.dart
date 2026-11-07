@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../load_fonts.dart';
 import '../../utils/a11y_guidelines.dart';
 import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
@@ -771,6 +772,50 @@ void main() {
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
           isNot(colors.outlineFocus.toARGB32()));
     });
+  });
+
+  group('CoreSwitch – Show Hide word position', () {
+    // The test font draws "Hide" wider than its slot, so the word fills the
+    // slot and every alignment looks the same. Roboto leaves room around it.
+    setUpAll(loadFonts);
+
+    for (final enabled in [true, false]) {
+      for (final value in [false, true]) {
+        testWidgets(
+            '${enabled ? 'enabled' : 'disabled'} ${value ? 'on' : 'off'} '
+            'word sits against the far padding', (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light().copyWith(
+                textTheme: ThemeData.light()
+                    .textTheme
+                    .apply(fontFamily: 'Roboto'),
+              ),
+              home: Scaffold(
+                body: CoreSwitch(
+                  type: CoreSwitchType.showHide,
+                  value: value,
+                  onChanged: enabled ? (_) {} : null,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // 8 dp padding, plus 1 dp when the track draws its border.
+          final hasBorder = !enabled || !value;
+          final track = tester.getRect(find.descendant(
+            of: find.byType(CoreSwitch),
+            matching: find.byType(AnimatedContainer),
+          ));
+          final word = tester.getRect(find.text(value ? 'Show' : 'Hide'));
+          expect(
+            value ? word.left - track.left : track.right - word.right,
+            closeTo(8 + (hasBorder ? 1 : 0), 0.01),
+          );
+        });
+      }
+    }
   });
 
   group('CoreSwitch – large text', () {

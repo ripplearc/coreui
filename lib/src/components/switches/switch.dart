@@ -350,7 +350,13 @@ class CoreSwitch extends StatelessWidget {
                       top: 0,
                       bottom: 0,
                       // A large label scales down; the track keeps its size.
-                      child: Center(
+                      // Show Hide puts its word against the far padding.
+                      child: Align(
+                        alignment: !_isShowHide
+                            ? Alignment.center
+                            : (value
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
