@@ -217,8 +217,6 @@ class CoreSwitch extends StatelessWidget {
         });
   }
 
-  /// Gets the switch width based on type and label presence.
-  /// Returns 32px for compact (no labels), 71px for normal/lock, 77px for imperial.
   double get _getSwitchWidth {
     if (!_hasLabels && !_isShowHide) return _SwitchConstants.widthCompact;
     switch (type) {
@@ -232,8 +230,6 @@ class CoreSwitch extends StatelessWidget {
     }
   }
 
-  /// Gets the switch height based on label presence.
-  /// Returns 24px for labeled switches, 18px for compact switches.
   double get _getSwitchHeight {
     if (_isShowHide) return _SwitchConstants.heightShowHide;
     return _hasLabels
