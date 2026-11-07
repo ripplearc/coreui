@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -61,10 +62,71 @@ void main() {
           isButton: true,
           isEnabled: true,
           hasEnabledState: true,
+          hasTapAction: true,
         ),
       );
 
       handle.dispose();
+    });
+
+    for (final size in CoreButtonSize.values) {
+      testWidgets(
+          '${size.name} button: a screen reader double tap presses it once',
+          (tester) async {
+        final handle = tester.ensureSemantics();
+        try {
+          var presses = 0;
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light(),
+              home: Scaffold(
+                body: CoreButton(
+                  label: 'Save',
+                  size: size,
+                  onPressed: () => presses++,
+                ),
+              ),
+            ),
+          );
+
+          final node = tester.getSemantics(find.byType(CoreButton));
+          expect(
+              node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+          tester.semantics.tap(find.semantics.byLabel('Save'));
+          await tester.pump();
+
+          expect(presses, 1);
+        } finally {
+          handle.dispose();
+        }
+      });
+    }
+
+    testWidgets('a disabled button has no screen reader tap action',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        var presses = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light(),
+            home: Scaffold(
+              body: CoreButton(
+                label: 'Save',
+                isDisabled: true,
+                onPressed: () => presses++,
+              ),
+            ),
+          ),
+        );
+
+        final node = tester.getSemantics(find.byType(CoreButton));
+        expect(
+            node.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+        expect(presses, 0);
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('semanticsLabel overrides label in the semantics tree',
