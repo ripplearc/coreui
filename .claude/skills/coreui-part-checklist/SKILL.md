@@ -189,7 +189,7 @@ These came up in the same review rounds:
   text.
 - **Size line** in the PR text counts production lines: the insertions in
   `lib/**/*.dart` (not generated files, tests or docs) on the pushed branch,
-  `git diff --numstat origin/main...HEAD -- 'lib/**/*.dart'`. Over 200 is
+  `git diff --numstat origin/main...HEAD -- 'lib/**/*.dart' 'lib/*.dart'`. Over 200 is
   too large for one PR. This is the team's Digestible PR rule
   (`construculator-app/.claude/rules/01-digestible-pr.md`).
 

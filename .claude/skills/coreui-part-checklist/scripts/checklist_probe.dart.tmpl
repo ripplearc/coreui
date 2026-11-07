@@ -21,6 +21,7 @@ class Case {
 }
 
 const _bk = Key('probe-boundary');
+const _pk = Key('probe-part');
 const _purple = Color(0xFF7F3FBF);
 
 /// What sits behind the part. Press and focus are read on [page], the real
@@ -107,10 +108,7 @@ String _takeErrorsOfLastStep(WidgetTester t) {
   return e == null ? '' : ' | EXCEPTION ${e.toString().split('\n').first}';
 }
 
-Rect _partRect(WidgetTester t) {
-  final box = t.getRect(find.byKey(_bk));
-  return Rect.fromLTRB(box.left + 16, box.top + 16, box.right - 16, box.bottom - 16);
-}
+Rect _partRect(WidgetTester t) => t.getRect(find.byKey(_pk));
 
 Iterable<Rect> _tapRects(WidgetTester t) {
   final f = find.byWidgetPredicate((w) =>
@@ -130,7 +128,7 @@ void probe(List<Case> cases) {
   for (final c in cases) {
     testWidgets('PROBE ${c.name}', (t) async {
       final out = <String>[];
-      Widget body() => SizedBox(width: c.width, child: Align(alignment: Alignment.topLeft, widthFactor: 1, heightFactor: 1, child: c.build()));
+      Widget body() => SizedBox(width: c.width, child: Align(alignment: Alignment.topLeft, widthFactor: 1, heightFactor: 1, child: KeyedSubtree(key: _pk, child: c.build())));
       // rest, on the page colour
       await t.pumpWidget(_app(body()));
       await t.pumpAndSettle();
@@ -218,6 +216,10 @@ void probe(List<Case> cases) {
         final boundary = t.renderObject(find.byKey(_bk));
         final texts = find.descendant(of: find.byKey(_bk), matching: find.byType(RichText)).evaluate().map((x) => t.getRect(find.byElementPredicate((y) => y == x))).toList();
         final icons = find.descendant(of: find.byKey(_bk), matching: find.byWidgetPredicate((w) => w is Icon || w is CoreIconWidget || w is Image || w.runtimeType.toString().contains('Svg'))).evaluate().map((x) => t.getRect(find.byElementPredicate((y) => y == x))).toList();
+        // A text centred inside an icon's box (a count on a badge, initials
+        // on an avatar picture) is placed there on purpose, so it is not
+        // counted. A short label on a larger icon is missed this way: look
+        // at the text pictures too.
         var overlap = 0;
         for (final a in texts) {
           for (final b in icons) {
@@ -249,8 +251,10 @@ void probe(List<Case> cases) {
             a = a.parent;
           }
           if (a is RenderDecoratedBox) {
-            final tr = ro.localToGlobal(Offset.zero) & ro.size;
-            final ar = a.localToGlobal(Offset.zero) & a.size;
+            // Boxes after any scale, so a label a FittedBox shrinks to
+            // fit reads as inside.
+            final tr = MatrixUtils.transformRect(ro.getTransformTo(null), Offset.zero & ro.size);
+            final ar = MatrixUtils.transformRect(a.getTransformTo(null), Offset.zero & a.size);
             if (tr.top < ar.top - 0.5 || tr.bottom > ar.bottom + 0.5 || tr.left < ar.left - 0.5 || tr.right > ar.right + 0.5) {
               escaping.add('"$text" ${tr.height.toStringAsFixed(0)}h in ${ar.height.toStringAsFixed(0)}h box');
             }

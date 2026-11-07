@@ -57,7 +57,8 @@ Future<Uint8List> pixels(WidgetTester tester) async {
 /// [Rect.zero] if none does.
 Rect changedBox(WidgetTester tester, Uint8List a, Uint8List b) {
   final origin = tester.getTopLeft(find.byKey(partBoundary));
-  final width = tester.getSize(find.byKey(partBoundary)).width.round();
+  // The image is the part width rounded up.
+  final width = tester.getSize(find.byKey(partBoundary)).width.ceil();
   var left = 1 << 30, top = 1 << 30, right = -1, bottom = -1;
   for (var i = 0; i < a.length; i += 4) {
     if (a[i] != b[i] || a[i + 1] != b[i + 1] || a[i + 2] != b[i + 2]) {
@@ -127,7 +128,11 @@ testWidgets('the press shows on the page and stays inside the pill',
   final gesture = await tester.startGesture(
     tester.getCenter(find.byType(CoreFilterChip)),
   );
-  await tester.pump(const Duration(milliseconds: 300));
+  // Three frames, as the probe pumps: one frame is drawn at the start of
+  // an animated press, before anything has changed.
+  await tester.pump(const Duration(milliseconds: 150));
+  await tester.pump(const Duration(milliseconds: 150));
+  await tester.pump(const Duration(milliseconds: 150));
   final tint = changedBox(tester, rest, await pixels(tester));
   await gesture.up();
 
@@ -212,7 +217,7 @@ for (final scale in [1.5, 2.0]) {
     final icon = tester.getRect(find.byType(CoreIconWidget));
     expect(label.overlaps(icon), isFalse);
 
-    final shape = tester.getRect(find.byKey(const Key('pill')));
+    final shape = tester.getRect(find.byKey(CoreFilterChip.pillKey));
     expect(shape.top, lessThanOrEqualTo(label.top));
     expect(shape.bottom, greaterThanOrEqualTo(label.bottom));
   });
@@ -272,10 +277,16 @@ testWidgets('focus moves after a clear, and only once', (tester) async {
 ## 6. A golden for each state
 
 One `matchesGoldenFile` per state the library draws (rest, pressed, focused,
-disabled), light and dark. Regenerate only the goldens you meant to change:
+disabled), light and dark. Golden pictures differ between platforms, so
+make them inside the Docker container, as the README says in
+[Golden Tests with Docker](../../../../README.md#golden-tests-with-docker).
+A run on the host, on a Mac for example, fails on parts that did not
+change. Regenerate only the goldens you meant to change, in the container:
 
 ```sh
-fvm flutter test --update-goldens test/components/<part>/<part>_golden_test.dart
+flutter test --update-goldens test/components/<folder>/<file>_golden_test.dart
 ```
+
+For example, `test/components/chips/core_chip_golden_test.dart`.
 
 Then open each changed `.png` and look at it before you commit.
