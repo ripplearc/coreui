@@ -97,7 +97,7 @@ CoreUnderlineTextField(
   `large`), up to `maxLines` lines. Past that the text scrolls inside the
   field.
 - The underline sits 8px under the last line of text. With `labelTrailing`
-  it is 4px, as on one line.
+  at the `regular` or `compact` size it is 4px, as on one line.
 - The return key adds a new line, so `onSubmitted` does not fire on it. Pass
   `textInputAction` to change that.
 - A hint or error line sits under the underline as usual. An error line

@@ -37,8 +37,9 @@ import 'underline_field_metrics.dart';
 /// [maxLines] above 1 lets the text wrap. The value row grows with the text
 /// up to [maxLines] lines, then the text scrolls inside the field. The
 /// underline sits 8px under the last line of text (4px with
-/// [labelTrailing]), and the return key adds a new line, so [onSubmitted]
-/// does not fire on return unless [textInputAction] says so.
+/// [labelTrailing] at the regular or compact size), and the return key adds
+/// a new line, so [onSubmitted] does not fire on return unless
+/// [textInputAction] says so.
 /// The default, 1, keeps one line that scrolls sideways.
 ///
 /// ### Placeholder
@@ -192,8 +193,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// The most lines the value shows before it scrolls. Above 1 the text wraps
   /// and the field grows with it, one line at a time, up to this many lines;
   /// the return key adds a new line and the underline sits 8px under the last
-  /// line (4px with [labelTrailing]). Defaults to 1, a single line that does
-  /// not wrap.
+  /// line (4px with [labelTrailing] at the regular or compact size).
+  /// Defaults to 1, a single line that does not wrap.
   ///
   /// As on one line, the screen reader node is at least 48px tall while the
   /// row is drawn as tall as its lines.

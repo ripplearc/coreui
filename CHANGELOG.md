@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-- **CoreUnderlineTextField.maxLines**: lets the value wrap. The field grows with its text up to `maxLines` lines, then the text scrolls inside it, and the return key adds a new line. The underline sits 8px under the last line (4px with `labelTrailing`, as on one line), as the Figma Line Multi-line variants draw it. As on one line, the screen reader node is at least 48px tall while the row is drawn as tall as its lines. The default, 1, is unchanged (CA-1347)
+- **CoreUnderlineTextField.maxLines**: lets the value wrap. The field grows with its text up to `maxLines` lines, then the text scrolls inside it, and the return key adds a new line. The underline sits 8px under the last line (4px with `labelTrailing` at the regular or compact size, as on one line), as the Figma Line Multi-line variants draw it. As on one line, the screen reader node is at least 48px tall while the row is drawn as tall as its lines. The default, 1, is unchanged (CA-1347)
 - The error row and the hint row the ticket asks for were already part of the field (`errorText`, `helperText`), so they are only covered with new multi-line tests and goldens
 - **No Material needed**: the field brings its own transparent `Material`, so outside a `Scaffold` or `Material` it no longer throws "No Material widget found" and its label, prefix, unit, helper line and error draw as they do under a `Scaffold` (one line or several)
 - **Height questions**: a multi-line field gives the same height to intrinsic and dry layout as to normal layout, so inside `IntrinsicHeight` a field with one line of text is 53px, as on one line (was 77px), and `getDryLayout` no longer throws
