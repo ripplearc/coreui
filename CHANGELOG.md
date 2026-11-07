@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.90.0] - CoreSwitch disabled state and Show Hide look
+
+### ✨ Features
+
+- **CoreSwitch disabled state**: pass a null `onChanged` to disable the switch (it is now `ValueChanged<bool>?`; enabled switches do not change). A disabled switch ignores taps, Tab skips it, and it uses one set of colours for every type, as Figma draws it: `pageBackground` track with a `lineMid` border in both On and Off, `textDisable` label and an `iconGrayLight` thumb without a shadow. The thumb keeps the size and side of its own On or Off state, at the same gap from the edge as an enabled thumb: the border no longer pushes a disabled On thumb 1 dp to the right (CA-1342)
+- **CoreSwitchType.showHide**: the Show Hide look of the share sheet, 72 x 32. Off is a `backgroundGrayLight` track with a `lineMid` border, "Hide" in `textDark` and an `iconGrayMid` thumb on the left, the Off thumb of the normal type. On is a `buttonSurface` track, "Show" in `textInverse` and a `textInverse` thumb on the right, like every On thumb: white in light mode, #101828 in dark mode. Both labels are Body Small Semibold and default to "Hide" and "Show"; the label always names the current state. The word sits against the 8 dp padding at the edge far from the thumb, as the storyboard draws it; the other types keep their centred label (CA-1342)
+- **CoreSwitch semantics**: the switch reads as toggled or not and as enabled or disabled. The new optional `semanticLabel` is the name a screen reader reads first. The label, state, tap action and keyboard focus are one node. The default "Show" and "Hide" labels are English; pass localized labels in a localized app (CA-1342)
+
+### 🔧 Fixes
+
+- **CoreSwitch labels at large text**: a label that does not fit the track scales down instead of being cut, so the switch keeps its library size. Measured in Roboto, labels used to wrap and be cut from 1.3x text ("Show", "Private", "Unlock", "Imperial"), 1.5x ("Hide" needs 38.3 dp and its slot was 34.4 dp; "Public", "Metric") or 2.0x ("Lock") (CA-1342)
+- **CoreSwitch focus ring**: the 2 dp `outlineFocus` ring now stands 2 dp clear of the track, as CoreButton's focus ring does. In light mode an On track (`iconDark`, or `buttonSurface` for Show Hide) is the same colour as `outlineFocus`, so the touching ring of 0.58.0 only made an On switch look thicker (CA-1342)
+
+### 📐 Design notes
+
+Show Hide is 32 high; the other labelled types stay 24 high. The Show Hide thumb is 14 in both states with 8 px padding, so it sits 9 dp from the left edge when Off (inside the 1 px border) and 8 dp from the right edge when On. Check the thumb padding against Figma node 57436:8960 when the design changes.
+
+### 🧪 Tests
+
+- Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action. Large text: every labelled type, On and Off, keeps its label inside the track and on one line at its full width at 1.5x and 2.0x (15 of the 16 fail without the fix; normal "On" at 1.5x fits anyway). On thumb is `textInverse` for every type in light and dark. A disabled On thumb keeps the edge gap of an enabled one, for every type, compact and labelled. The Show Hide thumb sits at the Figma gaps. The Show Hide word sits against the far padding, enabled and disabled, On and Off, measured in Roboto (all 4 fail with the word centred). Focus: the ring is 2 dp clear of the track for normal and Show Hide, On and Off (fails without the gap). Goldens: Show Hide focused Off and On, light and dark; the normal focused goldens are redrawn with the gap
+
 ## [0.82.0] - CoreCheckRowItem.checkRow, disabled rows and a keyboard focus ring
 
 ### ✨ Features

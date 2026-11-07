@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../load_fonts.dart';
 import '../../utils/a11y_guidelines.dart';
 import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
@@ -221,6 +223,351 @@ void main() {
       });
     });
 
+    Future<void> pumpSwitch(
+      WidgetTester tester, {
+      required CoreSwitchType type,
+      required bool value,
+      ValueChanged<bool>? onChanged,
+      String? activeLabel,
+      String? inactiveLabel,
+      String? semanticLabel,
+      bool dark = false,
+    }) {
+      return tester.pumpWidget(
+        MaterialApp(
+          theme: dark ? CoreTheme.dark() : CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSwitch(
+              type: type,
+              value: value,
+              onChanged: onChanged,
+              activeLabel: activeLabel,
+              inactiveLabel: inactiveLabel,
+              semanticLabel: semanticLabel,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('show hide label names the current state',
+        (WidgetTester tester) async {
+      var value = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => CoreSwitch(
+                type: CoreSwitchType.showHide,
+                value: value,
+                onChanged: (v) => setState(() => value = v),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Hide'), findsOneWidget);
+      expect(find.text('Show'), findsNothing);
+
+      await tester.tap(find.byType(CoreSwitch));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Show'), findsOneWidget);
+      expect(find.text('Hide'), findsNothing);
+    });
+
+    testWidgets('show hide is 72 x 32', (WidgetTester tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+
+      expect(tester.getSize(find.byType(AnimatedContainer)),
+          const Size(72, 32));
+    });
+
+    testWidgets('show hide uses the Figma colours when enabled',
+        (WidgetTester tester) async {
+      final colors = CoreTheme.light().coreColors;
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+      expect(offKnobColor(tester), colors.iconGrayMid);
+      expect(offBorderColor(tester), colors.lineMid);
+      expect(tester.widget<Text>(find.text('Hide')).style!.color,
+          colors.textDark);
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      final track = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      final decoration = track.decoration! as BoxDecoration;
+      expect(decoration.color, colors.buttonSurface);
+      expect(decoration.border, isNull);
+      expect(offKnobColor(tester), colors.textInverse);
+      expect(tester.widget<Text>(find.text('Show')).style!.color,
+          colors.textInverse);
+    });
+
+    for (final dark in [false, true]) {
+      for (final type in CoreSwitchType.values) {
+        testWidgets('${type.name} on knob is textInverse in '
+            '${dark ? 'dark' : 'light'} mode', (WidgetTester tester) async {
+          final colors =
+              (dark ? CoreTheme.dark() : CoreTheme.light()).coreColors;
+          await pumpSwitch(
+            tester,
+            type: type,
+            value: true,
+            onChanged: (_) {},
+            dark: dark,
+          );
+          await tester.pumpAndSettle();
+
+          expect(offKnobColor(tester), colors.textInverse);
+        });
+      }
+    }
+
+    testWidgets('show hide off knob differs from a disabled knob in dark mode',
+        (WidgetTester tester) async {
+      final colors = CoreTheme.dark().coreColors;
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+        dark: true,
+      );
+      await tester.pumpAndSettle();
+
+      expect(offKnobColor(tester), colors.iconGrayMid);
+      expect(offKnobColor(tester), isNot(colors.iconGrayLight));
+    });
+
+    Rect thumbRect(WidgetTester tester) => tester.getRect(
+          find.byWidgetPredicate((w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration! as BoxDecoration).shape == BoxShape.circle),
+        );
+
+    Rect trackRect(WidgetTester tester) => tester.getRect(find.descendant(
+          of: find.byType(CoreSwitch),
+          matching: find.byType(AnimatedContainer),
+        ));
+
+    for (final type in CoreSwitchType.values) {
+      for (final labelled in [false, true]) {
+        if (type == CoreSwitchType.showHide && !labelled) continue;
+        testWidgets(
+            'disabled ${type.name}${labelled ? ' labelled' : ' compact'} on '
+            'thumb keeps the gap of an enabled one', (tester) async {
+          Future<double> rightGap({required bool enabled}) async {
+            await pumpSwitch(
+              tester,
+              type: type,
+              value: true,
+              onChanged: enabled ? (_) {} : null,
+              activeLabel: labelled ? 'On' : null,
+              inactiveLabel: labelled ? 'Off' : null,
+            );
+            await tester.pumpAndSettle();
+            return trackRect(tester).right - thumbRect(tester).right;
+          }
+
+          final enabledGap = await rightGap(enabled: true);
+          final disabledGap = await rightGap(enabled: false);
+          expect(disabledGap, moreOrLessEquals(enabledGap));
+        });
+      }
+    }
+
+    testWidgets('show hide thumb sits at the Figma gaps', (tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      expect(thumbRect(tester).left - trackRect(tester).left, 9);
+
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+      await tester.pumpAndSettle();
+      expect(trackRect(tester).right - thumbRect(tester).right, 8);
+    });
+
+    for (final type in CoreSwitchType.values) {
+      for (final value in [false, true]) {
+        testWidgets('disabled ${type.name} ${value ? 'on' : 'off'} uses the '
+            'disabled colours', (WidgetTester tester) async {
+          final colors = CoreTheme.light().coreColors;
+          final labelled = type != CoreSwitchType.normal;
+
+          await pumpSwitch(
+            tester,
+            type: type,
+            value: value,
+            activeLabel: labelled ? 'On' : null,
+            inactiveLabel: labelled ? 'Off' : null,
+          );
+          await tester.pumpAndSettle();
+
+          final track = tester.widget<AnimatedContainer>(
+            find.byType(AnimatedContainer),
+          );
+          final decoration = track.decoration! as BoxDecoration;
+          expect(decoration.color, colors.pageBackground);
+          expect(offBorderColor(tester), colors.lineMid);
+          expect(offKnobColor(tester), colors.iconGrayLight);
+          if (labelled) {
+            expect(
+              tester.widget<Text>(find.text(value ? 'On' : 'Off')).style!.color,
+              colors.textDisable,
+            );
+          }
+        });
+      }
+    }
+
+    testWidgets('disabled thumb keeps the side of its value',
+        (WidgetTester tester) async {
+      Future<double> thumbLeft(bool value) async {
+        await pumpSwitch(
+          tester,
+          type: CoreSwitchType.showHide,
+          value: value,
+        );
+        await tester.pumpAndSettle();
+        return tester
+            .getTopLeft(find.byWidgetPredicate((w) =>
+                w is Container &&
+                w.decoration is BoxDecoration &&
+                (w.decoration! as BoxDecoration).shape == BoxShape.circle))
+            .dx;
+      }
+
+      final off = await thumbLeft(false);
+      final on = await thumbLeft(true);
+      expect(on, greaterThan(off));
+    });
+
+    testWidgets('disabled switch ignores taps', (WidgetTester tester) async {
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+      );
+
+      await tester.tap(find.byType(CoreSwitch));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Hide'), findsOneWidget);
+      expect(find.text('Show'), findsNothing);
+    });
+
+    testWidgets('enabled switch calls onChanged with the toggled value',
+        (WidgetTester tester) async {
+      bool? received;
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        onChanged: (v) => received = v,
+      );
+
+      await tester.tap(find.byType(CoreSwitch));
+
+      expect(received, isTrue);
+    });
+
+    testWidgets('screen reader reads a disabled switch as disabled',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: false,
+        semanticLabel: 'Markup to client',
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(
+          label: 'Markup to client',
+          hasEnabledState: true,
+          isEnabled: false,
+          hasToggledState: true,
+          isToggled: false,
+          hasTapAction: false,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('screen reader reads an enabled switch as enabled, on and '
+        'focusable',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+        semanticLabel: 'Markup to client',
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(
+          hasEnabledState: true,
+          isEnabled: true,
+          hasToggledState: true,
+          isToggled: true,
+          hasTapAction: true,
+          isFocusable: true,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('screen reader reads the current label when none is given',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpSwitch(
+        tester,
+        type: CoreSwitchType.showHide,
+        value: true,
+        onChanged: (_) {},
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreSwitch)),
+        isSemantics(label: 'Show'),
+      );
+      handle.dispose();
+    });
+
     testWidgets('switch respects custom inactive color',
         (WidgetTester tester) async {
       final colors = AppColorsExtension.create();
@@ -287,9 +634,13 @@ void main() {
     final theme = CoreTheme.light();
     final colors = theme.coreColors;
 
-    Future<List<bool>> pumpSwitch(WidgetTester tester) async {
+    Future<List<bool>> pumpSwitch(
+      WidgetTester tester, {
+      CoreSwitchType type = CoreSwitchType.normal,
+      bool initialValue = false,
+    }) async {
       final changes = <bool>[];
-      var value = false;
+      var value = initialValue;
       await tester.pumpWidget(
         buildTestApp(
           RepaintBoundary(
@@ -299,6 +650,7 @@ void main() {
               child: StatefulBuilder(
                 builder: (context, setState) => CoreSwitch(
                   key: switchKey,
+                  type: type,
                   value: value,
                   onChanged: (newValue) {
                     changes.add(newValue);
@@ -336,25 +688,38 @@ void main() {
       expect(changes, [true, false, true]);
     });
 
-    testWidgets('Tab draws a 2 dp outlineFocus ring outside the track',
-        (WidgetTester tester) async {
-      await pumpSwitch(tester);
-      final restingTrack = trackOf(tester);
+    // An On track is outlineFocus in light mode, so the ring must stand clear
+    // of it to be seen.
+    for (final (type, value) in [
+      (CoreSwitchType.normal, false),
+      (CoreSwitchType.normal, true),
+      (CoreSwitchType.showHide, false),
+      (CoreSwitchType.showHide, true),
+    ]) {
+      testWidgets(
+          'Tab draws a 2 dp outlineFocus ring 2 dp clear of the '
+          '${type.name} ${value ? 'on' : 'off'} track',
+          (WidgetTester tester) async {
+        await pumpSwitch(tester, type: type, initialValue: value);
+        final restingTrack = trackOf(tester);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
 
-      // The top and bottom of the ring are straight, so no anti-aliasing.
-      final track = trackOf(tester);
-      final x = track.center.dx;
-      expect(track, restingTrack);
-      expect(await pixel(tester, Offset(x, track.top - 1)),
-          colors.outlineFocus.toARGB32());
-      expect(await pixel(tester, Offset(x, track.bottom + 1)),
-          colors.outlineFocus.toARGB32());
-      expect(await pixel(tester, Offset(x, track.top - 3)),
-          isNot(colors.outlineFocus.toARGB32()));
-    });
+        // The top and bottom of the ring are straight, so no anti-aliasing.
+        final track = trackOf(tester);
+        final x = track.center.dx;
+        final ring = colors.outlineFocus.toARGB32();
+        expect(track, restingTrack);
+        for (final gap in [track.top - 1, track.bottom + 1]) {
+          expect(await pixel(tester, Offset(x, gap)), isNot(ring));
+        }
+        for (final edge in [track.top - 3, track.bottom + 3]) {
+          expect(await pixel(tester, Offset(x, edge)), ring);
+        }
+        expect(await pixel(tester, Offset(x, track.top - 5)), isNot(ring));
+      });
+    }
 
     testWidgets('a touch tap toggles each time and draws no ring',
         (WidgetTester tester) async {
@@ -370,5 +735,143 @@ void main() {
       expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
           isNot(colors.outlineFocus.toARGB32()));
     });
+
+    testWidgets('Tab skips a disabled switch and draws no ring on it',
+        (WidgetTester tester) async {
+      final nextFocus = FocusNode();
+      addTearDown(nextFocus.dispose);
+      await tester.pumpWidget(
+        buildTestApp(
+          RepaintBoundary(
+            key: boundaryKey,
+            child: Padding(
+              padding: const EdgeInsets.all(CoreSpacing.space2),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CoreSwitch(
+                    key: switchKey,
+                    value: false,
+                    onChanged: null,
+                  ),
+                  Focus(focusNode: nextFocus, child: const SizedBox()),
+                ],
+              ),
+            ),
+          ),
+          theme: theme,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      final track = trackOf(tester);
+      expect(nextFocus.hasFocus, isTrue);
+      expect(await pixel(tester, Offset(track.center.dx, track.top - 1)),
+          isNot(colors.outlineFocus.toARGB32()));
+    });
+  });
+
+  group('CoreSwitch – Show Hide word position', () {
+    // The test font draws "Hide" wider than its slot, so the word fills the
+    // slot and every alignment looks the same. Roboto leaves room around it.
+    setUpAll(loadFonts);
+
+    for (final enabled in [true, false]) {
+      for (final value in [false, true]) {
+        testWidgets(
+            '${enabled ? 'enabled' : 'disabled'} ${value ? 'on' : 'off'} '
+            'word sits against the far padding', (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light().copyWith(
+                textTheme: ThemeData.light()
+                    .textTheme
+                    .apply(fontFamily: 'Roboto'),
+              ),
+              home: Scaffold(
+                body: CoreSwitch(
+                  type: CoreSwitchType.showHide,
+                  value: value,
+                  onChanged: enabled ? (_) {} : null,
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // 8 dp padding, plus 1 dp when the track draws its border.
+          final hasBorder = !enabled || !value;
+          final track = tester.getRect(find.descendant(
+            of: find.byType(CoreSwitch),
+            matching: find.byType(AnimatedContainer),
+          ));
+          final word = tester.getRect(find.text(value ? 'Show' : 'Hide'));
+          expect(
+            value ? word.left - track.left : track.right - word.right,
+            closeTo(8 + (hasBorder ? 1 : 0), 0.01),
+          );
+        });
+      }
+    }
+  });
+
+  group('CoreSwitch – large text', () {
+    final cases = <(CoreSwitchType, String?, String?)>[
+      (CoreSwitchType.showHide, null, null),
+      (CoreSwitchType.normal, 'On', 'Off'),
+      (CoreSwitchType.lock, 'Locked', 'Unlocked'),
+      (CoreSwitchType.imperial, 'Metric', 'Imperial'),
+    ];
+
+    for (final (type, activeLabel, inactiveLabel) in cases) {
+      for (final scale in [1.5, 2.0]) {
+        for (final value in [false, true]) {
+          testWidgets(
+              '${type.name} ${value ? 'on' : 'off'} keeps its label inside the '
+              'track at ${scale}x text', (tester) async {
+            await tester.pumpWidget(
+              MaterialApp(
+                theme: CoreTheme.light(),
+                home: MediaQuery(
+                  data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+                  child: Scaffold(
+                    body: CoreSwitch(
+                      type: type,
+                      value: value,
+                      onChanged: (_) {},
+                      activeLabel: activeLabel,
+                      inactiveLabel: inactiveLabel,
+                    ),
+                  ),
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
+
+            final track = tester.getRect(find.descendant(
+              of: find.byType(CoreSwitch),
+              matching: find.byType(AnimatedContainer),
+            ));
+            final label = tester.getRect(find.byType(Text));
+            final text =
+                tester.renderObject<RenderParagraph>(find.byType(RichText));
+            expect(tester.takeException(), isNull);
+            expect(
+              text.size.width,
+              greaterThanOrEqualTo(
+                  text.getMaxIntrinsicWidth(double.infinity) - 0.01),
+            );
+            expect(text.didExceedMaxLines, isFalse);
+            expect(label.left, greaterThanOrEqualTo(track.left));
+            expect(label.right, lessThanOrEqualTo(track.right));
+            expect(label.top, greaterThanOrEqualTo(track.top));
+            expect(label.bottom, lessThanOrEqualTo(track.bottom));
+          });
+        }
+      }
+    }
   });
 }
