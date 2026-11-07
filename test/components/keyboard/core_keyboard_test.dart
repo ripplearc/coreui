@@ -651,6 +651,64 @@ void main() {
       expect(sizeTransitionExpanded.sizeFactor.value, 1.0);
     });
 
+    testWidgets(
+        'pressing the drag handle paints a splash above the keyboard '
+        'background', (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+      final pageBackground = AppColorsExtension.create().pageBackground;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreKeyboard(
+              currentGroup: const GroupNameType(
+                  id: "Basic Geometry", label: "Basic Geometry"),
+              allGroups: testGroups,
+              onDigitPressed: (_) {},
+              onUnitSelected: (_) {},
+              onOperatorPressed: (_) {},
+              onControlAction: (_) {},
+              onResultTapped: () {},
+              onGroupSelected: (_) {},
+              onKeyTapped: (_) {},
+              onUnitSystemChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final handle = find.descendant(
+        of: find.bySemanticsLabel('Keyboard drag handle'),
+        matching: find.byType(InkWell),
+      );
+      final gesture = await tester.startGesture(tester.getCenter(handle));
+      addTearDown(gesture.removePointer);
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final inkLayer = Material.of(tester.element(handle)) as RenderObject;
+      expect(inkLayer, paints..rect());
+
+      final background = tester.renderObject(find.byWidgetPredicate(
+        (widget) =>
+            widget is DecoratedBox &&
+            widget.decoration is BoxDecoration &&
+            (widget.decoration as BoxDecoration).color == pageBackground,
+      ));
+      var isAboveBackground = false;
+      for (RenderObject? node = inkLayer; node != null; node = node.parent) {
+        if (identical(node, background)) isAboveBackground = true;
+      }
+      expect(isAboveBackground, isTrue,
+          reason: 'the splash must be painted inside the keyboard background, '
+              'not on a Material behind it');
+
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('sub-threshold drag does not collapse keyboard',
         (tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());

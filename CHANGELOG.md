@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.87.0] - CoreKeyboard drag handle: press feedback is visible
+
+### 🔧 Fixes
+
+- **CoreKeyboard drag handle**: pressing or focusing the handle showed nothing. Its `InkWell` drew them on a `Material` behind the keyboard, and the keyboard's `pageBackground` was painted over them. The `InkWell` now has its own transparent `Material`, so the theme's highlight, splash and keyboard-focus overlay show over the handle row in light and dark. Tap, drag and the handle's label are unchanged (CA-1389)
+
+### 🧪 Tests
+
+- Pressing the handle paints ink on a layer inside the keyboard background, not behind it (fails on the old code). New goldens for the handle pressed and focused (Tab), light and dark
+
 ## [0.82.0] - CoreCheckRowItem.checkRow, disabled rows and a keyboard focus ring
 
 ### ✨ Features
