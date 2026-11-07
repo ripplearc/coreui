@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.88.0] - CoreUnderlineTextField text that wraps to several lines
+
+### ✨ Features
+
+- **CoreUnderlineTextField.maxLines**: lets the value wrap. The field grows with its text up to `maxLines` lines, then the text scrolls inside it, and the return key adds a new line. The underline sits 8px under the last line (4px with `labelTrailing`, as on one line), as the Figma Line Multi-line variants draw it. As on one line, the screen reader node is at least 48px tall while the row is drawn as tall as its lines. The default, 1, is unchanged (CA-1347)
+- The error row and the hint row the ticket asks for were already part of the field (`errorText`, `helperText`), so they are only covered with new multi-line tests and goldens
+- **No Material needed**: the field brings its own transparent `Material`, so outside a `Scaffold` or `Material` it no longer throws "No Material widget found" and its label, prefix, unit, helper line and error draw as they do under a `Scaffold` (one line or several)
+- **Height questions**: a multi-line field gives the same height to intrinsic and dry layout as to normal layout, so inside `IntrinsicHeight` a field with one line of text is 53px, as on one line (was 77px), and `getDryLayout` no longer throws
+- Docs: `compact` now says it draws the same as `regular` (since 0.55.0); the class, `size` and enum docs still said its underline sat 2px closer
+- Showcase: a "Several lines" section in the Underline Text Field screen, and the component doc describes `maxLines`
+
+### 🧪 Tests
+
+- Widget tests for wrapping, the 8px gap under the last line, the stop at `maxLines` with scrolling, the new line on return, the error replacing the hint, the drawn height matching one line, and the unchanged default (53px, 8px gap)
+- Accessibility tests: a multi-line field on one line has a 48px node, at every size, with and without a label (padded, since the tap target guideline skips a node at the screen edge)
+- Widget tests: every size, one line and four, builds and takes text with no Material above it, and its label, prefix, unit, helper line and error have the same style as under a `Scaffold`: not monospace, no double underline (fails without the fix)
+- Widget tests: in `IntrinsicHeight`, `maxLines` 1 and 4 with one line of text are both 53px; dry layout matches layout (fails without the fix)
+- Goldens for short text, long text, hint and error on a multi-line field; focused at the regular and large size; disabled at every size; in light and dark
+
 ## [0.87.0] - CoreKeyboard drag handle: press feedback is visible
 
 ### 🔧 Fixes
