@@ -31,7 +31,8 @@ What do I need?
 
 ├─ Color?        → final colors = AppColorsExtension.of(context);  colors.textHeadline
 ├─ Text style?   → final typography = AppTypographyExtension.of(context);  typography.bodyMediumRegular
-├─ Spacing?      → CoreSpacing.space1 … space14   (multiples of 4: space1 = 4, space4 = 16)
+├─ Spacing?      → CoreSpacing.space1 … space64   (multiples of 4: space1 = 4, space16 = 64;
+│                   above space10 the steps skip numbers, see lib/src/theme/spacing.dart)
 ├─ Radius?       → CoreRadius.radius<N>
 ├─ Icon?         → CoreIconWidget(icon: CoreIcons.<name>, size: CoreIconSize.size<N>)
 └─ Shadow?       → CoreShadows.<size>

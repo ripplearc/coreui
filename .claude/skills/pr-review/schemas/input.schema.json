@@ -43,13 +43,6 @@
       "description": "Preferred output format (json for agent automation, markdown for humans)",
       "default": "markdown"
     },
-    "max_file_size_kb": {
-      "type": "number",
-      "minimum": 1,
-      "maximum": 1000,
-      "description": "Skip files larger than this size",
-      "default": 100
-    },
     "output_dir": {
       "type": "string",
       "description": "Output directory for the .md review file (repo-root-relative)",

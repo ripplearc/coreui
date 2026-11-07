@@ -63,6 +63,8 @@ class CoreChip extends StatefulWidget {
 
 Size and color checks (`tester.getSize`, a decoration's color) are fine when they are the behavior under test — find the widget by its Key, not by `byType(Container).at(2)`.
 
+Tree order is fine to check when the order is the behavior under test, for example ink under a fill: `find.descendant(of: find.byType(AnimatedContainer), matching: find.byType(InkWell))` proves the splash is painted inside the fill (rule 17).
+
 ---
 
 ## For Review Agents (Detective)

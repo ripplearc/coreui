@@ -41,10 +41,11 @@ rule only when it's routed to a changed file.
 | Ink Needs Material | `17-ink-needs-material.md` | `lib/src/` using `Ink`/`InkWell`/`InkResponse` |
 
 File numbers match the construculator-app rules, so a rule has the same number
-in both repos. The app's rules that need app-only code (UI / Business
-Separation, Stream Lifecycle, Unit Test Behavior, Localization, Mutation Testing,
-Sentry Logging) are not used here; if a user passes one, skip it with reason
-`"Not a coreui rule"`.
+in both repos. Three app rules need code coreui does not have: UI / Business
+Separation (no BLoC in `lib/`), Stream Lifecycle (no streams) and Sentry
+Logging (no Sentry). Three more are not used yet, to keep this first version
+small: Unit Test Behavior, Localization and Mutation Testing. The `rules` input
+takes only the nine names above; any other name returns `INVALID_ENUM`.
 
 ## Input
 
@@ -53,10 +54,9 @@ Sentry Logging) are not used here; if a user passes one, skip it with reason
 | `pr_branch` | yes | — | branch with changes |
 | `base_branch` | no | `main` | target branch |
 | `pr_number` | no | — | GitHub PR number; turns on `PR Text Matches Diff` |
-| `rules` | no | all | force a subset by name, e.g. `["Naming & Abstraction","Stream Lifecycle"]` |
+| `rules` | no | all | force a subset by name, e.g. `["Naming & Abstraction","Ink Needs Material"]` |
 | `output_format` | no | `markdown` | `markdown` \| `json` \| `both` |
 | `output_dir` | no | `reviews/` | directory (repo-root-relative) the `.md` review file is written to |
-| `max_file_size_kb` | no | `100` | skip larger files (1–1000) |
 
 On missing/invalid input, return an error object (see [Errors](#errors)).
 
@@ -181,7 +181,7 @@ Scripts and this skill return JSON on failure:
 Codes: `MISSING_REQUIRED_FIELD`, `INVALID_ENUM`, `INVALID_BRANCH`, `GIT_ERROR`,
 `PARSE_ERROR`, `FILE_NOT_FOUND`, `INVALID_PR_NUMBER`, `PR_NOT_FOUND`. On a git/branch
 failure, return the branch names to verify; on `PR_NOT_FOUND`, check `gh auth status`
-and the PR number, or rerun without `pr_number`; oversized files are skipped and noted in `rules_skipped`; a missing
+and the PR number, or rerun without `pr_number`; a missing
 rule module means the file was likely deleted.
 
 ## Notes

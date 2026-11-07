@@ -7,7 +7,7 @@ Ink Needs Material
 UI Components - Touch Feedback
 
 ## Severity Levels
-- **Major:** `Ink` / `InkWell` / `InkResponse` has a colored parent between it and the nearest `Material`, so the splash is painted under the color and cannot be seen
+- **Major:** `Ink` / `InkWell` / `InkResponse` has a colored parent between it and the nearest `Material`, or a colored child, so the splash is painted under the color and cannot be seen
 - **Minor:** `Ink` / `InkWell` relies on a `Material` from another widget (a page `Scaffold`, a parent component) with nothing colored in between today, but the widget can be placed under a colored parent by its callers
 - **Suggestion:** Move a parent's color onto `Ink(decoration:)` so the color and the splash share one `Material`
 
@@ -29,7 +29,9 @@ Changed files under `lib/src/` that contain `Ink(`, `Ink.image(`, `InkWell(` or 
 
 ```
 Does the widget use Ink / InkWell / InkResponse?
-  └─ YES → Walk up the build method from the InkWell.
+  └─ YES → Walk up the build method from the InkWell (from a helper
+          method, continue at its call site).
+      ├─ Its own child paints a color?                 → Move the color onto Ink (fix B)
       ├─ Reach a Material first?                       → OK
       ├─ Reach a colored widget first?                 → Add a Material between them (fix A)
       │                                                   or move the color onto Ink (fix B)
@@ -82,7 +84,7 @@ Use `MaterialType.transparency` unless the `Material` itself should paint the ba
 
 | Colored (blocks the splash) | Not colored (OK between Material and InkWell) |
 |---|---|
-| `Container(color: …)`, `Container(decoration: BoxDecoration(color:/gradient:/image: …))` | `Container` with only `padding`, `margin`, size or `alignment` |
+| `Container(color: …)`, `AnimatedContainer(color: …)`, and either with `decoration: BoxDecoration(color:/gradient:/image: …)` | `Container` with only `padding`, `margin`, size or `alignment` |
 | `ColoredBox`; `DecoratedBox` / `DecoratedSliver` whose decoration has a color, gradient or image | `Padding`, `SizedBox`, `Align`, `Center`, `Row`, `Column`, `Stack` |
 | `Card`, `Chip` and other widgets that paint their own background, unless they are the Material themselves | `ClipRRect`, `Semantics`, `Focus`, `MouseRegion` |
 | `Image`, `CoreIconWidget` or any opaque child placed *above* the splash in a `Stack` | `Opacity`, `Transform` |
@@ -98,26 +100,34 @@ An `InkWell` that draws no ink on purpose — `splashFactory: NoSplash.splashFac
 ### Detection Patterns
 
 ```bash
-# 1. Candidates: every ink widget in a changed file
-git grep -nE '\b(Ink|InkWell|InkResponse)\(|Ink\.image\(' "$PR_BRANCH" -- <changed files>
+# 1. Candidates: every ink widget in a changed file. No \b: Apple Git's
+#    `git grep -E` does not know it and returns no hits, with no error.
+git grep -nE '(^|[^A-Za-z0-9_])(Ink|InkWell|InkResponse)\(|Ink\.image\(' "$PR_BRANCH" -- <changed files>
 ```
 
 ```
 For each hit:
   2. Read the file (git show "$PR_BRANCH:<file>") upward from the hit to the
-     nearest `Widget build(`. That is the search range.
+     method that holds it. That is the search range.
+     If that method is a helper (`_buildTab`, `_buildItemRow`), not `build`,
+     find where it is called in the same file and continue the walk up from
+     the call. Repeat until you reach `Widget build(`.
   3. Inside the range, walk up through each enclosing widget call (each
      child: / children: level). The first Material( or colored widget
      (table above) wins.
      Skip the hit if the InkWell draws no ink on purpose (NoSplash +
      transparent overlay, see above).
-  4. Colored widget first                         → Major
+  4. Then look down at the ink widget's own child. The splash paints on the
+     Material, under the child, so a colored child (table above) hides it
+     too (`Material → InkWell → Container(color: selectedFill)`).
+  5. Colored widget first, or a colored child     → Major
      Neither before build(, widget is reusable
      (takes child / onTap from its caller)        → Minor
-     Material first, or not reusable              → no finding
+     Material first, child not colored,
+     or not reusable                              → no finding
 ```
 
-Only ancestors in the **same build method** count. A `Material` in a parent widget's `build` is not seen by the rule; that is what the Minor case is for.
+Only ancestors in the **same widget's** `build`, and the helpers it calls, count. A `Material` in a parent widget's `build` is not seen by the rule; that is what the Minor case is for.
 
 ### Finding shape
 
@@ -132,13 +142,15 @@ Only ancestors in the **same build method** count. A `Material` in a parent widg
 | `Container(color: x, child: InkWell(...))` | `Container(color: x, child: Material(type: MaterialType.transparency, child: InkWell(...)))` | Major |
 | `DecoratedBox(decoration: BoxDecoration(color: x, borderRadius: r), child: InkWell(...))` | `Material(color: x, borderRadius: r, child: InkWell(borderRadius: r, ...))` | Major |
 | `Stack(children: [InkWell(...), Image(...)])` (image over the splash) | Put the `InkWell` last in the `Stack`, or use `Ink.image` | Major |
+| `Material(child: InkWell(child: Container(color: x, ...)))` (fill on the child) | Move the fill to `Ink(color: x)` above the `InkWell`, or onto the `Material` | Major |
 | Reusable tile: `build` returns `InkWell(...)` with no `Material` | Wrap in `Material(type: MaterialType.transparency, ...)` | Minor |
 
 ### Review Questions
 
-1. Walking up from the `InkWell`, is a `Material` reached before any color? → if no, flag.
-2. Can callers place this widget on a colored background? → if yes and there is no own `Material`, flag Minor.
-3. Does the splash shape match the colored shape (`borderRadius`)? → if no, suggest matching it.
+1. Walking up from the `InkWell`, through helper methods to their callers, is a `Material` reached before any color? → if no, flag.
+2. Does the `InkWell`'s own child paint an opaque color? → if yes, flag.
+3. Can callers place this widget on a colored background? → if yes and there is no own `Material`, flag Minor.
+4. Does the splash shape match the colored shape (`borderRadius`)? → if no, suggest matching it.
 
 ---
 

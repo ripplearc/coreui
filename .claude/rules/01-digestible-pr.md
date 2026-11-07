@@ -40,7 +40,7 @@ This rule applies during PR creation and review. It is primarily used by review 
 
 ```bash
 # Production insertions only
-git diff --numstat "$BASE_BRANCH".."$PR_BRANCH" -- 'lib/**/*.dart' \
+git diff --numstat "$BASE_BRANCH"..."$PR_BRANCH" -- 'lib/*.dart' 'lib/**/*.dart' \
   | awk '{ inserted += $1 } END { print inserted + 0 }'
 ```
 
