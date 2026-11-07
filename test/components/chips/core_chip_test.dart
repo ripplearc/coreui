@@ -1073,6 +1073,103 @@ void main() {
       expect(surfaceOf(tester).color, isNot(colors.pageBackground));
     });
 
+    Future<void> pumpExpandedChip(
+      WidgetTester tester, {
+      CoreChipSize size = CoreChipSize.medium,
+      TextDirection textDirection = TextDirection.ltr,
+      bool removable = true,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Directionality(
+            textDirection: textDirection,
+            child: Scaffold(
+              body: Row(
+                children: [
+                  Expanded(
+                    child: CoreChip(
+                      label: 'Filter',
+                      size: size,
+                      selected: selected,
+                      withCloseIcon: true,
+                      onRemove: removable ? () => removes++ : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Rect closeIconRect(WidgetTester tester) {
+      return tester.getRect(find.byWidgetPredicate(
+        (widget) => widget is CoreIconWidget && widget.icon == CoreIcons.close,
+      ));
+    }
+
+    for (final size in CoreChipSize.values) {
+      testWidgets('in an Expanded, a tap on the ${size.name} close icon '
+          'removes the chip', (tester) async {
+        await pumpExpandedChip(tester, size: size);
+
+        final target = tester.getRect(find.byKey(const Key('close_icon')));
+        expect(target.contains(closeIconRect(tester).center), isTrue);
+        await tester.tapAt(closeIconRect(tester).center);
+        await tester.pumpAndSettle();
+
+        expect(removes, 1);
+        expect(selected.value, isFalse);
+      });
+    }
+
+    testWidgets('in an Expanded, right to left, a tap on the close icon '
+        'removes the chip', (tester) async {
+      await pumpExpandedChip(tester, textDirection: TextDirection.rtl);
+
+      await tester.tapAt(closeIconRect(tester).center);
+      await tester.pumpAndSettle();
+
+      expect(removes, 1);
+      expect(selected.value, isFalse);
+    });
+
+    testWidgets('in an Expanded, the chip surface keeps its own width',
+        (tester) async {
+      await pumpChip(tester);
+      final alone = tester.getSize(find.byKey(CoreChip.surfaceKey));
+
+      await pumpExpandedChip(tester);
+
+      expect(tester.getSize(find.byKey(CoreChip.surfaceKey)), alone);
+    });
+
+    testWidgets('a focused close button that goes away and comes back has '
+        'no ring', (tester) async {
+      await pumpExpandedChip(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      expect(closeRingOf(tester).border, isNotNull);
+
+      await pumpExpandedChip(tester, removable: false);
+      await tester.pumpAndSettle();
+      await pumpExpandedChip(tester);
+      await tester.pumpAndSettle();
+
+      final focused = FocusManager.instance.primaryFocus!.context!;
+      expect(
+        find.ancestor(
+          of: find.byElementPredicate((element) => element == focused),
+          matching: find.byKey(const Key('close_icon')),
+        ),
+        findsNothing,
+      );
+      expect(closeRingOf(tester).border, isNull);
+    });
+
     testWidgets('a removeSemanticsLabel replaces the English label',
         (tester) async {
       await pumpChip(tester, removeSemanticsLabel: 'Quitar Filter');
