@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.89.0] - CoreQuickSheet fixed height
+
+### ✨ Features
+
+- **CoreQuickSheet**: `isFixedHeight` (default `false`) keeps the sheet at one height, so it no longer grows or shrinks when its content changes and the controls at the top stay under the thumb. The child gets the full height below the drag handle, so a caller can wrap one part in `Expanded` to fill the spare height and keep a footer at the bottom. Content that does not fit scrolls only if that `Expanded` part is a scroll view, such as a `ListView`. `fixedHeightRatio` lets the caller set that height as a share of the screen (for example 0.64, as in CUJ 7); it defaults to 0.9, and values above 0.9 are capped at 0.9, so the 90% limit is kept, and with the option off the sheet sizes to its content exactly as before (CA-1343)
+- Showcase: a Fixed Height Sheet demo in the quick sheet screen, at 64% with `useSafeArea: true` so the footer stays above the home bar
+
+### 🧪 Tests
+
+- Widget tests: height is 90% of the screen by default and the caller's ratio when one is passed (also with a bottom inset), a ratio above 90% is capped, a ratio without the option or of 0 is an error, height unchanged when the content changes, filling part and footer, a child that does not fill still gets all the height below the handle, long content scrolls, default still wraps its content
+- Goldens: fixed height with short content (filled, footer at the bottom), with long content, and at a 64% ratio, on a 400 x 800 dp view
+
 ## [0.88.0] - CoreUnderlineTextField text that wraps to several lines
 
 ### ✨ Features
