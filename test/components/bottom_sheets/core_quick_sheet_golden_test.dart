@@ -171,4 +171,192 @@ void main() {
       matchesGoldenFile('goldens/core_quick_sheet_long_content.png'),
     );
   });
+
+  testWidgets('CoreQuickSheet Golden Test - Fixed Height Short Content', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.backgroundGrayMid,
+          body: Builder(
+            builder: (context) => Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  CoreQuickSheet.show(
+                    context: context,
+                    isFixedHeight: true,
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(CoreSpacing.space4),
+                          child: Text('Fixed height, short content'),
+                        ),
+                        Expanded(
+                          child: ColoredBox(
+                            color: colors.orientMid,
+                            child: const Center(child: Text('Fills the space')),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(CoreSpacing.space4),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Footer'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_quick_sheet_fixed_height_short.png'),
+    );
+  });
+
+  testWidgets('CoreQuickSheet Golden Test - Fixed Height 64% Ratio', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.backgroundGrayMid,
+          body: Builder(
+            builder: (context) => Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  CoreQuickSheet.show(
+                    context: context,
+                    isFixedHeight: true,
+                    fixedHeightRatio: 0.64,
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(CoreSpacing.space4),
+                          child: Text('Fixed height, 64% of the screen'),
+                        ),
+                        Expanded(
+                          child: ColoredBox(
+                            color: colors.orientMid,
+                            child: const Center(child: Text('Fills the space')),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(CoreSpacing.space4),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Footer'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_quick_sheet_fixed_height_ratio.png'),
+    );
+  });
+
+  testWidgets('CoreQuickSheet Golden Test - Fixed Height Long Content', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoreTheme.light().copyWith(
+          textTheme: ThemeData().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.backgroundGrayMid,
+          body: Builder(
+            builder: (context) => Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  CoreQuickSheet.show(
+                    context: context,
+                    isFixedHeight: true,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: 30,
+                            itemBuilder: (context, index) => ListTile(
+                              title: Text('Item ${index + 1}'),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(CoreSpacing.space4),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: const Text('Footer'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_quick_sheet_fixed_height_long.png'),
+    );
+  });
 }

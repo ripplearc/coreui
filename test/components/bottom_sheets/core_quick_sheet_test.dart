@@ -261,4 +261,254 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('CoreQuickSheet fixed height', () {
+    const maxHeightRatio = 0.9;
+    const footerHeight = 48.0;
+
+    double screenHeight(WidgetTester tester) =>
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+
+    Future<void> openSheet(
+      WidgetTester tester, {
+      required Widget child,
+      bool isFixedHeight = true,
+      bool useSafeArea = false,
+      double? fixedHeightRatio,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => CoreQuickSheet.show(
+                  context: context,
+                  isFixedHeight: isFixedHeight,
+                  useSafeArea: useSafeArea,
+                  fixedHeightRatio: fixedHeightRatio,
+                  child: child,
+                ),
+                child: const Text('Open Sheet'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open Sheet'));
+      await tester.pumpAndSettle();
+    }
+
+    double contentHeight(WidgetTester tester) =>
+        tester.getSize(find.byKey(const Key('content'))).height;
+
+    testWidgets('is 90% of the screen for short content',
+        (WidgetTester tester) async {
+      await openSheet(tester, child: const SizedBox(height: 100));
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
+      );
+    });
+
+    testWidgets('stays 90% of the screen when the safe area has a bottom inset',
+        (WidgetTester tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+
+      await openSheet(
+        tester,
+        useSafeArea: true,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
+      );
+    });
+
+    testWidgets('is the caller\'s ratio of the screen when one is passed',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * 0.64, 0.01),
+      );
+    });
+
+    testWidgets('keeps the caller\'s ratio when the safe area has a bottom inset',
+        (WidgetTester tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 34);
+      addTearDown(tester.view.resetPadding);
+
+      await openSheet(
+        tester,
+        useSafeArea: true,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          children: [Expanded(child: SizedBox(key: Key('content')))],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * 0.64, 0.01),
+      );
+    });
+
+    testWidgets('caps a ratio above 90% at 90% of the screen',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.95,
+        child: const SizedBox(height: 100),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        closeTo(screenHeight(tester) * maxHeightRatio, 0.01),
+      );
+    });
+
+    testWidgets('a ratio without the option is an error',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        isFixedHeight: false,
+        fixedHeightRatio: 0.64,
+        child: const SizedBox(height: 100),
+      );
+
+      expect(tester.takeException(), isAssertionError);
+    });
+
+    testWidgets('a ratio of 0 is an error', (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0,
+        child: const SizedBox(height: 100),
+      );
+
+      expect(tester.takeException(), isAssertionError);
+    });
+
+    testWidgets('keeps its height when the content changes',
+        (WidgetTester tester) async {
+      final showMore = ValueNotifier<bool>(false);
+      await openSheet(
+        tester,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: showMore,
+          builder: (context, more, _) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 100),
+              if (more) const SizedBox(height: 200, child: Text('More')),
+            ],
+          ),
+        ),
+      );
+
+      final before = tester.getRect(find.byType(BottomSheet));
+      showMore.value = true;
+      await tester.pumpAndSettle();
+
+      expect(find.text('More'), findsOneWidget);
+      expect(tester.getRect(find.byType(BottomSheet)), before);
+    });
+
+    testWidgets('a filling part grows and the footer stays at the bottom',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          children: [
+            Expanded(child: SizedBox(key: Key('content'))),
+            SizedBox(height: footerHeight, child: Text('Footer')),
+          ],
+        ),
+      );
+
+      final sheet = tester.getRect(find.byType(BottomSheet));
+      expect(sheet.height, closeTo(screenHeight(tester) * 0.64, 0.01));
+      expect(tester.getRect(find.text('Footer')).bottom,
+          lessThanOrEqualTo(sheet.bottom));
+      expect(tester.getRect(find.byKey(const Key('content'))).bottom,
+          closeTo(sheet.bottom - footerHeight, 0.01));
+      expect(contentHeight(tester), greaterThan(sheet.height / 2));
+    });
+
+    testWidgets('a child that does not fill still gets all the height',
+        (WidgetTester tester) async {
+      const handleArea = CoreSpacing.space4 * 2 + CoreSpacing.space1;
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          key: Key('content'),
+          mainAxisSize: MainAxisSize.min,
+          children: [SizedBox(height: 50)],
+        ),
+      );
+
+      final sheet = tester.getRect(find.byType(BottomSheet));
+      expect(contentHeight(tester), closeTo(sheet.height - handleArea, 0.01));
+    });
+
+    testWidgets('long content scrolls inside the sheet',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: ListView.builder(
+          key: const Key('long_list'),
+          itemCount: 100,
+          itemBuilder: (context, index) => SizedBox(
+            height: 56,
+            child: Text('Item $index'),
+          ),
+        ),
+      );
+
+      final sheetBefore = tester.getRect(find.byType(BottomSheet));
+      expect(sheetBefore.height, closeTo(screenHeight(tester) * 0.64, 0.01));
+      expect(find.text('Item 60'), findsNothing);
+
+      await tester.drag(find.byKey(const Key('long_list')), const Offset(0, -2000));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Item 0'), findsNothing);
+      expect(tester.getRect(find.byType(BottomSheet)), sheetBefore);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('without the option the sheet still wraps its content',
+        (WidgetTester tester) async {
+      await openSheet(
+        tester,
+        isFixedHeight: false,
+        child: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [SizedBox(key: Key('content'), height: 100)],
+        ),
+      );
+
+      expect(
+        tester.getRect(find.byType(BottomSheet)).height,
+        lessThan(screenHeight(tester) * maxHeightRatio / 2),
+      );
+    });
+  });
 }
