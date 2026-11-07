@@ -69,6 +69,8 @@ class CoreDatePicker extends StatefulWidget {
   /// Overrides "today" for testing; defaults to [DateTime.now].
   final DateTime? today;
 
+  /// Creates a single-date picker. The caller keeps [selectedDate] and
+  /// updates it from [onDateChanged]. The default labels are English.
   const CoreDatePicker({
     super.key,
     required this.selectedDate,

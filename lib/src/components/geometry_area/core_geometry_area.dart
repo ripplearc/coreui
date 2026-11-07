@@ -18,6 +18,7 @@ part 'parts/table_sizes/sizes_table_header.dart';
 
 /// Data class for a single row in the sizes table in the [CoreGeometryArea].
 class CoreSizeCardData {
+  /// Creates a row with one value per column of its table.
   const CoreSizeCardData({
     required this.id,
     required this.values,
@@ -44,6 +45,7 @@ class CoreSizeCardData {
 /// A column is a header title. Every row supplies one value per column, and
 /// the column itself carries no per-cell behaviour.
 class CoreSizesColumn {
+  /// Creates a column headed by [title].
   const CoreSizesColumn({
     required this.title,
   });
@@ -66,6 +68,9 @@ class CoreSizesColumn {
 /// no add action. That lets the same widget express a reorderable, extendable
 /// sizes table and a fixed, read-only rates table.
 class CoreSizesTableData {
+  /// Creates a table. [id] must not be empty, and each callback and
+  /// [unitOptions] needs the labels its assert names, such as
+  /// [dragHandleLabel] for [onReordered] and [addLabel] for [onAdd].
   const CoreSizesTableData({
     required this.id,
     required this.title,
@@ -245,6 +250,7 @@ class CoreSizesTableData {
 
 /// Data class for a single dimension to display in the [CoreGeometryArea].
 class CoreDimensionData {
+  /// Creates a dimension shown as [label] and its formatted [value].
   const CoreDimensionData({
     required this.label,
     required this.value,
@@ -296,6 +302,8 @@ class CoreGeometryArea extends StatelessWidget {
   /// The default text shown for the document button.
   static const String defaultDocumentButtonLabel = 'Document';
 
+  /// Creates a geometry area. Its labels default to English; pass localised
+  /// ones from the app.
   const CoreGeometryArea({
     super.key,
     this.dimensionsLabel = defaultDimensionsLabel,

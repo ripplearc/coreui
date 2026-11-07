@@ -29,6 +29,7 @@ class BottomNavTab {
   /// The text label displayed when the tab is active.
   final String label;
 
+  /// Creates a tab with an [icon] and a [label].
   const BottomNavTab({
     required this.icon,
     required this.label,
@@ -176,6 +177,7 @@ class CoreBottomNavBar extends StatefulWidget {
   /// trailing button renders without a semantic label (backward compatible).
   final String? actionButtonSemanticLabel;
 
+  /// Creates a bar with 2 to 4 [tabs]; any other count fails an assert.
   const CoreBottomNavBar({
     super.key,
     required this.tabs,

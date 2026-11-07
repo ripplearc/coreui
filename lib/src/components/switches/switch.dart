@@ -110,23 +110,30 @@ class _SwitchConstants {
 ///   inactiveColor: Colors.purple,
 /// )
 /// ```
-///
-/// [value] is the current state of the switch (true = active/on, false = inactive/off).
-/// [onChanged] is the callback function when the switch is toggled.
-/// [type] determines the switch's visual style and default colors.
-/// [activeLabel] is the text displayed when the switch is in the active state.
-/// [inactiveLabel] is the text displayed when the switch is in the inactive state.
-/// [inactiveColor] overrides the default inactive color for the switch type.
 class CoreSwitch extends StatelessWidget {
+  /// Whether the switch is on. The caller keeps it and updates it from
+  /// [onChanged].
   final bool value;
+
+  /// Called with the new value on a tap, Enter or Space.
   final ValueChanged<bool> onChanged;
+
+  /// Colours of the switch, and the width of a labelled one: 77 px for
+  /// [CoreSwitchType.imperial], 71 px for the others. Defaults to
+  /// [CoreSwitchType.normal].
   final CoreSwitchType type;
 
+  /// Text inside the track while [value] is true. When neither label is
+  /// set the switch is the compact 32 px one.
   final String? activeLabel;
+
+  /// Text inside the track while [value] is false.
   final String? inactiveLabel;
 
+  /// Replaces the [type]'s colour for the off thumb, border and text.
   final Color? inactiveColor;
 
+  /// Creates a switch that the caller turns on and off through [value].
   const CoreSwitch({
     super.key,
     required this.value,

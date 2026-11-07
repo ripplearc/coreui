@@ -3,23 +3,31 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme/icons/icon_data.dart';
 
-/// Core icon widget that supports both Material and SVG icons
-/// [icon] is the icon data to be displayed
-/// [size] is the size of the icon
-/// [color] is the color of the icon
-/// [semanticLabel] is the semantic label for the icon
-/// [onTap] is the callback function when the icon is tapped
-/// [padding] is the padding around the icon
+/// Core icon widget that supports both Material and SVG icons.
 class CoreIconWidget extends StatelessWidget {
+  /// The icon to draw, a Material icon or an SVG asset.
   final CoreIconData icon;
+
+  /// Width and height in px. When null a Material icon takes the
+  /// [IconTheme] size and an SVG its own size.
   final double? size;
+
+  /// Colour of the icon. When null a Material icon takes the [IconTheme]
+  /// colour and an SVG keeps the colours in its file.
   final Color? color;
+
+  /// Screen-reader label. When null the icon has no label.
   final String? semanticLabel;
+
+  /// Called on tap. When set the icon is wrapped in an [IconButton].
   final VoidCallback? onTap;
+
+  /// Space around the icon, inside the tap area when [onTap] is set.
   final EdgeInsetsGeometry? padding;
   /// Controls the compactness of the [IconButton]. Defaults to null (platform default).
   final VisualDensity? visualDensity;
 
+  /// Creates an icon; it reacts to taps only when [onTap] is set.
   const CoreIconWidget({super.key,
     required this.icon,
     this.size,
