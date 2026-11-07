@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/app_typography_extension.dart';
@@ -27,10 +28,19 @@ import 'underline_field_metrics.dart';
 /// `statusError`.
 ///
 /// ### Sizes
-/// [CoreUnderlineTextFieldSize.compact] has the same text, caret and unit gap
-/// as [CoreUnderlineTextFieldSize.regular]. It only moves the underline 2px
-/// closer to the value, so a caller does not get smaller text.
+/// [CoreUnderlineTextFieldSize.compact] draws the same as
+/// [CoreUnderlineTextFieldSize.regular]: the design's 6px underline gap is
+/// kept at 8px on the 4px grid.
 /// [CoreUnderlineTextFieldSize.large] enlarges the label and the value.
+///
+/// ### Several lines
+/// [maxLines] above 1 lets the text wrap. The value row grows with the text
+/// up to [maxLines] lines, then the text scrolls inside the field. The
+/// underline sits 8px under the last line of text (4px with
+/// [labelTrailing] at the regular or compact size), and the return key adds
+/// a new line, so [onSubmitted] does not fire on return unless
+/// [textInputAction] says so.
+/// The default, 1, keeps one line that scrolls sideways.
 ///
 /// ### Placeholder
 /// While the field is empty, [hintText] shows in the value row in
@@ -112,7 +122,16 @@ import 'underline_field_metrics.dart';
 /// )
 /// ```
 ///
-/// ### 5) An error the caller decides to show
+/// ### 5) Text that wraps
+/// ```dart
+/// CoreUnderlineTextField(
+///   label: 'Scope of work',
+///   maxLines: 4,
+///   initialValue: 'Demolition of the existing kitchen and new flooring.',
+/// )
+/// ```
+///
+/// ### 6) An error the caller decides to show
 /// ```dart
 /// CoreUnderlineTextField(
 ///   label: 'Quantity',
@@ -138,8 +157,8 @@ class CoreUnderlineTextField extends StatefulWidget {
   final FocusNode? focusNode;
 
   /// The size of the field. [CoreUnderlineTextFieldSize.large] enlarges the
-  /// label and value. [CoreUnderlineTextFieldSize.compact] keeps the regular
-  /// text and only moves the underline closer. Defaults to
+  /// label and value. [CoreUnderlineTextFieldSize.compact] draws the same as
+  /// regular. Defaults to
   /// [CoreUnderlineTextFieldSize.regular].
   final CoreUnderlineTextFieldSize size;
 
@@ -170,6 +189,16 @@ class CoreUnderlineTextField extends StatefulWidget {
   /// The limit runs after the [inputFormatters], and only on typing and paste.
   /// A change made through [controller] skips it.
   final int? maxLength;
+
+  /// The most lines the value shows before it scrolls. Above 1 the text wraps
+  /// and the field grows with it, one line at a time, up to this many lines;
+  /// the return key adds a new line and the underline sits 8px under the last
+  /// line (4px with [labelTrailing] at the regular or compact size).
+  /// Defaults to 1, a single line that does not wrap.
+  ///
+  /// As on one line, the screen reader node is at least 48px tall while the
+  /// row is drawn as tall as its lines.
+  final int maxLines;
 
   /// Whether the field takes focus when it is first built.
   final bool autofocus;
@@ -281,6 +310,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.textInputAction,
     this.inputFormatters,
     this.maxLength,
+    this.maxLines = 1,
     this.autofocus = false,
     this.labelTrailing,
     this.prefixText,
@@ -295,7 +325,7 @@ class CoreUnderlineTextField extends StatefulWidget {
     this.selectAllOnFocus = false,
     this.onTap,
     this.showCursor,
-  });
+  }) : assert(maxLines > 0, 'maxLines must be at least 1');
 
   @override
   State<CoreUnderlineTextField> createState() => _CoreUnderlineTextFieldState();
@@ -318,6 +348,8 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
       (widget.showCursor ?? !widget.readOnly);
 
   bool get _isLarge => widget.size == CoreUnderlineTextFieldSize.large;
+
+  bool get _isMultiLine => widget.maxLines > 1;
 
   @override
   void initState() {
@@ -382,6 +414,12 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
 
   @override
   Widget build(BuildContext context) {
+    // Its own Material, so the field and all its text draw the same with no
+    // Material above it.
+    return Material(type: MaterialType.transparency, child: _buildField());
+  }
+
+  Widget _buildField() {
     final theme = Theme.of(context);
     final colors = theme.coreColors;
     final typography = theme.coreTypography;
@@ -542,51 +580,145 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
     final rowHeight = math.max(metrics.valueRowHeight, textHeight);
     final fieldHeight = math.max(kMinInteractiveDimension, rowHeight);
 
-    return SizedBox(
-      height: rowHeight,
-      child: OverflowBox(
-        maxHeight: fieldHeight,
-        child: Semantics(
-          label: widget.label,
-          onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            onChanged: widget.onChanged,
-            onSubmitted: widget.onSubmitted,
-            keyboardType: widget.keyboardType,
-            textInputAction: widget.textInputAction,
-            autofocus: widget.autofocus,
-            inputFormatters: [
-              ...?widget.inputFormatters,
-              if (widget.maxLength != null)
-                LengthLimitingTextInputFormatter(widget.maxLength),
-            ],
-            enabled: widget.enabled,
-            readOnly: widget.readOnly,
-            onTap: widget.onTap,
-            style: style.copyWith(
-              color: widget.enabled ? colors.textHeadline : colors.textDisable,
-            ),
-            cursorColor: colors.outlineFocus,
-            showCursor: widget.showCursor,
-            cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
-            cursorHeight: metrics.caretHeight,
-            decoration: InputDecoration(
-              isCollapsed: true,
-              contentPadding: EdgeInsets.symmetric(
-                vertical: (fieldHeight - rowHeight) / 2,
-              ),
-              hintText: widget.hintText,
-              hintStyle: style.copyWith(color: colors.textDisable),
-              filled: false,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-            ),
+    final textField = Semantics(
+      label: widget.label,
+      onTap: widget.enabled && widget.onTap != null ? _handleTap : null,
+      child: TextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        autofocus: widget.autofocus,
+        minLines: 1,
+        maxLines: widget.maxLines,
+        inputFormatters: [
+          ...?widget.inputFormatters,
+          if (widget.maxLength != null)
+            LengthLimitingTextInputFormatter(widget.maxLength),
+        ],
+        enabled: widget.enabled,
+        readOnly: widget.readOnly,
+        onTap: widget.onTap,
+        style: style.copyWith(
+          color: widget.enabled ? colors.textHeadline : colors.textDisable,
+        ),
+        cursorColor: colors.outlineFocus,
+        showCursor: widget.showCursor,
+        cursorWidth: _showsCaret ? UnderlineFieldMetrics.caretWidth : 0,
+        cursorHeight: metrics.caretHeight,
+        decoration: InputDecoration(
+          isCollapsed: true,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: (fieldHeight - rowHeight) / 2,
           ),
+          hintText: widget.hintText,
+          hintStyle: style.copyWith(color: colors.textDisable),
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
         ),
       ),
     );
+
+    // The text area is padded to 48px; the row is drawn without that padding.
+    // One line knows its height, so an OverflowBox does it. Several lines do
+    // not, so the padding is taken back off the measured height.
+    if (_isMultiLine) {
+      return _UnpaddedHeight(
+        padding: (fieldHeight - rowHeight) / 2,
+        child: textField,
+      );
+    }
+
+    return SizedBox(
+      height: rowHeight,
+      child: OverflowBox(maxHeight: fieldHeight, child: textField),
+    );
+  }
+}
+
+class _UnpaddedHeight extends SingleChildRenderObjectWidget {
+  const _UnpaddedHeight({required this.padding, required super.child});
+
+  final double padding;
+
+  @override
+  _RenderUnpaddedHeight createRenderObject(BuildContext context) =>
+      _RenderUnpaddedHeight(padding);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderUnpaddedHeight renderObject,
+  ) {
+    renderObject.padding = padding;
+  }
+}
+
+class _RenderUnpaddedHeight extends RenderShiftedBox {
+  _RenderUnpaddedHeight(this._padding) : super(null);
+
+  double _padding;
+
+  set padding(double value) {
+    if (value == _padding) return;
+    _padding = value;
+    markNeedsLayout();
+  }
+
+  BoxConstraints _childConstraints(BoxConstraints constraints) =>
+      constraints.copyWith(minHeight: 0, maxHeight: double.infinity);
+
+  Size _unpadded(BoxConstraints constraints, Size childSize) =>
+      constraints.constrain(
+        Size(childSize.width, childSize.height - 2 * _padding),
+      );
+
+  @override
+  double computeMinIntrinsicHeight(double width) =>
+      math.max(0, super.computeMinIntrinsicHeight(width) - 2 * _padding);
+
+  @override
+  double computeMaxIntrinsicHeight(double width) =>
+      math.max(0, super.computeMaxIntrinsicHeight(width) - 2 * _padding);
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    final child = this.child;
+    if (child == null) return constraints.smallest;
+    return _unpadded(
+      constraints,
+      child.getDryLayout(_childConstraints(constraints)),
+    );
+  }
+
+  @override
+  double? computeDryBaseline(
+    BoxConstraints constraints,
+    TextBaseline baseline,
+  ) {
+    final childBaseline = child?.getDryBaseline(
+      _childConstraints(constraints),
+      baseline,
+    );
+    return childBaseline == null ? null : childBaseline - _padding;
+  }
+
+  @override
+  void performLayout() {
+    final child = this.child;
+    if (child == null) {
+      size = constraints.smallest;
+      return;
+    }
+    child.layout(_childConstraints(constraints), parentUsesSize: true);
+    final parentData = child.parentData;
+    if (parentData is BoxParentData) {
+      parentData.offset = Offset(0, -_padding);
+    }
+    size = _unpadded(constraints, child.size);
   }
 }

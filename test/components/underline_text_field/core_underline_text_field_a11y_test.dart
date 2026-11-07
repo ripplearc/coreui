@@ -45,6 +45,38 @@ void main() {
       });
     }
 
+    // The tap target guideline skips a node that touches the screen edge,
+    // so the field is padded and its node is also measured directly.
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      for (final label in ['Scope of work', null]) {
+        testWidgets(
+            '${size.name} multi-line field on one line has a 48px node '
+            '${label == null ? 'without' : 'with'} a label', (tester) async {
+          await pumpWithSemantics(
+            tester,
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: CoreUnderlineTextField(
+                label: label,
+                initialValue: 'Kitchen.',
+                size: size,
+                maxLines: 4,
+              ),
+            ),
+            () async {
+              final rect = tester.getSemantics(find.byType(TextField)).rect;
+
+              expect(rect.height, greaterThanOrEqualTo(48));
+              await expectLater(
+                tester,
+                meetsGuideline(androidTapTargetGuideline),
+              );
+            },
+          );
+        });
+      }
+    }
+
     testWidgets('prefix, unit and a trailing button meet the guidelines',
         (tester) async {
       await setupA11yTest(tester);

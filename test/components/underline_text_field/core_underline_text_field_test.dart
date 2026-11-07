@@ -723,4 +723,108 @@ void main() {
       expect(find.byType(DecoratedBox), findsNothing);
     });
   });
+
+  group('CoreUnderlineTextField – no Material above it', () {
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      for (final maxLines in [1, 4]) {
+        testWidgets('${size.name}, maxLines $maxLines builds and takes text',
+            (tester) async {
+          // MaterialApp gives no Material widget; only a Scaffold would.
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoreTheme.light(),
+              home: Center(
+                child: SizedBox(
+                  width: 300,
+                  child: CoreUnderlineTextField(
+                    label: 'Scope of work',
+                    size: size,
+                    maxLines: maxLines,
+                  ),
+                ),
+              ),
+            ),
+          );
+          expect(find.byType(Scaffold), findsNothing);
+
+          await tester.enterText(find.byType(TextField), 'Kitchen');
+          await tester.pump();
+
+          expect(tester.takeException(), isNull);
+          expect(find.text('Kitchen'), findsOneWidget);
+        });
+
+        testWidgets('${size.name}, maxLines $maxLines draws its text as '
+            'under a Scaffold', (tester) async {
+          for (final hasError in [false, true]) {
+            final field = CoreUnderlineTextField(
+              label: 'Rate',
+              size: size,
+              maxLines: maxLines,
+              prefixText: r'$',
+              unitText: '/day',
+              helperText: 'Per crew',
+              errorText: hasError ? 'Enter a rate' : null,
+            );
+            final texts = [
+              'Rate',
+              r'$',
+              '/day',
+              if (hasError) 'Enter a rate' else 'Per crew',
+            ];
+
+            TextStyle? styleOf(String text) => tester
+                .widget<RichText>(
+                  find.descendant(
+                    of: find.byType(CoreUnderlineTextField),
+                    matching: find.byWidgetPredicate(
+                      (w) => w is RichText && w.text.toPlainText() == text,
+                    ),
+                  ),
+                )
+                .text
+                .style;
+
+            await tester.pumpWidget(
+              MaterialApp(
+                theme: CoreTheme.light(),
+                home: Scaffold(
+                  body: Center(child: SizedBox(width: 300, child: field)),
+                ),
+              ),
+            );
+            final underScaffold = {for (final t in texts) t: styleOf(t)};
+
+            // With no Material, Flutter draws text in monospace with a
+            // yellow double underline.
+            await tester.pumpWidget(
+              MaterialApp(
+                theme: CoreTheme.light(),
+                home: Center(child: SizedBox(width: 300, child: field)),
+              ),
+            );
+            expect(find.byType(Scaffold), findsNothing);
+
+            for (final text in texts) {
+              final style = styleOf(text);
+              expect(
+                style,
+                isA<TextStyle>()
+                    .having((s) => s.fontFamily, 'fontFamily',
+                        isNot('monospace'))
+                    .having((s) => s.decorationStyle, 'decorationStyle',
+                        isNot(TextDecorationStyle.double)),
+                reason: '"$text" with hasError $hasError',
+              );
+              expect(
+                style,
+                underScaffold[text],
+                reason: '"$text" with hasError $hasError',
+              );
+            }
+          }
+        });
+      }
+    }
+  });
 }

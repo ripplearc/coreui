@@ -39,6 +39,7 @@ $ 145.00 /day  [inlineAccessory]                [trailing]
 | `textInputAction`  | `TextInputAction?`           | The keyboard's action key                                                  |
 | `inputFormatters`  | `List<TextInputFormatter>?`  | Filters or reshapes what is typed                                          |
 | `maxLength`        | `int?`                       | Most characters accepted. No counter is drawn                              |
+| `maxLines`         | `int`                        | Most lines shown before the text scrolls. Above 1 the text wraps. Default 1 |
 | `autofocus`        | `bool`                       | Takes focus when first built                                               |
 | `labelTrailing`    | `Widget?`                    | A widget beside the label, such as a badge                                 |
 | `prefixText`       | `String?`                    | Fixed text before the value, such as `$`                                   |
@@ -79,6 +80,32 @@ makes it 65px, with the value centered against the widget.
 The design spaces stacked fields 12px apart. That spacing belongs to the form
 and is not part of the field.
 
+## Several lines
+
+`maxLines: 4` lets the value wrap, as the Scope of work and Terms fields of the
+estimate sheet do:
+
+```dart
+CoreUnderlineTextField(
+  label: 'Scope of work',
+  maxLines: 4,
+  controller: scope,
+)
+```
+
+- The value row grows with its text, one line at a time (24px, or 32px at
+  `large`), up to `maxLines` lines. Past that the text scrolls inside the
+  field.
+- The underline sits 8px under the last line of text. With `labelTrailing`
+  at the `regular` or `compact` size it is 4px, as on one line.
+- The return key adds a new line, so `onSubmitted` does not fire on it. Pass
+  `textInputAction` to change that.
+- A hint or error line sits under the underline as usual. An error line
+  replaces the hint line.
+- As on one line, the screen reader node is at least 48px tall, while the
+  row is drawn as tall as its lines.
+- The default, `maxLines: 1`, is unchanged: one line that scrolls sideways.
+
 ## Underline and focus
 
 The underline is the field's whole focus affordance. At rest it is
@@ -110,7 +137,9 @@ only once there is a value to put it beside.
 ## Slots
 
 `labelTrailing`, `inlineAccessory` and `trailing` take any widget. The field
-owns their position and spacing, not their look.
+owns their position and spacing, not their look. Pass a style to a `Text` in a
+slot: the field's own `Material` sets the default text style below it, so a
+`DefaultTextStyle` above the field does not reach the slot.
 
 - `labelTrailing` sits 4px after the label. It makes the label row 20px tall
   and takes the 4px back from the gap above the underline, so the field keeps
