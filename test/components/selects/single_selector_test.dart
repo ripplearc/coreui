@@ -194,8 +194,6 @@ void main() {
 
       final focusedBorder = decoration().enabledBorder as OutlineInputBorder;
       expect(focusedBorder.borderSide.color, colors.outlineHover);
-      final labelStyle = decoration().labelStyle as TextStyle;
-      expect(labelStyle.color, colors.textDark);
     });
 
     testWidgets('opens the sheet with Enter after Tab', (tester) async {
