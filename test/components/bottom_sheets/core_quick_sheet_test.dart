@@ -450,6 +450,23 @@ void main() {
       expect(contentHeight(tester), greaterThan(sheet.height / 2));
     });
 
+    testWidgets('a child that does not fill still gets all the height',
+        (WidgetTester tester) async {
+      const handleArea = CoreSpacing.space4 * 2 + CoreSpacing.space1;
+      await openSheet(
+        tester,
+        fixedHeightRatio: 0.64,
+        child: const Column(
+          key: Key('content'),
+          mainAxisSize: MainAxisSize.min,
+          children: [SizedBox(height: 50)],
+        ),
+      );
+
+      final sheet = tester.getRect(find.byType(BottomSheet));
+      expect(contentHeight(tester), closeTo(sheet.height - handleArea, 0.01));
+    });
+
     testWidgets('long content scrolls inside the sheet',
         (WidgetTester tester) async {
       await openSheet(
