@@ -61,7 +61,7 @@ enum CoreSuggestionLayout {
 /// position in its row.
 class CoreSuggestionArea extends StatefulWidget {
   /// Creates a suggestion area. The default labels are English; the
-  /// required screen-reader labels come from the app.
+  /// required labels come from the app.
   const CoreSuggestionArea({
     super.key,
     this.suggestionAreaPlaceholder = defaultSuggestionAreaPlaceholder,

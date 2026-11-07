@@ -30,7 +30,8 @@ enum CoreButtonVariant {
 /// Either [label] or [child] must be provided.
 class CoreButton extends StatefulWidget {
   /// Text on the button, on one line and cut with an ellipsis when too long.
-  /// Ignored when [child] is set.
+  /// Not drawn when [child] is set, but still the name a screen reader
+  /// reads unless [semanticsLabel] is set.
   final String? label;
 
   /// Content drawn in place of [label], for anything a plain string cannot
@@ -40,9 +41,10 @@ class CoreButton extends StatefulWidget {
   /// Called on tap. When null the button is disabled.
   final VoidCallback? onPressed;
 
-  /// Height of the button: 48, 40 or 36 px. Defaults to
-  /// [CoreButtonSize.large]. A [CoreButtonVariant.social] button must be
-  /// large, or the build throws.
+  /// Drawn height of the button, at least 48, 40 or 36 px. Defaults to
+  /// [CoreButtonSize.large]. A medium or small button still takes a 48 px
+  /// tap box. A [CoreButtonVariant.social] button has no minimum height and
+  /// must be large, or the build throws.
   final CoreButtonSize size;
 
   /// Look of the button. Defaults to [CoreButtonVariant.primary].
@@ -67,7 +69,11 @@ class CoreButton extends StatefulWidget {
   /// start edge. Ignored by [CoreButtonVariant.social].
   final bool centerAlign;
 
-  /// With [centerAlign], pushes the icon and the label to opposite ends.
+  /// With [centerAlign] and an [icon], the icon goes to its edge, the label
+  /// stays centred, and an empty 24 px box holds the other end. With
+  /// [centerAlign] and no [icon], the label goes to the start edge, or to
+  /// the end edge with [trailing]. Without [centerAlign], the icon touches
+  /// the label, and with [trailing] the content starts 24 px further in.
   /// Ignored by [CoreButtonVariant.social].
   final bool spaceOut;
 
@@ -82,11 +88,14 @@ class CoreButton extends StatefulWidget {
   /// its own.
   final FocusNode? focusNode;
 
-  /// Shadows under the button. A [CoreButtonVariant.secondary] button with
-  /// shadows gets a solid fill; without them its fill is transparent.
+  /// Shadows under the button. An enabled [CoreButtonVariant.secondary]
+  /// button with shadows gets a solid fill; without them, or when disabled,
+  /// its fill is transparent.
   final List<BoxShadow>? shadows;
 
-  /// Screen-reader label. When null the reader announces [label].
+  /// Screen-reader label. When null the reader announces [label]. The
+  /// reader never reads [child], so a button with a [child] needs [label] or
+  /// this, or it has no name.
   final String? semanticsLabel;
 
   /// Screen-reader hint announced after the label — what a tap does

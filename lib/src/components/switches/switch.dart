@@ -118,7 +118,9 @@ class CoreSwitch extends StatelessWidget {
   /// Called with the new value on a tap, Enter or Space.
   final ValueChanged<bool> onChanged;
 
-  /// Colours of the switch. Defaults to [CoreSwitchType.normal].
+  /// Colours of the switch, and the width of a labelled one: 77 px for
+  /// [CoreSwitchType.imperial], 71 px for the others. Defaults to
+  /// [CoreSwitchType.normal].
   final CoreSwitchType type;
 
   /// Text inside the track while [value] is true. When neither label is
