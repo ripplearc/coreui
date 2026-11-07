@@ -246,6 +246,28 @@ The Toast component includes semantic labels for accessibility:
     - Receipt secondary label: `CoreTypography.bodyLargeSemiBold` in `textLink` at 85 % opacity
 - Receipt action: `CoreButton`, `primary`, `CoreButtonSize.large` (48 dp), not full width
 
+## Showing an alert through CoreToast
+
+`CoreToast.showError`, `showSuccess` and `showWarning` take the same optional
+`actionLabel` with `onAction` as the alerts:
+
+```dart
+CoreToast.showError(
+  context,
+  'Upload failed',
+  'Close',
+  actionLabel: 'View',
+  onAction: controller.openUploadDetails,
+);
+```
+
+The helper passes its own `onClose`, so taking `View` fires `onAction` once and
+removes the alert. The alert still leaves after 3 s, `View` or not, so a
+screen-reader user may not reach `View` in time; use it for a shortcut to
+something the app also offers elsewhere. An `actionLabel` without `onAction`, or
+the other way round, fails an assert at the call, before the toast already on
+screen is removed.
+
 ## Showing a receipt through CoreToast
 
 `CoreToast.showReceipt` puts a receipt in the overlay and wires its dismissal:

@@ -25,12 +25,18 @@ class CoreToast {
   static bool _disableTimers = false;
 
   /// Shows an error toast.
+  ///
+  /// [actionLabel] with [onAction] adds a text button such as `View`; taking
+  /// it fires [onAction] once and closes the toast.
   static void showError(
     BuildContext context,
     String message,
     String closeLabel, {
     String? title,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
+    _assertActionTravelsWithItsLabel(actionLabel, onAction);
     _showWithDismiss(
       context,
       (dismiss) => Toast.error(
@@ -38,17 +44,25 @@ class CoreToast {
         closeLabel: closeLabel,
         title: title,
         onClose: dismiss,
+        actionLabel: actionLabel,
+        onAction: onAction,
       ),
     );
   }
 
   /// Shows a success toast.
+  ///
+  /// [actionLabel] with [onAction] adds a text button such as `View`; taking
+  /// it fires [onAction] once and closes the toast.
   static void showSuccess(
     BuildContext context,
     String message,
     String closeLabel, {
     String? title,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
+    _assertActionTravelsWithItsLabel(actionLabel, onAction);
     _showWithDismiss(
       context,
       (dismiss) => Toast.success(
@@ -56,17 +70,25 @@ class CoreToast {
         closeLabel: closeLabel,
         title: title,
         onClose: dismiss,
+        actionLabel: actionLabel,
+        onAction: onAction,
       ),
     );
   }
 
   /// Shows a warning toast.
+  ///
+  /// [actionLabel] with [onAction] adds a text button such as `View`; taking
+  /// it fires [onAction] once and closes the toast.
   static void showWarning(
     BuildContext context,
     String message,
     String closeLabel, {
     String? title,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
+    _assertActionTravelsWithItsLabel(actionLabel, onAction);
     _showWithDismiss(
       context,
       (dismiss) => Toast.warning(
@@ -74,6 +96,8 @@ class CoreToast {
         closeLabel: closeLabel,
         title: title,
         onClose: dismiss,
+        actionLabel: actionLabel,
+        onAction: onAction,
       ),
     );
   }
@@ -193,6 +217,18 @@ class CoreToast {
         return build(() => _removeEntryOnce(ownEntry));
       },
       duration: duration,
+    );
+  }
+
+  static void _assertActionTravelsWithItsLabel(
+    String? actionLabel,
+    VoidCallback? onAction,
+  ) {
+    assert(
+      (actionLabel == null) == (onAction == null),
+      'actionLabel and onAction travel together: an action with no label '
+      'is invisible to a screen reader, and a label with no action is a '
+      'dead control.',
     );
   }
 
