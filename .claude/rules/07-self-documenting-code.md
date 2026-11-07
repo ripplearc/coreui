@@ -61,7 +61,7 @@ Inside a method body, a comment that says **why** stays: a design decision the c
 | Comment above a private member | a `//` or `///` line directly above a declaration whose name starts with `_`, or inside a `class _…` / `enum _…` body | Major |
 | Exported widget or public parameter with no dartdoc | new `class Core…` / `final <Type> <name>;` in a public class with no `///` above it | Major |
 | Step-by-step narration | 3+ consecutive `//` lines inside a method body that say *what* the next lines do (a block that says *why* is fine) | Major |
-| Commented-out code | `grep -nE "^[[:space:]]*//[^/].*\b(await\|return\|if \(\|for \().*[;{]$"` (a `//` line that ends like code; dartdoc examples and prose are not matched) | Major |
+| Commented-out code | `grep -nE "^\+?[[:space:]]*//[^/].*(\b(await\|return\|final\|var\|const\|if \(\|for \().*[;{]\|[A-Za-z_]+\(.*(\),\|\);\|\{))$"` (a `//` line, with or without the diff's `+`, that ends like code: `// return foo();`, `// final x = compute();`, `// Text('hello'),`, `// setState(() {`; dartdoc examples and prose are not matched: on main it matches none of the 955 `//` lines in `lib/` and `test/`) | Major |
 | Inline changelog | `grep -n "// Updated 20[0-9][0-9]-"` | Minor |
 
 Run the greps on the added lines of the diff only.

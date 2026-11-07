@@ -80,10 +80,11 @@ OUTPUT='{"files": []}'
 # Match files against pattern using bash glob matching
 while IFS= read -r FILE; do
   if [[ -n "$FILE" ]]; then
-    # Substring match of the provided pattern. coreui's buckets are plain
-    # path prefixes, so no '**' handling is needed.
+    # Prefix match of the provided pattern, Dart files only. coreui's buckets
+    # are plain path prefixes, so no '**' handling is needed, and an
+    # example/test/ file or a component .md file is not routed to a rule.
     MATCHED=false
-    if [[ "$FILE" == *"$PATTERN"* || "$FILE" == "$PATTERN" ]]; then
+    if [[ "$FILE" == "$PATTERN"* && "$FILE" == *.dart ]]; then
       MATCHED=true
     fi
 
