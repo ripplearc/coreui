@@ -68,9 +68,14 @@ import 'underline_field_metrics.dart';
 ///
 /// ### Tap target
 /// A tap anywhere on the field focuses it, on the label, the value row, the
-/// underline and the helper or error line. The text field's own accessibility
-/// node is 48px tall, though the value row is drawn 24px or 32px tall, so the
-/// field meets the minimum tap target without changing the design's spacing.
+/// underline and the helper or error line. A field drawn under 48px tall, such
+/// as a regular field with no label (33px), takes taps up to 48px, centred,
+/// without changing the design's spacing. That reach covers only space its
+/// parents leave around it, such as the gap to the next row of a form, and
+/// never a point that a widget before it in the same row or column takes. A
+/// ListView wraps each item in a box of the item's own size, so there the
+/// reach does nothing: give such a row at least 48px with its own vertical
+/// padding. The text field's own accessibility node is 48px tall as well.
 ///
 /// ### Text size
 /// The label row and the value row are minimum heights. They grow when the
@@ -415,8 +420,11 @@ class _CoreUnderlineTextFieldState extends State<CoreUnderlineTextField> {
   @override
   Widget build(BuildContext context) {
     // Its own Material, so the field and all its text draw the same with no
-    // Material above it.
-    return Material(type: MaterialType.transparency, child: _buildField());
+    // Material above it. The field can be drawn under 48px tall (33px with no
+    // label), so its touch area reaches past the drawn edges to 48px.
+    return _MinTouchHeight(
+      child: Material(type: MaterialType.transparency, child: _buildField()),
+    );
   }
 
   Widget _buildField() {
@@ -720,5 +728,51 @@ class _RenderUnpaddedHeight extends RenderShiftedBox {
       parentData.offset = Offset(0, -_padding);
     }
     size = _unpadded(constraints, child.size);
+  }
+}
+
+class _MinTouchHeight extends SingleChildRenderObjectWidget {
+  const _MinTouchHeight({required super.child});
+
+  @override
+  _RenderMinTouchHeight createRenderObject(BuildContext context) =>
+      _RenderMinTouchHeight();
+}
+
+class _RenderMinTouchHeight extends RenderProxyBox {
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (size.contains(position)) {
+      return super.hitTest(result, position: position);
+    }
+    final reach = math.max(0.0, (kMinInteractiveDimension - size.height) / 2);
+    final isInReach = position.dx >= 0 &&
+        position.dx <= size.width &&
+        position.dy >= -reach &&
+        position.dy <= size.height + reach;
+    if (!isInReach || _isTakenByAnEarlierSibling(position)) return false;
+    final lastRow = math.max(0.0, size.height - 0.5);
+    final onField = Offset(position.dx, position.dy.clamp(0.0, lastRow));
+    if (!hitTestChildren(result, position: onField)) return false;
+    result.add(BoxHitTestEntry(this, onField));
+    return true;
+  }
+
+  bool _isTakenByAnEarlierSibling(Offset position) {
+    final data = parentData;
+    if (data is! ContainerBoxParentData<RenderBox>) return false;
+    final inParent = position + data.offset;
+    var sibling = data.previousSibling;
+    while (sibling != null) {
+      final siblingData = sibling.parentData;
+      if (siblingData is! ContainerBoxParentData<RenderBox>) return false;
+      final isTaken = sibling.hitTest(
+        BoxHitTestResult(),
+        position: inParent - siblingData.offset,
+      );
+      if (isTaken) return true;
+      sibling = siblingData.previousSibling;
+    }
+    return false;
   }
 }
