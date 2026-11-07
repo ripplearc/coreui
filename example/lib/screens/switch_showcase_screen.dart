@@ -19,8 +19,9 @@ class _SwitchShowcaseScreenState extends State<SwitchShowcaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Core Switch Showcase')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+            20, 20, 20, 20 + MediaQuery.paddingOf(context).bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
