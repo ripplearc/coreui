@@ -1,0 +1,276 @@
+// Checklist probe for coreui parts. A template, not a test: run_probe.sh
+// copies it into test/, adds the parts as cases, runs it and deletes it.
+// Never commit the copy.
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ripplearc_coreui/ripplearc_coreui.dart';
+
+import 'load_fonts.dart';
+
+class Case {
+  final String name;
+  final Widget Function() build;
+  final double width;
+  Case(this.name, this.build, {this.width = 360});
+}
+
+const _bk = Key('probe-boundary');
+const _pk = Key('probe-part');
+const _purple = Color(0xFF7F3FBF);
+
+/// What sits behind the part. Press and focus are read on [page], the real
+/// page colour, so a press in the page colour shows as NO CHANGE (#252).
+/// The coloured parent check compares [purpleMaterial] with
+/// [purpleContainer]: the same purple, once as the Material and once as a
+/// Container above a white Material.
+enum Surface { page, purpleMaterial, purpleContainer }
+
+Widget _app(Widget body, {double scale = 1, Surface surface = Surface.page}) {
+  final ThemeData theme = CoreTheme.light();
+  final Color material = switch (surface) {
+    Surface.page => theme.scaffoldBackgroundColor,
+    Surface.purpleMaterial => _purple,
+    Surface.purpleContainer => Colors.white,
+  };
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: theme,
+    home: MediaQuery(
+      data: MediaQueryData(size: const Size(800, 600), textScaler: TextScaler.linear(scale)),
+      child: Scaffold(
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: RepaintBoundary(
+            key: _bk,
+            child: Material(
+              color: material,
+              child: Container(
+                color: surface == Surface.purpleContainer ? _purple : null,
+                padding: const EdgeInsets.all(16),
+                child: body,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<(Uint8List, int, int)> _snap(WidgetTester t) async {
+  final rb = t.renderObject<RenderRepaintBoundary>(find.byKey(_bk));
+  final r = await t.runAsync(() async {
+    final img = await rb.toImage();
+    final bd = await img.toByteData(format: ui.ImageByteFormat.rawRgba);
+    return (bd!.buffer.asUint8List(), img.width, img.height);
+  });
+  return r!;
+}
+
+String _diff((Uint8List, int, int) a, (Uint8List, int, int) b) {
+  if (a.$2 != b.$2 || a.$3 != b.$3) return 'size changed ${a.$2}x${a.$3} -> ${b.$2}x${b.$3}';
+  var n = 0, x0 = 1 << 30, y0 = 1 << 30, x1 = -1, y1 = -1;
+  for (var y = 0; y < a.$3; y++) {
+    for (var x = 0; x < a.$2; x++) {
+      final i = (y * a.$2 + x) * 4;
+      if (a.$1[i] != b.$1[i] || a.$1[i + 1] != b.$1[i + 1] || a.$1[i + 2] != b.$1[i + 2]) {
+        n++;
+        if (x < x0) x0 = x;
+        if (y < y0) y0 = y;
+        if (x > x1) x1 = x;
+        if (y > y1) y1 = y;
+      }
+    }
+  }
+  if (n == 0) return 'NO CHANGE';
+  return '$n px changed, box x ${x0 - 16}..${x1 - 16} y ${y0 - 16}..${y1 - 16} (part-local)';
+}
+
+Future<void> _png(WidgetTester t, String name) async {
+  final rb = t.renderObject<RenderRepaintBoundary>(find.byKey(_bk));
+  await t.runAsync(() async {
+    final img = await rb.toImage(pixelRatio: 2);
+    final bd = await img.toByteData(format: ui.ImageByteFormat.png);
+    final dir = Platform.environment['PROBE_OUT'] ?? '/tmp';
+    Directory(dir).createSync(recursive: true);
+    File('$dir/${name.replaceAll(RegExp('[^A-Za-z0-9.]+'), '_')}.png').writeAsBytesSync(bd!.buffer.asUint8List());
+  });
+}
+
+String _takeErrorsOfLastStep(WidgetTester t) {
+  final e = t.takeException();
+  return e == null ? '' : ' | EXCEPTION ${e.toString().split('\n').first}';
+}
+
+Rect _partRect(WidgetTester t) => t.getRect(find.byKey(_pk));
+
+Iterable<Rect> _tapRects(WidgetTester t) {
+  final f = find.byWidgetPredicate((w) =>
+      (w is InkResponse && (w.onTap != null || w.onTapDown != null || w.onTapUp != null || w.onLongPress != null)) ||
+      (w is GestureDetector && (w.onTap != null || w.onTapDown != null || w.onTapUp != null || w.onLongPress != null)));
+  return f.evaluate().map((e) => t.getRect(find.byElementPredicate((x) => x == e)));
+}
+
+Future<void> _rebuild(WidgetTester t, Widget app) async {
+  await t.pumpWidget(const SizedBox());
+  await t.pumpWidget(app);
+  await t.pumpAndSettle();
+}
+
+void probe(List<Case> cases) {
+  setUpAll(loadFonts);
+  for (final c in cases) {
+    testWidgets('PROBE ${c.name}', (t) async {
+      final out = <String>[];
+      Widget body() => SizedBox(width: c.width, child: Align(alignment: Alignment.topLeft, widthFactor: 1, heightFactor: 1, child: KeyedSubtree(key: _pk, child: c.build())));
+      // rest, on the page colour
+      await t.pumpWidget(_app(body()));
+      await t.pumpAndSettle();
+      final part = _partRect(t);
+      out.add('part ${part.width.toStringAsFixed(1)}x${part.height.toStringAsFixed(1)}${_takeErrorsOfLastStep(t)}');
+      final taps = _tapRects(t).toSet().toList();
+      out.add('tap targets: ${taps.isEmpty ? 'NONE FOUND' : taps.map((r) => '${r.width.toStringAsFixed(0)}x${r.height.toStringAsFixed(0)}').join(', ')}');
+      final rest = await _snap(t);
+      await _png(t, '${c.name} rest');
+      // press: each tap target in turn, from a fresh rest
+      for (var i = 0; i < (taps.isEmpty ? 1 : taps.length); i++) {
+        if (i > 0) await _rebuild(t, _app(body()));
+        final at = taps.isEmpty ? t.getCenter(find.byKey(_bk)) : taps[i].center;
+        final g = await t.startGesture(at);
+        await t.pump(const Duration(milliseconds: 150));
+        await t.pump(const Duration(milliseconds: 150));
+        await t.pump(const Duration(milliseconds: 150));
+        final label = taps.isEmpty ? 'centre' : '${i + 1} ${taps[i].width.toStringAsFixed(0)}x${taps[i].height.toStringAsFixed(0)}';
+        final pressed = _diff(rest, await _snap(t));
+        await _png(t, '${c.name} pressed${i + 1}');
+        await g.up();
+        await t.pumpAndSettle();
+        out.add('PRESS $label: $pressed${_takeErrorsOfLastStep(t)}');
+      }
+      // focus: Tab through every stop; each must differ from rest and from
+      // the stop before it
+      await _rebuild(t, _app(body()));
+      final rest2 = await _snap(t);
+      final stops = <FocusNode>[];
+      var previous = rest2;
+      while (stops.length < 6) {
+        await t.sendKeyEvent(LogicalKeyboardKey.tab);
+        await t.pumpAndSettle();
+        final f = FocusManager.instance.primaryFocus;
+        if (f == null || f is FocusScopeNode || stops.contains(f)) break;
+        stops.add(f);
+        final now = await _snap(t);
+        final n = stops.length;
+        out.add('TAB$n: ${_diff(rest2, now)}${n > 1 ? '; vs TAB${n - 1}: ${_diff(previous, now)}' : ''}${_takeErrorsOfLastStep(t)}');
+        await _png(t, '${c.name} tab$n');
+        previous = now;
+      }
+      out.add('focus stops: ${stops.isEmpty ? 'NONE FOUND' : stops.length}${_takeErrorsOfLastStep(t)}');
+      // coloured parent: the same purple as a Container, vs as the Material
+      await _rebuild(t, _app(body(), surface: Surface.purpleMaterial));
+      final restPurple = await _snap(t);
+      final purpleErrors = _takeErrorsOfLastStep(t);
+      await _rebuild(t, _app(body(), surface: Surface.purpleContainer));
+      final containerErrors = _takeErrorsOfLastStep(t);
+      out.add('COLOURED PARENT (purple Container vs purple Material): ${_diff(restPurple, await _snap(t))}${purpleErrors.isNotEmpty ? purpleErrors : containerErrors}');
+      await _png(t, '${c.name} coloured');
+      // no Material at all
+      await t.pumpWidget(const SizedBox());
+      await t.pumpWidget(MaterialApp(
+        theme: CoreTheme.light(),
+        home: Container(
+          color: Colors.white,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: RepaintBoundary(key: _bk, child: Padding(padding: const EdgeInsets.all(16), child: body())),
+          ),
+        ),
+      ));
+      await t.pump();
+      final ex = t.takeException();
+      // Text with no Material above it does not throw: it draws in the
+      // fallback style, a yellow double underline (#253).
+      final fallback = find
+          .descendant(of: find.byKey(_bk), matching: find.byType(RichText))
+          .evaluate()
+          .map((e) => e.widget as RichText)
+          .where((r) => r.text.style?.decorationStyle == TextDecorationStyle.double)
+          .map((r) => r.text.toPlainText())
+          .toList();
+      final noMaterial = [
+        if (ex != null) 'EXCEPTION ${ex.toString().split('\n').first}',
+        if (fallback.isNotEmpty) 'fallback text style on: ${fallback.join(', ')}',
+      ];
+      out.add('NO MATERIAL: ${noMaterial.isEmpty ? 'ok' : noMaterial.join('; ')}');
+      await _png(t, '${c.name} nomaterial');
+      // text scale
+      for (final s in [1.5, 2.0]) {
+        await _rebuild(t, _app(body(), scale: s));
+        final e = _takeErrorsOfLastStep(t);
+        final boundary = t.renderObject(find.byKey(_bk));
+        final texts = find.descendant(of: find.byKey(_bk), matching: find.byType(RichText)).evaluate().map((x) => t.getRect(find.byElementPredicate((y) => y == x))).toList();
+        final icons = find.descendant(of: find.byKey(_bk), matching: find.byWidgetPredicate((w) => w is Icon || w is CoreIconWidget || w is Image || w.runtimeType.toString().contains('Svg'))).evaluate().map((x) => t.getRect(find.byElementPredicate((y) => y == x))).toList();
+        // A text centred inside an icon's box (a count on a badge, initials
+        // on an avatar picture) is placed there on purpose, so it is not
+        // counted. A short label on a larger icon is missed this way: look
+        // at the text pictures too.
+        var overlap = 0;
+        for (final a in texts) {
+          for (final b in icons) {
+            if (a.intersect(b).width > 1 && a.intersect(b).height > 1 && !b.contains(a.center)) overlap++;
+          }
+        }
+        await _png(t, '${c.name} text$s');
+        var escaping = <String>[];
+        for (final el in find.descendant(of: find.byKey(_bk), matching: find.byType(RichText)).evaluate()) {
+          final ro = el.renderObject! as RenderParagraph;
+          final text = (el.widget as RichText).text.toPlainText();
+          final need = ro.getMinIntrinsicHeight(ro.size.width);
+          if (need > ro.size.height + 0.5) {
+            escaping.add('CUT "$text" needs ${need.toStringAsFixed(0)} high, gets ${ro.size.height.toStringAsFixed(0)}');
+          }
+          // Cut sideways: an ellipsis or a fade on maxLines, or a single
+          // line wider than its box. An ellipsis can be on purpose; look.
+          final wide = ro.getMaxIntrinsicWidth(double.infinity);
+          final oneLine = ro.maxLines == 1 || !ro.softWrap;
+          if (oneLine && wide > ro.size.width + 0.5) {
+            escaping.add('CUT SIDEWAYS "$text" needs ${wide.toStringAsFixed(0)} wide, gets ${ro.size.width.toStringAsFixed(0)}');
+          } else if (ro.didExceedMaxLines) {
+            escaping.add('CUT SIDEWAYS "$text" needs more than ${ro.maxLines} lines');
+          }
+          // The nearest decorated box between the text and the probe's own
+          // boundary: the text must stay inside it.
+          RenderObject? a = ro.parent;
+          while (a != null && a != boundary && a is! RenderDecoratedBox) {
+            a = a.parent;
+          }
+          if (a is RenderDecoratedBox) {
+            // Boxes after any scale, so a label a FittedBox shrinks to
+            // fit reads as inside.
+            final tr = MatrixUtils.transformRect(ro.getTransformTo(null), Offset.zero & ro.size);
+            final ar = MatrixUtils.transformRect(a.getTransformTo(null), Offset.zero & a.size);
+            if (tr.top < ar.top - 0.5 || tr.bottom > ar.bottom + 0.5 || tr.left < ar.left - 0.5 || tr.right > ar.right + 0.5) {
+              escaping.add('"$text" ${tr.height.toStringAsFixed(0)}h in ${ar.height.toStringAsFixed(0)}h box');
+            }
+          }
+        }
+        final p = _partRect(t);
+        out.add('TEXT x$s: part ${p.width.toStringAsFixed(0)}x${p.height.toStringAsFixed(0)}, text/icon overlaps $overlap, text outside its box: ${escaping.isEmpty ? 'none' : escaping.join('; ')}$e');
+      }
+      // ignore: avoid_print
+      print('### ${c.name}\n  ${out.join('\n  ')}');
+    });
+  }
+}
+
+void main() => probe([
+
+  // CASES
+
+]);
