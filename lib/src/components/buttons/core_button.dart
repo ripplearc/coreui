@@ -31,11 +31,11 @@ enum CoreButtonVariant {
 class CoreButton extends StatefulWidget {
   /// Text on the button, on one line and cut with an ellipsis when too long.
   /// Not drawn when [child] is set, but still the name a screen reader
-  /// reads unless [semanticsLabel] is set.
+  /// reads unless [semanticsLabel] is set. Null needs a [child].
   final String? label;
 
   /// Content drawn in place of [label], for anything a plain string cannot
-  /// show. The button does not style it.
+  /// show. The button does not style it. Null draws [label].
   final Widget? child;
 
   /// Called on tap. When null the button is disabled.
@@ -51,10 +51,12 @@ class CoreButton extends StatefulWidget {
   final CoreButtonVariant variant;
 
   /// Icon beside the label, before it unless [trailing] is true. A
-  /// [CoreButtonVariant.social] button pins it to the left edge.
+  /// [CoreButtonVariant.social] button pins it to the left edge. Null draws
+  /// no icon.
   final CoreIconWidget? icon;
 
   /// Draws the disabled look and ignores taps, even when [onPressed] is set.
+  /// Defaults to `false`.
   final bool isDisabled;
 
   /// Fills the parent's width when true (the default); otherwise the button
@@ -69,28 +71,29 @@ class CoreButton extends StatefulWidget {
   /// start edge. Ignored by [CoreButtonVariant.social].
   final bool centerAlign;
 
-  /// With [centerAlign] and an [icon], the icon goes to its edge, the label
-  /// stays centred, and an empty 24 px box holds the other end. With
-  /// [centerAlign] and no [icon], the label goes to the start edge, or to
-  /// the end edge with [trailing]. Without [centerAlign], the icon touches
-  /// the label, and with [trailing] the content starts 24 px further in.
-  /// Ignored by [CoreButtonVariant.social].
+  /// Defaults to `false`. With [centerAlign] and an [icon], the icon goes to
+  /// its edge, the label stays centred, and an empty 24 px box holds the other
+  /// end. With [centerAlign] and no [icon], the label goes to the start edge,
+  /// or to the end edge with [trailing]. Without [centerAlign], the icon
+  /// touches the label, and with [trailing] the content starts 24 px further
+  /// in. Ignored by [CoreButtonVariant.social].
   final bool spaceOut;
 
-  /// Puts [icon] after the label instead of before it. Ignored by
-  /// [CoreButtonVariant.social].
+  /// Puts [icon] after the label instead of before it. Defaults to `false`.
+  /// Ignored by [CoreButtonVariant.social].
   final bool trailing;
 
-  /// Focuses the button when it first builds.
+  /// Focuses the button when it first builds. Defaults to `false`.
   final bool autofocus;
 
   /// Focus node for the button. When null the button makes and disposes
   /// its own.
   final FocusNode? focusNode;
 
-  /// Shadows under the button. An enabled [CoreButtonVariant.secondary]
-  /// button with shadows gets a solid fill; without them, or when disabled,
-  /// its fill is transparent.
+  /// Shadows under the button; null draws none. An enabled
+  /// [CoreButtonVariant.secondary] button gets a solid fill when this is not
+  /// null, even an empty list; when null, or when disabled, its fill is
+  /// transparent.
   final List<BoxShadow>? shadows;
 
   /// Screen-reader label. When null the reader announces [label]. The

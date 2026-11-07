@@ -5,9 +5,11 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// This widget uses a bottom sheet to display the list of items for selection.
 class SingleItemSelector<T> extends StatefulWidget {
   /// Label of the field, floated above it. Also the screen-reader label.
+  /// Null shows no label.
   final String? labelText;
 
-  /// Text shown in the field while [selectedItem] is null.
+  /// Text shown in the field while [selectedItem] is null. When this is null
+  /// too, the field is empty.
   final String? hintText;
 
   /// Heading at the top of the bottom sheet the field opens.
@@ -37,9 +39,11 @@ class SingleItemSelector<T> extends StatefulWidget {
   final Color? selectedBackgroundColor;
 
   /// Draws the disabled look and stops a tap from opening the sheet.
+  /// Defaults to `false`.
   final bool isDisabled;
 
-  /// Called on a tap, just before the sheet opens.
+  /// Called on a tap, just before the sheet opens. When null the sheet still
+  /// opens.
   final VoidCallback? onOpen;
 
   /// Creates a field that opens a bottom sheet of [items] to pick from.
