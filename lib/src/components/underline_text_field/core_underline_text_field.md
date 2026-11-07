@@ -137,7 +137,9 @@ only once there is a value to put it beside.
 ## Slots
 
 `labelTrailing`, `inlineAccessory` and `trailing` take any widget. The field
-owns their position and spacing, not their look.
+owns their position and spacing, not their look. Pass a style to a `Text` in a
+slot: the field's own `Material` sets the default text style below it, so a
+`DefaultTextStyle` above the field does not reach the slot.
 
 - `labelTrailing` sits 4px after the label. It makes the label row 20px tall
   and takes the 4px back from the gap above the underline, so the field keeps
