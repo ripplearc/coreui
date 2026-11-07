@@ -45,7 +45,8 @@ enum _ToastType {
 /// [onAction], then [onClose].
 class Toast extends StatefulWidget {
   /// Larger first line of an alert, above [description]. When null, the
-  /// alert is the small one-line look that shows [description] alone.
+  /// alert is the small look that shows [description] alone; long text
+  /// wraps.
   final String? title;
 
   /// The message. In an alert it sits under [title], or alone when [title] is

@@ -1,10 +1,10 @@
 # Changelog
 
-## [0.73.1] - Doc comments on 80 public members in lib/src/components
+## [0.90.1] - Doc comments on 80 public members in lib/src/components
 
 ### 📝 Documentation
 
-- Every public field and constructor in `lib/src/components` now has a `///` doc comment, except the keyboard, text-field, underline-field and value-editor files. Those wait until the open keyboard pull requests merge. Each doc says what the member does, its default, and what null means. A constructor doc names its asserts. `CoreButton`, `CoreIconWidget`, `CoreLetterAvatar`, `CoreSwitch` and `SingleItemSelector` lose the `[param] is …` list in their class doc; that text now sits on each field. No code changes (CA-1385)
+- Every public field and constructor in `lib/src/components` now has a `///` doc comment, except the keyboard, text-field, underline-field and value-editor files. Those wait until the open keyboard pull requests merge. Each doc says what the member does; many also give the default and what null means. A constructor doc names its asserts. `CoreButton`, `CoreIconWidget`, `CoreLetterAvatar`, `CoreSwitch` and `SingleItemSelector` lose the `[param] is …` list in their class doc; that text now sits on each field. No code changes (CA-1385)
 
 ## [0.88.0] - CoreUnderlineTextField text that wraps to several lines
 
