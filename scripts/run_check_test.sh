@@ -127,6 +127,14 @@ expect "differs: changed and untracked Dart files, not example/pubspec.lock" \
   "$(differs_from_commit)"
 git -C "$WORK" checkout -q -- lib/src/components/chips/core_chip.dart
 rm "$WORK/lib/src/new_file.dart" "$WORK/example/pubspec.lock"
+add test/components/chips/goldens/a.png "right image on disk only"
+add test/components/chips/goldens/b.png
+expect "differs: changed and untracked golden PNGs" \
+  " M test/components/chips/goldens/a.png
+?? test/components/chips/goldens/b.png" \
+  "$(differs_from_commit)"
+git -C "$WORK" checkout -q -- test/components/chips/goldens/a.png
+rm "$WORK/test/components/chips/goldens/b.png"
 
 # --- is_golden_test ----------------------------------------------------------
 golden() { if is_golden_test "$1"; then echo yes; else echo no; fi; }

@@ -161,10 +161,11 @@ run_linter() {
   return "$failed"
 }
 
-# Dart files and the root pubspec that differ from the last commit, untracked
-# ones included. pub get rewrites example/pubspec.lock, so it is left out.
+# Files that differ from the last commit, untracked ones included. The checks
+# read the disk, golden PNGs too, so a pass must mean the commit passes.
+# pub get rewrites example/pubspec.lock, so it is left out.
 differs_from_commit() {
-  git -C "$REPO_ROOT" status --porcelain -- '*.dart' pubspec.yaml pubspec.lock
+  git -C "$REPO_ROOT" status --porcelain -- . ':(exclude)example/pubspec.lock'
 }
 
 golden_command() {
