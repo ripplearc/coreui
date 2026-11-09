@@ -8,8 +8,8 @@ Code Quality & Maintainability
 
 ## Severity Levels
 - **Critical:** AI-generated artifacts or placeholder comments in production code
-- **Major:** Public widget or parameter without dartdoc; step-by-step narrative comments; any comment above a private member
-- **Minor:** Obscure naming requiring explanatory comments
+- **Major:** Public widget or parameter without dartdoc; step-by-step narrative comments
+- **Minor:** Any comment above a private member; obscure naming requiring explanatory comments
 - **Suggestion:** Refactor complex logic into descriptive helper methods
 
 ## Description
@@ -33,7 +33,7 @@ All production code in `lib/src/`.
 
 ### What NOT to Write
 
-- **No comment of any kind above a private member** (`_field`, `_method`, `_PrivateClass`, members of a private class or enum). Rename so the name carries the meaning. The reviewers ruled this on many PRs; it applies to "why" comments too. If the why really matters, put it in a named constant, a helper or a test.
+- **No comment of any kind above a private member** (`_field`, `_method`, `_PrivateClass`, members of a private class or enum). Rename so the name carries the meaning. The reviewers ruled this on many PRs; it applies to "why" comments too. If the why really matters, put it in a named constant, a helper or a test. Two lines are not comments about the code and are allowed: a `// TODO: [CA-XXX]` line with its YouTrack link (and the `//` lines that continue it), and an analyzer `// ignore:` line.
 - AI residuals (`// <-- ADD THIS`, `// TODO: implement`, `// Fix:`).
 - Step-by-step narration and comments that restate the code.
 - Commented-out code — git keeps history.
@@ -41,7 +41,7 @@ All production code in `lib/src/`.
 
 ### When Comments ARE Appropriate
 
-Inside a method body, a comment that says **why** stays: a design decision the code cannot show (why the × overlaps the text, why a box has a minimum height), a Flutter workaround with a link, or the storyboard / Figma frame a value comes from. A reviewer asking "is this comment necessary?" is not a request to delete a why-comment. The private-member rule above still wins: no comment directly above a private declaration.
+Inside a method body, a comment that says **why** stays: a design decision the code cannot show (why the × overlaps the text, why a box has a minimum height), a Flutter workaround with a link, or the storyboard / Figma frame a value comes from. A reviewer asking "is this comment necessary?" is not a request to delete a why-comment. The private-member rule above still wins: no comment directly above a private declaration, except a ticketed `// TODO: [CA-XXX]` or an `// ignore:` line.
 
 ### Refactor Instead of Commenting
 
@@ -57,20 +57,29 @@ Inside a method body, a comment that says **why** stays: a design decision the c
 
 | Pattern | Grep / Regex | Severity |
 |---|---|---|
-| AI residuals | `grep -nE "// <--\|// ADD THIS\|// implementation here\|// TODO: implement\|// Fix:"` | Critical |
-| Comment above a private member | a `//` or `///` line directly above a declaration whose name starts with `_`, or inside a `class _…` / `enum _…` body | Major |
+| AI residuals | grep 1 below | Critical |
+| Comment above a private member | a `//` or `///` line directly above a declaration whose name starts with `_`, or directly above any member of a `class _…` / `enum _…`. Not a `// TODO: [CA-XXX]` line with its link (or its continuation lines), and not an `// ignore:` line | Minor |
 | Exported widget or public parameter with no dartdoc | new `class Core…` / `final <Type> <name>;` in a public class with no `///` above it | Major |
 | Step-by-step narration | 3+ consecutive `//` lines inside a method body that say *what* the next lines do (a block that says *why* is fine) | Major |
-| Commented-out code | `grep -nE "^\+?[[:space:]]*//[^/].*(\b(await\|return\|final\|var\|const\|if \(\|for \().*[;{]\|[A-Za-z_]+\(.*(\),\|\);\|\{))$"` (a `//` line, with or without the diff's `+`, that ends like code: `// return foo();`, `// final x = compute();`, `// Text('hello'),`, `// setState(() {`; dartdoc examples and prose are not matched: on 2026-11-07 it matched no `//` line in `lib/` or `test/` on main) | Major |
-| Inline changelog | `grep -n "// Updated 20[0-9][0-9]-"` | Minor |
+| Commented-out code | grep 2 below: a `//` line, with or without the diff's `+`, that ends like code (`// return foo();`, `// final x = compute();`, `// Text('hello'),`, `// setState(() {`). Dartdoc examples and prose are not matched | Major |
+| Inline changelog | grep 3 below | Minor |
 
-Run the greps on the added lines of the diff only.
+The greps sit in a code block, not in the table, so each `|` is a plain regex "or". Run them on the added lines of the diff only.
+
+```bash
+# 1. AI residuals
+grep -nE "// <--|// ADD THIS|// implementation here|// TODO: implement|// Fix:"
+# 2. Commented-out code
+grep -nE "^\+?[[:space:]]*//[^/].*(\b(await|return|final|var|const|if \(|for \().*[;{]|[A-Za-z_]+\(.*(\),|\);|\{))$"
+# 3. Inline changelog
+grep -n "// Updated 20[0-9][0-9]-"
+```
 
 ### Common Violations
 
 | ❌ Violation | ✅ Fix | Severity |
 |---|---|---|
-| `/// Ring shown on keyboard focus.` above `final _ringKey` | Delete; name it `_focusRingKey` | Major |
+| `/// Ring shown on keyboard focus.` above `final _ringKey` | Delete; name it `_focusRingKey` | Minor |
 | New `CoreTag` with no class dartdoc | Add purpose + usage example | Major |
 | `// TODO: implement` | Delete the placeholder | Critical |
 | `// Loop through segments` above a `for` | Delete the comment | Major |

@@ -73,13 +73,26 @@ Tree order is fine to check when the order is the behavior under test, for examp
 
 | Pattern | Grep | Severity |
 |---|---|---|
-| `findsNWidgets` with `byType` | `grep -rn "findsNWidgets" test/ \| grep "byType"` | Critical |
-| Positional access | `grep -rnE "find\.[a-zA-Z]+\([^)]*\)\.(first\|last\|at\()" test/` | Major |
-| Layout type finders | `grep -rnE "byType\((Row\|Column\|Container\|Padding\|SizedBox)\)" test/` | Minor |
-| Tap by widget type | `grep -rn "tester.tap(find.byType" test/` | Major |
-| Key string repeated in a test instead of the component's static Key | `grep -rn "Key('core_" test/` | Minor |
+| `findsNWidgets` with `byType` | grep 1 below | Critical |
+| Positional access | grep 2 below | Major |
+| Layout type finders | grep 3 below | Minor |
+| Tap by widget type | grep 4 below | Major |
+| Key string repeated in a test instead of the component's static Key | grep 5 below | Minor |
 
-Run on the added lines of the diff only.
+The greps sit in a code block, not in the table, so each `|` means what the shell or regex says: a pipe in grep 1, an "or" in greps 2 and 3. Run them on the added lines of the diff only.
+
+```bash
+# 1. findsNWidgets with byType
+grep -rn "findsNWidgets" test/ | grep "byType"
+# 2. Positional access
+grep -rnE "find\.[a-zA-Z]+\([^)]*\)\.(first|last|at\()" test/
+# 3. Layout type finders
+grep -rnE "byType\((Row|Column|Container|Padding|SizedBox)\)" test/
+# 4. Tap by widget type
+grep -rn "tester.tap(find.byType" test/
+# 5. Key string repeated in a test
+grep -rn "Key('core_" test/
+```
 
 ### Common Violations
 

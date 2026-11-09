@@ -8,7 +8,7 @@ Code Review & PR Structure
 
 ## Severity Levels
 - **Major:** A sentence in the PR text is not true for the current diff (a file, line count, test or behavior it names is missing or different)
-- **Minor:** A count or name is close but out of date (e.g. "~120 lines" when the diff has 160)
+- **Minor:** A count or name is close but out of date (e.g. "~150 lines" when the diff has 160)
 - **Suggestion:** Something in the diff is worth naming but the PR text does not mention it
 
 ## Description
@@ -80,8 +80,14 @@ git diff --stat "$BASE_BRANCH"..."$PR_BRANCH"
 |---|---|---|---|
 | **File name** | "Adds `test/.../foo_test.dart`" | `git diff --name-status` — status letter must match the verb (A = adds, M = changes, D = removes, R = renames) | The file is not in the diff, or the status is different |
 | **Line count / size** | "Size: S (64 production lines)" | Rule 01's insertions count | The number is different. Off by ≤10% → Minor; more → Major |
-| **Test name** | "`shows the hint when empty` covers …" | `git grep -n "test(\|testWidgets(" "$PR_BRANCH" -- <test files in diff>`, then read a few lines after each hit: the name is often on the next line, and a long name can be split into two strings (`'... the keyboard '` `'background'`). Join the split strings, then look for the exact name | No test in the PR's files has that name |
+| **Test name** | "`shows the hint when empty` covers …" | Test-name grep below, then read a few lines after each hit: the name is often on the next line, and a long name can be split into two strings (`'... the keyboard '` `'background'`). Join the split strings, then look for the exact name | No test in the PR's files has that name |
 | **Behavior** | "Tapping × now clears the field and keeps focus" | Read the diff hunks of the file that owns the behavior (`scripts/generate_diff.sh`) and the test that proves it | The code does something else, or the behavior was reverted in a later commit |
+
+The test-name grep sits in a code block, not in the table, so its `|` is a plain regex "or":
+
+```bash
+git grep -nE "test\(|testWidgets\(" "$PR_BRANCH" -- <test files in diff>
+```
 
 For a stacked PR, the base is the parent branch, not `main`. Check claims against `parent...PR`, otherwise the parent's files look like they belong to this PR.
 

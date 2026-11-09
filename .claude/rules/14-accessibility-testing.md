@@ -67,11 +67,20 @@ Existing examples: `test/components/chips/core_chip_a11y_test.dart`, `test/compo
 
 | Pattern | Grep | Severity |
 |---|---|---|
-| `IconButton` without tooltip | `grep -nE "(^\|[^A-Za-z0-9_])IconButton\(" <changed lib files>`, then read the whole call: `tooltip:` is usually on a later line | Critical |
-| `excludeSemantics` on interactive widgets | `grep -nE "excludeSemantics: true" <changed lib files>` then check the subtree for `onTap`/`onPressed` | Critical |
+| `IconButton` without tooltip | grep 1 below, then read the whole call: `tooltip:` is usually on a later line | Critical |
+| `excludeSemantics` on interactive widgets | grep 2 below, then check the subtree for `onTap`/`onPressed` | Critical |
 | Small custom tap targets | `GestureDetector` / `InkWell` with `width:` or `height:` under 48 and no larger hit area | Major |
 | Component changed, a11y test not touched | a component file in the diff but no `*_a11y_test.dart` for it. Find the test by the part's file name anywhere under `test/`, not by folder: `alerts/toast.dart` is tested in `test/components/toast/`. Skip when the change keeps every label, role, tap size and focus | Major |
 | A11y test in one theme only | new `_a11y_test.dart` calls `expectMeetsTapTargetAndLabelGuidelines` but not `…ForEachTheme` | Minor |
+
+The greps sit in a code block, not in the table, so each `|` is a plain regex "or":
+
+```bash
+# 1. IconButton (no \b: Apple Git's `git grep -E` does not know it)
+grep -nE "(^|[^A-Za-z0-9_])IconButton\(" <changed lib files>
+# 2. excludeSemantics
+grep -nE "excludeSemantics: true" <changed lib files>
+```
 
 ### Common Violations
 

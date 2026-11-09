@@ -80,11 +80,20 @@ Do not invent a literal. Check the storyboard, then Figma, for the token name. I
 |---|---|---|---|---|
 | 1 | Raw hex color | `Color\(0x[0-9A-Fa-f]{6,8}\)` | Critical | `AppColorsExtension.of(context).<name>` |
 | 2 | Material colors | `\bColors\.[a-zA-Z]+` (`Colors.transparent` is allowed) | Critical | Theme color |
-| 3 | Light-only static color in a component | `Core(Text\|Background\|Border\|Icon\|Button\|Chip\|Alert\|Status)Colors\.` | Major | Same color via `AppColorsExtension.of(context)` |
-| 4 | Hard-coded spacing | `EdgeInsets\.[a-zA-Z]+\([^)]*\b[0-9]+(\.[0-9]+)?\b` or `SizedBox\((width\|height): [0-9]` | Major | `CoreSpacing.space<N>` |
+| 3 | Light-only static color in a component | regex 3 below | Major | Same color via `AppColorsExtension.of(context)` |
+| 4 | Hard-coded spacing | regex 4 below | Major | `CoreSpacing.space<N>` |
 | 5 | Hard-coded radius | `BorderRadius\.circular\([0-9]` / `Radius\.circular\([0-9]` | Major | `CoreRadius.radius<N>` |
 | 6 | Hard-coded text style | `TextStyle\(` (outside `lib/src/theme/`) | Major | `AppTypographyExtension.of(context).<variant>` |
 | 7 | Hard-coded icon size / Material icon | `size: [0-9]` on an icon, `Icons\.[a-z_]+` outside `lib/src/theme/icons/` | Major | `CoreIconSize.size<N>`, `CoreIcons.<name>` |
+
+Regexes 3 and 4 hold a `|`, so they sit in a code block, not in the table, where each `|` is a plain regex "or":
+
+```bash
+# 3. Light-only static color
+grep -nE "Core(Text|Background|Border|Icon|Button|Chip|Alert|Status)Colors\."
+# 4. Hard-coded spacing
+grep -nE "EdgeInsets\.[a-zA-Z]+\([^)]*\b[0-9]+(\.[0-9]+)?\b|SizedBox\((width|height): [0-9]"
+```
 
 Run each regex on the **added lines** of the diff only (`scripts/generate_diff.sh`); older literals in a file the PR only touches are not this PR's finding.
 
