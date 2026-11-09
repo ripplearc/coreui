@@ -79,9 +79,11 @@ On missing/invalid input, return an error object (see [Errors](#errors)).
 
 3. **Gate** `Accessibility` and `PR Text Matches Diff`:
    - `Accessibility` only if an interactive component file changed (it has a
-     tap, focus or value-change callback); then require a matching
-     `test/components/<component>/*_a11y_test.dart` update and flag if
-     missing — else skip: `"No interactive component changed"`.
+     tap, focus or value-change callback); then find its a11y test the way
+     rule 14 says: by the part's file name anywhere under `test/`, not by
+     folder (`alerts/toast.dart` is tested in `test/components/toast/`).
+     Rule 14 also skips a change that keeps every label, role, tap size and
+     focus. Else skip: `"No interactive component changed"`.
    - `PR Text Matches Diff` only if `pr_number` was given — else skip:
      `"No pr_number given"`. It runs once per PR, like `Digestible PR`.
    If the user passed `rules`, apply only those; record the rest in
@@ -179,9 +181,10 @@ Scripts and this skill return JSON on failure:
 `{ "error", "code", "details?", "suggestions" }`.
 
 Codes: `MISSING_REQUIRED_FIELD`, `INVALID_ENUM`, `INVALID_BRANCH`, `GIT_ERROR`,
-`PARSE_ERROR`, `FILE_NOT_FOUND`, `INVALID_PR_NUMBER`, `PR_NOT_FOUND`. On a git/branch
-failure, return the branch names to verify; on `PR_NOT_FOUND`, check `gh auth status`
-and the PR number, or rerun without `pr_number`; a missing
+`PARSE_ERROR`, `FILE_NOT_FOUND`, `INVALID_PR_NUMBER`, `PR_NOT_FOUND`, `AUTH_ERROR`,
+`GH_ERROR`. On a git/branch failure, return the branch names to verify; on
+`PR_NOT_FOUND`, check the PR number; on `AUTH_ERROR`, run `gh auth status`; on
+`GH_ERROR`, show `details.gh_error`. Or rerun without `pr_number`; a missing
 rule module means the file was likely deleted.
 
 ## Notes
