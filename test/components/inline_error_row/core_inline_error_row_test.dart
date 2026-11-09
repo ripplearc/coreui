@@ -28,7 +28,7 @@ void main() {
     expect(style.fontWeight, theme.coreTypography.bodySmallRegular.fontWeight);
   });
 
-  testWidgets('draws the error icon at 14 dp in the error colour',
+  testWidgets('draws the error icon at 16 dp in the iconRed colour',
       (tester) async {
     final theme = CoreTheme.dark();
     await tester.pumpWidget(
@@ -38,8 +38,8 @@ void main() {
 
     final icon = tester.widget<CoreIconWidget>(find.byType(CoreIconWidget));
     expect(icon.icon, CoreIcons.error);
-    expect(icon.size, CoreIconSize.size14);
-    expect(icon.color, theme.coreColors.textError);
+    expect(icon.size, CoreIconSize.size16);
+    expect(icon.color, theme.coreColors.iconRed);
   });
 
   testWidgets('puts 8 dp between the icon and the message', (tester) async {
@@ -260,7 +260,7 @@ void main() {
   });
 
   testWidgets(
-      'keeps at least half the row for the message at twice the text '
+      'keeps half the row less the gap for the message at twice the text '
       'size on a narrow row', (tester) async {
     await tester.pumpWidget(
       MediaQuery(
@@ -284,7 +284,7 @@ void main() {
     expect(
       tester.getSize(find.text('Could not open your saved prices.')).width,
       greaterThanOrEqualTo(
-        320 / 2 - CoreSpacing.space2 - CoreIconSize.size14,
+        320 / 2 - CoreSpacing.space3 - CoreSpacing.space2 - CoreIconSize.size16,
       ),
     );
   });
@@ -464,6 +464,56 @@ void main() {
     expect(icon.center.dy, text.top + 8);
   });
 
+  for (final scale in [1.3, 2.0]) {
+    testWidgets(
+        'at ${scale}x text the icon stays centred on the first line of a '
+        'wrapped message', (tester) async {
+      const longMessage =
+          'Could not load your rates because the connection dropped twice in '
+          'a row, so please check it and try once more';
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          child: buildTestApp(
+            const SizedBox(
+              width: 200,
+              child: CoreInlineErrorRow(message: longMessage),
+            ),
+            theme: CoreTheme.light(),
+          ),
+        ),
+      );
+
+      final text = tester.getRect(find.text(longMessage));
+      final icon = tester.getRect(find.byType(CoreIconWidget));
+      final style = CoreTheme.light().coreTypography.bodySmallRegular;
+      final lineHeight = scale * style.fontSize! * style.height!;
+      expect(text.height, greaterThan(lineHeight));
+      expect(icon.center.dy, closeTo(text.top + lineHeight / 2, 0.5));
+    });
+  }
+
+  testWidgets('keeps 12 dp between the message and the action', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(
+        SizedBox(
+          width: 320,
+          child: CoreInlineErrorRow(
+            message: 'x' * 400,
+            actionLabel: actionText,
+            onAction: () {},
+            actionKey: const Key('retry'),
+          ),
+        ),
+        theme: CoreTheme.light(),
+      ),
+    );
+
+    final message = tester.getRect(find.text('x' * 400));
+    final zone = tester.getRect(find.byKey(const Key('retry')));
+    expect(zone.left - message.right, CoreSpacing.space3);
+  });
+
   test('rejects an action label without a callback', () {
     expect(
       () => CoreInlineErrorRow(message: messageText, actionLabel: actionText),
@@ -574,22 +624,41 @@ void main() {
     });
 
     testWidgets(
-        'Tab draws a 2 dp outlineFocus ring inside the zone and '
-        'moves nothing', (tester) async {
+        'Tab draws a 3 dp outlineFocus stadium ring 12 dp from the label '
+        'and moves nothing', (tester) async {
       final theme = CoreTheme.light();
+      const ringKey = Key('inline_error_action_focus_ring');
       await tester.pumpWidget(row(theme, () {}));
       final restSize = tester.getSize(find.byKey(actionKey));
       final restText = tester.getTopLeft(find.text(actionText));
-      final zone = tester.getRect(find.byKey(actionKey));
-      final ringPoint = zone.topCenter + const Offset(0, 1);
-      final atRest = await pixelAt(tester, find.byKey(boundaryKey), ringPoint);
+      expect(find.byKey(ringKey), findsNothing);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
 
-      expect(atRest, theme.coreColors.pageBackground.toARGB32());
+      final label = tester.getRect(find.text(actionText));
+      final ring = tester.getRect(find.byKey(ringKey));
+      expect(ring.left, label.left - CoreSpacing.space3);
+      expect(ring.right, label.right + CoreSpacing.space3);
+      expect(ring.top, label.top - 5);
+      expect(ring.bottom, label.bottom + 5);
+      final shape = tester
+          .widget<DecoratedBox>(
+            find.descendant(
+              of: find.byKey(ringKey),
+              matching: find.byType(DecoratedBox),
+            ),
+          )
+          .decoration as ShapeDecoration;
+      final border = shape.shape as StadiumBorder;
+      expect(border.side.color, theme.coreColors.outlineFocus);
+      expect(border.side.width, 3);
       expect(
-        await pixelAt(tester, find.byKey(boundaryKey), ringPoint),
+        await pixelAt(
+          tester,
+          find.byKey(boundaryKey),
+          Offset(ring.center.dx, ring.top + 1),
+        ),
         theme.coreColors.outlineFocus.toARGB32(),
       );
       expect(tester.getSize(find.byKey(actionKey)), restSize);
@@ -597,50 +666,42 @@ void main() {
     });
 
     testWidgets('a touch tap draws no ring', (tester) async {
-      final theme = CoreTheme.light();
-      await tester.pumpWidget(row(theme, () {}));
-      final zone = tester.getRect(find.byKey(actionKey));
-      final ringPoint = zone.topCenter + const Offset(0, 1);
+      await tester.pumpWidget(row(CoreTheme.light(), () {}));
 
       await tester.tap(find.byKey(actionKey));
       await tester.pumpAndSettle();
 
       expect(
-        await pixelAt(tester, find.byKey(boundaryKey), ringPoint),
-        theme.coreColors.pageBackground.toARGB32(),
+        find.byKey(const Key('inline_error_action_focus_ring')),
+        findsNothing,
       );
     });
 
     testWidgets(
-        'pressed, the zone fills with backgroundGrayMid and clears '
-        'on release', (tester) async {
+        'pressed, the label turns buttonPress with no fill and returns '
+        'to textLink on release', (tester) async {
       final theme = CoreTheme.light();
       await tester.pumpWidget(row(theme, () {}));
       final zone = tester.getRect(find.byKey(actionKey));
-      final fillPoint = zone.topCenter + const Offset(0, 5);
+      Color? labelColor() =>
+          tester.widget<Text>(find.text(actionText)).style!.color;
+      expect(labelColor(), theme.coreColors.textLink);
 
       final gesture = await tester.startGesture(zone.center);
       await tester.pump();
-      final fillColor = theme.coreColors.backgroundGrayMid.toARGB32();
-      expect(
-        await pixelAt(tester, find.byKey(boundaryKey), fillPoint),
-        fillColor,
-      );
+      expect(labelColor(), theme.coreColors.buttonPress);
       expect(
         await pixelAt(
           tester,
           find.byKey(boundaryKey),
-          zone.topLeft + const Offset(10, 10),
+          zone.topLeft + const Offset(10, 5),
         ),
-        fillColor,
+        theme.coreColors.pageBackground.toARGB32(),
       );
 
       await gesture.up();
       await tester.pump();
-      expect(
-        await pixelAt(tester, find.byKey(boundaryKey), fillPoint),
-        theme.coreColors.pageBackground.toARGB32(),
-      );
+      expect(labelColor(), theme.coreColors.textLink);
     });
   });
 }

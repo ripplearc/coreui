@@ -42,8 +42,8 @@ class CoreInlineErrorRow extends StatelessWidget {
     final messageStyle = typography.bodySmallRegular.copyWith(
       color: colors.textError,
     );
-    final firstLineHeight =
-        (messageStyle.fontSize ?? 0) * (messageStyle.height ?? 1);
+    final firstLineHeight = MediaQuery.textScalerOf(context)
+        .scale((messageStyle.fontSize ?? 0) * (messageStyle.height ?? 1));
 
     return LayoutBuilder(
       builder: (context, constraints) => Row(
@@ -61,8 +61,8 @@ class CoreInlineErrorRow extends StatelessWidget {
                     child: Center(
                       child: CoreIconWidget(
                         icon: CoreIcons.error,
-                        size: CoreIconSize.size14,
-                        color: colors.textError,
+                        size: CoreIconSize.size16,
+                        color: colors.iconRed,
                       ),
                     ),
                   ),
@@ -77,7 +77,8 @@ class CoreInlineErrorRow extends StatelessWidget {
               ),
             ),
           ),
-          if (action != null)
+          if (action != null) ...[
+            const SizedBox(width: CoreSpacing.space3),
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
               child: _InlineErrorAction(
@@ -86,6 +87,7 @@ class CoreInlineErrorRow extends StatelessWidget {
                 onTap: onAction,
               ),
             ),
+          ],
         ],
       ),
     );
@@ -103,6 +105,10 @@ class _InlineErrorAction extends StatefulWidget {
 }
 
 class _InlineErrorActionState extends State<_InlineErrorAction> {
+  static const double _ringWidth = 3;
+  static const double _ringOutsetX = CoreSpacing.space3;
+  static const double _ringOutsetY = 5;
+
   bool _focused = false;
   bool _pressed = false;
 
@@ -129,23 +135,38 @@ class _InlineErrorActionState extends State<_InlineErrorAction> {
             onHighlightChanged: (pressed) => setState(() => _pressed = pressed),
             overlayColor: WidgetStatePropertyAll(colors.transparent),
             splashFactory: NoSplash.splashFactory,
-            child: CustomPaint(
-              painter: _ActionHighlightPainter(
-                color: _pressed ? colors.backgroundGrayMid : null,
-              ),
-              foregroundPainter: _ActionHighlightPainter(
-                ringColor: _focused ? colors.outlineFocus : null,
-              ),
-              child: ExcludeSemantics(
-                child: Center(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: Text(
-                    widget.label,
-                    style: typography.bodyLargeSemiBold.copyWith(
-                      color: colors.textLink,
+            child: ExcludeSemantics(
+              child: Center(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Text(
+                      widget.label,
+                      style: typography.bodyLargeSemiBold.copyWith(
+                        color: _pressed ? colors.buttonPress : colors.textLink,
+                      ),
                     ),
-                  ),
+                    if (_focused)
+                      Positioned(
+                        key: const Key('inline_error_action_focus_ring'),
+                        left: -_ringOutsetX,
+                        right: -_ringOutsetX,
+                        top: -_ringOutsetY,
+                        bottom: -_ringOutsetY,
+                        child: DecoratedBox(
+                          decoration: ShapeDecoration(
+                            shape: StadiumBorder(
+                              side: BorderSide(
+                                color: colors.outlineFocus,
+                                width: _ringWidth,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -154,41 +175,4 @@ class _InlineErrorActionState extends State<_InlineErrorAction> {
       ),
     );
   }
-}
-
-class _ActionHighlightPainter extends CustomPainter {
-  static const double _reach = CoreSpacing.space2;
-  static const double _ringWidth = 2;
-
-  static final _radius = BorderRadius.circular(CoreSpacing.space2);
-
-  final Color? color;
-  final Color? ringColor;
-
-  const _ActionHighlightPainter({this.color, this.ringColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = _radius.toRRect(
-      Rect.fromLTWH(-_reach, 0, size.width + 2 * _reach, size.height),
-    );
-    final fill = color;
-    if (fill != null) {
-      canvas.drawRRect(rect, Paint()..color = fill);
-    }
-    final ring = ringColor;
-    if (ring != null) {
-      canvas.drawRRect(
-        rect.deflate(_ringWidth / 2),
-        Paint()
-          ..color = ring
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _ringWidth,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ActionHighlightPainter old) =>
-      old.color != color || old.ringColor != ringColor;
 }
