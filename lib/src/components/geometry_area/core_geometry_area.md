@@ -152,6 +152,7 @@ CoreGeometryArea(
 | `unitGroupLabel` | `String?` | `null` | Names the unit row in the entry sheet's group header. Required with `unitOptions`. |
 | `addResultLabel` | `String?` | `null` | Label of the entry sheet's commit key when adding — "Add" in the design. Distinct from `addLabel`, which titles the sheet. Required with `onSaved`. |
 | `editResultLabel` | `String?` | `null` | Label of the entry sheet's commit key when editing — "Update" in the design. Required with `onSaved`. |
+| `keyboardSemantics` | `CoreKeyboardSemantics` | `CoreKeyboardSemantics.english` | The screen-reader strings of the keyboard inside the entry sheet. Pass the app's localised set. |
 | `dragHandleLabel` | `String?` | `null` | Semantic label announced for this table's drag handles. Required with `onReordered`. |
 | `editRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each edit button's semantic label from its row, so the label can name what it edits. Required with `onSaved`. |
 | `deleteRowSemanticsLabelBuilder` | `String Function(CoreSizeCardData)?` | `null` | Builds each delete button's semantic label from its row. Required with `onDeleted`. |

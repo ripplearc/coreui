@@ -17,6 +17,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [showUnitToggle] determines whether to show the unit system toggle.
 /// [currentUnitSystem] is the current unit system (imperial or metric).
 /// [onUnitSystemChanged] is called when the unit system is changed.
+/// [semantics] supplies the screen-reader strings of the unit system switch,
+/// the group headers and their drag handles; see [CoreKeyboardSemantics].
 class CoreFunctionKeyBottomSheet extends StatefulWidget {
   final List<FunctionGroup> groups;
   final Map<GroupNameType, Color> groupAccentColors;
@@ -31,9 +33,13 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   /// handles render only while this is set.
   final void Function(int oldIndex, int newIndex)? onGroupsReordered;
 
-  /// Builds the drag handle's screen-reader label from the group label.
-  /// Defaults to [defaultReorderSemanticsLabel].
+  /// Builds the drag handle's screen-reader label from the group label, in
+  /// place of [CoreKeyboardSemantics.reorderHandle].
   final String Function(String groupLabel)? reorderSemanticsLabelBuilder;
+
+  /// The screen-reader strings of the sheet. Defaults to
+  /// [CoreKeyboardSemantics.english]; an app passes its own localised set.
+  final CoreKeyboardSemantics semantics;
 
   final bool showUnitToggle;
   final UnitSystem currentUnitSystem;
@@ -48,14 +54,17 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
     required this.onKeyTapped,
     this.onGroupsReordered,
     this.reorderSemanticsLabelBuilder,
+    this.semantics = CoreKeyboardSemantics.english,
     this.showUnitToggle = true,
     this.currentUnitSystem = UnitSystem.imperial,
     this.onUnitSystemChanged,
   });
 
-  /// The drag handle label used when [reorderSemanticsLabelBuilder] is null.
+  /// The English drag handle label, [CoreKeyboardSemantics.reorderHandle] of
+  /// [CoreKeyboardSemantics.english], which is where to read it from now.
+  @Deprecated('Read CoreKeyboardSemantics.english.reorderHandle instead')
   static String defaultReorderSemanticsLabel(String groupLabel) =>
-      'Drag indicator for $groupLabel group';
+      CoreKeyboardSemantics.english.reorderHandle(groupLabel);
 
   @override
   State<CoreFunctionKeyBottomSheet> createState() =>
@@ -110,6 +119,7 @@ class _CoreFunctionKeyBottomSheetState
                 _Header(
                   unitSystem: widget.currentUnitSystem,
                   onUnitSystemChanged: widget.onUnitSystemChanged,
+                  switchSemanticsLabel: widget.semantics.unitSystemSwitch,
                 ),
               if (widget.showUnitToggle)
                 const SizedBox(height: CoreSpacing.space3),
@@ -144,11 +154,13 @@ class _CoreFunctionKeyBottomSheetState
                         onGroupSelected: widget.onGroupSelected,
                         onKeyTapped: widget.onKeyTapped,
                         showDragHandle: widget.onGroupsReordered != null,
+                        headerSemanticsLabel:
+                            widget.semantics.groupHeader(group.name.label),
                         dragHandleSemanticsLabel:
                             (widget.reorderSemanticsLabelBuilder ??
-                                    CoreFunctionKeyBottomSheet
-                                        .defaultReorderSemanticsLabel)(
-                                group.name.label),
+                                widget.semantics.reorderHandle)(
+                          group.name.label,
+                        ),
                       ),
                     );
                   },
@@ -170,6 +182,7 @@ class _FunctionGroupSection extends StatelessWidget {
   final ValueChanged<GroupNameType> onGroupSelected;
   final ValueChanged<KeyType> onKeyTapped;
   final bool showDragHandle;
+  final String headerSemanticsLabel;
   final String dragHandleSemanticsLabel;
 
   const _FunctionGroupSection({
@@ -180,6 +193,7 @@ class _FunctionGroupSection extends StatelessWidget {
     required this.onGroupSelected,
     required this.onKeyTapped,
     required this.showDragHandle,
+    required this.headerSemanticsLabel,
     required this.dragHandleSemanticsLabel,
   });
 
@@ -195,6 +209,7 @@ class _FunctionGroupSection extends StatelessWidget {
           isSelected: isSelected,
           onTap: () => onGroupSelected(group.name),
           showDragHandle: showDragHandle,
+          semanticsLabel: headerSemanticsLabel,
           dragHandleSemanticsLabel: dragHandleSemanticsLabel,
         ),
         const SizedBox(height: CoreSpacing.space3),
@@ -223,9 +238,11 @@ class _FunctionGroupSection extends StatelessWidget {
 class _Header extends StatefulWidget {
   final UnitSystem unitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
+  final String switchSemanticsLabel;
 
   const _Header({
     required this.unitSystem,
+    required this.switchSemanticsLabel,
     this.onUnitSystemChanged,
   });
   @override
@@ -279,7 +296,7 @@ class _HeaderState extends State<_Header> {
             const Spacer(),
             if (onUnitSystemChanged case final callback?)
               Semantics(
-                label: 'Unit system switch',
+                label: widget.switchSemanticsLabel,
                 toggled: isMetric,
                 child: CoreSwitch(
                   type: CoreSwitchType.imperial,
@@ -309,6 +326,7 @@ class _GroupHeader extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final bool showDragHandle;
+  final String semanticsLabel;
   final String dragHandleSemanticsLabel;
 
   const _GroupHeader({
@@ -318,6 +336,7 @@ class _GroupHeader extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.showDragHandle,
+    required this.semanticsLabel,
     required this.dragHandleSemanticsLabel,
   });
 
@@ -326,7 +345,7 @@ class _GroupHeader extends StatelessWidget {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
     return Semantics(
-      label: 'Function group header for $name',
+      label: semanticsLabel,
       button: true,
       child: GestureDetector(
         onTap: onTap,

@@ -77,6 +77,7 @@ class CoreSizesTableData {
     this.editResultLabel,
     this.unitOptions,
     this.unitGroupLabel,
+    this.keyboardSemantics = CoreKeyboardSemantics.english,
     this.dragHandleLabel,
     this.editRowSemanticsLabelBuilder,
     this.deleteRowSemanticsLabelBuilder,
@@ -197,6 +198,11 @@ class CoreSizesTableData {
   /// Names the unit row in the entry sheet's group header. Localize alongside
   /// [unitOptions].
   final String? unitGroupLabel;
+
+  /// The screen-reader strings of the keyboard inside the entry sheet, handed
+  /// to [CoreValueEditorSheet.show] as `keyboardSemantics`. Defaults to
+  /// [CoreKeyboardSemantics.english]; pass the app's localised set.
+  final CoreKeyboardSemantics keyboardSemantics;
 
   /// The semantic label announced for this table's drag handles.
   ///

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../blocs/suggestion_area_showcase_bloc.dart';
+import '../showcase_keyboard_semantics.dart';
 
 /// A showcase screen demonstrating [CoreSuggestionArea]
 class SuggestionAreaShowcaseScreen extends StatelessWidget {
@@ -197,6 +198,7 @@ class _SuggestionAreaShowcaseViewState
                                 padding: const EdgeInsets.only(
                                     top: CoreSpacing.space1),
                                 child: CoreKeyboard(
+                                  semantics: showcaseKeyboardSemantics,
                                   currentGroup: _currentGroup,
                                   allGroups: _groups,
                                   onDigitPressed: (key) {

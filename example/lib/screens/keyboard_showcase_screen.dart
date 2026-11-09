@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../showcase_keyboard_semantics.dart';
+
 class KeyboardShowcaseScreen extends StatefulWidget {
   const KeyboardShowcaseScreen({super.key});
 
@@ -154,8 +156,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                     onUnitSystemChanged: onUnitSystemChanged,
                     groupAccentColors: groupAccentColors,
                     onGroupsReordered: onGroupsReordered,
-                    reorderSemanticsLabelBuilder: (label) =>
-                        'Reorder $label group',
+                    semantics: showcaseKeyboardSemantics,
                     parenEnabled: parenEnabled,
                     parenSemanticLabel: 'Bracket key',
                     parenSemanticHint:
