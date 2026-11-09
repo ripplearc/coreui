@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../blocs/display_area_bloc.dart';
+import '../showcase_keyboard_semantics.dart';
 
 /// A showcase screen demonstrating [CoreDisplayArea] with multi-stage
 /// swipe-to-expand interaction alongside [CoreKeyboard].
@@ -186,6 +187,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                         );
                       },
                       child: CoreKeyboard(
+                        semantics: showcaseKeyboardSemantics,
                         currentGroup: _currentGroup,
                         allGroups: _groups,
                         onDigitPressed: (digit) =>

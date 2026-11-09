@@ -231,6 +231,7 @@ class _GeometryAreaShowcaseScreenState
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: CoreKeyboard(
+                              semantics: showcaseKeyboardSemantics,
                               currentGroup: _basicGeometryGroup,
                               allGroups: _groups,
                               onDigitPressed: (digit) =>
