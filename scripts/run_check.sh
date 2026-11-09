@@ -138,6 +138,13 @@ is_macos() {
   [[ "${RUN_CHECK_OS:-$(uname -s)}" == "Darwin" ]]
 }
 
+# A golden test stays off the host on macOS, which renders text unlike the
+# Ubuntu CI, and with --goldens, which runs it in Docker instead.
+skip_on_host() {
+  local file="$1" goldens="$2"
+  is_golden_test "$file" && { is_macos || [[ "$goldens" == true ]]; }
+}
+
 lint_rules() {
   local rules
   rules="$(grep -v '^[[:space:]]*$' "$RULES_FILE" | paste -sd, -)"
@@ -193,7 +200,7 @@ main() {
   if [[ -n "$dirty" ]]; then
     echo "These files differ from your last commit:"
     echo "$dirty"
-    echo "The checks read the disk, so the result can differ from CI. Commit or stash them first."
+    echo "The checks read the disk, so the result can differ from CI. Commit them, run git stash -u, or delete them."
     return 1
   fi
 
@@ -217,7 +224,7 @@ main() {
   local tests=() goldens_found=() file
   while IFS= read -r file; do
     [[ -n "$file" ]] || continue
-    if is_golden_test "$file" && { is_macos || [[ "$goldens" == true ]]; }; then
+    if skip_on_host "$file" "$goldens"; then
       goldens_found+=("$file")
     else
       tests+=("$file")

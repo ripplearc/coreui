@@ -147,6 +147,15 @@ mac() { if is_macos; then echo yes; else echo no; fi; }
 expect "macos: Darwin" yes "$(RUN_CHECK_OS=Darwin mac)"
 expect "macos: Linux" no "$(RUN_CHECK_OS=Linux mac)"
 
+# --- skip_on_host ------------------------------------------------------------
+off() { if skip_on_host "$1" "$2"; then echo yes; else echo no; fi; }
+G=test/components/chips/core_chip_golden_test.dart
+P=test/components/chips/core_chip_test.dart
+expect "skip on host: macOS golden, no --goldens" yes "$(RUN_CHECK_OS=Darwin off "$G" false)"
+expect "skip on host: Linux golden, --goldens" yes "$(RUN_CHECK_OS=Linux off "$G" true)"
+expect "skip on host: Linux golden, no --goldens" no "$(RUN_CHECK_OS=Linux off "$G" false)"
+expect "skip on host: macOS plain test, --goldens" no "$(RUN_CHECK_OS=Darwin off "$P" true)"
+
 # --- lint_rules --------------------------------------------------------------
 RULES_FILE="$WORK/rules.txt"
 printf 'a\nb\n\n' >"$RULES_FILE"
