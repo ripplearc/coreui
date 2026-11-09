@@ -97,6 +97,11 @@ class CoreTheme {
       keyboardFunctions: CoreKeyboardColors.functions,
       keyboardActions: CoreKeyboardColors.actions,
       keyboardMain: CoreKeyboardColors.main,
+      keyboardGroupGeometry: CoreKeyboardColors.groupGeometry,
+      keyboardGroupShapes: CoreKeyboardColors.groupShapes,
+      keyboardGroupMaterials: CoreKeyboardColors.groupMaterials,
+      keyboardGroupUnit: CoreKeyboardColors.groupUnit,
+      keyboardGroupTrigonometry: CoreKeyboardColors.groupTrigonometry,
       transparent: CorePrimitiveColors.transparent,
 
       // Shadow Colors
@@ -203,6 +208,11 @@ class CoreTheme {
       keyboardFunctions: CoreDarkKeyboardColors.functions,
       keyboardActions: CoreDarkKeyboardColors.actions,
       keyboardMain: CoreDarkKeyboardColors.main,
+      keyboardGroupGeometry: CoreDarkKeyboardColors.groupGeometry,
+      keyboardGroupShapes: CoreDarkKeyboardColors.groupShapes,
+      keyboardGroupMaterials: CoreDarkKeyboardColors.groupMaterials,
+      keyboardGroupUnit: CoreDarkKeyboardColors.groupUnit,
+      keyboardGroupTrigonometry: CoreDarkKeyboardColors.groupTrigonometry,
       transparent: CoreDarkKeyboardColors.transparent,
 
       // Shadow Colors (unchanged — alpha overlays render correctly on any bg)

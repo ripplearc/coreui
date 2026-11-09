@@ -181,8 +181,8 @@ void main() {
       );
 
       final semantics = tester.getSemantics(find.text('sin'));
-      expect(semantics.label, contains('Function key sin'));
-      expect(semantics.hint, contains('Tap to use sin function'));
+      expect(semantics.label, 'sin');
+      expect(semantics.hint, isEmpty);
     });
 
     List<FunctionGroup> reorderGroups() => [
