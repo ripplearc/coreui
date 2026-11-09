@@ -90,12 +90,12 @@ Regexes 3 and 4 hold a `|`, so they sit in a code block, not in the table, where
 
 ```bash
 # 3. Light-only static color
-grep -nE "Core(Text|Background|Border|Icon|Button|Chip|Alert|Status)Colors\."
+grep -nE "Core(Text|Background|Border|Icon|Button|Chip|Alert|Status|Keyboard)Colors\."
 # 4. Hard-coded spacing
 grep -nE "EdgeInsets\.[a-zA-Z]+\([^)]*\b[0-9]+(\.[0-9]+)?\b|SizedBox\((width|height): [0-9]"
 ```
 
-Run each regex on the **added lines** of the diff only (`scripts/generate_diff.sh`); older literals in a file the PR only touches are not this PR's finding.
+Run each regex on the **added lines** of the diff only (`.claude/skills/pr-review/scripts/generate_diff.sh`); older literals in a file the PR only touches are not this PR's finding.
 
 Allowed literals: `0`, `1` (hairlines), `double.infinity`, and values with a why-comment that names the storyboard or Figma frame.
 

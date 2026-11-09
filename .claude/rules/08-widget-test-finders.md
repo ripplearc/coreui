@@ -84,8 +84,10 @@ The greps sit in a code block, not in the table, so each `|` means what the shel
 ```bash
 # 1. findsNWidgets with byType
 grep -rn "findsNWidgets" test/ | grep "byType"
-# 2. Positional access
-grep -rnE "find\.[a-zA-Z]+\([^)]*\)\.(first|last|at\()" test/
+# 2. Positional access, also with a Key(...) inside the finder
+grep -rnE "find\.[a-zA-Z]+\(.*\)\.(first|last|at\()" test/
+# 2b. Positional access on its own line, after a finder split over lines
+grep -rnE "^[[:space:]]*\.(first|last|at\()" test/
 # 3. Layout type finders
 grep -rnE "byType\((Row|Column|Container|Padding|SizedBox)\)" test/
 # 4. Tap by widget type
