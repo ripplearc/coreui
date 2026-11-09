@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.83.0] - CoreInlineErrorRow
+## [0.90.0] - CoreInlineErrorRow
 
 ### ✨ Features
 
