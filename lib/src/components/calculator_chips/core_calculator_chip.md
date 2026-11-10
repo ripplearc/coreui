@@ -31,6 +31,14 @@ CoreCalculatorChip(
 | `label`                  | `String?`                |       No | `null`  | The optional label displayed before the value. **Required** when type is `disabled`.                    |
 | `inert`                  | `bool`                   |       No | `false` | Dims the chip to `CoreCalculatorChipTheme.inertOpacity`, ignores tap and long-press and reports the chip disabled, while keeping the look of its `type`. The chips before an open bracket, and after a reopened one, wait like this. |
 
+## Long names
+
+Inside a bounded width — the tape's `Wrap`, where a chip can be no wider than its row — a `label` longer than the
+space left ends in an ellipsis (`Pitch-rise per 12i… 6in/12in`), so the chip stays inside the row and its value stays
+whole: the value is the app's number, shorter than any row, and is the part that must be read. A chip without a label
+shortens its value instead. The screen-reader label still carries the whole text. In an unbounded width, such as a
+horizontal scroll view, nothing is shortened and the chip takes its full width.
+
 ## Types
 
 On the tape an **outlined** chip is something the user typed and a **filled** chip is something the app worked out.

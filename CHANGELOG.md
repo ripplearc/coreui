@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.95.0] - A long name stays inside the row at phone width
+
+### 🔧 Fixes
+
+- **CoreDisplayArea label row**: a label longer than the row wraps onto a second line and ends in an ellipsis after that, where before it ran past the edge of the area; a label that fits is laid out as before. The typing dots stay centred on the label block, so a two-line label puts them between its lines: the ticket asks for them beside the last line, but bottom-aligning the row moves every existing one-line label row by 3 px (CA-1405)
+- **CoreCalculatorChip**: inside a bounded width — the tape's `Wrap`, where a chip can be no wider than its row — a label longer than the space left ends in an ellipsis, so the chip stays inside the row and its value stays whole (`Pitch-rise per 12i… 6in/12in`): the value is the app's number, shorter than any row, and is the part that must be read. A chip without a label shortens its value instead. A screen reader still hears the whole text. In an unbounded width, such as a horizontal scroll view, nothing is shortened and the chip takes its full width as before; a line break in a label or value still breaks the line (CA-1405)
+- Showcase: the calculator chip screen shows the two shortened chips in a 192 dp row, and the display area screen's Basic Geometry group gains a "Pitch-rise per 12in run" key, so the long name reaches the label row and the tape
+
+### 📐 Design notes
+
+- The app's S1b calculator page tests render at 800 dp; moving them to a phone's 390 dp is the app's side of CA-1405 and is not changed here
+
+### 🧪 Tests
+
+- Chip: in a 192 dp row a long name ends in an ellipsis, the chip fits the row and the value keeps its whole width; a chip without a name shortens its value; a short name keeps its full width; the screen reader hears the whole name; in a horizontal scroll view the chip takes its full width and the name is drawn whole; a value with a line break keeps both lines; a chip lays out under an `IntrinsicWidth` parent. Display area: at 390 dp with text at twice the size a long label wraps, stays inside the area and keeps the typing dots beside it; a label too long for two lines ends in an ellipsis at the second. Light and dark goldens of the two shortened chips in a 192 dp row, and of a 390 dp display area at twice the text size with the long label and chip. The existing display area and chip goldens are unchanged
+
 ## [0.94.0] - A trailing slot on the empty tape row
 
 ### ✨ Features
