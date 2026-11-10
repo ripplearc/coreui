@@ -1157,58 +1157,59 @@ void main() {
     });
   });
 
-  group('CoreDisplayArea previous-session restore', () {
-    CoreHistorySessionData session({
-      String? id,
-      String value = '2700ft³',
-      VoidCallback? onChipTap,
-      CoreCalculatorChipType chipType = CoreCalculatorChipType.editable,
-    }) {
-      return CoreHistorySessionData(
-        id: id,
-        dateLabel: 'May 27, 2025',
-        value: value,
-        chipsList: [
-          CoreCalculatorChip(
-            label: 'Length',
-            value: '16ft 14in',
-            type: chipType,
-            onTap: onChipTap,
-          ),
-        ],
-      );
-    }
-
-    Widget buildArea({
-      required List<CoreHistorySessionData> sessions,
-      ValueChanged<String>? onTapped,
-    }) {
-      return MaterialApp(
-        theme: CoreTheme.light(),
-        home: Scaffold(
-          body: CoreDisplayArea(
-            closeSemanticLabel: testCloseSemanticLabel,
-            historyPlaceholder: testHistoryPlaceholder,
-            label: 'Length',
-            value: '16ft 14in',
-            previousSessions: sessions,
-            onPreviousSessionTapped: onTapped,
-            restoreSemanticsLabel:
-                onTapped == null ? null : testRestoreSemanticsLabel,
-          ),
+  CoreHistorySessionData session({
+    String? id,
+    String dateLabel = 'May 27, 2025',
+    String value = '2700ft³',
+    VoidCallback? onChipTap,
+    CoreCalculatorChipType chipType = CoreCalculatorChipType.editable,
+  }) {
+    return CoreHistorySessionData(
+      id: id,
+      dateLabel: dateLabel,
+      value: value,
+      chipsList: [
+        CoreCalculatorChip(
+          label: 'Length',
+          value: '16ft 14in',
+          type: chipType,
+          onTap: onChipTap,
         ),
-      );
-    }
+      ],
+    );
+  }
 
-    /// Swipes down once to reach the stage where previous sessions show.
-    Future<void> revealPreviousSessions(WidgetTester tester) async {
-      await tester.fling(
-          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('display_area_previous_section')),
-          findsOneWidget);
-    }
+  Widget buildArea({
+    required List<CoreHistorySessionData> sessions,
+    ValueChanged<String>? onTapped,
+  }) {
+    return MaterialApp(
+      theme: CoreTheme.light(),
+      home: Scaffold(
+        body: CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          label: 'Length',
+          value: '16ft 14in',
+          previousSessions: sessions,
+          onPreviousSessionTapped: onTapped,
+          restoreSemanticsLabel:
+              onTapped == null ? null : testRestoreSemanticsLabel,
+        ),
+      ),
+    );
+  }
 
+  /// Swipes down once to reach the stage where previous sessions show.
+  Future<void> revealPreviousSessions(WidgetTester tester) async {
+    await tester.fling(
+        find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+    await tester.pumpAndSettle();
+    expect(
+        find.byKey(const Key('display_area_previous_section')), findsOneWidget);
+  }
+
+  group('CoreDisplayArea previous-session restore', () {
     testWidgets('reports the id of the session that was tapped',
         (WidgetTester tester) async {
       final tapped = <String>[];
@@ -1846,6 +1847,70 @@ void main() {
       expect(text.maxLines, 2);
       expect(text.overflow, TextOverflow.ellipsis);
       expect(tester.getSize(find.text(veryLong)).height, twoLines);
+    });
+  });
+
+  group('CoreDisplayArea previous-session rule', () {
+    final sessions = [
+      session(id: 'a', dateLabel: 'May 27, 2025', value: '2700ft³'),
+      session(id: 'b', dateLabel: 'May 26, 2025', value: '1500ft³'),
+      session(id: 'c', dateLabel: 'May 25, 2025', value: '800ft³'),
+    ];
+
+    Future<void> pumpFullScreen(WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await tester.pumpWidget(buildArea(sessions: sessions, onTapped: (_) {}));
+      await revealPreviousSessions(tester);
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+    }
+
+    Rect cardRect(WidgetTester tester, String id) =>
+        tester.getRect(find.byKey(Key('display_area_previous_session_$id')));
+
+    testWidgets(
+        'a CoreDivider in the panel colour separates the session '
+        'cards in fullScreen', (WidgetTester tester) async {
+      await pumpFullScreen(tester);
+
+      final rules = find.byType(CoreDivider);
+      expect(rules, findsNWidgets(sessions.length - 1));
+      final elements = tester.elementList(rules).toList();
+      for (final element in elements) {
+        final rule = element.widget as CoreDivider;
+        expect(
+          rule.resolvedColor(element),
+          AppColorsExtension.of(element).lineDarkOutline,
+        );
+      }
+    });
+
+    testWidgets(
+        'the rule is one pixel tall and sits midway in the 16 dp '
+        'between two cards', (WidgetTester tester) async {
+      await pumpFullScreen(tester);
+
+      final rule = tester.getRect(find.byType(CoreDivider).first);
+      final above = cardRect(tester, 'a');
+      final below = cardRect(tester, 'b');
+      final gap = (CoreSpacing.space4 - CoreDivider.thickness) / 2;
+      expect(rule.height, CoreDivider.thickness);
+      expect(rule.top - above.bottom, gap);
+      expect(below.top - rule.bottom, gap);
+    });
+
+    testWidgets('expandedPrevious shows the last session alone, with no rule',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+      await tester.pumpWidget(buildArea(sessions: sessions));
+      await revealPreviousSessions(tester);
+
+      expect(find.text('May 25, 2025'), findsOneWidget);
+      expect(find.text('May 26, 2025'), findsNothing);
+      expect(find.byType(CoreDivider), findsNothing);
     });
   });
 }
