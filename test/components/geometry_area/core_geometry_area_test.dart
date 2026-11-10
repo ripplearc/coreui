@@ -13,6 +13,7 @@ CoreSizesTableData _table({
   String? editLabel = 'Edit size',
   String? dragHandleLabel = 'Reorder',
   CoreKeyboardSemantics keyboardSemantics = CoreKeyboardSemantics.english,
+  CoreKeyboardLabels keyboardLabels = CoreKeyboardLabels.english,
   VoidCallback? onAdd,
   void Function(SizeEntryResult result)? onSaved,
   void Function(String id)? onDeleted,
@@ -29,6 +30,7 @@ CoreSizesTableData _table({
     unitOptions: const ['m', 'cm', 'mm'],
     unitGroupLabel: 'Unit',
     keyboardSemantics: keyboardSemantics,
+    keyboardLabels: keyboardLabels,
     dragHandleLabel: dragHandleLabel,
     editRowSemanticsLabelBuilder: (row) => 'Edit ${row.values.first}',
     deleteRowSemanticsLabelBuilder: (row) => 'Delete ${row.values.first}',
@@ -76,6 +78,17 @@ String _resultLabel(String face) => 'Résultat $face';
 String _groupHeader(String groupLabel) => 'En-tête $groupLabel';
 
 String _reorderHandle(String groupLabel) => 'Déplacer $groupLabel';
+
+const CoreKeyboardLabels _frenchLabels = CoreKeyboardLabels(
+  viewAll: 'Tout afficher',
+  functionKeys: 'Touches de fonction',
+  groupHeader: _frenchGroupHeader,
+  measurementSystem: 'Système de mesure',
+  imperial: 'Impérial',
+  metric: 'Métrique',
+);
+
+String _frenchGroupHeader(String groupLabel) => 'Groupe $groupLabel';
 
 Widget _app(Widget child) => MaterialApp(
       theme: CoreTheme.light(),
@@ -1073,6 +1086,25 @@ void main() {
               .label,
           'Commande clearAll',
         );
+      });
+
+      testWidgets('the entry sheet hands keyboardLabels to its keyboard',
+          (tester) async {
+        _setTestViewport(tester);
+
+        await tester.pumpWidget(
+          _app(CoreGeometryArea(
+            onMediaButtonPressed: () {},
+            onDocumentButtonPressed: () {},
+            tables: [_table(keyboardLabels: _frenchLabels)],
+          )),
+        );
+
+        await tester.tap(find.bySemanticsLabel('Add size'));
+        await tester.pumpAndSettle();
+
+        expect(_inSheet(find.text('Tout afficher')), findsOneWidget);
+        expect(_inSheet(find.text('Groupe Unit')), findsOneWidget);
       });
 
       testWidgets(

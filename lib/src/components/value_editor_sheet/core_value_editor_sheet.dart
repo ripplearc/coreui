@@ -115,6 +115,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     this.unitGroupLabel,
     this.parenSemanticLabel,
     this.keyboardSemantics = CoreKeyboardSemantics.english,
+    this.keyboardLabels = CoreKeyboardLabels.english,
     this.validator,
   })  : assert(
           unitOptions == null || unitGroupLabel != null,
@@ -145,6 +146,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     this.unitGroupLabel,
     this.parenSemanticLabel,
     this.keyboardSemantics = CoreKeyboardSemantics.english,
+    this.keyboardLabels = CoreKeyboardLabels.english,
     this.validator,
     this.onSaved,
   })  : assert(
@@ -220,6 +222,11 @@ class CoreValueEditorSheet extends StatefulWidget {
   /// an app passes its own localised set.
   final CoreKeyboardSemantics keyboardSemantics;
 
+  /// The visible words of the keyboard the sheet embeds that are not a key's
+  /// face, passed to [CoreKeyboard.labels]. Defaults to
+  /// [CoreKeyboardLabels.english]; an app passes its own localised set.
+  final CoreKeyboardLabels keyboardLabels;
+
   /// Rejects a value when it returns a message, which is shown beneath the
   /// offending field and keeps the sheet open.
   ///
@@ -259,6 +266,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     String? unitGroupLabel,
     String? parenSemanticLabel,
     CoreKeyboardSemantics keyboardSemantics = CoreKeyboardSemantics.english,
+    CoreKeyboardLabels keyboardLabels = CoreKeyboardLabels.english,
     String? Function(String value)? validator,
   }) {
     return showModalBottomSheet<SizeEntryResult>(
@@ -275,6 +283,7 @@ class CoreValueEditorSheet extends StatefulWidget {
         unitGroupLabel: unitGroupLabel,
         parenSemanticLabel: parenSemanticLabel,
         keyboardSemantics: keyboardSemantics,
+        keyboardLabels: keyboardLabels,
         validator: validator,
       ),
     );
@@ -293,6 +302,7 @@ class CoreValueEditorSheet extends StatefulWidget {
     String? unitGroupLabel,
     String? parenSemanticLabel,
     CoreKeyboardSemantics keyboardSemantics = CoreKeyboardSemantics.english,
+    CoreKeyboardLabels keyboardLabels = CoreKeyboardLabels.english,
     String? Function(String value)? validator,
     void Function(String value, String? unit)? onSaved,
   }) {
@@ -309,6 +319,7 @@ class CoreValueEditorSheet extends StatefulWidget {
         unitGroupLabel: unitGroupLabel,
         parenSemanticLabel: parenSemanticLabel,
         keyboardSemantics: keyboardSemantics,
+        keyboardLabels: keyboardLabels,
         validator: validator,
         onSaved: onSaved,
       ),
@@ -749,6 +760,7 @@ class _CoreValueEditorSheetState extends State<CoreValueEditorSheet> {
               onUnitSystemChanged: (_) {},
               customResultLabel: widget.resultLabel,
               semantics: widget.keyboardSemantics,
+              labels: widget.keyboardLabels,
               parenEnabled: false,
               parenSemanticLabel: widget.parenSemanticLabel,
             ),

@@ -230,6 +230,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                       },
                       child: CoreKeyboard(
                         semantics: showcaseKeyboardSemantics,
+                        labels: showcaseKeyboardLabels,
                         currentGroup: _currentGroup,
                         allGroups: _groups,
                         onDigitPressed: (digit) =>
