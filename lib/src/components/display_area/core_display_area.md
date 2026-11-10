@@ -133,6 +133,7 @@ TweenAnimationBuilder<double>(
 | `label` | `String` | `''` | Main label text shown in the label section (e.g., 'Rise', 'Run').                                                                                                             |
 | `value` | `String` | `''` | Main value text shown prominently in the value section.                                                                                                                       |
 | `historyPlaceholder` | `String` | **required** | Text displayed in the history panel when `chipsList` is empty. Has no default — pass a localized string from your app's localization layer. |
+| `emptyTapeTrailing` | `Widget?` | `null` | A widget at the end of the row that shows `historyPlaceholder` while `chipsList` is empty — the calculator's System of units pill. The placeholder takes the width that is left and wraps, so the two never overlap. Left out once the tape has a chip, and in `expandedPrevious` and `fullScreen`, where the close row is hidden. The row is as tall as the 40 dp close icon: a 48 dp widget grows it by 8 dp, a 36 dp small `CoreButton` keeps it but needs its own 48 dp hit area to meet the tap target. |
 
 ### State Properties
 | Property | Type | Default | Description |

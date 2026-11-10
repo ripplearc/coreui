@@ -409,4 +409,85 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  Future<void> pumpEmptyTapeTrailing(
+      WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+    final typography = theme.coreTypography;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 824x456 @ 2.0 => 412x228 logical: exactly the collapsed display area
+    // (CoreSpacing.space57 tall), so the golden holds the empty tape row with
+    // the pill in its slot and nothing else.
+    tester.view.physicalSize = const Size(824, 456);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            emptyTapeTrailing: CoreButton(
+              size: CoreButtonSize.small,
+              variant: CoreButtonVariant.secondary,
+              fullWidth: false,
+              shadows: CoreShadows.small,
+              borderColor: colors.lineMid,
+              borderWidth: CoreButton.hairlineBorderWidth,
+              trailing: true,
+              icon: CoreIconWidget(
+                icon: CoreIcons.swapHorizontal,
+                color: colors.iconDark,
+                size: CoreIconSize.size16,
+              ),
+              semanticsLabel: 'System of units: Imperial',
+              onPressed: () {},
+              child: Text(
+                'Imperial',
+                style: typography.bodySmallSemiBold
+                    .copyWith(color: colors.textDark),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('DisplayArea empty tape trailing slot Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpEmptyTapeTrailing(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_empty_tape_trailing_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('DisplayArea empty tape trailing slot Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpEmptyTapeTrailing(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_empty_tape_trailing_dark.png'),
+    );
+    debugDisableShadows = true;
+  });
 }
