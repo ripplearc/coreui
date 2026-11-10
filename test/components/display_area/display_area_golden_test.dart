@@ -490,4 +490,76 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  Future<void> pumpLongLabel(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 780x456 @ 2.0 => 390x228 logical: a phone-wide collapsed display area
+    // (CoreSpacing.space57 tall) with its text at twice the size, where the
+    // label wraps and the chip's name ends in an ellipsis; no value, which
+    // the fixed collapsed height would cut at this text size.
+    tester.view.physicalSize = const Size(780, 456);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: MediaQuery.withClampedTextScaling(
+            minScaleFactor: 2,
+            maxScaleFactor: 2,
+            child: const CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              label: 'Pitch-rise per 12in run',
+              isTyping: true,
+              chipsList: [
+                CoreCalculatorChip(
+                  label: 'Pitch-rise per 12in run',
+                  value: '6in/12in',
+                  type: CoreCalculatorChipType.active,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('DisplayArea long label Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpLongLabel(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_long_label_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('DisplayArea long label Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpLongLabel(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_long_label_dark.png'),
+    );
+    debugDisableShadows = true;
+  });
 }

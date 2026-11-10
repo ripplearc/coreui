@@ -82,6 +82,11 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
         KeyType(groupName: 'Basic Geometry', id: 'Rise', label: 'Rise'),
         KeyType(groupName: 'Basic Geometry', id: 'Run', label: 'Run'),
         KeyType(groupName: 'Basic Geometry', id: 'Radius', label: 'Radius'),
+        KeyType(
+          groupName: 'Basic Geometry',
+          id: 'PitchRise',
+          label: 'Pitch-rise per 12in run',
+        ),
       ],
     ),
     FunctionGroup(
