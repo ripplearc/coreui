@@ -21,6 +21,7 @@ class DisplayAreaShowcaseScreen extends StatefulWidget {
 class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
   DisplayAreaStage _currentStage = DisplayAreaStage.collapsed;
   GroupNameType _currentGroup = _basicGeometryGroup;
+  UnitSystem _unitSystem = UnitSystem.imperial;
 
   static const GroupNameType _basicGeometryGroup =
       GroupNameType(id: 'Basic Geometry', label: 'Basic Geometry');
@@ -104,6 +105,41 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
     ),
   ];
 
+  void _switchUnitSystem() {
+    setState(() {
+      _unitSystem = _unitSystem == UnitSystem.imperial
+          ? UnitSystem.metric
+          : UnitSystem.imperial;
+    });
+  }
+
+  Widget _unitSystemPill(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
+    final isImperial = _unitSystem == UnitSystem.imperial;
+    return CoreButton(
+      size: CoreButtonSize.small,
+      variant: CoreButtonVariant.secondary,
+      fullWidth: false,
+      shadows: CoreShadows.small,
+      borderColor: colors.lineMid,
+      borderWidth: CoreButton.hairlineBorderWidth,
+      trailing: true,
+      icon: CoreIconWidget(
+        icon: CoreIcons.swapHorizontal,
+        color: colors.iconDark,
+        size: CoreIconSize.size16,
+      ),
+      semanticsLabel: 'System of units: ${isImperial ? 'Imperial' : 'Metric'}',
+      semanticsHint: isImperial ? 'Switches to metric' : 'Switches to imperial',
+      onPressed: _switchUnitSystem,
+      child: Text(
+        isImperial ? 'Imperial' : 'Metric',
+        style: typography.bodySmallSemiBold.copyWith(color: colors.textDark),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -162,6 +198,7 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                               _restoreSession(context, id),
                           restoreSemanticsLabel: 'Restore this calculation',
                           previousSessions: _previousSessions,
+                          emptyTapeTrailing: _unitSystemPill(context),
                         ),
                       ),
                     ),
@@ -206,9 +243,10 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                           next.insert(newIndex, next.removeAt(oldIndex));
                           _groups = next;
                         }),
-                        currentUnitSystem: UnitSystem.imperial,
+                        currentUnitSystem: _unitSystem,
                         onKeyTapped: (key) => bloc.add(KeySelected(key.label)),
-                        onUnitSystemChanged: (_) {},
+                        onUnitSystemChanged: (system) =>
+                            setState(() => _unitSystem = system),
                         groupAccentColors: groupAccentColors,
                         result: const ResultType(label: '='),
                       ),

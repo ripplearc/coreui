@@ -637,7 +637,8 @@ void main() {
           reason: 'a pill without a hint announces its label alone');
     });
 
-    testWidgets('a restorable session card meets tap target and label '
+    testWidgets(
+        'a restorable session card meets tap target and label '
         'guidelines', (WidgetTester tester) async {
       await setTestViewport(tester);
       await setupA11yTest(tester);
@@ -679,6 +680,47 @@ void main() {
           find.byKey(const Key('display_area_previous_session_session-1')),
         );
       }
+    });
+
+    testWidgets(
+        'a pill in the empty tape slot meets the label and contrast '
+        'guidelines and announces its own label', (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreDisplayArea(
+          closeSemanticLabel: testCloseSemanticLabel,
+          historyPlaceholder: testHistoryPlaceholder,
+          emptyTapeTrailing: CoreButton(
+            size: CoreButtonSize.small,
+            variant: CoreButtonVariant.secondary,
+            fullWidth: false,
+            semanticsLabel: 'System of units: Imperial',
+            semanticsHint: 'Switches to metric',
+            onPressed: () {},
+            child: const Text('Imperial'),
+          ),
+        ),
+        find.byType(CoreDisplayArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: true,
+        checkTextContrast: true,
+      );
+
+      final handle = tester.ensureSemantics();
+      final pill = tester
+          .getSemantics(find.bySemanticsLabel('System of units: Imperial'));
+      expect(pill.label, 'System of units: Imperial');
+      expect(pill.hint, 'Switches to metric');
+      expect(
+        tester
+            .getSemantics(find.bySemanticsLabel(testCloseSemanticLabel))
+            .label,
+        testCloseSemanticLabel,
+      );
+      handle.dispose();
     });
   });
 }
