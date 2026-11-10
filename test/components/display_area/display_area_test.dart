@@ -1274,8 +1274,7 @@ void main() {
       expect(semantics.flagsCollection.isButton, isFalse);
     });
 
-    testWidgets('an empty id counts as no id',
-        (WidgetTester tester) async {
+    testWidgets('an empty id counts as no id', (WidgetTester tester) async {
       final tapped = <String>[];
       await tester.pumpWidget(
         buildArea(sessions: [session(id: '')], onTapped: tapped.add),
@@ -1537,6 +1536,239 @@ void main() {
       await tester.tap(find.text('2700ft³'));
       await tester.pumpAndSettle();
       expect(tapped, isEmpty);
+    });
+  });
+
+  group('CoreDisplayArea empty tape trailing slot', () {
+    const pillKey = Key('units_pill');
+    const pill = SizedBox(
+      key: pillKey,
+      width: CoreSpacing.space20,
+      height: CoreSpacing.space8,
+    );
+
+    Future<void> pumpArea(
+      WidgetTester tester, {
+      String placeholder = testHistoryPlaceholder,
+      List<CoreCalculatorChip> chips = const [],
+      List<CoreHistorySessionData> previousSessions = const [],
+    }) {
+      return tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: placeholder,
+              chipsList: chips,
+              previousSessions: previousSessions,
+              emptyTapeTrailing: pill,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('renders the widget at the end of the placeholder row',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await pumpArea(tester);
+
+      expect(find.byKey(pillKey), findsOneWidget);
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      final textRect = tester.getRect(find.text(testHistoryPlaceholder));
+      final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      expect(pillRect.right, areaRect.right - CoreSpacing.space4);
+      expect(textRect.right, pillRect.left - CoreSpacing.space2,
+          reason: 'the placeholder takes every dp left before the widget, so '
+              'the widget sits at the end edge and not after the text');
+    });
+
+    testWidgets('a CoreButton pill is centred on the close icon',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+              emptyTapeTrailing: CoreButton(
+                key: pillKey,
+                size: CoreButtonSize.small,
+                variant: CoreButtonVariant.secondary,
+                fullWidth: false,
+                semanticsLabel: 'System of units: Imperial',
+                onPressed: () {},
+                child: const Text('Imperial'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      final iconRect = tester.getRect(find.byType(CoreIconWidget));
+      final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      expect(pillRect.center.dy, iconRect.center.dy);
+      expect(pillRect.right, areaRect.right - CoreSpacing.space4);
+    });
+
+    testWidgets('is left out once the tape has a chip',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await pumpArea(
+        tester,
+        chips: const [
+          CoreCalculatorChip(
+            label: 'Length',
+            value: '16ft',
+            type: CoreCalculatorChipType.editable,
+          ),
+        ],
+      );
+
+      expect(find.byKey(pillKey), findsNothing);
+    });
+
+    testWidgets('leaves with the close row in expandedPrevious and fullScreen',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await pumpArea(
+        tester,
+        previousSessions: const [
+          CoreHistorySessionData(
+            dateLabel: 'May 27, 2025',
+            value: '2700ft³',
+            chipsList: [],
+          ),
+        ],
+      );
+      expect(find.byKey(pillKey), findsOneWidget);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byKey(pillKey), findsNothing);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byKey(pillKey), findsNothing);
+
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
+      await tester.pumpAndSettle();
+      await tester.fling(
+          find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byKey(pillKey), findsOneWidget);
+    });
+
+    testWidgets(
+        'at phone width a long placeholder wraps beside the widget, which '
+        'keeps its width at the end edge', (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      const long = 'Here will show what you type, every chip of the tape in '
+          'the order you typed it';
+
+      await pumpArea(tester);
+      final shortHeight = tester.getSize(find.text(testHistoryPlaceholder));
+      await pumpArea(tester, placeholder: long);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      final textRect = tester.getRect(find.text(long));
+      final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      expect(pillRect.width, CoreSpacing.space20);
+      expect(pillRect.right, areaRect.right - CoreSpacing.space4);
+      expect(textRect.right, pillRect.left - CoreSpacing.space2);
+      expect(textRect.height, greaterThan(shortHeight.height));
+    });
+
+    testWidgets(
+        'at phone width with text at twice the size the placeholder wraps '
+        'beside the widget and nothing overflows', (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: MediaQuery.withClampedTextScaling(
+              minScaleFactor: 2,
+              maxScaleFactor: 2,
+              child: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
+                emptyTapeTrailing: CoreButton(
+                  key: pillKey,
+                  size: CoreButtonSize.small,
+                  variant: CoreButtonVariant.secondary,
+                  fullWidth: false,
+                  semanticsLabel: 'System of units: Imperial',
+                  onPressed: () {},
+                  child: const Text('Imperial'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      final textRect = tester.getRect(find.text(testHistoryPlaceholder));
+      final iconRect = tester.getRect(find.byType(CoreIconWidget));
+      final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      expect(pillRect.right, areaRect.right - CoreSpacing.space4);
+      expect(textRect.right, pillRect.left - CoreSpacing.space2);
+      expect(textRect.left, greaterThan(iconRect.right));
+      expect(textRect.height, greaterThan(pillRect.height));
+    });
+
+    testWidgets('the row is unchanged without a widget',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: testHistoryPlaceholder,
+            ),
+          ),
+        ),
+      );
+
+      final iconRect = tester.getRect(find.byType(CoreIconWidget));
+      final textRect = tester.getRect(find.text(testHistoryPlaceholder));
+      expect(textRect.left, greaterThan(iconRect.right));
+      expect(find.byKey(pillKey), findsNothing);
     });
   });
 }

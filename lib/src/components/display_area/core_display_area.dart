@@ -89,6 +89,7 @@ class CoreDisplayArea extends StatefulWidget {
     this.onStageChanged,
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
+    this.emptyTapeTrailing,
   }) : assert(
           onPreviousSessionTapped == null || restoreSemanticsLabel != null,
           'A tappable session card needs restoreSemanticsLabel: a control a '
@@ -124,6 +125,37 @@ class CoreDisplayArea extends StatefulWidget {
   /// historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
   /// ```
   final String historyPlaceholder;
+
+  /// A widget placed at the end of the row that shows [historyPlaceholder]
+  /// while [chipsList] is empty: the calculator's System of units pill.
+  /// Defaults to `null`, which leaves the row as it was.
+  ///
+  /// The row makes room for it: the placeholder takes the width that is left
+  /// between the close icon and the widget and wraps when it needs to, so the
+  /// two never overlap on a narrow phone. The widget is laid out at its own
+  /// width, so keep it to a short word: one wider than the space beside the
+  /// close icon overflows the row rather than wrapping its own text. It
+  /// leaves with the placeholder: not rendered once the tape has a chip, nor
+  /// in [DisplayAreaStage.expandedPrevious] and [DisplayAreaStage.fullScreen],
+  /// where the close icon and its row are hidden. The widget brings its own
+  /// semantics; a tappable one should carry a label.
+  ///
+  /// The row is as tall as the 40 dp close icon, so a widget that meets the
+  /// library's 48 dp tap target grows the row by 8 dp and the area absorbs
+  /// it. A 36 dp small [CoreButton], as below, keeps the row where it is but
+  /// is short of that target: give it its own 48 dp hit area, or accept the
+  /// taller row.
+  /// ```dart
+  /// emptyTapeTrailing: CoreButton(
+  ///   size: CoreButtonSize.small,
+  ///   variant: CoreButtonVariant.secondary,
+  ///   fullWidth: false,
+  ///   semanticsLabel: l10n.unitSystemPill(state.unitSystem),
+  ///   onPressed: () => bloc.add(const UnitSystemSwitched()),
+  ///   child: Text(l10n.unitSystemName(state.unitSystem)),
+  /// ),
+  /// ```
+  final Widget? emptyTapeTrailing;
 
   /// Main label text shown in the label section. Defaults to `null`.
   final String? label;
@@ -286,6 +318,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
           showCurrentChips: _stage != DisplayAreaStage.fullScreen,
           onPreviousSessionTapped: widget.onPreviousSessionTapped,
           restoreSemanticsLabel: widget.restoreSemanticsLabel,
+          emptyTapeTrailing: widget.emptyTapeTrailing,
         ),
       ),
       DecoratedBox(

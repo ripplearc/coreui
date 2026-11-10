@@ -14,6 +14,7 @@ class _HistoryPanel extends StatelessWidget {
     this.showCurrentChips = true,
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
+    this.emptyTapeTrailing,
   });
 
   final VoidCallback? onClose;
@@ -27,6 +28,7 @@ class _HistoryPanel extends StatelessWidget {
   final bool showCurrentChips;
   final ValueChanged<String>? onPreviousSessionTapped;
   final String? restoreSemanticsLabel;
+  final Widget? emptyTapeTrailing;
 
   static const double _closeBorderWidth = 1.5;
 
@@ -138,6 +140,7 @@ class _HistoryPanel extends StatelessWidget {
   Widget _buildCloseIcon(
       {required AppColorsExtension colors,
       required AppTypographyExtension typography}) {
+    final trailing = chipsList.isEmpty ? emptyTapeTrailing : null;
     return AnimatedSize(
       duration: _kDisplayAreaAnimationDuration,
       curve: Curves.easeInOut,
@@ -168,12 +171,17 @@ class _HistoryPanel extends StatelessWidget {
                 const SizedBox(width: CoreSpacing.space2),
                 if (chipsList.isEmpty)
                   Flexible(
+                    fit: trailing == null ? FlexFit.loose : FlexFit.tight,
                     child: Text(
                       historyPlaceholder,
                       style: typography.bodyMediumRegular
                           .copyWith(color: colors.textHeadline),
                     ),
                   ),
+                if (trailing != null) ...[
+                  const SizedBox(width: CoreSpacing.space2),
+                  trailing,
+                ],
               ],
             )
           : const SizedBox.shrink(),

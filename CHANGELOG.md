@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.94.0] - A trailing slot on the empty tape row
+
+### ✨ Features
+
+- **CoreDisplayArea.emptyTapeTrailing**: a widget placed at the end of the row that shows `historyPlaceholder` while `chipsList` is empty — the calculator's System of units pill. The row makes room for it: the placeholder takes the width that is left between the close icon and the widget and wraps, so the two never overlap on a narrow phone, where an overlay let the text run under the pill. It leaves with the placeholder: not rendered once the tape has a chip, nor in `expandedPrevious` and `fullScreen`, where the close icon and its row are hidden. `null`, the default, leaves the row as it was (CA-1375)
+- Showcase: the display area screen puts an Imperial / Metric pill in the slot; it switches the keyboard's unit system and goes when the first chip lands
+
+### 🧪 Tests
+
+- The widget sits at the end edge of the placeholder row while the tape is empty, is left out once the tape has a chip and in the two stages that hide the close row, and comes back when the area collapses; at 390 dp a long placeholder wraps beside it and the widget keeps its own width at the end edge, with no overflow, and with text at twice the size it wraps beside a `CoreButton` pill the same way; the row without a widget is as before; a `CoreButton` pill in the slot meets the label and contrast guidelines in both themes and announces its own label and hint, and is centred on the close icon; light and dark goldens of the empty state with the pill (412 × 228). The existing display area goldens are unchanged
+
 ## [0.93.0] - A function key announces its full name, and the group dots get their own tokens
 
 ### 🔧 Fixes
