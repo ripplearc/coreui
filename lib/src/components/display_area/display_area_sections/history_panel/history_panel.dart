@@ -227,7 +227,6 @@ class _PreviousChipsSection extends StatelessWidget {
   final bool limitToLast;
   final ValueChanged<String>? onSessionTapped;
   final String? restoreSemanticsLabel;
-  static const double _kDividerThickness = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -255,11 +254,11 @@ class _PreviousChipsSection extends StatelessWidget {
       children: [
         for (int i = start; i < sessions.length; i++) ...[
           if (i > start)
-            // TODO: Migrate this hand-rolled hairline to CoreDivider
-            // (https://ripplearc.youtrack.cloud/issue/CA-1020).
-            Divider(
-              thickness: _kDividerThickness,
-              color: colors.lineDarkOutline,
+            SizedBox(
+              height: CoreSpacing.space4,
+              child: Center(
+                child: CoreDivider(color: colors.lineDarkOutline),
+              ),
             ),
           _buildSessionCard(sessions[i], colors, typography),
         ],
