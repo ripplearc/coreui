@@ -305,7 +305,12 @@ enum UnitSystem {
 
 /// Extension providing label strings for [UnitSystem] enum values.
 extension UnitSystemX on UnitSystem {
-  /// Returns the string label representation of the unit system.
+  /// The English name of the unit system, "Imperial" or "Metric". Nothing in
+  /// coreui draws it since 0.98.0: the switch faces come from
+  /// `CoreKeyboardLabels.imperial` and `CoreKeyboardLabels.metric`, and an app
+  /// names a system through its own localisation.
+  @Deprecated('English only. Read CoreKeyboardLabels.imperial / metric, or '
+      'name the system through the app\'s localisation')
   String get label {
     switch (this) {
       case UnitSystem.imperial:

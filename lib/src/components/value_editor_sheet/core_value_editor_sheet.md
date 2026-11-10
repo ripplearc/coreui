@@ -95,6 +95,8 @@ final result = await CoreValueEditorSheet.showSingleValue(
 | `unitOptions` | `List<String>?` | `null` | Unit row labels. Null or empty renders no unit row. |
 | `unit` | `String?` | `null` | Single-value mode only — a debug assert rejects it on the default constructor, where nothing reads it. Seeds the unit a commit reports when the user never taps a unit key. Taken as given, **not** filtered through `unitOptions`: the keyboard's unit column commits labels that are never in that list, and a rate sheet has no unit row at all. Not rendered as a highlighted key — neither control has a selected state. |
 | `unitGroupLabel` | `String?` | `null` | Names the unit row in the keyboard's group header. **Required whenever `unitOptions` is set** (debug assert) — this package ships no user-facing English. |
+| `keyboardSemantics` | `CoreKeyboardSemantics` | `CoreKeyboardSemantics.english` | The screen-reader strings of the keyboard the sheet embeds. Pass the app's localised set. |
+| `keyboardLabels` | `CoreKeyboardLabels` | `CoreKeyboardLabels.english` | The visible words of that keyboard that are not a key's face ("View all", the "… group" headers, the sheet's title, "Measurement System", "Imperial" / "Metric"). Pass the app's localised set. |
 | `validator` | `String? Function(String)?` | `null` | Returns a message to reject a value and keep the sheet open. |
 | `onSaved` | `void Function(String, String?)?` | `null` | Single-value mode only: the committed value and selected unit. |
 

@@ -22,6 +22,10 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [customResultLabel] is an optional custom label for the result button.
 /// [semantics] is every screen-reader string of the keyboard, the "View all"
 /// sheet included; see [CoreKeyboardSemantics].
+/// [labels] is every visible word of the keyboard that is not a key's face —
+/// "View all", the "… group" headers, the sheet's "Function keys" title,
+/// "Measurement System" and the switch's "Imperial" / "Metric"; see
+/// [CoreKeyboardLabels].
 ///
 /// ## Group swipe
 /// A horizontal swipe on the function-key strip selects the previous (swipe
@@ -58,6 +62,7 @@ class CoreKeyboard extends StatefulWidget {
     this.groupAccentColors = const {},
     this.customResultLabel,
     this.semantics = CoreKeyboardSemantics.english,
+    this.labels = CoreKeyboardLabels.english,
     this.parenEnabled = true,
     this.parenSemanticLabel,
     this.parenSemanticHint,
@@ -90,6 +95,11 @@ class CoreKeyboard extends StatefulWidget {
   /// button and the sheet it opens. Defaults to
   /// [CoreKeyboardSemantics.english]; an app passes its own localised set.
   final CoreKeyboardSemantics semantics;
+
+  /// The visible words of the strip and the sheet it opens that are not a
+  /// key's face. Defaults to [CoreKeyboardLabels.english]; an app passes its
+  /// own localised set.
+  final CoreKeyboardLabels labels;
 
   /// Whether the `( )` key bottom-left answers taps. `false` dims it and drops
   /// its tap action, which is how the value editor keeps a bracket out of a
@@ -363,6 +373,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
                               onKeyTapped: widget.onKeyTapped,
                               accentColor: accent,
                               semantics: widget.semantics,
+                              labels: widget.labels,
                               onViewAll: () => _showFunctionsSheet(context),
                             ),
                           ),
@@ -668,6 +679,7 @@ class _CoreKeyboardState extends State<CoreKeyboard>
             onGroupsReordered: widget.onGroupsReordered,
             reorderSemanticsLabelBuilder: widget.reorderSemanticsLabelBuilder,
             semantics: widget.semantics,
+            labels: widget.labels,
             currentUnitSystem: widget.currentUnitSystem,
             onUnitSystemChanged: (system) {
               widget.onUnitSystemChanged(system);
@@ -720,6 +732,7 @@ class _FunctionKeyStrip extends StatelessWidget {
   final ValueChanged<KeyType> onKeyTapped;
   final Color accentColor;
   final CoreKeyboardSemantics semantics;
+  final CoreKeyboardLabels labels;
   final VoidCallback onViewAll;
 
   const _FunctionKeyStrip({
@@ -727,6 +740,7 @@ class _FunctionKeyStrip extends StatelessWidget {
     required this.onKeyTapped,
     required this.accentColor,
     required this.semantics,
+    required this.labels,
     required this.onViewAll,
   });
 
@@ -764,7 +778,7 @@ class _FunctionKeyStrip extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        '${group.name.label} group',
+                        labels.groupHeader(group.name.label),
                         style: typography.bodySmallMedium.copyWith(
                           color: colors.textHeadline,
                         ),
@@ -802,7 +816,7 @@ class _FunctionKeyStrip extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'View all',
+                        labels.viewAll,
                         style: typography.bodySmallMedium
                             .copyWith(color: colors.buttonSurface),
                         overflow: TextOverflow.ellipsis,

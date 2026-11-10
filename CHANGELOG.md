@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.98.0] - The keyboard's visible English comes from the app
+
+### ✨ Features
+
+- **CoreKeyboardLabels**: one object for every visible word of the keyboard that is not a key's face — the strip's "View all", the "… group" header on the strip and in the "View all" sheet, and the sheet's "Function keys" title, "Measurement System" row and "Imperial" / "Metric" switch faces. **CoreKeyboard** and **CoreFunctionKeyBottomSheet** take it as `labels`; **CoreValueEditorSheet** (both constructors and both `show` helpers) and **CoreSizesTableData** take it as `keyboardLabels` and hand it to the keyboard they embed, so the entry sheet a `CoreGeometryArea` table opens takes the app's words too. With a set supplied, these six are no longer English literals from coreui; the function keys' faces and the group names come from the app through `KeyType` and `GroupNameType`. What still is: the unit keys' faces ("Feet", "Inch", "Yards", "M", "CM", "MM" from `UnitTypeX.label`), which are not in CA-1370's scope and stay as they were (CA-1370)
+- The parameter is optional and defaults to `CoreKeyboardLabels.english`, the words the keyboard showed before, so no caller breaks and the keyboard, sheet and value editor goldens are unchanged. As with `CoreKeyboardSemantics.english` (0.91.0), that default is an exception to the 0.15.0 rule that a user-facing string reaches the screen only through the app's localisation, which CA-1370 allows so that no existing caller breaks, at the cost that a call site which forgets the set stays English with no warning
+- Showcase: `showcaseKeyboardLabels` ("All keys", "… keys", "Units") is passed by the keyboard, display area, suggestion area, value editor and geometry area screens, the way an app passes its localised words
+
+### 🔧 Fixes
+
+- The "View all" sheet's group header text is flexible and ends in an ellipsis inside a narrow sheet, as the strip's already did, so a long localised header no longer overflows the row beside the drag handle and the dot. The "Measurement System" label takes the width left beside the switch and ends in an ellipsis when short of it, where before the row overflowed at 320 dp even in English; where it fits, nothing moves
+- An unused private unit-system toggle in the sheet's file, which drew its own "Imperial" / "Metric", is deleted; the sheet has used `CoreSwitch` since the unit row was built
+
+### 🔧 Deprecations
+
+- `UnitSystemX.label` ("Imperial" / "Metric" from a `UnitSystem`) is deprecated: nothing in coreui draws it any more, and it is English only. Read `CoreKeyboardLabels.imperial` / `metric`, or name the system through the app's localisation. The app does not call it
+
+### 📐 Design notes
+
+- `CoreKeyboardLabels.viewAll`, `imperial` and `metric` are documented as short words: the "View all" button sits beside the group header, which gives way first, and the switch's track is a fixed width
+- Figma's Function keys sheet (`62234:74174`) draws the title and the group headers but no unit-system row: the "Measurement System" label and its switch are coreui's own, which is why the ticket names them for localisation. Figma keeps the unit system in the More sheet's Preferences as "System of units"
+
+### 🧪 Tests
+
+- `core_keyboard_labels_test.dart`: the English constant equals the former literals; inside `CoreKeyboard` the strip shows the set's "View all" and group header, and the sheet it opens shows the set's title, measurement system label, the imperial face and then the metric face once the switch is tapped, and every group header, with none of the English left; a keyboard built without a set keeps the English on the strip and in the sheet; a sheet built on its own follows the set, and in a 320 dp sheet a long group header and a long measurement system label each end in an ellipsis inside the width, the label short of the switch, and nothing overflows; `CoreValueEditorSheet` passes the set on from `show` and `showSingleValue`; a `CoreGeometryArea` table's entry sheet from `keyboardLabels`. `core_keyboard_a11y_test.dart`: with a French semantics set and a French label set, "View all" and the sheet meet the label guideline in both themes, the sheet's title and measurement-system nodes read the set's words, and no node on the sheet reads "Function keys", "Measurement System", "Imperial", "Metric", "View all" or "… group". Keyboard, sheet, value editor and geometry area goldens are unchanged
+
 ## [0.97.0] - A slot for a strip note, in the warning style
 
 ### ✨ Features

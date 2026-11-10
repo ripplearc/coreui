@@ -90,7 +90,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
 
           void onUnitSystemChanged(UnitSystem system) {
             sheetSetState(() => currentUnitSystem = system);
-            log('Unit system switched to: ${system.label}');
+            log('Unit system switched to: ${system.name}');
           }
 
           void onGroupsReordered(int oldIndex, int newIndex) {
@@ -157,6 +157,7 @@ class _KeyboardShowcaseScreenState extends State<KeyboardShowcaseScreen> {
                     groupAccentColors: groupAccentColors,
                     onGroupsReordered: onGroupsReordered,
                     semantics: showcaseKeyboardSemantics,
+                    labels: showcaseKeyboardLabels,
                     parenEnabled: parenEnabled,
                     parenSemanticLabel: 'Bracket key',
                     parenSemanticHint:

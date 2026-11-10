@@ -19,6 +19,9 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 /// [onUnitSystemChanged] is called when the unit system is changed.
 /// [semantics] supplies the screen-reader strings of the unit system switch,
 /// the group headers and their drag handles; see [CoreKeyboardSemantics].
+/// [labels] supplies the visible "Function keys" title, "Measurement System",
+/// the switch's "Imperial" / "Metric" faces and the "… group" headers; see
+/// [CoreKeyboardLabels].
 class CoreFunctionKeyBottomSheet extends StatefulWidget {
   final List<FunctionGroup> groups;
   final Map<GroupNameType, Color> groupAccentColors;
@@ -41,6 +44,10 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
   /// [CoreKeyboardSemantics.english]; an app passes its own localised set.
   final CoreKeyboardSemantics semantics;
 
+  /// The visible words of the sheet that are not a key's face. Defaults to
+  /// [CoreKeyboardLabels.english]; an app passes its own localised set.
+  final CoreKeyboardLabels labels;
+
   final bool showUnitToggle;
   final UnitSystem currentUnitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
@@ -55,6 +62,7 @@ class CoreFunctionKeyBottomSheet extends StatefulWidget {
     this.onGroupsReordered,
     this.reorderSemanticsLabelBuilder,
     this.semantics = CoreKeyboardSemantics.english,
+    this.labels = CoreKeyboardLabels.english,
     this.showUnitToggle = true,
     this.currentUnitSystem = UnitSystem.imperial,
     this.onUnitSystemChanged,
@@ -120,6 +128,7 @@ class _CoreFunctionKeyBottomSheetState
                   unitSystem: widget.currentUnitSystem,
                   onUnitSystemChanged: widget.onUnitSystemChanged,
                   switchSemanticsLabel: widget.semantics.unitSystemSwitch,
+                  labels: widget.labels,
                 ),
               if (widget.showUnitToggle)
                 const SizedBox(height: CoreSpacing.space3),
@@ -149,6 +158,7 @@ class _CoreFunctionKeyBottomSheetState
                       child: _FunctionGroupSection(
                         index: index,
                         group: group,
+                        headerText: widget.labels.groupHeader(group.name.label),
                         accentColor: accent,
                         isSelected: isSelected,
                         onGroupSelected: widget.onGroupSelected,
@@ -177,6 +187,7 @@ class _CoreFunctionKeyBottomSheetState
 class _FunctionGroupSection extends StatelessWidget {
   final int index;
   final FunctionGroup group;
+  final String headerText;
   final Color accentColor;
   final bool isSelected;
   final ValueChanged<GroupNameType> onGroupSelected;
@@ -188,6 +199,7 @@ class _FunctionGroupSection extends StatelessWidget {
   const _FunctionGroupSection({
     required this.index,
     required this.group,
+    required this.headerText,
     required this.accentColor,
     required this.isSelected,
     required this.onGroupSelected,
@@ -204,7 +216,7 @@ class _FunctionGroupSection extends StatelessWidget {
       children: [
         _GroupHeader(
           index: index,
-          name: group.name.label,
+          text: headerText,
           accentColor: accentColor,
           isSelected: isSelected,
           onTap: () => onGroupSelected(group.name),
@@ -239,10 +251,12 @@ class _Header extends StatefulWidget {
   final UnitSystem unitSystem;
   final ValueChanged<UnitSystem>? onUnitSystemChanged;
   final String switchSemanticsLabel;
+  final CoreKeyboardLabels labels;
 
   const _Header({
     required this.unitSystem,
     required this.switchSemanticsLabel,
+    required this.labels,
     this.onUnitSystemChanged,
   });
   @override
@@ -279,7 +293,7 @@ class _HeaderState extends State<_Header> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Function keys',
+          widget.labels.functionKeys,
           style: typography.titleMediumSemiBold.copyWith(
             color: colors.textHeadline,
           ),
@@ -287,13 +301,15 @@ class _HeaderState extends State<_Header> {
         const SizedBox(height: CoreSpacing.space2),
         Row(
           children: [
-            Text(
-              'Measurement System',
-              style: typography.bodyMediumMedium.copyWith(
-                color: colors.textHeadline,
+            Expanded(
+              child: Text(
+                widget.labels.measurementSystem,
+                overflow: TextOverflow.ellipsis,
+                style: typography.bodyMediumMedium.copyWith(
+                  color: colors.textHeadline,
+                ),
               ),
             ),
-            const Spacer(),
             if (onUnitSystemChanged case final callback?)
               Semantics(
                 label: widget.switchSemanticsLabel,
@@ -308,8 +324,8 @@ class _HeaderState extends State<_Header> {
                     callback(
                         newValue ? UnitSystem.metric : UnitSystem.imperial);
                   },
-                  activeLabel: 'Metric',
-                  inactiveLabel: 'Imperial',
+                  activeLabel: widget.labels.metric,
+                  inactiveLabel: widget.labels.imperial,
                 ),
               ),
           ],
@@ -321,7 +337,7 @@ class _HeaderState extends State<_Header> {
 
 class _GroupHeader extends StatelessWidget {
   final int index;
-  final String name;
+  final String text;
   final Color accentColor;
   final bool isSelected;
   final VoidCallback onTap;
@@ -331,7 +347,7 @@ class _GroupHeader extends StatelessWidget {
 
   const _GroupHeader({
     required this.index,
-    required this.name,
+    required this.text,
     required this.accentColor,
     required this.isSelected,
     required this.onTap,
@@ -365,10 +381,13 @@ class _GroupHeader extends StatelessWidget {
               ),
               const SizedBox(width: CoreSpacing.space2),
             ],
-            Text(
-              '$name group',
-              style: typography.bodyMediumSemiBold.copyWith(
-                color: colors.textHeadline,
+            Flexible(
+              child: Text(
+                text,
+                overflow: TextOverflow.ellipsis,
+                style: typography.bodyMediumSemiBold.copyWith(
+                  color: colors.textHeadline,
+                ),
               ),
             ),
             const SizedBox(width: CoreSpacing.space2),
@@ -380,166 +399,6 @@ class _GroupHeader extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// A toggle widget for switching between unit systems (Imperial and Metric).
-///
-/// [currentSystem] is the currently selected unit system.
-/// [onChanged] is called when the user switches the unit system.
-class _UnitSystemToggle extends StatefulWidget {
-  final UnitSystem currentSystem;
-  final ValueChanged<UnitSystem> onChanged;
-
-  const _UnitSystemToggle({
-    required this.currentSystem,
-    required this.onChanged,
-  });
-
-  @override
-  State<_UnitSystemToggle> createState() => _UnitSystemToggleState();
-}
-
-class _UnitSystemToggleState extends State<_UnitSystemToggle> {
-  late bool _isImperial;
-
-  static const Duration _containerAnimationDuration = Duration(
-    milliseconds: 300,
-  );
-
-  static const Duration _indicatorAnimationDuration = Duration(
-    milliseconds: 200,
-  );
-
-  static const double _toggleWidth = 80.0;
-  static const double _toggleHeight = 24;
-
-  static const double _borderWidth = 1;
-
-  static const double _indicatorSize = 22;
-
-  static const double _indicatorPadding = CoreSpacing.space1;
-  static const double _textHorizontalPadding = CoreSpacing.space2;
-
-  static const double _circularBorderRadius = 100.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _isImperial = widget.currentSystem == UnitSystem.imperial;
-  }
-
-  @override
-  void didUpdateWidget(_UnitSystemToggle oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentSystem != widget.currentSystem) {
-      setState(() {
-        _isImperial = widget.currentSystem == UnitSystem.imperial;
-      });
-    }
-  }
-
-  Widget _buildToggleContainer(BuildContext context, bool isImperial) {
-    final colors = AppColorsExtension.of(context);
-    return AnimatedContainer(
-      duration: _containerAnimationDuration,
-      width: _toggleWidth,
-      height: _toggleHeight,
-      decoration: BoxDecoration(
-        color: isImperial ? colors.textInverse : colors.buttonSurface,
-        borderRadius: BorderRadius.circular(_circularBorderRadius),
-        border: Border.all(
-          color: isImperial ? colors.iconGreen : colors.buttonSurface,
-          width: _borderWidth,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImperialText(BuildContext context, bool isImperial) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-    return AnimatedOpacity(
-      duration: _containerAnimationDuration,
-      opacity: isImperial ? 1.0 : 0.0,
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Padding(
-          padding: const EdgeInsets.only(right: _textHorizontalPadding),
-          child: Text(
-            'Imperial',
-            style: typography.bodySmallRegular.copyWith(
-              color: colors.textSuccess,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMetricText(BuildContext context, bool isImperial) {
-    final colors = AppColorsExtension.of(context);
-    final typography = AppTypographyExtension.of(context);
-    return AnimatedOpacity(
-      duration: _indicatorAnimationDuration,
-      opacity: !isImperial ? 1.0 : 0.0,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: _textHorizontalPadding),
-          child: Text(
-            'Metric',
-            style: typography.bodySmallRegular.copyWith(
-              color: colors.textInverse,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIndicatorCircle(BuildContext context, bool isImperial) {
-    final colors = AppColorsExtension.of(context);
-    return AnimatedAlign(
-      duration: _indicatorAnimationDuration,
-      alignment: isImperial ? Alignment.centerLeft : Alignment.centerRight,
-      child: Padding(
-        padding: const EdgeInsets.all(_indicatorPadding),
-        child: Container(
-          width: _indicatorSize,
-          height: _indicatorSize,
-          decoration: BoxDecoration(
-            color: isImperial ? colors.iconGreen : colors.textInverse,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isImperial = !_isImperial;
-        });
-        widget.onChanged(_isImperial ? UnitSystem.imperial : UnitSystem.metric);
-      },
-      child: SizedBox(
-        width: _toggleWidth,
-        height: _toggleHeight,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            _buildToggleContainer(context, _isImperial),
-            _buildImperialText(context, _isImperial),
-            _buildMetricText(context, _isImperial),
-            _buildIndicatorCircle(context, _isImperial),
           ],
         ),
       ),

@@ -78,6 +78,7 @@ class CoreSizesTableData {
     this.unitOptions,
     this.unitGroupLabel,
     this.keyboardSemantics = CoreKeyboardSemantics.english,
+    this.keyboardLabels = CoreKeyboardLabels.english,
     this.dragHandleLabel,
     this.editRowSemanticsLabelBuilder,
     this.deleteRowSemanticsLabelBuilder,
@@ -203,6 +204,11 @@ class CoreSizesTableData {
   /// to [CoreValueEditorSheet.show] as `keyboardSemantics`. Defaults to
   /// [CoreKeyboardSemantics.english]; pass the app's localised set.
   final CoreKeyboardSemantics keyboardSemantics;
+
+  /// The visible words of the keyboard inside the entry sheet that are not a
+  /// key's face, handed to [CoreValueEditorSheet.show] as `keyboardLabels`.
+  /// Defaults to [CoreKeyboardLabels.english]; pass the app's localised set.
+  final CoreKeyboardLabels keyboardLabels;
 
   /// The semantic label announced for this table's drag handles.
   ///

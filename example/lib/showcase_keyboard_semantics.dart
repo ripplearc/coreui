@@ -53,3 +53,16 @@ String _resultLabel(String face) => face == '=' ? 'Equals' : face;
 String _groupHeader(String groupLabel) => '$groupLabel group, selects it';
 
 String _reorderHandle(String groupLabel) => 'Reorder $groupLabel group';
+
+/// The visible words the showcase hands to every keyboard it shows, the way
+/// an app passes its localised ones.
+const CoreKeyboardLabels showcaseKeyboardLabels = CoreKeyboardLabels(
+  viewAll: 'All keys',
+  functionKeys: 'Function keys',
+  groupHeader: _groupHeaderText,
+  measurementSystem: 'Units',
+  imperial: 'Imperial',
+  metric: 'Metric',
+);
+
+String _groupHeaderText(String groupLabel) => '$groupLabel keys';

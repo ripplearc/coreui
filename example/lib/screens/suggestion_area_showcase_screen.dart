@@ -234,6 +234,7 @@ class _SuggestionAreaShowcaseViewState
                                     top: CoreSpacing.space1),
                                 child: CoreKeyboard(
                                   semantics: showcaseKeyboardSemantics,
+                                  labels: showcaseKeyboardLabels,
                                   currentGroup: _currentGroup,
                                   allGroups: _groups,
                                   onDigitPressed: (key) {
