@@ -72,6 +72,15 @@ enum CoreCalculatorChipType {
 /// replaced by [stalePlaceholder] (UX design doc Section 7, "Editing a
 /// bracket"; walkthrough 12.8).
 ///
+/// ## Layout
+/// Inside a bounded width — the tape's `Wrap`, where a chip can be no wider
+/// than its row — a [label] longer than the space left ends in an ellipsis,
+/// so the chip stays inside the row and its [value] stays whole: the value is
+/// the app's number, shorter than any row, and is the part that must be read.
+/// A chip without a label shortens its value instead. A screen reader still
+/// hears the whole text. In an unbounded width, such as a horizontal scroll
+/// view, nothing is shortened and the chip takes its full width.
+///
 /// ## Interaction
 /// Every variant except [CoreCalculatorChipType.disabled] responds to [onTap]
 /// and [onLongPress] unless it is [inert]. Long-press is how the calculator
@@ -309,25 +318,34 @@ class CoreCalculatorChip extends StatelessWidget {
                       ),
                     ),
                   if (label != null)
-                    ExcludeSemantics(
-                      child: Text(
-                        label,
-                        style: CoreCalculatorChipTheme.labelStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                    Flexible(
+                      child: ExcludeSemantics(
+                        child: Text(
+                          label,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: CoreCalculatorChipTheme.labelStyle(
+                            type: type,
+                            colors: colors,
+                            typography: typography,
+                          ),
                         ),
                       ),
                     ),
                   if (value != null) ...[
                     if (hasLeading) const SizedBox(width: CoreSpacing.space1),
-                    ExcludeSemantics(
-                      child: Text(
-                        value,
-                        style: CoreCalculatorChipTheme.valueStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                    Flexible(
+                      flex: label == null ? 1 : 0,
+                      child: ExcludeSemantics(
+                        child: Text(
+                          value,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: CoreCalculatorChipTheme.valueStyle(
+                            type: type,
+                            colors: colors,
+                            typography: typography,
+                          ),
                         ),
                       ),
                     ),

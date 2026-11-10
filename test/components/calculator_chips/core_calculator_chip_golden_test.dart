@@ -234,4 +234,77 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  Future<void> pumpLongNames(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 448x220 @ 2.0 => 224x110 logical: a 192-wide tape row holding a chip
+    // whose name ends in an ellipsis over a value-only chip that shortens its
+    // value, with space4 padding and no dead space.
+    tester.view.physicalSize = const Size(448, 220);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: _withRoboto(theme),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: const Padding(
+            padding: EdgeInsets.all(CoreSpacing.space4),
+            child: SizedBox(
+              width: CoreSpacing.space48,
+              child: Wrap(
+                spacing: CoreSpacing.space2,
+                runSpacing: CoreSpacing.space2,
+                children: [
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.editable,
+                    label: 'Pitch-rise per 12in run',
+                    value: '6in/12in',
+                  ),
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.error,
+                    value: 'Area and length cannot be added together',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('CoreCalculatorChip long names Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpLongNames(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_long_names_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('CoreCalculatorChip long names Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpLongNames(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_long_names_dark.png'),
+    );
+    debugDisableShadows = true;
+  });
 }

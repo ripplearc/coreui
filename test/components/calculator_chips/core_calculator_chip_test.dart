@@ -1198,4 +1198,211 @@ void main() {
       expect(semantics.hintOverrides, isNull);
     });
   });
+
+  group('CoreCalculatorChip long names', () {
+    const longLabel = 'Pitch-rise per 12in run';
+    const longValue = 'A value that is longer than the row it sits in';
+
+    Future<void> pumpIn(WidgetTester tester, Widget host) {
+      return tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(body: Center(child: host)),
+        ),
+      );
+    }
+
+    Widget boundedRow(Widget chip) => SizedBox(
+          width: CoreSpacing.space48,
+          child: Wrap(children: [chip]),
+        );
+
+    testWidgets(
+        'a name longer than the row ends in an ellipsis inside the chip, and '
+        'the value stays whole', (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        const UnconstrainedBox(
+          child: CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            label: longLabel,
+            value: '6in/12in',
+          ),
+        ),
+      );
+      final wholeValue = tester.getSize(find.text('6in/12in')).width;
+
+      await pumpIn(
+        tester,
+        boundedRow(const CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          label: longLabel,
+          value: '6in/12in',
+        )),
+      );
+
+      expect(tester.takeException(), isNull);
+      final chipRect = tester.getRect(find.byType(CoreCalculatorChip));
+      expect(chipRect.width, lessThanOrEqualTo(CoreSpacing.space48));
+      expect(tester.widget<Text>(find.text(longLabel)).overflow,
+          TextOverflow.ellipsis);
+      final valueRect = tester.getRect(find.text('6in/12in'));
+      expect(valueRect.width, wholeValue);
+      expect(valueRect.right, lessThanOrEqualTo(chipRect.right));
+    });
+
+    testWidgets('a chip without a name shortens its value instead',
+        (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        boundedRow(const CoreCalculatorChip(
+          type: CoreCalculatorChipType.error,
+          value: longValue,
+        )),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getRect(find.byType(CoreCalculatorChip)).width,
+          lessThanOrEqualTo(CoreSpacing.space48));
+      expect(tester.widget<Text>(find.text(longValue)).overflow,
+          TextOverflow.ellipsis);
+    });
+
+    testWidgets('a short name keeps its full width in a bounded row',
+        (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        const UnconstrainedBox(
+          child: CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            label: 'Length',
+            value: '22ft',
+          ),
+        ),
+      );
+      final wholeWidth = tester.getSize(find.byType(CoreCalculatorChip)).width;
+
+      await pumpIn(
+        tester,
+        boundedRow(const CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          label: 'Length',
+          value: '22ft',
+        )),
+      );
+
+      expect(tester.getSize(find.byType(CoreCalculatorChip)).width, wholeWidth);
+    });
+
+    testWidgets('the screen reader still hears the whole name',
+        (WidgetTester tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpIn(
+        tester,
+        boundedRow(const CoreCalculatorChip(
+          type: CoreCalculatorChipType.editable,
+          label: longLabel,
+          value: '6in/12in',
+        )),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(CoreCalculatorChip)).label,
+        '$longLabel, 6in/12in',
+      );
+      handle.dispose();
+    });
+
+    testWidgets(
+        'in an unbounded width the chip takes its full width and the name is '
+        'drawn whole', (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        const UnconstrainedBox(
+          child: CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            label: longLabel,
+            value: '6in/12in',
+          ),
+        ),
+      );
+      final wholeLabel = tester.getSize(find.text(longLabel)).width;
+
+      await pumpIn(
+        tester,
+        const SizedBox(
+          width: CoreSpacing.space48,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: CoreCalculatorChip(
+              type: CoreCalculatorChipType.editable,
+              label: longLabel,
+              value: '6in/12in',
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(CoreCalculatorChip)).width,
+          greaterThan(CoreSpacing.space48));
+      expect(tester.getSize(find.text(longLabel)).width, wholeLabel);
+    });
+
+    testWidgets('a value with a line break keeps both lines',
+        (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        const UnconstrainedBox(
+          child: CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            label: 'Rise',
+            value: '3ft',
+          ),
+        ),
+      );
+      final oneLine = tester.getSize(find.text('3ft')).height;
+
+      await pumpIn(
+        tester,
+        const UnconstrainedBox(
+          child: CoreCalculatorChip(
+            type: CoreCalculatorChipType.editable,
+            label: 'Rise',
+            value: '3ft\n6in',
+          ),
+        ),
+      );
+
+      expect(
+          tester.getSize(find.text('3ft\n6in')).height, greaterThan(oneLine));
+    });
+
+    testWidgets('a chip lays out under an IntrinsicWidth parent',
+        (WidgetTester tester) async {
+      await pumpIn(
+        tester,
+        const IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.editable,
+                label: 'Rise',
+                value: '3ft',
+              ),
+              CoreCalculatorChip(
+                type: CoreCalculatorChipType.result,
+                label: longLabel,
+                value: '6in/12in',
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(CoreCalculatorChip), findsNWidgets(2));
+    });
+  });
 }

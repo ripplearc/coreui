@@ -178,6 +178,27 @@ class CalculatorChipShowcaseScreen extends StatelessWidget {
                 inert: true,
               ),
             ]),
+            _section(
+                context, 'Long name in a 192 dp row: ends in an ellipsis', [
+              ConstrainedBox(
+                constraints:
+                    const BoxConstraints(maxWidth: CoreSpacing.space48),
+                child: CoreCalculatorChip(
+                  type: CoreCalculatorChipType.editable,
+                  label: 'Pitch-rise per 12in run',
+                  value: '6in/12in',
+                  onTap: () {},
+                ),
+              ),
+              ConstrainedBox(
+                constraints:
+                    const BoxConstraints(maxWidth: CoreSpacing.space48),
+                child: const CoreCalculatorChip(
+                  type: CoreCalculatorChipType.error,
+                  value: 'Area and length cannot be added together',
+                ),
+              ),
+            ]),
             _section(context, 'Error', [
               const CoreCalculatorChip(
                 type: CoreCalculatorChipType.error,
