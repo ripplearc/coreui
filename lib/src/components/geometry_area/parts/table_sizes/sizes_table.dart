@@ -118,6 +118,7 @@ class _SizesTableState extends State<_SizesTable> {
       unitOptions: table.unitOptions,
       unitGroupLabel: table.unitGroupLabel,
       keyboardSemantics: table.keyboardSemantics,
+      keyboardLabels: table.keyboardLabels,
     );
     if (result != null) {
       widget.table.onSaved?.call(result);

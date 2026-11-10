@@ -26,6 +26,7 @@ export 'src/components/geometry_area/core_geometry_area.dart';
 export 'src/components/inline_error_row/core_inline_error_row.dart';
 export 'src/components/keyboard/core_function_key_bottom_sheet.dart';
 export 'src/components/keyboard/core_keyboard.dart';
+export 'src/components/keyboard/core_keyboard_labels.dart';
 export 'src/components/keyboard/core_keyboard_semantics.dart';
 export 'src/components/keyboard/core_number_keypad.dart';
 export 'src/components/keyboard/function_key_tile.dart';

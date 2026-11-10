@@ -41,6 +41,17 @@ String _groupHeader(String groupLabel) => 'En-tête $groupLabel';
 
 String _reorderHandle(String groupLabel) => 'Déplacer $groupLabel';
 
+const CoreKeyboardLabels _callerLabels = CoreKeyboardLabels(
+  viewAll: 'Tout afficher',
+  functionKeys: 'Touches de fonction',
+  groupHeader: _groupHeaderText,
+  measurementSystem: 'Système de mesure des unités',
+  imperial: 'Impérial',
+  metric: 'Métrique',
+);
+
+String _groupHeaderText(String groupLabel) => 'Groupe $groupLabel';
+
 void _expectTapTarget(WidgetTester tester, Finder finder) {
   final size = tester.getSemantics(finder).rect.size;
   expect(size.width, greaterThanOrEqualTo(kMinInteractiveDimension));
@@ -77,8 +88,10 @@ void main() {
       bool parenEnabled = true,
       String? parenSemanticLabel,
       CoreKeyboardSemantics semantics = CoreKeyboardSemantics.english,
+      CoreKeyboardLabels labels = CoreKeyboardLabels.english,
     }) {
       return CoreKeyboard(
+        labels: labels,
         currentGroup:
             const GroupNameType(id: "Basic Geometry", label: "Basic Geometry"),
         allGroups: testGroups,
@@ -335,6 +348,70 @@ void main() {
           await tester.tap(find.descendant(
             of: find.byType(CoreFunctionKeyBottomSheet),
             matching: find.text('Basic Geometry group'),
+          ));
+          await tester.pumpAndSettle();
+        }
+      },
+    );
+
+    testWidgets(
+      'with a label set, View all and the sheet meet the label guideline in '
+      'both themes and no node on the sheet reads an English literal',
+      (tester) async {
+        await setupA11yTest(tester, screenSize: const Size(1100, 1600));
+
+        await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+          tester,
+          (_) => buildTestKeyboard(
+            semantics: _callerSemantics,
+            labels: _callerLabels,
+          ),
+          find.bySemanticsLabel('Toutes les touches'),
+        );
+        _expectTapTarget(tester, find.bySemanticsLabel('Toutes les touches'));
+
+        await setupA11yTest(tester, screenSize: const Size(600, 1000));
+        for (final theme in kA11yTestThemes) {
+          await tester.pumpWidget(buildTestApp(
+            buildTestKeyboard(
+              semantics: _callerSemantics,
+              labels: _callerLabels,
+            ),
+            theme: theme,
+          ));
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.text('Tout afficher'));
+          await tester.pumpAndSettle();
+
+          await expectMeetsTapTargetAndLabelGuidelines(
+            tester,
+            find.byType(CoreFunctionKeyBottomSheet),
+            checkTapTargetSize: false,
+            checkLabeledTapTarget: true,
+            checkTextContrast: false,
+          );
+          expect(find.bySemanticsLabel('Touches de fonction'), findsOneWidget);
+          expect(find.bySemanticsLabel('Système de mesure des unités'),
+              findsOneWidget);
+          expect(find.bySemanticsLabel(RegExp('Groupe Basic Geometry')),
+              findsWidgets);
+          for (final english in [
+            'Function keys',
+            'Measurement System',
+            'Imperial',
+            'Metric',
+            'View all',
+            'Basic Geometry group',
+          ]) {
+            expect(find.bySemanticsLabel(RegExp(RegExp.escape(english))),
+                findsNothing,
+                reason: '"$english" is an English literal from coreui');
+          }
+
+          await tester.tap(find.descendant(
+            of: find.byType(CoreFunctionKeyBottomSheet),
+            matching: find.text('Groupe Basic Geometry'),
           ));
           await tester.pumpAndSettle();
         }

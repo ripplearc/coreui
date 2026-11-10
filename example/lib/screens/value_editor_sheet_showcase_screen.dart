@@ -44,6 +44,7 @@ class _ValueEditorSheetShowcaseScreenState
       ),
       initialIndex: 0,
       keyboardSemantics: showcaseKeyboardSemantics,
+      keyboardLabels: showcaseKeyboardLabels,
     );
     if (result == null) return;
     _report('Size committed: ${result.values.join(' x ')}');
@@ -61,6 +62,7 @@ class _ValueEditorSheetShowcaseScreenState
           ? null
           : 'Enter a rate greater than zero',
       keyboardSemantics: showcaseKeyboardSemantics,
+      keyboardLabels: showcaseKeyboardLabels,
     );
     if (result == null) return;
     _report('Rate committed: ${result.value}');
@@ -77,6 +79,7 @@ class _ValueEditorSheetShowcaseScreenState
       unit: 'cm',
       validator: (value) => value.trim().isEmpty ? 'Enter a size' : null,
       keyboardSemantics: showcaseKeyboardSemantics,
+      keyboardLabels: showcaseKeyboardLabels,
     );
     if (result == null) return;
     _report('Sheet size committed: ${result.value} (unit: ${result.unit})');
