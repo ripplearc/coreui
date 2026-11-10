@@ -452,4 +452,81 @@ void main() {
     );
     debugDisableShadows = true;
   });
+
+  Future<void> pumpNote(
+    WidgetTester tester,
+    ThemeData theme, {
+    String note = '12ft was not added.',
+  }) async {
+    final colors = theme.coreColors;
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 824x128 @ 2.0 => 412x64 logical: the strip at its minimum height with
+    // the note in its slot and nothing else; a two-line note fits inside it.
+    tester.view.physicalSize = const Size(824, 128);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: testCoreSuggestionArea(note: note),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('SuggestionArea note Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_light.png'),
+    );
+  });
+
+  testWidgets('SuggestionArea note Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_dark.png'),
+    );
+  });
+
+  const twoLineNote = '12ft was not added. A length cannot join an area; '
+      'finish the area, or clear it, and type the length again after that, '
+      'and the strip shows the suggestions again.';
+
+  testWidgets('SuggestionArea two-line note Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.light(), note: twoLineNote);
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_two_lines_light.png'),
+    );
+  });
+
+  testWidgets('SuggestionArea two-line note Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.dark(), note: twoLineNote);
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_two_lines_dark.png'),
+    );
+  });
 }
