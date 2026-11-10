@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.96.0] - The history panel's rule is a CoreDivider
+
+### 🔧 Internal
+
+- **CoreDisplayArea history panel**: the hairline between two previous-session cards is a `CoreDivider` in `lineDarkOutline`, where before it was a Material `Divider` set up by hand with a private thickness constant and a TODO. The rule sits centred in a `CoreSpacing.space4` slot, the 16 dp that `Divider` owned by default, so the cards are where they were and the stage goldens are unchanged; the TODO and the constant are gone. One thing no longer applies: an ambient `DividerThemeData.space` from the app used to size that slot, and now does not, as `CoreDivider` ignores divider themes by design (CA-1020)
+- Showcase: unchanged. The display area screen's two previous sessions show the rule in the full-screen stage
+
+### 🧪 Tests
+
+- In the full-screen stage a `CoreDivider` in `lineDarkOutline` sits between each pair of session cards, one pixel tall and 7.5 dp from the card above and the card below, the cards found by their restore keys; `expandedPrevious` shows the last session alone with no rule. The restore group's `session`, `buildArea` and `revealPreviousSessions` helpers are hoisted to the file so both groups share them. The display area goldens, the three-stage and two-stage ones included, are unchanged
+
 ## [0.95.0] - A long name stays inside the row at phone width
 
 ### 🔧 Fixes
