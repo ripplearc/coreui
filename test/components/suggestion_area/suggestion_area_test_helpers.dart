@@ -38,6 +38,7 @@ CoreSuggestionArea testCoreSuggestionArea({
       CoreSuggestionArea.defaultConversionsRowSemanticsLabel,
   String Function(List<SuggestionData> suggestions)?
       suggestionsSemanticsLabelBuilder,
+  String? note,
 }) {
   return CoreSuggestionArea(
     key: key,
@@ -59,6 +60,7 @@ CoreSuggestionArea testCoreSuggestionArea({
     conversionsRowTagLabel: conversionsRowTagLabel,
     conversionsRowSemanticsLabel: conversionsRowSemanticsLabel,
     suggestionsSemanticsLabelBuilder: suggestionsSemanticsLabelBuilder,
+    note: note,
   );
 }
 

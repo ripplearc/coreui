@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.97.0] - A slot for a strip note, in the warning style
+
+### ✨ Features
+
+- **CoreSuggestionArea.note**: the strip's own slot for a short warning — "12ft was not added." — in `textWarningStrong` at `bodyLargeRegular` (Body Large/Regular 16/24, as the ticket asks), up to two lines, the second ending in an ellipsis. While set it is what the strip shows, in place of the suggestions and the placeholder alike, so the app sets it on a refused key and clears it on the next one without touching its lists; before, the app had to put the note in `suggestionAreaPlaceholder`, in the placeholder's grey. At the default text size two lines fit inside the strip's minimum height, so a one-row strip does not move and the keyboard below stays put (at a larger text scale they are taller than it, as two chip rows are); a two-row strip folds to one row, as it does when its lists empty. Setting it folds an expanded row and reports that through `onExpandedChanged` the way a suggestion change does; clearing it brings the rows back collapsed. The note is a live region, so a screen reader hears the refusal. `null` or an empty string, the default, leaves the strip as it was. The text carries `CoreSuggestionArea.noteKey` (`calc_strip_note`) for Patrol (CA-1433)
+- Showcase: the suggestion area screen gains "Strip note" and "Two-line note" switches, the one-line and two-line notes the ticket asks for
+
+### 📐 Design notes
+
+- `textWarningStrong` (orange 700 light, orange 200 dark), not the ticket's Text Color/Warning (`textWarning`): on the page background `textWarning` reaches 4.2:1 in the light theme, under the 4.5:1 WCAG 1.4.3 asks of 16 px regular text; `textWarningStrong` reaches 5.8:1 light and over 7:1 dark, and is the sprint drawing's `#b54708`
+
+### 🧪 Tests
+
+- The note shows in the warning colour at Body Large/Regular, two lines at most with an ellipsis, in place of the placeholder; it replaces the suggestions while set and they return when it is cleared; an empty note is no note; a two-line note leaves the strip at its 64 dp minimum height, and at twice the text size the strip grows with the taller note, inside the width; in two rows a note folds both rows to that height and they come back when it clears; setting it folds an expanded row and reports `false`, and clearing it brings the overflow control back. A11y: the note meets the contrast guideline in both themes and is a live region that reads the note. Light and dark goldens of the strip with a one-line note and with a two-line note ending in an ellipsis (412 × 64 each). The existing suggestion area goldens are unchanged
+
 ## [0.96.0] - The history panel's rule is a CoreDivider
 
 ### 🔧 Internal

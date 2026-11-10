@@ -1285,6 +1285,199 @@ void main() {
       expect(tapped, isTrue);
     });
   });
+  group('CoreSuggestionArea note', () {
+    const note = '12ft was not added.';
+    final suggestions = [
+      SuggestionData(label: 'Sheets:', value: '5.81', onTap: () {}),
+      SuggestionData(label: 'Cost:', value: '\$84.25', onTap: () {}),
+    ];
+
+    testWidgets('a note shows in the warning style in place of the placeholder',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(tester, testCoreSuggestionArea(note: note));
+
+      final text = tester.widget<Text>(find.byKey(CoreSuggestionArea.noteKey));
+      final context = tester.element(find.byType(CoreSuggestionArea));
+      final colors = AppColorsExtension.of(context);
+      final typography = AppTypographyExtension.of(context);
+      expect(text.data, note);
+      expect(text.style!.color, colors.textWarningStrong);
+      expect(text.style!.fontWeight, typography.bodyLargeRegular.fontWeight);
+      expect(text.style!.fontSize, typography.bodyLargeRegular.fontSize);
+      expect(text.style!.height, typography.bodyLargeRegular.height);
+      expect(text.maxLines, 2);
+      expect(text.overflow, TextOverflow.ellipsis);
+      expect(find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
+          findsNothing);
+    });
+
+    testWidgets('a note replaces the suggestions while set',
+        (WidgetTester tester) async {
+      await pumpSuggestionArea(
+        tester,
+        testCoreSuggestionArea(aiSuggestions: suggestions, note: note),
+      );
+
+      expect(find.byKey(CoreSuggestionArea.noteKey), findsOneWidget);
+      expect(find.byType(CoreChip), findsNothing);
+
+      await pumpSuggestionArea(
+        tester,
+        testCoreSuggestionArea(aiSuggestions: suggestions),
+      );
+
+      expect(find.byKey(CoreSuggestionArea.noteKey), findsNothing);
+      expect(find.byType(CoreChip), findsNWidgets(2));
+    });
+
+    testWidgets(
+        'in two rows a note folds both rows to the minimum height and '
+        'they come back when it clears', (WidgetTester tester) async {
+      final conversions = [
+        SuggestionData(label: 'Conv:', value: '264', unit: 'in', onTap: () {}),
+        SuggestionData(label: 'Conv:', value: '7.33', unit: 'yd', onTap: () {}),
+      ];
+      Widget area({String? note}) => testCoreSuggestionArea(
+            layout: CoreSuggestionLayout.twoRows,
+            aiSuggestions: suggestions,
+            conversionSuggestions: conversions,
+            note: note,
+          );
+
+      await pumpSuggestionArea(tester, area());
+      await tester.pumpAndSettle();
+      final twoRows = tester.getSize(find.byType(CoreSuggestionArea)).height;
+      expect(twoRows, greaterThan(CoreSpacing.space16));
+      expect(find.byType(CoreChip), findsNWidgets(4));
+
+      await pumpSuggestionArea(tester, area(note: note));
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoreSuggestionArea.noteKey), findsOneWidget);
+      expect(find.byType(CoreChip), findsNothing);
+      expect(tester.getSize(find.byType(CoreSuggestionArea)).height,
+          CoreSpacing.space16);
+
+      await pumpSuggestionArea(tester, area());
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoreSuggestionArea.noteKey), findsNothing);
+      expect(find.byType(CoreChip), findsNWidgets(4));
+      expect(tester.getSize(find.byType(CoreSuggestionArea)).height, twoRows);
+    });
+
+    testWidgets('an empty note is no note', (WidgetTester tester) async {
+      await pumpSuggestionArea(tester, testCoreSuggestionArea(note: ''));
+
+      expect(find.byKey(CoreSuggestionArea.noteKey), findsNothing);
+      expect(find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
+          findsOneWidget);
+    });
+
+    testWidgets('the strip keeps its minimum height under a two-line note',
+        (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      const long = '12ft was not added. A length cannot join an area; finish '
+          'the area, or clear it, and type the length again after that.';
+
+      await pumpSuggestionArea(tester, testCoreSuggestionArea(note: note));
+      final empty = tester.getSize(find.byType(CoreSuggestionArea));
+      final oneLine = tester.getSize(find.text(note)).height;
+      await pumpSuggestionArea(tester, testCoreSuggestionArea(note: long));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final noteSize = tester.getSize(find.byKey(CoreSuggestionArea.noteKey));
+      expect(noteSize.height, greaterThan(oneLine));
+      expect(tester.getSize(find.byType(CoreSuggestionArea)), empty);
+      expect(empty.height, CoreSpacing.space16);
+    });
+
+    testWidgets(
+        'at phone width with text at twice the size a two-line note is taller '
+        'than the minimum height and the strip grows with it, inside the width',
+        (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      const long = '12ft was not added. A length cannot join an area; finish '
+          'the area, or clear it, and type the length again after that.';
+
+      await pumpSuggestionArea(
+        tester,
+        MediaQuery.withClampedTextScaling(
+          minScaleFactor: 2,
+          maxScaleFactor: 2,
+          child: testCoreSuggestionArea(note: long),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final strip = tester.getRect(find.byType(CoreSuggestionArea));
+      final noteRect = tester.getRect(find.byKey(CoreSuggestionArea.noteKey));
+      expect(noteRect.height, greaterThan(CoreSpacing.space16));
+      expect(strip.height, greaterThan(CoreSpacing.space16));
+      expect(noteRect.bottom, lessThanOrEqualTo(strip.bottom));
+      expect(noteRect.right, lessThanOrEqualTo(strip.right));
+      expect(
+          tester.widget<Text>(find.byKey(CoreSuggestionArea.noteKey)).maxLines,
+          2);
+    });
+
+    testWidgets(
+        'a note folds an expanded row and reports it; clearing it brings the '
+        'rows back collapsed', (WidgetTester tester) async {
+      final expanded = <bool>[];
+      final many = [
+        for (var i = 0; i < 8; i++)
+          SuggestionData(label: 'Rung $i:', value: '${i * 10}', onTap: () {}),
+      ];
+
+      await pumpSuggestionArea(
+        tester,
+        testCoreSuggestionArea(
+          aiSuggestions: many,
+          onExpandedChanged: expanded.add,
+        ),
+      );
+      await tester.pump();
+      await tester
+          .tap(find.bySemanticsLabel(RegExp(r'Show \d+ more suggestions')));
+      await tester.pumpAndSettle();
+      expect(expanded, [true]);
+
+      await pumpSuggestionArea(
+        tester,
+        testCoreSuggestionArea(
+          aiSuggestions: many,
+          onExpandedChanged: expanded.add,
+          note: note,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(expanded, [true, false]);
+      expect(find.byType(CoreChip), findsNothing);
+
+      await pumpSuggestionArea(
+        tester,
+        testCoreSuggestionArea(
+          aiSuggestions: many,
+          onExpandedChanged: expanded.add,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(expanded, [true, false]);
+      expect(find.bySemanticsLabel(RegExp(r'Show \d+ more suggestions')),
+          findsOneWidget);
+    });
+  });
 }
 
 class _TwoRowHost extends StatefulWidget {

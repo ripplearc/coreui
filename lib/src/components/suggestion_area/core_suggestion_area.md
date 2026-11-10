@@ -38,7 +38,7 @@ CoreSuggestionArea(
 
 | Property | Type | Required | Default | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `suggestionAreaPlaceholder` | `String` | No | `'Here you can see smart suggestions from us'` | Placeholder text shown when both `aiSuggestions` and `conversionSuggestions` are empty. Must be localised by the app. |
+| `suggestionAreaPlaceholder` | `String` | No | `'Here you can see smart suggestions from us'` | Placeholder text shown when both `aiSuggestions` and `conversionSuggestions` are empty and no `note` is set. Must be localised by the app. |
 | `aiSuggestions` | `List<SuggestionData>?` | No | `null` | The list of AI recommendations to display (e.g. Area calculations). |
 | `conversionSuggestions` | `List<SuggestionData>?` | No | `null` | The list of conversion metrics to display (e.g. feet to inches). Expected to carry `SuggestionKind.conversion` data only: in `twoRows` it is the secondary row, which drops every chip's label by position rather than by kind, so a `bind` or `memory` suggestion routed here would render as a bare value. |
 | `onExpandedChanged` | `ValueChanged<bool>?` | No | `null` | Called when the user expands or collapses the suggestion area overflow list. |
@@ -54,6 +54,7 @@ CoreSuggestionArea(
 | `conversionsRowTagLabel` | `String` | No | `'as'` | In `twoRows`, the word of the tag (ruler icon + text) that leads the conversions row, so "conversion" is said once and the chips show only their value. Decorative — excluded from semantics. Override per locale. Ignored in `toggle`. |
 | `conversionsRowSemanticsLabel` | `String` | No | `'Convert to other units'` | In `twoRows`, the group label a screen reader announces on entering the conversions row, giving its value-only chips their context. Override per locale. Ignored in `toggle`. |
 | `suggestionsSemanticsLabelBuilder` | `String Function(List<SuggestionData>)?` | No | `null` | Builds the live-region text announced when the visible suggestions change (the active list in `toggle`; both rows in `twoRows`, minus the conversions row while `secondRowHidden`). `null` uses `CoreSuggestionArea.defaultSuggestionsSemanticsLabel`, which joins each suggestion's `semanticsLabel` — or label, value and unit — with commas. Override per locale. |
+| `note` | `String?` | No | `null` | A short warning the strip shows in place of everything else while set (`12ft was not added.`), in `textWarningStrong` at `bodyLargeRegular` (16/24), up to two lines. `null` or empty shows the suggestions or the placeholder. Setting it folds an expanded row and reports it through `onExpandedChanged`. Announced as a live region. Carries `CoreSuggestionArea.noteKey` (`calc_strip_note`). Must be localised by the app. |
 
 ### SuggestionData
 
@@ -92,7 +93,7 @@ Row 2 follows the calculator prototype's two-row strip (design decision, 2026-09
 
 ## Accessibility
 
-The area is a **live region**: its semantics node is labelled with the suggestions on screen (`suggestionsSemanticsLabelBuilder`, default `Area: 220 ft², Cost: $84.25`), so a screen reader announces a new rung or a fresh set of conversions without moving focus. Each chip keeps its own node inside the region, the conversions row keeps its `conversionsRowSemanticsLabel` group, and the placeholder is a live region of its own, so an emptied strip is heard too. Expanding or collapsing a row does not change the text, so the `+N` control is silent beyond its own label.
+The area is a **live region**: its semantics node is labelled with the suggestions on screen (`suggestionsSemanticsLabelBuilder`, default `Area: 220 ft², Cost: $84.25`), so a screen reader announces a new rung or a fresh set of conversions without moving focus. Each chip keeps its own node inside the region, the conversions row keeps its `conversionsRowSemanticsLabel` group, and the placeholder and the `note` are live regions of their own, so an emptied strip and a refusal are heard too. Expanding or collapsing a row does not change the text, so the `+N` control is silent beyond its own label.
 
 ## Test keys
 
@@ -114,6 +115,24 @@ CoreSuggestionArea(
   expandToggleSemanticsLabelBuilder: (count) => 'Show $count more',
   collapseToggleSemanticsLabel: 'Collapse',
   toggleSemanticsLabel: 'Toggle suggestion mode',
+)
+```
+
+### Strip note
+
+The strip's own slot for a refusal. While `note` is set it replaces the suggestions and the placeholder, so the app
+sets it on a refused key and clears it on the next one without touching its lists. At the default text size two lines
+fit inside the strip's minimum height, so a one-row strip does not move and the keyboard stays put; at a larger text
+scale they are taller than it, as two chip rows are. A two-row strip folds to one row, as it does when its lists empty.
+
+```dart
+CoreSuggestionArea(
+  aiSuggestions: suggestions,
+  note: state.refusal == null ? null : l10n.notAdded(state.refusal),
+  hiddenChipsTextBuilder: (count) => l10n.moreSuggestions(count),
+  expandToggleSemanticsLabelBuilder: (count) => l10n.showMoreSuggestions(count),
+  collapseToggleSemanticsLabel: l10n.showFewerSuggestions,
+  toggleSemanticsLabel: l10n.toggleSuggestionMode,
 )
 ```
 

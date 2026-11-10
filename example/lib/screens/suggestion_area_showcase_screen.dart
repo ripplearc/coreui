@@ -37,6 +37,8 @@ class _SuggestionAreaShowcaseViewState
     extends State<_SuggestionAreaShowcaseView> {
   CoreSuggestionLayout _layout = CoreSuggestionLayout.twoRows;
   bool _secondRowHidden = false;
+  bool _showNote = false;
+  bool _twoLineNote = false;
   GroupNameType _currentGroup =
       SuggestionAreaShowcaseScreen._basicGeometryGroup;
   List<FunctionGroup> _groups = [
@@ -72,6 +74,16 @@ class _SuggestionAreaShowcaseViewState
       ],
     ),
   ];
+
+  static const String _oneLineNote = '12ft was not added.';
+  static const String _twoLineNoteText =
+      '12ft was not added. A length cannot join an area; finish the area, or '
+      'clear it, and type the length again after that.';
+
+  String? get _note {
+    if (!_showNote) return null;
+    return _twoLineNote ? _twoLineNoteText : _oneLineNote;
+  }
 
   Widget _layoutControls(BuildContext context) {
     final colors = AppColorsExtension.of(context);
@@ -115,6 +127,28 @@ class _SuggestionAreaShowcaseViewState
               CoreSwitch(
                 value: _secondRowHidden,
                 onChanged: (value) => setState(() => _secondRowHidden = value),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Strip note', style: labelStyle),
+              const SizedBox(width: CoreSpacing.space2),
+              CoreSwitch(
+                value: _showNote,
+                onChanged: (value) => setState(() => _showNote = value),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Two-line note', style: labelStyle),
+              const SizedBox(width: CoreSpacing.space2),
+              CoreSwitch(
+                value: _twoLineNote,
+                onChanged: (value) => setState(() => _twoLineNote = value),
               ),
             ],
           ),
@@ -180,6 +214,7 @@ class _SuggestionAreaShowcaseViewState
                               CoreSuggestionArea(
                                 layout: _layout,
                                 secondRowHidden: _secondRowHidden,
+                                note: _note,
                                 aiSuggestions: state.aiSuggestions,
                                 conversionSuggestions:
                                     state.conversionSuggestions,
