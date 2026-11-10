@@ -44,21 +44,33 @@ enum CoreSuggestionLayout {
 /// adding a result.
 ///
 /// Displays [suggestionAreaPlaceholder] when nothing is visible: both lists
-/// are null or empty, or only conversions exist and [secondRowHidden] is set.
+/// are null or empty, or only conversions exist and [secondRowHidden] is set,
+/// and no [note] is set.
+///
+/// ## Strip note
+///
+/// [note] is the strip's own slot for a short warning — "12ft was not added."
+/// — in the warning colour, up to two lines. While set it is what the strip
+/// shows, in place of the suggestions and the placeholder alike, so the app
+/// sets it on a refused key and clears it on the next one without touching
+/// its lists. At the default text size two lines fit inside the strip's
+/// minimum height, so a one-row strip does not move and the keyboard below
+/// stays put.
 ///
 /// ## Accessibility
 ///
 /// The area is a live region labelled with the suggestions on screen, so a
 /// screen reader announces a new rung or a fresh set of conversions without
 /// moving focus; [suggestionsSemanticsLabelBuilder] builds that text. Each
-/// chip keeps its own node inside the region, and the placeholder is a live
-/// region of its own, so an emptied strip is heard too.
+/// chip keeps its own node inside the region, and the placeholder and the
+/// note are live regions of their own, so an emptied strip and a refusal are
+/// heard too.
 ///
 /// ## Test keys
 ///
 /// Every chip carries a stable [Key] for Patrol and widget tests:
 /// [SuggestionData.testKey], or [chipTestKey] / [conversionChipTestKey] by
-/// position in its row.
+/// position in its row. The note carries [noteKey].
 class CoreSuggestionArea extends StatefulWidget {
   const CoreSuggestionArea({
     super.key,
@@ -78,6 +90,7 @@ class CoreSuggestionArea extends StatefulWidget {
     this.conversionsRowTagLabel = defaultConversionsRowTagLabel,
     this.conversionsRowSemanticsLabel = defaultConversionsRowSemanticsLabel,
     this.suggestionsSemanticsLabelBuilder,
+    this.note,
   });
 
   /// The default placeholder text shown when no suggestions are provided.
@@ -105,6 +118,10 @@ class CoreSuggestionArea extends StatefulWidget {
   /// single row of [CoreSuggestionLayout.toggle]: `calc_strip_chip_<index>`.
   /// [SuggestionData.testKey] overrides it.
   static Key chipTestKey(int index) => ValueKey('calc_strip_chip_$index');
+
+  /// The [Key] the [note] text carries, for Patrol and widget tests:
+  /// `calc_strip_note`.
+  static const Key noteKey = ValueKey('calc_strip_note');
 
   /// The default [Key] of the chip at [index] on the conversions row of
   /// [CoreSuggestionLayout.twoRows]: `calc_strip_conversion_<index>`, so the
@@ -229,6 +246,24 @@ class CoreSuggestionArea extends StatefulWidget {
   final String Function(List<SuggestionData> suggestions)?
       suggestionsSemanticsLabelBuilder;
 
+  /// A short warning the strip shows in place of everything else while set —
+  /// "12ft was not added." — in `textWarningStrong` at `bodyLargeRegular`, up
+  /// to two lines, the second ending in an ellipsis. `null` or an empty
+  /// string, the default, shows the suggestions or the placeholder as usual.
+  /// Setting it folds an expanded row and reports that through
+  /// [onExpandedChanged] the way a suggestion change does; clearing it brings
+  /// the rows back collapsed. A two-row strip folds to one row under it, as
+  /// it does when its lists empty. At the default text size two lines fit
+  /// inside the strip's minimum height; at a larger text scale they are
+  /// taller than it, as two chip rows are. Announced as a live region. Pass a
+  /// localised string from the app layer:
+  /// ```dart
+  /// note: state.refusal == null
+  ///     ? null
+  ///     : AppLocalizations.of(context).notAdded(state.refusal),
+  /// ```
+  final String? note;
+
   @override
   State<CoreSuggestionArea> createState() => _CoreSuggestionAreaState();
 }
@@ -274,13 +309,19 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     return true;
   }
 
+  static String? _noteOf(CoreSuggestionArea area) {
+    final note = area.note;
+    return note == null || note.isEmpty ? null : note;
+  }
+
   @override
   void didUpdateWidget(CoreSuggestionArea oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!_areSuggestionsEqual(widget.aiSuggestions, oldWidget.aiSuggestions) ||
         !_areSuggestionsEqual(
             widget.conversionSuggestions, oldWidget.conversionSuggestions) ||
-        widget.layout != oldWidget.layout) {
+        widget.layout != oldWidget.layout ||
+        (_noteOf(widget) != null && _noteOf(oldWidget) == null)) {
       _collapseAll();
     } else if (widget.secondRowHidden &&
         !oldWidget.secondRowHidden &&
@@ -421,16 +462,59 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     );
   }
 
+  Widget _buildMessage(String text, TextStyle style,
+      {Key? key, int? maxLines}) {
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      child: Text(
+        text,
+        key: key,
+        maxLines: maxLines,
+        overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
+        style: style,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
     final typography = AppTypographyExtension.of(context);
+    final note = _noteOf(widget);
     final bool hasAi = widget.aiSuggestions?.isNotEmpty ?? false;
     final bool hasConv = widget.conversionSuggestions?.isNotEmpty ?? false;
     final bool isTwoRows = widget.layout == CoreSuggestionLayout.twoRows;
     final bool hasVisible = isTwoRows
         ? hasAi || (hasConv && !widget.secondRowHidden)
         : hasAi || hasConv;
+
+    final Widget content;
+    if (note != null) {
+      content = _buildMessage(
+        note,
+        typography.bodyLargeRegular.copyWith(color: colors.textWarningStrong),
+        key: CoreSuggestionArea.noteKey,
+        maxLines: 2,
+      );
+    } else if (!hasVisible) {
+      content = _buildMessage(
+        widget.suggestionAreaPlaceholder,
+        typography.bodyMediumRegular.copyWith(color: colors.textDark),
+      );
+    } else {
+      content = Semantics(
+        container: true,
+        explicitChildNodes: true,
+        liveRegion: true,
+        label: (widget.suggestionsSemanticsLabelBuilder ??
+                CoreSuggestionArea.defaultSuggestionsSemanticsLabel)(
+            _announcedSuggestions(hasAi: hasAi, hasConv: hasConv)),
+        child: isTwoRows
+            ? _buildTwoRowLayout(hasAi: hasAi, hasConv: hasConv)
+            : _buildToggleLayout(hasAi: hasAi, hasConv: hasConv),
+      );
+    }
 
     return AnimatedContainer(
       duration: CoreSuggestionArea.animationDuration,
@@ -440,28 +524,7 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
       child: Align(
         alignment: AlignmentDirectional.centerStart,
         heightFactor: 1.0,
-        child: !hasVisible
-            ? Semantics(
-                container: true,
-                liveRegion: true,
-                child: Text(
-                  widget.suggestionAreaPlaceholder,
-                  style: typography.bodyMediumRegular.copyWith(
-                    color: colors.textDark,
-                  ),
-                ),
-              )
-            : Semantics(
-                container: true,
-                explicitChildNodes: true,
-                liveRegion: true,
-                label: (widget.suggestionsSemanticsLabelBuilder ??
-                        CoreSuggestionArea.defaultSuggestionsSemanticsLabel)(
-                    _announcedSuggestions(hasAi: hasAi, hasConv: hasConv)),
-                child: isTwoRows
-                    ? _buildTwoRowLayout(hasAi: hasAi, hasConv: hasConv)
-                    : _buildToggleLayout(hasAi: hasAi, hasConv: hasConv),
-              ),
+        child: content,
       ),
     );
   }
