@@ -25,6 +25,7 @@ RUN curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/sta
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 # 6. Switch to non-root user for the rest of the setup
+RUN mkdir /app && chown flutter:flutter /app
 USER flutter
 WORKDIR /app
 
