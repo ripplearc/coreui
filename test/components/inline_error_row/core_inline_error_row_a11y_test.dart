@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -28,18 +29,30 @@ void main() {
     );
   });
 
-  testWidgets('the disabled action keeps its label and tap target size',
-      (tester) async {
+  testWidgets(
+      'the disabled action stays a labelled 48 dp button; contrast is not '
+      'checked for a disabled node', (tester) async {
     await setupA11yTest(tester);
-    await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
-      tester,
-      (theme) => CoreInlineErrorRow(
-        message: 'Could not load your rates',
-        actionLabel: 'Try again',
-        onAction: () {},
-        isActionDisabled: true,
-      ),
-      find.text('Try again'),
-    );
+    final handle = tester.ensureSemantics();
+    try {
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => CoreInlineErrorRow(
+          message: 'Could not load your rates',
+          actionLabel: 'Try again',
+          onAction: () {},
+          actionKey: const Key('retry'),
+          isActionDisabled: true,
+        ),
+        find.text('Try again'),
+        checkTextContrast: false,
+      );
+      final zone = tester.getSize(find.byKey(const Key('retry')));
+      expect(zone.width, greaterThanOrEqualTo(48));
+      expect(zone.height, greaterThanOrEqualTo(48));
+      expect(find.bySemanticsLabel('Try again'), findsOneWidget);
+    } finally {
+      handle.dispose();
+    }
   });
 }

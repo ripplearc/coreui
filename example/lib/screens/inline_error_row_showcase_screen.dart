@@ -18,12 +18,19 @@ class _InlineErrorRowShowcaseScreenState
     extends State<InlineErrorRowShowcaseScreen> {
   int _retries = 0;
   bool _isRetryRunning = false;
+  Timer? _retryTimer;
 
   void _runRetry() {
     setState(() => _isRetryRunning = true);
-    Timer(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _isRetryRunning = false);
+    _retryTimer = Timer(const Duration(seconds: 2), () {
+      setState(() => _isRetryRunning = false);
     });
+  }
+
+  @override
+  void dispose() {
+    _retryTimer?.cancel();
+    super.dispose();
   }
 
   Widget _section(String title, Widget row) {

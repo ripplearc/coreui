@@ -835,6 +835,14 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.space);
       await tester.pump();
 
+      final focused = FocusManager.instance.primaryFocus?.context;
+      expect(
+        find.descendant(
+          of: find.byKey(actionKey),
+          matching: find.byElementPredicate((element) => element == focused),
+        ),
+        findsNothing,
+      );
       expect(taps, 0);
       expect(
         find.byKey(const Key('inline_error_action_focus_ring')),
