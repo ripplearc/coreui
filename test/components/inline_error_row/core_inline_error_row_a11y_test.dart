@@ -45,6 +45,8 @@ void main() {
           isActionDisabled: true,
         ),
         find.text('Try again'),
+        // textDisable on pageBackground measures 2.46:1 in light and 3.57:1
+        // in dark, and Flutter's contrast guideline skips disabled nodes.
         checkTextContrast: false,
       );
       final zone = tester.getSize(find.byKey(const Key('retry')));
