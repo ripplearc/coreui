@@ -27,4 +27,19 @@ void main() {
       checkTapTargetSize: false,
     );
   });
+
+  testWidgets('the disabled action keeps its label and tap target size',
+      (tester) async {
+    await setupA11yTest(tester);
+    await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+      tester,
+      (theme) => CoreInlineErrorRow(
+        message: 'Could not load your rates',
+        actionLabel: 'Try again',
+        onAction: () {},
+        isActionDisabled: true,
+      ),
+      find.text('Try again'),
+    );
+  });
 }

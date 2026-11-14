@@ -18,8 +18,8 @@ void main() {
   });
 
   Future<void> pumpVariants(WidgetTester tester, ThemeData theme) async {
-    // 640x560 @ 2.0 => 320x280 logical.
-    tester.view.physicalSize = const Size(640, 560);
+    // 640x640 @ 2.0 => 320x320 logical.
+    tester.view.physicalSize = const Size(640, 640);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -43,6 +43,13 @@ void main() {
                   message: 'Could not load your rates',
                   actionLabel: 'Try again',
                   onAction: () {},
+                ),
+                const SizedBox(height: CoreSpacing.space4),
+                CoreInlineErrorRow(
+                  message: 'Could not load your rates',
+                  actionLabel: 'Try again',
+                  onAction: () {},
+                  isActionDisabled: true,
                 ),
                 const SizedBox(height: CoreSpacing.space4),
                 const CoreInlineErrorRow(

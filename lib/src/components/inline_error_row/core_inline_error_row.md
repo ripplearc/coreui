@@ -20,6 +20,7 @@ CoreInlineErrorRow(
 | `actionLabel` | `String?` | No | Link-style text after the message, e.g. "Try again". Given with `onAction` or not at all (asserted). |
 | `onAction` | `VoidCallback?` | No | Called when the action is tapped. |
 | `actionKey` | `Key?` | No | Key of the action's tap zone, for tests. |
+| `isActionDisabled` | `bool` | No | Default `false`. Gives the action its disabled look and ignores taps, for example while the retry it starts runs. Needs `actionLabel` (asserted). |
 
 ## Styling
 
@@ -28,6 +29,7 @@ CoreInlineErrorRow(
 | Icon | `CoreIcons.error`, `CoreIconSize.size16`, centred on the first line of the message, which follows the phone's text size | `iconRed` |
 | Message | `bodySmallRegular`, 8 dp (`space2`) after the icon | `textError` |
 | Action | `bodyLargeSemiBold` (the storyboard draws 16 sp) | `textLink` |
+| Action disabled | the label stays, with no spinner | `textDisable` |
 | Action pressed | the label turns `buttonPress`, with no fill, as the library Text button does | `buttonPress` |
 | Action focused | 3 dp stadium ring around the label, 12 dp wider at each side and 5 dp above and below | `outlineFocus` |
 
@@ -37,8 +39,8 @@ The row measures its width with a `LayoutBuilder`, so it cannot be placed inside
 
 ## Keyboard
 
-Tab reaches the action; Enter or Space calls `onAction`. Focus draws a 3 dp `outlineFocus` ring around the label, 12 dp wider at each side, so nothing moves. A touch tap draws no ring.
+Tab reaches the action; Enter or Space calls `onAction`. Focus draws a 3 dp `outlineFocus` ring around the label, 12 dp wider at each side, so nothing moves. A touch tap draws no ring. A disabled action is skipped by Tab and ignores Enter and Space.
 
 ## Accessibility
 
-The icon and message are one live region, so a screen reader announces the message when the row appears. The icon has no label, so it adds nothing to the announcement. The action is a separate button node outside the live region, so a retry does not re-announce the message. Both text colours hold 4.5:1 on the page background in both themes.
+The icon and message are one live region, so a screen reader announces the message when the row appears. The icon has no label, so it adds nothing to the announcement. The action is a separate button node outside the live region, so a retry does not re-announce the message. A disabled action is still a button node, marked disabled with no tap action, so a screen reader reads its label as disabled. The disabled label is not held to the 4.5:1 text contrast: Flutter's contrast guideline skips disabled nodes. Both text colours hold 4.5:1 on the page background in both themes.
