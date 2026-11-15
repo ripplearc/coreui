@@ -9,6 +9,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
 
+void _doNothing() {}
+
 void main() {
   const messageText = 'Could not load your rates';
   const actionText = 'Try again';
@@ -713,13 +715,13 @@ void main() {
     Widget row(
       ThemeData theme, {
       required bool disabled,
-      VoidCallback? onAction,
+      VoidCallback onAction = _doNothing,
     }) =>
         buildTestApp(
           CoreInlineErrorRow(
             message: messageText,
             actionLabel: actionText,
-            onAction: onAction ?? () {},
+            onAction: onAction,
             actionKey: actionKey,
             isActionDisabled: disabled,
           ),
@@ -835,7 +837,7 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.space);
       await tester.pump();
 
-      final focused = FocusManager.instance.primaryFocus?.context;
+      final focused = FocusManager.instance.primaryFocus!.context;
       expect(
         find.descendant(
           of: find.byKey(actionKey),
