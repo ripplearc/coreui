@@ -1552,6 +1552,7 @@ void main() {
       String placeholder = testHistoryPlaceholder,
       List<CoreCalculatorChip> chips = const [],
       List<CoreHistorySessionData> previousSessions = const [],
+      void Function(DisplayAreaStage stage)? onStageChanged,
     }) {
       return tester.pumpWidget(
         MaterialApp(
@@ -1562,6 +1563,7 @@ void main() {
               historyPlaceholder: placeholder,
               chipsList: chips,
               previousSessions: previousSessions,
+              onStageChanged: onStageChanged,
               emptyTapeTrailing: pill,
             ),
           ),
@@ -1590,6 +1592,7 @@ void main() {
         (WidgetTester tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
+      const oneLine = 'Empty';
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1597,7 +1600,7 @@ void main() {
           home: Scaffold(
             body: CoreDisplayArea(
               closeSemanticLabel: testCloseSemanticLabel,
-              historyPlaceholder: testHistoryPlaceholder,
+              historyPlaceholder: oneLine,
               emptyTapeTrailing: CoreButton(
                 key: pillKey,
                 size: CoreButtonSize.small,
@@ -1615,7 +1618,12 @@ void main() {
       final pillRect = tester.getRect(find.byKey(pillKey));
       final iconRect = tester.getRect(find.byType(CoreIconWidget));
       final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      final textRect = tester.getRect(find.text(oneLine));
+      expect(pillRect.height, CoreSpacing.space12,
+          reason: 'a small CoreButton brings its own 48 dp hit area');
       expect(pillRect.center.dy, iconRect.center.dy);
+      expect(textRect.center.dy, iconRect.center.dy,
+          reason: 'a one-line placeholder stays centred on the close icon');
       expect(pillRect.right, areaRect.right - CoreSpacing.space4);
     });
 
@@ -1642,9 +1650,11 @@ void main() {
         (WidgetTester tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
       tester.view.physicalSize = const ui.Size(1100, 1600);
+      final stages = <DisplayAreaStage>[];
 
       await pumpArea(
         tester,
+        onStageChanged: stages.add,
         previousSessions: const [
           CoreHistorySessionData(
             dateLabel: 'May 27, 2025',
@@ -1658,19 +1668,23 @@ void main() {
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
+      expect(stages.last, DisplayAreaStage.expandedPrevious);
       expect(find.byKey(pillKey), findsNothing);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
       await tester.pumpAndSettle();
+      expect(stages.last, DisplayAreaStage.fullScreen);
       expect(find.byKey(pillKey), findsNothing);
 
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
       await tester.pumpAndSettle();
+      expect(stages.last, DisplayAreaStage.expandedPrevious);
       await tester.fling(
           find.byType(CoreDisplayArea), const Offset(0, -200), 1000);
       await tester.pumpAndSettle();
+      expect(stages.last, DisplayAreaStage.collapsed);
       expect(find.byKey(pillKey), findsOneWidget);
     });
 

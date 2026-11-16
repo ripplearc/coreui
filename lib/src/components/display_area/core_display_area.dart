@@ -140,11 +140,17 @@ class CoreDisplayArea extends StatefulWidget {
   /// where the close icon and its row are hidden. The widget brings its own
   /// semantics; a tappable one should carry a label.
   ///
-  /// The row is as tall as the 40 dp close icon, so a widget that meets the
-  /// library's 48 dp tap target grows the row by 8 dp and the area absorbs
-  /// it. A 36 dp small [CoreButton], as below, keeps the row where it is but
-  /// is short of that target: give it its own 48 dp hit area, or accept the
-  /// taller row.
+  /// With a widget in the slot the row is at least 48 dp tall, the library's
+  /// tap target, 8 dp more than the 40 dp close icon alone, and the area
+  /// absorbs it. A small [CoreButton], as below, already meets that target:
+  /// its 36 dp body sits in its own 48 dp hit area, so it needs no second
+  /// one.
+  ///
+  /// The close icon and the widget are centred on that first 48 dp and stay
+  /// at the top of the row. A placeholder that wraps past it, as it does
+  /// beside a wide widget at a large text size, grows the row downward and
+  /// moves neither of them, so both stay inside the collapsed area and can
+  /// be tapped.
   /// ```dart
   /// emptyTapeTrailing: CoreButton(
   ///   size: CoreButtonSize.small,
