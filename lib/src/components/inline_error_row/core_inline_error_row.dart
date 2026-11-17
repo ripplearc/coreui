@@ -24,6 +24,12 @@ class CoreInlineErrorRow extends StatelessWidget {
   /// Key of the action's tap zone, so a test can find the action.
   final Key? actionKey;
 
+  /// Whether the action shows its disabled look and ignores taps, for example
+  /// while the retry it starts is running. The label stays, the tap zone keeps
+  /// its size, Tab skips it and a screen reader reads it as disabled. Only
+  /// valid together with [actionLabel].
+  final bool isActionDisabled;
+
   /// Creates an inline error row.
   const CoreInlineErrorRow({
     super.key,
@@ -31,7 +37,9 @@ class CoreInlineErrorRow extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.actionKey,
-  }) : assert((actionLabel == null) == (onAction == null));
+    this.isActionDisabled = false,
+  })  : assert((actionLabel == null) == (onAction == null)),
+        assert(!isActionDisabled || actionLabel != null);
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +92,7 @@ class CoreInlineErrorRow extends StatelessWidget {
               child: _InlineErrorAction(
                 key: actionKey,
                 label: action,
-                onTap: onAction,
+                onTap: isActionDisabled ? null : onAction,
               ),
             ),
           ],
@@ -100,6 +108,8 @@ class _InlineErrorAction extends StatefulWidget {
 
   const _InlineErrorAction({super.key, required this.label, this.onTap});
 
+  bool get isEnabled => onTap != null;
+
   @override
   State<_InlineErrorAction> createState() => _InlineErrorActionState();
 }
@@ -112,6 +122,11 @@ class _InlineErrorActionState extends State<_InlineErrorAction> {
   bool _focused = false;
   bool _pressed = false;
 
+  Color _labelColor(AppColorsExtension colors) {
+    if (!widget.isEnabled) return colors.textDisable;
+    return _pressed ? colors.buttonPress : colors.textLink;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -121,6 +136,7 @@ class _InlineErrorActionState extends State<_InlineErrorAction> {
     return Semantics(
       container: true,
       button: true,
+      enabled: widget.isEnabled,
       label: widget.label,
       child: Material(
         type: MaterialType.transparency,
@@ -145,7 +161,7 @@ class _InlineErrorActionState extends State<_InlineErrorAction> {
                     Text(
                       widget.label,
                       style: typography.bodyLargeSemiBold.copyWith(
-                        color: _pressed ? colors.buttonPress : colors.textLink,
+                        color: _labelColor(colors),
                       ),
                     ),
                     if (_focused)

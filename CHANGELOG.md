@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.99.0] - CoreInlineErrorRow disabled action
+
+### ✨ Features
+
+- **CoreInlineErrorRow**: `isActionDisabled` gives the action its disabled look while the retry it starts is running, as the storyboard frame "Look-up, saved prices not read" says: the label stays, in `textDisable` and the same size and weight, with no spinner. A tap, Enter or Space calls nothing, Tab skips the action and no focus ring or pressed colour shows, and a screen reader reads it as a disabled button. The tap zone and the row do not change size or move. Only valid together with `actionLabel` (asserted) (CA-1411)
+- Showcase: the Inline Error Row screen has a row that disables its action for two seconds after a tap, and the component doc lists the new property
+
+### 🧪 Tests
+
+- Disabled action: no `onAction` call on a tap by key or by label, `textDisable` in both themes with the size and weight kept, the row, zone and label unmoved, the message keeping its colour and live region, a disabled button with no tap action for a screen reader and an enabled one when not disabled, Tab, Enter and Space doing nothing and drawing no ring, no `buttonPress` colour on a press, the ring gone when an action becomes disabled while focused, `textLink` and the tap back after it is enabled again, and the assert without an action. A11y: the disabled action's 48 dp zone and label in both themes, asserted directly because Flutter's guidelines skip a disabled node. Goldens: the disabled action added to the light and dark variants images
+
 ## [0.94.0] - CoreInlineErrorRow
 
 ### ✨ Features

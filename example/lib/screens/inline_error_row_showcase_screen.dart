@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 /// A showcase screen for [CoreInlineErrorRow]: the message alone, with an
-/// action, and a long message that wraps.
+/// action, with the action disabled while a retry runs, and a long message that
+/// wraps.
 class InlineErrorRowShowcaseScreen extends StatefulWidget {
   const InlineErrorRowShowcaseScreen({super.key});
 
@@ -14,6 +17,21 @@ class InlineErrorRowShowcaseScreen extends StatefulWidget {
 class _InlineErrorRowShowcaseScreenState
     extends State<InlineErrorRowShowcaseScreen> {
   int _retries = 0;
+  bool _isRetryRunning = false;
+  Timer? _retryTimer;
+
+  void _runRetry() {
+    setState(() => _isRetryRunning = true);
+    _retryTimer = Timer(const Duration(seconds: 2), () {
+      setState(() => _isRetryRunning = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _retryTimer?.cancel();
+    super.dispose();
+  }
 
   Widget _section(String title, Widget row) {
     final typography = Theme.of(context).coreTypography;
@@ -54,6 +72,15 @@ class _InlineErrorRowShowcaseScreenState
                 message: 'Could not load your rates',
                 actionLabel: 'Try again',
                 onAction: () => setState(() => _retries++),
+              ),
+            ),
+            _section(
+              _isRetryRunning ? 'Retry running' : 'Tap Try again to retry',
+              CoreInlineErrorRow(
+                message: 'Could not load your rates',
+                actionLabel: 'Try again',
+                onAction: _runRetry,
+                isActionDisabled: _isRetryRunning,
               ),
             ),
             _section(

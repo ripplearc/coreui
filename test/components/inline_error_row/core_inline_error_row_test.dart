@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +8,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../utils/pixel_reader.dart';
 import '../../utils/test_harness.dart';
+
+void _doNothing() {}
 
 void main() {
   const messageText = 'Could not load your rates';
@@ -702,6 +706,202 @@ void main() {
       await gesture.up();
       await tester.pump();
       expect(labelColor(), theme.coreColors.textLink);
+    });
+  });
+
+  group('disabled action', () {
+    const actionKey = Key('retry');
+
+    Widget row(
+      ThemeData theme, {
+      required bool disabled,
+      VoidCallback onAction = _doNothing,
+    }) =>
+        buildTestApp(
+          CoreInlineErrorRow(
+            message: messageText,
+            actionLabel: actionText,
+            onAction: onAction,
+            actionKey: actionKey,
+            isActionDisabled: disabled,
+          ),
+          theme: theme,
+        );
+
+    Color? labelColor(WidgetTester tester) =>
+        tester.widget<Text>(find.text(actionText)).style!.color;
+
+    testWidgets('a tap on the disabled action does not call onAction',
+        (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        row(CoreTheme.light(), disabled: true, onAction: () => taps++),
+      );
+
+      await tester.tap(find.byKey(actionKey));
+      await tester.tap(find.text(actionText));
+      await tester.pump();
+
+      expect(taps, 0);
+    });
+
+    for (final (name, theme) in [
+      ('light', CoreTheme.light()),
+      ('dark', CoreTheme.dark()),
+    ]) {
+      testWidgets('the disabled label is textDisable in $name and keeps its '
+          'size and weight', (tester) async {
+        await tester.pumpWidget(row(theme, disabled: true));
+
+        final style = tester.widget<Text>(find.text(actionText)).style!;
+        expect(style.color, theme.coreColors.textDisable);
+        expect(style.fontSize, theme.coreTypography.bodyLargeSemiBold.fontSize);
+        expect(
+          style.fontWeight,
+          theme.coreTypography.bodyLargeSemiBold.fontWeight,
+        );
+      });
+    }
+
+    testWidgets('disabling moves nothing: same row height, zone and label '
+        'position', (tester) async {
+      await tester.pumpWidget(row(CoreTheme.light(), disabled: false));
+      final rowSize = tester.getSize(find.byType(CoreInlineErrorRow));
+      final zone = tester.getRect(find.byKey(actionKey));
+      final label = tester.getTopLeft(find.text(actionText));
+
+      await tester.pumpWidget(row(CoreTheme.light(), disabled: true));
+
+      expect(tester.getSize(find.byType(CoreInlineErrorRow)), rowSize);
+      expect(tester.getRect(find.byKey(actionKey)), zone);
+      expect(tester.getTopLeft(find.text(actionText)), label);
+    });
+
+    testWidgets('the message keeps its error colour and live region while '
+        'the action is disabled', (tester) async {
+      final theme = CoreTheme.light();
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(row(theme, disabled: true));
+
+        expect(messageWidget(tester).style!.color, theme.coreColors.textError);
+        final node = tester.getSemantics(find.bySemanticsLabel(messageText));
+        expect(node.getSemanticsData().flagsCollection.isLiveRegion, isTrue);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('a screen reader reads the disabled action as a disabled '
+        'button that cannot be tapped', (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(row(CoreTheme.light(), disabled: true));
+
+        final data = tester
+            .getSemantics(find.bySemanticsLabel(actionText))
+            .getSemanticsData();
+        expect(data.flagsCollection.isButton, isTrue);
+        expect(data.flagsCollection.isEnabled, ui.Tristate.isFalse);
+        expect(data.hasAction(SemanticsAction.tap), isFalse);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('an enabled action is read as an enabled button',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(row(CoreTheme.light(), disabled: false));
+
+        final data = tester
+            .getSemantics(find.bySemanticsLabel(actionText))
+            .getSemanticsData();
+        expect(data.flagsCollection.isEnabled, ui.Tristate.isTrue);
+      } finally {
+        handle.dispose();
+      }
+    });
+
+    testWidgets('Tab skips the disabled action and Enter calls nothing',
+        (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        row(CoreTheme.light(), disabled: true, onAction: () => taps++),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      final focused = FocusManager.instance.primaryFocus!.context;
+      expect(
+        find.descendant(
+          of: find.byKey(actionKey),
+          matching: find.byElementPredicate((element) => element == focused),
+        ),
+        findsNothing,
+      );
+      expect(taps, 0);
+      expect(
+        find.byKey(const Key('inline_error_action_focus_ring')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a press on the disabled action does not turn the label '
+        'buttonPress', (tester) async {
+      final theme = CoreTheme.light();
+      await tester.pumpWidget(row(theme, disabled: true));
+
+      final gesture = await tester.startGesture(
+        tester.getRect(find.byKey(actionKey)).center,
+      );
+      await tester.pump();
+
+      expect(labelColor(tester), theme.coreColors.textDisable);
+      await gesture.up();
+    });
+
+    testWidgets('an action focused when it becomes disabled loses its ring',
+        (tester) async {
+      await tester.pumpWidget(row(CoreTheme.light(), disabled: false));
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      const ringKey = Key('inline_error_action_focus_ring');
+      expect(find.byKey(ringKey), findsOneWidget);
+
+      await tester.pumpWidget(row(CoreTheme.light(), disabled: true));
+      await tester.pump();
+
+      expect(find.byKey(ringKey), findsNothing);
+    });
+
+    testWidgets('enabling the action again restores textLink and the tap',
+        (tester) async {
+      final theme = CoreTheme.light();
+      var taps = 0;
+      await tester.pumpWidget(
+        row(theme, disabled: true, onAction: () => taps++),
+      );
+
+      await tester.pumpWidget(
+        row(theme, disabled: false, onAction: () => taps++),
+      );
+      await tester.tap(find.byKey(actionKey));
+
+      expect(labelColor(tester), theme.coreColors.textLink);
+      expect(taps, 1);
+    });
+
+    test('disabling the action without an action is rejected', () {
+      expect(
+        () => CoreInlineErrorRow(message: messageText, isActionDisabled: true),
+        throwsAssertionError,
+      );
     });
   });
 }
