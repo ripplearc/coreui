@@ -271,6 +271,7 @@ class GroupNameType {
   // `id != ''` rather than `id.isNotEmpty`: every call site is a const
   // expression, and `isNotEmpty` is not const-evaluable, so the getter form
   // fails to compile at each one.
+  /// Creates a group; [id] must not be empty.
   const GroupNameType({required this.id, required this.label})
       : assert(id != '', 'GroupNameType.id must be non-empty');
 
@@ -286,9 +287,12 @@ class GroupNameType {
 }
 
 /// Defines the types of results that can be displayed on the keyboard.
-/// - [label]: The label of the result
 class ResultType {
+  /// Name of the result, such as "Area". The result key shows it in
+  /// capitals.
   final String label;
+
+  /// Creates a result type named [label].
   const ResultType({required this.label});
 }
 

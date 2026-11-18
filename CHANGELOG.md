@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.100.2] - Doc comments on the keyboard keys
+
+### 📝 Documentation
+
+- Every public member of `CoreDigitInput`, `CoreOperatorButton`, `CoreUnitButton`, `CoreControlButton`, `CoreResultButton`, `FunctionKeyTile`, `GroupNameType` and `ResultType` now has a `///` doc comment. Their class docs lose the `[param] is …` lists; that text now sits on each field (CA-1385)
+- The old `CoreUnitButton` and `CoreResultButton` docs said a null `height` meant "78% of width or 60px" and "53% of width or 56px". Neither is true: a null `width` is 64 px and a null `height` takes the height the parent gives. The new docs say so
+- `FunctionKeyTile.hasPadding` is documented as not read, because the tile draws the same either way. No code changes
+
 ## [0.100.1] - Doc comments on 80 public members in lib/src/components
 
 ### 📝 Documentation

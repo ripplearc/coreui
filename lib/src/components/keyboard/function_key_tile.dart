@@ -8,26 +8,24 @@ import 'keyboard_models.dart';
 
 /// A tile widget for displaying a single function key.
 ///
-/// [keyType] is the key data to display.
-/// [onTap] is called when the key is tapped.
-/// [hasPadding] determines whether to add padding around the key (default: false).
-/// [customHint] is the screen-reader hint, in the app's own words; without
-/// it the tile announces no hint.
-///
-/// A screen reader announces [KeyType.semanticLabel] when the key has one —
-/// the full name behind an abbreviated face, `Footing` for `Footng` — and
-/// the face [KeyType.label] otherwise. The face is left out of the node, so
-/// the name is announced once. The tile adds no words of its own, so nothing
-/// it announces is fixed English.
-///
 /// The rendered tile carries [KeyType.resolvedTestKey] (`calc_key_<id>`, or
 /// [KeyType.testKey]) for Patrol and widget tests.
 class FunctionKeyTile extends StatefulWidget {
+  /// The function key to show: its label, optional icon and test key.
   final KeyType keyType;
+
+  /// Called when a tap on the tile ends.
   final VoidCallback onTap;
+
+  /// Not read by the tile: it draws the same either way. Defaults to false.
   final bool hasPadding;
+
+  /// Screen-reader hint, in the app's own words. When null the tile
+  /// announces no hint. The tile announces [KeyType.semanticLabel] when the
+  /// key has one, and the face [KeyType.label] otherwise.
   final String? customHint;
 
+  /// Creates a function key tile.
   const FunctionKeyTile({
     super.key,
     required this.keyType,
