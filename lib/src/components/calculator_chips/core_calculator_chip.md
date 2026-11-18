@@ -73,7 +73,7 @@ so the chip keeps its size. A touch tap does not focus the chip, so it draws no 
 `inert` chip. `CoreCalculatorChip.outlineKey` finds the outline in tests.
 
 The `error` value drops to `bodyMediumRegular` (the chip carries a sentence, not a number). The `dashed` outline is a
-`CoreDashedBorderDecoration` applied as the chip's `foregroundDecoration` — `CoreCalculatorChipTheme.dashedOutline`
+`CoreDashedBorderDecoration` applied in foreground position over the chip — `CoreCalculatorChipTheme.dashedOutline`
 resolves it, and the solid border is painted transparent at the same width so every variant measures the same.
 
 The tokens follow the Figma **Calculator Chip** component set (Design System page, node `58781:24269`, variants

@@ -28,54 +28,54 @@ Future<void> pumpChip(
   );
 }
 
-  // The chips that take input. Each one has a callback, so a press or Tab
+// The chips that take input. Each one has a callback, so a press or Tab
 // reaches its InkWell.
 final tappable = <CoreCalculatorChipType, CoreCalculatorChip>{
-    CoreCalculatorChipType.editable: CoreCalculatorChip(
-      type: CoreCalculatorChipType.editable,
-      value: '22ft',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.active: CoreCalculatorChip(
-      type: CoreCalculatorChipType.active,
-      value: '10ft',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.result: CoreCalculatorChip(
-      type: CoreCalculatorChipType.result,
-      label: 'Area',
-      value: '410.67ft²',
-      onLongPress: () {},
-    ),
-    CoreCalculatorChipType.error: CoreCalculatorChip(
-      type: CoreCalculatorChipType.error,
-      value: 'Dimension error',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.dashed: CoreCalculatorChip(
-      type: CoreCalculatorChipType.dashed,
-      value: '8ft ?',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.bracketOpen: CoreCalculatorChip(
-      type: CoreCalculatorChipType.bracketOpen,
-      value: '3×4',
-      semanticsLabel: 'open bracket, 3 times 4',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.bracketClosed: CoreCalculatorChip(
-      type: CoreCalculatorChipType.bracketClosed,
-      value: '3×4',
-      semanticsLabel: 'bracket, 3 times 4',
-      onTap: () {},
-    ),
-    CoreCalculatorChipType.stale: CoreCalculatorChip(
-      type: CoreCalculatorChipType.stale,
-      label: 'Calc',
-      semanticsLabel: 'Calc, pending',
-      onTap: () {},
-    ),
-  };
+  CoreCalculatorChipType.editable: CoreCalculatorChip(
+    type: CoreCalculatorChipType.editable,
+    value: '22ft',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.active: CoreCalculatorChip(
+    type: CoreCalculatorChipType.active,
+    value: '10ft',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.result: CoreCalculatorChip(
+    type: CoreCalculatorChipType.result,
+    label: 'Area',
+    value: '410.67ft²',
+    onLongPress: () {},
+  ),
+  CoreCalculatorChipType.error: CoreCalculatorChip(
+    type: CoreCalculatorChipType.error,
+    value: 'Dimension error',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.dashed: CoreCalculatorChip(
+    type: CoreCalculatorChipType.dashed,
+    value: '8ft ?',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.bracketOpen: CoreCalculatorChip(
+    type: CoreCalculatorChipType.bracketOpen,
+    value: '3×4',
+    semanticsLabel: 'open bracket, 3 times 4',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.bracketClosed: CoreCalculatorChip(
+    type: CoreCalculatorChipType.bracketClosed,
+    value: '3×4',
+    semanticsLabel: 'bracket, 3 times 4',
+    onTap: () {},
+  ),
+  CoreCalculatorChipType.stale: CoreCalculatorChip(
+    type: CoreCalculatorChipType.stale,
+    label: 'Calc',
+    semanticsLabel: 'Calc, pending',
+    onTap: () {},
+  ),
+};
 
 void main() {
   group('CoreCalculatorChip Widget Tests', () {
