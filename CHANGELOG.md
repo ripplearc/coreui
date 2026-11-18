@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.90.0] - CoreSwitch disabled state and Show Hide look
+## [0.100.0] - CoreSwitch disabled state and Show Hide look
 
 ### ✨ Features
 
@@ -20,6 +20,89 @@ Show Hide is 32 high; the other labelled types stay 24 high. The Show Hide thumb
 ### 🧪 Tests
 
 - Widget tests: Show Hide label, size and colours; disabled colours for every type in On and Off; the thumb side of a disabled switch; a tap on a disabled switch; Tab skips a disabled switch and draws no ring; the semantics of an enabled and a disabled switch, and that an enabled one is focusable. Goldens: Show Hide and a disabled grid of every look in On and Off (light and dark). Accessibility tests: a screen reader can toggle an enabled switch; a disabled one exposes no tap action. Large text: every labelled type, On and Off, keeps its label inside the track and on one line at its full width at 1.5x and 2.0x (15 of the 16 fail without the fix; normal "On" at 1.5x fits anyway). On thumb is `textInverse` for every type in light and dark. A disabled On thumb keeps the edge gap of an enabled one, for every type, compact and labelled. The Show Hide thumb sits at the Figma gaps. The Show Hide word sits against the far padding, enabled and disabled, On and Off, measured in Roboto (all 4 fail with the word centred). Focus: the ring is 2 dp clear of the track for normal and Show Hide, On and Off (fails without the gap). Goldens: Show Hide focused Off and On, light and dark; the normal focused goldens are redrawn with the gap
+
+## [0.99.0] - CoreInlineErrorRow disabled action
+
+### ✨ Features
+
+- **CoreInlineErrorRow**: `isActionDisabled` gives the action its disabled look while the retry it starts is running, as the storyboard frame "Look-up, saved prices not read" says: the label stays, in `textDisable` and the same size and weight, with no spinner. A tap, Enter or Space calls nothing, Tab skips the action and no focus ring or pressed colour shows, and a screen reader reads it as a disabled button. The tap zone and the row do not change size or move. Only valid together with `actionLabel` (asserted) (CA-1411)
+- Showcase: the Inline Error Row screen has a row that disables its action for two seconds after a tap, and the component doc lists the new property
+
+### 🧪 Tests
+
+- Disabled action: no `onAction` call on a tap by key or by label, `textDisable` in both themes with the size and weight kept, the row, zone and label unmoved, the message keeping its colour and live region, a disabled button with no tap action for a screen reader and an enabled one when not disabled, Tab, Enter and Space doing nothing and drawing no ring, no `buttonPress` colour on a press, the ring gone when an action becomes disabled while focused, `textLink` and the tap back after it is enabled again, and the assert without an action. A11y: the disabled action's 48 dp zone and label in both themes, asserted directly because Flutter's guidelines skip a disabled node. Goldens: the disabled action added to the light and dark variants images
+
+## [0.94.0] - CoreInlineErrorRow
+
+### ✨ Features
+
+- **CoreInlineErrorRow**: a one-line error row. A `CoreIcons.error` icon at 16 dp in `iconRed` and the message in `bodySmallRegular` in `textError`, with 8 dp between them, as the storyboard draws it; the icon is centred on the message's first line, also when the message wraps and when the phone's text size is changed. The icon and message are one live region, so a screen reader announces the message when the row appears. An optional `actionLabel` with `onAction` adds a `textLink` action such as "Try again" in `bodyLargeSemiBold`, as the storyboard draws it, in its own button node, with a tap zone of at least 48 x 48 dp, 12 dp after the message; one without the other is rejected. The action is at most half the row wide and wraps beyond that. Tab reaches the action and Enter or Space calls `onAction`; focus draws a 3 dp `outlineFocus` stadium ring around the label, 12 dp wider at each side so it never moves the layout, and pressed turns the label `buttonPress`, as the library Text button does; a touch tap draws no ring. The label and the whole zone end at the row's end edge. The row cannot sit inside an intrinsic-size parent such as `IntrinsicHeight`. `actionKey` puts a `Key` on the action's tap zone so a test can find it (CA-1316)
+- Showcase: an Inline Error Row screen in the example app, and a component doc
+
+### 🧪 Tests
+
+- Message and action styles and colours, the icon's size and `iconRed` colour in both themes, the 12 dp gap before the action, the 8 dp gap, the label ending at the row's edge in both directions and the last 2 dp of the zone tappable, no action unless given, one `onAction` call per tap on the action and none on the message, the 48 x 48 dp zone, wrapping with the icon centred on the first line, also at 1.3x and 2x text, a one-line message's icon on the line's centre, the two asserts, `actionKey` finding the action, a short label's 48 dp wide zone and a tap beside it, the row's height under a loose-height parent, no overflow at twice the text size, the message keeping at least half of a 320 dp row at twice the text size, and the icon on the start side in right-to-left; the message announced as a live region, with the unlabelled icon adding nothing to it, and the action as a separate button outside it. Keyboard: Tab then Enter, Tab then Space, the ring's size, colour and pixel and nothing moving, no ring on a touch tap, the pressed label colour and its release. A11y: tap target, label and text contrast guidelines in both themes. Goldens: light and dark, with every variant, and the focused action
+
+## [0.93.0] - A function key announces its full name, and the group dots get their own tokens
+
+### 🔧 Fixes
+
+- **FunctionKeyTile**: a key with `KeyType.semanticLabel` is announced by it — the full name behind an abbreviated face, "Footing" for `Footng` — and a key without one, or with an empty one, by its face. The hint is `customHint` or nothing (the strip and the sheet pass no hint, so a function key on the keyboard announces its name alone). The face is left out of the node, so the name is announced once, not the name and then the face. The tile adds no words of its own: "function key" and "Tap to use … function" are gone, so nothing it announces is fixed English. Same on the strip and in the "View all" sheet (CA-1195 A)
+
+### ✨ Features
+
+- **AppColorsExtension.keyboardGroupGeometry / keyboardGroupShapes / keyboardGroupMaterials / keyboardGroupUnit / keyboardGroupTrigonometry**: one accent token per function-key group for the dot on the strip and in the "View all" sheet, from `CoreKeyboardColors` and `CoreDarkKeyboardColors`. Light: `orient800` `#015B7C` 7.21:1, `violet500` `#7A5AF8` 4.33:1, `orange500` `#EB5000` 3.54:1, `royalBlue500` `#2970FF` 4.14:1, `green500` `#009E69` 3.30:1 on the page background. Dark: `orient400` `#00AEE0` 6.87:1, `violet500` 3.93:1, `amber500` `#F79009` 7.56:1, `royalBlue500` 4.10:1, `emerald500` `#12B76A` 6.77:1. Every dot reaches 3:1 (WCAG 1.4.11) and no two match in either theme. The prototype's amber and green reach only 2.25:1 and 2.51:1 on the light sheet, so they take the nearest palette step that passes; its teal reaches 2.36:1 on the dark one, and `orient700`, the nearest step that passes, does so at 3.03:1 with no margin, so the dark Geometry dot takes `orient400`, the teal the dark keyboard already uses for its main key (CA-1195 B)
+- Showcase: the colour screen gains a "Function-key group dots" section and the keyboard screen's groups use the new tokens
+
+### 📐 Design notes
+
+- `ControlAction.moreOptions` stays deprecated, not deleted (CA-1195 C): the app still carries its `case ControlAction.moreOptions:` arm until CA-1087 replaces its calculator bloc. The deletion is a breaking change and follows in its own release once that arm is gone
+
+### 🧪 Tests
+
+- Tile: a `semanticLabel` is exactly what the Semantics node announces, a key without one or with an empty one exactly its face, the hint is the caller's or absent, a screen reader tap presses the key once, and a named and a bare key meet the tap target and label guidelines in both themes; the same read on the strip and in the "View all" sheet. Tokens: the five values in each theme, 3:1 on the page background, five different colours per theme, `copyWith`, and `lerp` toward five other dots; the colour swatch goldens gain the five tokens and grow 100 px so the shadow row stays whole. Keyboard and value editor goldens are unchanged
+
+## [0.92.0] - The keyboard's screen-reader strings come from the app (2/2: the keyboard, the sheet and the value editor)
+
+### ✨ Features
+
+- **CoreKeyboard**, **CoreFunctionKeyBottomSheet** and **CoreValueEditorSheet** (as `keyboardSemantics`, on both constructors and both `show` helpers) take a `CoreKeyboardSemantics` and hand it to every key, the drag handle, the "View all" button and its hint, the unit system switch, the group headers and their drag handles. With a set supplied, no screen-reader label or hint on the keyboard, the collapsed keyboard or the "View all" sheet is an English literal from coreui, except what is named here: the function-key tile's own words are CA-1195's (#259); the visible "Function keys", "… group" and "Measurement System" texts and the switch's "Imperial" / "Metric" faces are read as part of their nodes and are CA-1370's; the visible "View all" is seen and not read (CA-1198, 2/2)
+- The "View all" button's own node carries the set's label and hint, where before they merged into the strip and the focused button announced its visible "View all"; the node keeps the button's enabled and focusable state
+- **CoreSizesTableData.keyboardSemantics**: the entry sheet a `CoreGeometryArea` table opens hands it to the keyboard it embeds, so that path takes the app's set too
+- `parenSemanticLabel` / `parenSemanticHint` and `reorderSemanticsLabelBuilder` stay as they were and, when set, win over the set's `controlLabel`, `controlHint` and `reorderHandle`. `CoreFunctionKeyBottomSheet.defaultReorderSemanticsLabel` is deprecated: it is `CoreKeyboardSemantics.english.reorderHandle`
+- Showcase: the keyboard, value editor, geometry area, display area and suggestion area screens pass the showcase set to every keyboard and entry sheet they show
+
+### 🧪 Tests
+
+- Inside `CoreKeyboard` every digit, operator, unit (imperial and metric), control and result key, the drag handle, "View all" and its hint follow the set exactly; the sheet's switch, group header and drag handle, and those of a sheet built on its own, contain the set's label; a screen reader tap on "View all" opens the sheet; the paren label, the paren hint and the reorder builder win over the set; a keyboard built without a set keeps the English; `CoreValueEditorSheet` passes the set on from `show` and `showSingleValue`, and a `CoreGeometryArea` table's entry sheet from `keyboardSemantics`. A11y: every key kind (found by its own key) and "View all" meet the tap target and label guidelines in both themes with caller-supplied labels, and their nodes measure at least 48 dp; the drag handle announces the caller's label (its 12 dp height is older code; CA-1361 gives it a 48 dp tap area). Keyboard and value editor goldens are unchanged
+
+## [0.91.0] - The keyboard's screen-reader strings come from the app (1/2: the object and the keys)
+
+### ✨ Features
+
+- **CoreKeyboardSemantics**: one object for every string a screen reader announces on the keyboard — a builder per key kind (digit, operator, unit, control label and hint, result label from the key's face) and the strings of the result hint, the drag handle, the "View all" button and its hint, the unit system switch, the group headers and their drag handles. Each key widget (`CoreDigitInput`, `CoreOperatorButton`, `CoreUnitButton`, `CoreControlButton`, `CoreResultButton`) and `CoreNumberKeypad` take it as `semantics`; `CoreKeyboard`, its "View all" sheet and `CoreValueEditorSheet` take it in 0.92.0 (CA-1198, 1/2)
+- The parameter is optional and defaults to `CoreKeyboardSemantics.english`, the strings the keys announced before, so no caller breaks. That default is an exception to the 0.15.0 rule that a user-facing string reaches the screen only through the app's localisation, which CA-1198 allows: the English lives in one constant that an app replaces with its localisation in one place, at the cost that a call site which forgets the set stays English with no warning. A per-key `semanticLabel` / `semanticHint` on `CoreControlButton` stays as it was and, when set, wins over the object's `controlLabel` / `controlHint`
+- Showcase: the number keypad screen passes a showcase set
+
+### 🔧 Fixes
+
+- **A key's visible face is left out of its semantics node**: each key drew its face (`7`, `Feet`, `( )`, `=`) with a plain `Text`, which Flutter merged into the key's node, so a screen reader read the supplied label and then the English face ("Pieds, Feet"). The face is now excluded and the node carries the supplied label alone (CA-1198, 1/2)
+
+### 🧪 Tests
+
+- Each key kind announces exactly the caller-supplied label, the English face not read, and the hint where it has one, when built alone; a per-key label or hint on a control key wins over the set; a result key with a caller-supplied face gets no hint; the English constant equals the former literals, every `ControlAction` included; `CoreNumberKeypad` passes the set to its digit and backspace keys. Keyboard goldens are unchanged
+
+## [0.89.0] - CoreQuickSheet fixed height
+
+### ✨ Features
+
+- **CoreQuickSheet**: `isFixedHeight` (default `false`) keeps the sheet at one height, so it no longer grows or shrinks when its content changes and the controls at the top stay under the thumb. The child gets the full height below the drag handle, so a caller can wrap one part in `Expanded` to fill the spare height and keep a footer at the bottom. Content that does not fit scrolls only if that `Expanded` part is a scroll view, such as a `ListView`. `fixedHeightRatio` lets the caller set that height as a share of the screen (for example 0.64, as in CUJ 7); it defaults to 0.9, and values above 0.9 are capped at 0.9, so the 90% limit is kept, and with the option off the sheet sizes to its content exactly as before (CA-1343)
+- Showcase: a Fixed Height Sheet demo in the quick sheet screen, at 64% with `useSafeArea: true` so the footer stays above the home bar
+
+### 🧪 Tests
+
+- Widget tests: height is 90% of the screen by default and the caller's ratio when one is passed (also with a bottom inset), a ratio above 90% is capped, a ratio without the option or of 0 is an error, height unchanged when the content changes, filling part and footer, a child that does not fill still gets all the height below the handle, long content scrolls, default still wraps its content
+- Goldens: fixed height with short content (filled, footer at the bottom), with long content, and at a 64% ratio, on a 400 x 800 dp view
 
 ## [0.88.0] - CoreUnderlineTextField text that wraps to several lines
 
