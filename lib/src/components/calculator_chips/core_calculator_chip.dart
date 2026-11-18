@@ -305,49 +305,48 @@ class CoreCalculatorChip extends StatelessWidget {
                         borderRadius: CoreCalculatorChipTheme.borderRadius,
                       )
                     : null,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (factor != null && _isInteractive)
-                    ExcludeSemantics(
-                      child: CoreIconWidget(
-                        icon: factor,
-                        size: CoreSpacing.space5,
-                        color: CoreCalculatorChipTheme.factorColor(
-                          type: type,
-                          colors: colors,
-                          inert: inert,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (factor != null && _isInteractive)
+                      ExcludeSemantics(
+                        child: CoreIconWidget(
+                          icon: factor,
+                          size: CoreSpacing.space5,
+                          color: CoreCalculatorChipTheme.factorColor(
+                            type: type,
+                            colors: colors,
+                            inert: inert,
+                          ),
                         ),
                       ),
-                    ),
-                  if (label != null)
-                    ExcludeSemantics(
-                      child: Text(
-                        label,
-                        style: CoreCalculatorChipTheme.labelStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                    if (label != null)
+                      ExcludeSemantics(
+                        child: Text(
+                          label,
+                          style: CoreCalculatorChipTheme.labelStyle(
+                            type: type,
+                            colors: colors,
+                            typography: typography,
+                          ),
                         ),
                       ),
-                    ),
-                  if (value != null) ...[
-                    if (hasLeading)
-                      const SizedBox(width: CoreSpacing.space1),
-                    ExcludeSemantics(
-                      child: Text(
-                        value,
-                        style: CoreCalculatorChipTheme.valueStyle(
-                          type: type,
-                          colors: colors,
-                          typography: typography,
+                    if (value != null) ...[
+                      if (hasLeading) const SizedBox(width: CoreSpacing.space1),
+                      ExcludeSemantics(
+                        child: Text(
+                          value,
+                          style: CoreCalculatorChipTheme.valueStyle(
+                            type: type,
+                            colors: colors,
+                            typography: typography,
+                          ),
                         ),
                       ),
-                    ),
-                  ]
-                ],
-              ),
+                    ]
+                  ],
+                ),
               ),
             ),
           ),
