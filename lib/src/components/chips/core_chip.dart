@@ -475,7 +475,12 @@ class _CoreChipState extends State<CoreChip> {
     );
     // A parent that forces a wider box (an Expanded) would stretch the
     // Stack and move the target off the × to the far end. The Align keeps
-    // the Stack the chip's size.
-    return Align(widthFactor: 1, heightFactor: 1, child: closable);
+    // the Stack the chip's size, at the start like a Row child.
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      widthFactor: 1,
+      heightFactor: 1,
+      child: closable,
+    );
   }
 }

@@ -1146,6 +1146,22 @@ void main() {
       expect(tester.getSize(find.byKey(CoreChip.surfaceKey)), alone);
     });
 
+    for (final direction in TextDirection.values) {
+      testWidgets('in an Expanded, the ${direction.name} chip starts at the '
+          'start edge', (tester) async {
+        await pumpExpandedChip(tester, textDirection: direction);
+
+        final row = tester.getRect(find.byType(Row).first);
+        final surface = tester.getRect(find.byKey(CoreChip.surfaceKey));
+        expect(
+          direction == TextDirection.ltr
+              ? surface.left == row.left
+              : surface.right == row.right,
+          isTrue,
+        );
+      });
+    }
+
     testWidgets('a focused close button that goes away and comes back has '
         'no ring', (tester) async {
       await pumpExpandedChip(tester);
