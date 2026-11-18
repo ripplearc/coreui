@@ -795,6 +795,26 @@ void main() {
           expect(find.text('First toast'), findsOneWidget);
           expect(tester.takeException(), isNull);
         });
+
+        testWidgets(
+            '$name with onAction and no actionLabel fails at the caller '
+            'and leaves the toast on screen', (tester) async {
+          await tester.pumpWidget(
+            buildHost((context) => show(context, 'First toast', 'Close')),
+          );
+          await tester.tap(find.text('Show Toast'));
+          await tester.pumpAndSettle();
+          final context = tester.element(find.text('Show Toast'));
+
+          expect(
+            () => show(context, 'Second toast', 'Close', onAction: () {}),
+            throwsAssertionError,
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.text('First toast'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        });
       }
     });
 
