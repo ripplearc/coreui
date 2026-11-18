@@ -31,6 +31,8 @@ class CoreSelectButton extends StatelessWidget {
   /// as the argument. If null, taps are still registered but have no effect.
   final ValueChanged<int>? onChanged;
 
+  /// Creates a segmented selector. [selectedIndex] must be 0 or more and,
+  /// when [tabs] is not empty, less than its length.
   const CoreSelectButton({
     super.key,
     required this.tabs,

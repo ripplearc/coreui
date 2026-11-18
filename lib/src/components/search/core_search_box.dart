@@ -51,6 +51,7 @@ class CoreSearchBox extends StatefulWidget {
   /// The library variant to draw. Defaults to [CoreSearchBoxType.pill].
   final CoreSearchBoxType type;
 
+  /// Creates a search field. The default labels are English.
   const CoreSearchBox({
     super.key,
     this.hintText,

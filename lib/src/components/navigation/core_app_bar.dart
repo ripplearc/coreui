@@ -223,6 +223,8 @@ class CoreAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Defaults to the theme's `pageBackground`.
   final Color? backgroundColor;
 
+  /// Creates an app bar. Pass [title] or [titleText], not both, and a
+  /// [height] of at least 48 so the tap targets fit.
   const CoreAppBar({
     super.key,
     this.title,

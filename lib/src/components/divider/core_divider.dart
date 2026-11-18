@@ -104,6 +104,8 @@ class CoreDivider extends StatelessWidget {
   /// migrated call sites.
   static const double thickness = 1.0;
 
+  /// Creates a full-width rule in the theme's `lineLight` colour, unless
+  /// [color], [indent] or [endIndent] say otherwise.
   const CoreDivider({
     super.key,
     this.color,

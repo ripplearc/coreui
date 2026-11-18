@@ -10,6 +10,7 @@ class CoreEstimateSummaryCharge {
   /// The formatted amount, sign included, e.g. "+$85.00".
   final String amount;
 
+  /// Creates a charge row; both strings arrive formatted and localised.
   const CoreEstimateSummaryCharge({required this.label, required this.amount});
 }
 
@@ -75,6 +76,8 @@ class CoreEstimateSummaryCard extends StatelessWidget {
   /// Shown in place of the amount by [CoreEstimateSummaryCard.empty].
   static const String emptyAmount = '—';
 
+  /// Creates the card for a line that totals: the amount it adds and the
+  /// estimate's total before and after.
   const CoreEstimateSummaryCard({
     super.key,
     required this.title,
@@ -85,6 +88,8 @@ class CoreEstimateSummaryCard extends StatelessWidget {
     required String this.totalAfter,
   }) : note = null;
 
+  /// Creates the card before the line can total: a dash for the amount and
+  /// [note] in place of the totals row.
   const CoreEstimateSummaryCard.empty({
     super.key,
     required this.title,
