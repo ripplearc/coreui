@@ -54,7 +54,7 @@ CoreSuggestionArea(
 | `conversionsRowTagLabel` | `String` | No | `'as'` | In `twoRows`, the word of the tag (ruler icon + text) that leads the conversions row, so "conversion" is said once and the chips show only their value. Decorative — excluded from semantics. Override per locale. Ignored in `toggle`. |
 | `conversionsRowSemanticsLabel` | `String` | No | `'Convert to other units'` | In `twoRows`, the group label a screen reader announces on entering the conversions row, giving its value-only chips their context. Override per locale. Ignored in `toggle`. |
 | `suggestionsSemanticsLabelBuilder` | `String Function(List<SuggestionData>)?` | No | `null` | Builds the live-region text announced when the visible suggestions change (the active list in `toggle`; both rows in `twoRows`, minus the conversions row while `secondRowHidden`). `null` uses `CoreSuggestionArea.defaultSuggestionsSemanticsLabel`, which joins each suggestion's `semanticsLabel` — or label, value and unit — with commas. Override per locale. |
-| `note` | `String?` | No | `null` | A short warning the strip shows in place of everything else while set (`12ft was not added.`), in `textWarningStrong` at `bodyLargeRegular` (16/24), up to two lines. `null` or empty shows the suggestions or the placeholder. Setting it folds an expanded row and reports it through `onExpandedChanged`. Announced as a live region. Carries `CoreSuggestionArea.noteKey` (`calc_strip_note`). Must be localised by the app. |
+| `note` | `String?` | No | `null` | A short warning the strip shows in place of everything else while set (`12ft was not added.`), in `textWarningStrong` at `bodyMediumRegular` (14/20), never cut with "…": it wraps, and the strip grows to fit it. `null` or empty shows the suggestions or the placeholder. Setting it folds an expanded row and reports it through `onExpandedChanged`. Announced as a live region. Carries `CoreSuggestionArea.noteKey` (`calc_strip_note`). Must be localised by the app. |
 
 ### SuggestionData
 
@@ -121,9 +121,10 @@ CoreSuggestionArea(
 ### Strip note
 
 The strip's own slot for a refusal. While `note` is set it replaces the suggestions and the placeholder, so the app
-sets it on a refused key and clears it on the next one without touching its lists. At the default text size two lines
-fit inside the strip's minimum height, so a one-row strip does not move and the keyboard stays put; at a larger text
-scale they are taller than it, as two chip rows are. A two-row strip folds to one row, as it does when its lists empty.
+sets it on a refused key and clears it on the next one without touching its lists. A note is never cut with "…". At
+the default text size a note of the app's length (about 52 characters, two lines at 300 px) fits inside the strip's
+minimum height, so a one-row strip does not move and the keyboard stays put; at a larger text scale the strip grows
+taller to fit the whole note. A two-row strip folds to one row, as it does when its lists empty.
 
 ```dart
 CoreSuggestionArea(

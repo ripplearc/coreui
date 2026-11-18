@@ -224,6 +224,23 @@ abstract final class CoreCalculatorChipTheme {
   static BorderRadius get borderRadius =>
       BorderRadius.circular(CoreSpacing.space6);
 
+  /// The corners of a chip of [type] whose text is [lineHeight] high on one
+  /// line. [CoreCalculatorChipType.error] wraps, so its corners are half the
+  /// height of a one-line chip: a one-line error is the pill it always was,
+  /// and an error that wraps onto more lines keeps round corners that do not
+  /// cut into its text (14 dp for an error of one line of `bodySmallRegular`
+  /// text). Every other type keeps [borderRadius], which a one-line chip
+  /// draws as the same pill.
+  static BorderRadius borderRadiusFor(
+    CoreCalculatorChipType type, {
+    required double lineHeight,
+  }) =>
+      type == CoreCalculatorChipType.error
+          ? BorderRadius.circular(
+              (lineHeight + padding.vertical + 2 * borderWidth) / 2,
+            )
+          : borderRadius;
+
   /// The default border width for all calculator chips.
   static const double borderWidth = 1;
 

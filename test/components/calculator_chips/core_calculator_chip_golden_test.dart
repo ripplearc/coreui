@@ -272,7 +272,7 @@ void main() {
                     value: '6in/12in',
                   ),
                   CoreCalculatorChip(
-                    type: CoreCalculatorChipType.error,
+                    type: CoreCalculatorChipType.editable,
                     value: 'Area and length cannot be added together',
                   ),
                 ],
@@ -306,5 +306,71 @@ void main() {
       matchesGoldenFile('goldens/core_calculator_chip_long_names_dark.png'),
     );
     debugDisableShadows = true;
+  });
+
+  Future<void> pumpWrappedError(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    // 448x200 @ 2.0 => 224x100 logical: a 192-wide tape row holding the
+    // error of CA-1467's example, which wraps onto a second line with round
+    // 14 dp corners, beside a one-line error that looks as it always has.
+    tester.view.physicalSize = const Size(448, 200);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: _withRoboto(theme),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: const Padding(
+            padding: EdgeInsets.all(CoreSpacing.space4),
+            child: SizedBox(
+              width: CoreSpacing.space48,
+              child: Wrap(
+                spacing: CoreSpacing.space2,
+                runSpacing: CoreSpacing.space2,
+                children: [
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.error,
+                    label: 'Area and length cannot be added',
+                  ),
+                  CoreCalculatorChip(
+                    type: CoreCalculatorChipType.error,
+                    label: 'Error',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  testWidgets('CoreCalculatorChip wrapped error Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpWrappedError(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_wrapped_error_light.png'),
+    );
+  });
+
+  testWidgets('CoreCalculatorChip wrapped error Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpWrappedError(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_calculator_chip_wrapped_error_dark.png'),
+    );
   });
 }

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -1302,11 +1303,11 @@ void main() {
       final typography = AppTypographyExtension.of(context);
       expect(text.data, note);
       expect(text.style!.color, colors.textWarningStrong);
-      expect(text.style!.fontWeight, typography.bodyLargeRegular.fontWeight);
-      expect(text.style!.fontSize, typography.bodyLargeRegular.fontSize);
-      expect(text.style!.height, typography.bodyLargeRegular.height);
-      expect(text.maxLines, 2);
-      expect(text.overflow, TextOverflow.ellipsis);
+      expect(text.style!.fontWeight, typography.bodyMediumRegular.fontWeight);
+      expect(text.style!.fontSize, typography.bodyMediumRegular.fontSize);
+      expect(text.style!.height, typography.bodyMediumRegular.height);
+      expect(text.maxLines, isNull, reason: 'a note is never cut (CA-1467)');
+      expect(text.overflow, isNot(TextOverflow.ellipsis));
       expect(find.text(CoreSuggestionArea.defaultSuggestionAreaPlaceholder),
           findsNothing);
     });
@@ -1372,16 +1373,16 @@ void main() {
           findsOneWidget);
     });
 
-    testWidgets('the strip keeps its minimum height under a two-line note',
-        (WidgetTester tester) async {
+    testWidgets(
+        'the strip keeps its minimum height under a note of the app\'s length '
+        'that wraps', (WidgetTester tester) async {
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
       });
       tester.view.physicalSize = const ui.Size(390, 844);
       tester.view.devicePixelRatio = 1.0;
-      const long = '12ft was not added. A length cannot join an area; finish '
-          'the area, or clear it, and type the length again after that.';
+      const long = 'A pitch must be under 90°. Edit the Pitch chip.';
 
       await pumpSuggestionArea(tester, testCoreSuggestionArea(note: note));
       final empty = tester.getSize(find.byType(CoreSuggestionArea));
@@ -1428,8 +1429,60 @@ void main() {
       expect(noteRect.right, lessThanOrEqualTo(strip.right));
       expect(
           tester.widget<Text>(find.byKey(CoreSuggestionArea.noteKey)).maxLines,
-          2);
+          isNull);
     });
+
+    for (final scale in const [1.0, 1.3, 2.0]) {
+      testWidgets(
+          'CA-1467: at 390 px with text at ${(scale * 100).round()}% a long '
+          'note shows every word, never cut with "…", and the strip grows to '
+          'fit it; a note of the app\'s length keeps the 64 dp strip at the '
+          'default size', (WidgetTester tester) async {
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+        tester.view.physicalSize = const ui.Size(390, 844);
+        tester.view.devicePixelRatio = 1.0;
+        const long = '12ft was not added. A length cannot join an area; '
+            'finish the area, or clear it, and type the length again.';
+        const appLength = 'A pitch must be under 90°. Edit the Pitch chip.';
+
+        for (final text in const [long, appLength]) {
+          await pumpSuggestionArea(
+            tester,
+            MediaQuery.withClampedTextScaling(
+              minScaleFactor: scale,
+              maxScaleFactor: scale,
+              child: testCoreSuggestionArea(note: text),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(tester.takeException(), isNull);
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find
+                .descendant(
+                  of: find.byKey(CoreSuggestionArea.noteKey),
+                  matching: find.byType(RichText),
+                )
+                .first,
+          );
+          expect(paragraph.didExceedMaxLines, isFalse, reason: text);
+          final strip = tester.getRect(find.byType(CoreSuggestionArea));
+          final noteRect =
+              tester.getRect(find.byKey(CoreSuggestionArea.noteKey));
+          expect(noteRect.bottom, lessThanOrEqualTo(strip.bottom),
+              reason: text);
+          expect(noteRect.right, lessThanOrEqualTo(strip.right), reason: text);
+        }
+        final strip = tester.getRect(find.byType(CoreSuggestionArea));
+        if (scale == 1.0) {
+          expect(strip.height, CoreSpacing.space16,
+              reason: 'the keys below do not move');
+        }
+      });
+    }
 
     testWidgets(
         'a note folds an expanded row and reports it; clearing it brings the '

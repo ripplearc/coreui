@@ -510,7 +510,7 @@ void main() {
       'finish the area, or clear it, and type the length again after that, '
       'and the strip shows the suggestions again.';
 
-  testWidgets('SuggestionArea two-line note Golden Test - Light',
+  testWidgets('SuggestionArea long note, never cut, Golden Test - Light',
       (WidgetTester tester) async {
     await pumpNote(tester, CoreTheme.light(), note: twoLineNote);
 
@@ -520,7 +520,7 @@ void main() {
     );
   });
 
-  testWidgets('SuggestionArea two-line note Golden Test - Dark',
+  testWidgets('SuggestionArea long note, never cut, Golden Test - Dark',
       (WidgetTester tester) async {
     await pumpNote(tester, CoreTheme.dark(), note: twoLineNote);
 

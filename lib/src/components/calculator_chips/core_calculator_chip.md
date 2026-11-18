@@ -39,6 +39,11 @@ whole: the value is the app's number, shorter than any row, and is the part that
 shortens its value instead. The screen-reader label still carries the whole text. In an unbounded width, such as a
 horizontal scroll view, nothing is shortened and the chip takes its full width.
 
+An `error` chip is never shortened: its message is what the user reads to fix the tape, so a long one wraps onto more
+lines and the chip grows taller (`Area and length cannot be` / `added`). Its corners are half the height of a one-line
+chip, so a one-line error is the same pill as before and a wrapped one keeps round corners that do not cut into its
+text (CA-1467).
+
 ## Types
 
 On the tape an **outlined** chip is something the user typed and a **filled** chip is something the app worked out.

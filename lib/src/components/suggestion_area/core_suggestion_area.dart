@@ -247,15 +247,18 @@ class CoreSuggestionArea extends StatefulWidget {
       suggestionsSemanticsLabelBuilder;
 
   /// A short warning the strip shows in place of everything else while set —
-  /// "12ft was not added." — in `textWarningStrong` at `bodyLargeRegular`, up
-  /// to two lines, the second ending in an ellipsis. `null` or an empty
-  /// string, the default, shows the suggestions or the placeholder as usual.
+  /// "12ft was not added." — in `textWarningStrong` at `bodyMediumRegular`,
+  /// never cut with an ellipsis: a note longer than its lines wraps, and the
+  /// strip grows taller to fit it. `null` or an empty string, the default,
+  /// shows the suggestions or the placeholder as usual.
   /// Setting it folds an expanded row and reports that through
   /// [onExpandedChanged] the way a suggestion change does; clearing it brings
   /// the rows back collapsed. A two-row strip folds to one row under it, as
-  /// it does when its lists empty. At the default text size two lines fit
-  /// inside the strip's minimum height; at a larger text scale they are
-  /// taller than it, as two chip rows are. Announced as a live region. Pass a
+  /// it does when its lists empty. At the default text size a note of the
+  /// app's length (about 52 characters, two lines at 300 px) fits inside the
+  /// strip's minimum height, so the keys below do not move; at a larger text
+  /// scale the strip grows to fit the whole note. Announced as a live region.
+  /// Pass a
   /// localised string from the app layer:
   /// ```dart
   /// note: state.refusal == null
@@ -462,16 +465,14 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     );
   }
 
-  Widget _buildMessage(String text, TextStyle style,
-      {Key? key, int? maxLines}) {
+  Widget _buildMessage(String text, TextStyle style, {Key? key}) {
     return Semantics(
       container: true,
       liveRegion: true,
       child: Text(
         text,
         key: key,
-        maxLines: maxLines,
-        overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
+        overflow: TextOverflow.clip,
         style: style,
       ),
     );
@@ -493,9 +494,8 @@ class _CoreSuggestionAreaState extends State<CoreSuggestionArea> {
     if (note != null) {
       content = _buildMessage(
         note,
-        typography.bodyLargeRegular.copyWith(color: colors.textWarningStrong),
+        typography.bodyMediumRegular.copyWith(color: colors.textWarningStrong),
         key: CoreSuggestionArea.noteKey,
-        maxLines: 2,
       );
     } else if (!hasVisible) {
       content = _buildMessage(
