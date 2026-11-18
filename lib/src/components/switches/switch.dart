@@ -159,6 +159,9 @@ class CoreSwitch extends StatelessWidget {
   final String? inactiveLabel;
 
   final Color? inactiveColor;
+
+  /// The name a screen reader reads. Without it a labelled switch reads its
+  /// current label and a compact switch has no name.
   final String? semanticLabel;
 
   const CoreSwitch({
