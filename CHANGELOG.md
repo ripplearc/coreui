@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.100.3] - Doc comments on the keyboard, its sheet, the number keypad and the text field
+
+### 📝 Documentation
+
+- Every public member of `CoreKeyboard`, `CoreFunctionKeyBottomSheet`, `CoreNumberKeypad`, `CoreTextField`, `UnderlineFieldMessage`, `SizeEntryResult` and `CoreValueEditorResult` now has a `///` doc comment. The `[param] is …` lists in the first four class docs move onto the fields. No code changes (CA-1385)
+
 ## [0.100.2] - Doc comments on the keyboard keys
 
 ### 📝 Documentation
