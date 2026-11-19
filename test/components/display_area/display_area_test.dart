@@ -1200,7 +1200,6 @@ void main() {
     );
   }
 
-  /// Swipes down once to reach the stage where previous sessions show.
   Future<void> revealPreviousSessions(WidgetTester tester) async {
     await tester.fling(
         find.byType(CoreDisplayArea), const Offset(0, 200), 1000);
