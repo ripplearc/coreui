@@ -1817,4 +1817,92 @@ void main() {
       expect(find.byKey(pillKey), findsNothing);
     });
   });
+
+  group('CoreDisplayArea long label', () {
+    const longLabel = 'Pitch-rise per 12in run';
+
+    Future<void> pumpArea(WidgetTester tester, String label) {
+      return tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: MediaQuery.withClampedTextScaling(
+              minScaleFactor: 2,
+              maxScaleFactor: 2,
+              child: CoreDisplayArea(
+                closeSemanticLabel: testCloseSemanticLabel,
+                historyPlaceholder: testHistoryPlaceholder,
+                label: label,
+                isTyping: true,
+                value: '6in/12in',
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets(
+        'a label longer than the row wraps at phone width with large text, '
+        'and the typing dots sit beside its last line, inside the area',
+        (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+
+      await pumpArea(tester, 'Rise');
+      final oneLineRect = tester.getRect(find.text('Rise'));
+      final oneLine = oneLineRect.height;
+      final dotsBelowLineCentre =
+          tester.getRect(find.byType(CoreWritingDots)).center.dy -
+              oneLineRect.center.dy;
+
+      await pumpArea(tester, longLabel);
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      final areaRect = tester.getRect(find.byType(CoreDisplayArea));
+      final labelRect = tester.getRect(find.text(longLabel));
+      expect(labelRect.height, greaterThan(oneLine));
+      expect(labelRect.right,
+          lessThanOrEqualTo(areaRect.right - CoreSpacing.space4));
+      final dotsRect = tester.getRect(find.byType(CoreWritingDots));
+      expect(dotsRect.right,
+          lessThanOrEqualTo(areaRect.right - CoreSpacing.space4));
+      expect(dotsRect.left, greaterThanOrEqualTo(labelRect.right));
+      expect(dotsRect.right, lessThan(areaRect.right - CoreSpacing.space4),
+          reason: 'the label box is as wide as its longest line, so the dots '
+              'follow the text and are not pushed to the end of the row');
+      final lastLineCentre = labelRect.bottom - oneLine / 2;
+      expect(dotsRect.center.dy - lastLineCentre, dotsBelowLineCentre,
+          reason: 'the dots sit beside the last line, where they sit beside '
+              'a one-line label, and not between the two lines');
+    });
+
+    testWidgets('a label too long for two lines ends in an ellipsis',
+        (WidgetTester tester) async {
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+      tester.view.physicalSize = const ui.Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      const veryLong = 'Pitch-rise per 12in run of the roof, measured along '
+          'the rafter from the wall plate to the ridge board';
+
+      await pumpArea(tester, longLabel);
+      final twoLines = tester.getSize(find.text(longLabel)).height;
+      await pumpArea(tester, veryLong);
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      final text = tester.widget<Text>(find.text(veryLong));
+      expect(text.maxLines, 2);
+      expect(text.overflow, TextOverflow.ellipsis);
+      expect(tester.getSize(find.text(veryLong)).height, twoLines);
+    });
+  });
 }
