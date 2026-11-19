@@ -310,7 +310,8 @@ class _HeaderState extends State<_Header> {
                 ),
               ),
             ),
-            if (onUnitSystemChanged case final callback?)
+            if (onUnitSystemChanged case final callback?) ...[
+              const SizedBox(width: CoreSpacing.space2),
               Semantics(
                 label: widget.switchSemanticsLabel,
                 toggled: isMetric,
@@ -328,6 +329,7 @@ class _HeaderState extends State<_Header> {
                   inactiveLabel: widget.labels.imperial,
                 ),
               ),
+            ],
           ],
         ),
       ],

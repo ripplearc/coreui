@@ -224,7 +224,10 @@ void main() {
 
       final measurementRect = tester.getRect(find.text(measurement));
       final switchRect = tester.getRect(find.byType(CoreSwitch));
-      expect(measurementRect.right, lessThanOrEqualTo(switchRect.left));
+      expect(switchRect.left - measurementRect.right,
+          greaterThanOrEqualTo(CoreSpacing.space2),
+          reason: 'a cut label keeps 8 dp from the switch, as in the other '
+              'rows of the sheet');
       expect(switchRect.right, lessThanOrEqualTo(sheet.right));
       expect(tester.widget<Text>(find.text(measurement)).overflow,
           TextOverflow.ellipsis);

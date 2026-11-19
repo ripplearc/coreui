@@ -38,6 +38,10 @@ class CoreKeyboardLabels {
   /// "View all". Keep it to a word or two: the button sits beside the group
   /// header, which gives way first, and a face wider than the strip overflows
   /// it.
+  ///
+  /// The screen reader says [CoreKeyboardSemantics.viewAllLabel], not this
+  /// face. Keep this face inside that label (WCAG 2.5.3, Label in Name), so a
+  /// voice control user can say the word they see.
   final String viewAll;
 
   /// The title of the "View all" sheet: "Function keys".
@@ -45,6 +49,10 @@ class CoreKeyboardLabels {
 
   /// The header of a group, built from the group's label, on the strip and in
   /// the sheet: "Materials group".
+  ///
+  /// The screen reader says [CoreKeyboardSemantics.groupHeader] for the same
+  /// group, not this text. Keep this text inside that label (WCAG 2.5.3, Label
+  /// in Name), so a voice control user can say the words they see.
   final String Function(String groupLabel) groupHeader;
 
   /// The label of the sheet's unit system row: "Measurement System".
