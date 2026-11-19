@@ -596,4 +596,43 @@ void main() {
       expect(placeholder.flagsCollection.isLiveRegion, isTrue);
     });
   });
+
+  group('CoreSuggestionArea note – accessibility', () {
+    const note = '12ft was not added.';
+
+    testWidgets('the note meets the contrast guideline in both themes',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+
+      await expectMeetsTapTargetAndLabelGuidelinesForEachTheme(
+        tester,
+        (theme) => testCoreSuggestionArea(note: note),
+        find.byType(CoreSuggestionArea),
+        checkTapTargetSize: false,
+        checkLabeledTapTarget: false,
+        checkTextContrast: true,
+      );
+    });
+
+    testWidgets('the note is a live region that reads the note',
+        (WidgetTester tester) async {
+      await setTestViewport(tester);
+      await setupA11yTest(tester);
+      final handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(body: testCoreSuggestionArea(note: note)),
+        ),
+      );
+
+      final semantics =
+          tester.getSemantics(find.byKey(CoreSuggestionArea.noteKey));
+      expect(semantics.label, note);
+      expect(semantics.flagsCollection.isLiveRegion, isTrue);
+      handle.dispose();
+    });
+  });
 }
