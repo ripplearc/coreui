@@ -74,7 +74,7 @@ On missing/invalid input, return an error object (see [Errors](#errors)).
    buckets come from `scripts/filter_files.sh` (patterns `lib/src/`,
    `lib/src/components/`, `test/`, `test/components/`); the `ink_using` bucket
    is confirmed by grepping the file
-   (`grep -lE "\b(Ink|InkWell|InkResponse)\(|Ink\.image\(" …`).
+   (`grep -lE '(^|[^A-Za-z0-9_])(Ink|InkWell|InkResponse)\(|Ink\.image\(' …`, the same pattern as rule 17, with no `\b`).
    `Digestible PR` always runs once over the production-code diff size.
 
 3. **Gate** `Accessibility` and `PR Text Matches Diff`:
