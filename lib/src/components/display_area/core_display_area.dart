@@ -147,7 +147,10 @@ class CoreDisplayArea extends StatefulWidget {
   /// one.
   ///
   /// The close icon and the widget are centred on that first 48 dp and stay
-  /// at the top of the row. A placeholder that wraps past it, as it does
+  /// at the top of the row. A widget taller than 48 dp, such as a small
+  /// [CoreButton] at the largest text size, starts at the top of the row
+  /// instead, and the close icon stays centred on the first 48 dp, a few dp
+  /// above the widget's centre. A placeholder that wraps past it, as it does
   /// beside a wide widget at a large text size, grows the row downward and
   /// moves neither of them, so both stay inside the collapsed area and can
   /// be tapped.

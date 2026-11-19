@@ -1627,6 +1627,38 @@ void main() {
       expect(pillRect.right, areaRect.right - CoreSpacing.space4);
     });
 
+    testWidgets(
+        'a widget taller than 48 dp starts at the top of the row and the '
+        'close icon stays centred on the first 48 dp',
+        (WidgetTester tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      tester.view.physicalSize = const ui.Size(1100, 1600);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: const Scaffold(
+            body: CoreDisplayArea(
+              closeSemanticLabel: testCloseSemanticLabel,
+              historyPlaceholder: 'Empty',
+              emptyTapeTrailing: SizedBox(
+                key: pillKey,
+                width: CoreSpacing.space16,
+                height: CoreSpacing.space16,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final pillRect = tester.getRect(find.byKey(pillKey));
+      final iconRect = tester.getRect(find.byType(CoreIconWidget));
+      expect(pillRect.height, CoreSpacing.space16);
+      expect(pillRect.top, iconRect.center.dy - CoreSpacing.space6,
+          reason: 'the widget starts at the row top, and the close icon is '
+              'centred 24 dp below it on the first 48 dp, not on the widget');
+    });
+
     testWidgets('is left out once the tape has a chip',
         (WidgetTester tester) async {
       addTearDown(() => tester.view.resetPhysicalSize());
