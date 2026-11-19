@@ -89,6 +89,7 @@ class CoreDisplayArea extends StatefulWidget {
     this.onStageChanged,
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
+    this.emptyTapeTrailing,
   }) : assert(
           onPreviousSessionTapped == null || restoreSemanticsLabel != null,
           'A tappable session card needs restoreSemanticsLabel: a control a '
@@ -124,6 +125,46 @@ class CoreDisplayArea extends StatefulWidget {
   /// historyPlaceholder: AppLocalizations.of(context).historyPlaceholder,
   /// ```
   final String historyPlaceholder;
+
+  /// A widget placed at the end of the row that shows [historyPlaceholder]
+  /// while [chipsList] is empty: the calculator's System of units pill.
+  /// Defaults to `null`, which leaves the row as it was.
+  ///
+  /// The row makes room for it: the placeholder takes the width that is left
+  /// between the close icon and the widget and wraps when it needs to, so the
+  /// two never overlap on a narrow phone. The widget is laid out at its own
+  /// width, so keep it to a short word: one wider than the space beside the
+  /// close icon overflows the row rather than wrapping its own text. It
+  /// leaves with the placeholder: not rendered once the tape has a chip, nor
+  /// in [DisplayAreaStage.expandedPrevious] and [DisplayAreaStage.fullScreen],
+  /// where the close icon and its row are hidden. The widget brings its own
+  /// semantics; a tappable one should carry a label.
+  ///
+  /// With a widget in the slot the row is at least 48 dp tall, the library's
+  /// tap target, 8 dp more than the 40 dp close icon alone, and the area
+  /// absorbs it. A small [CoreButton], as below, already meets that target:
+  /// its 36 dp body sits in its own 48 dp hit area, so it needs no second
+  /// one.
+  ///
+  /// The close icon and the widget are centred on that first 48 dp and stay
+  /// at the top of the row. A widget taller than 48 dp, such as a small
+  /// [CoreButton] at the largest text size, starts at the top of the row
+  /// instead, and the close icon stays centred on the first 48 dp, a few dp
+  /// above the widget's centre. A placeholder that wraps past it, as it does
+  /// beside a wide widget at a large text size, grows the row downward and
+  /// moves neither of them, so both stay inside the collapsed area and can
+  /// be tapped.
+  /// ```dart
+  /// emptyTapeTrailing: CoreButton(
+  ///   size: CoreButtonSize.small,
+  ///   variant: CoreButtonVariant.secondary,
+  ///   fullWidth: false,
+  ///   semanticsLabel: l10n.unitSystemPill(state.unitSystem),
+  ///   onPressed: () => bloc.add(const UnitSystemSwitched()),
+  ///   child: Text(l10n.unitSystemName(state.unitSystem)),
+  /// ),
+  /// ```
+  final Widget? emptyTapeTrailing;
 
   /// Main label text shown in the label section. Defaults to `null`.
   final String? label;
@@ -286,6 +327,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
           showCurrentChips: _stage != DisplayAreaStage.fullScreen,
           onPreviousSessionTapped: widget.onPreviousSessionTapped,
           restoreSemanticsLabel: widget.restoreSemanticsLabel,
+          emptyTapeTrailing: widget.emptyTapeTrailing,
         ),
       ),
       DecoratedBox(

@@ -14,6 +14,7 @@ class _HistoryPanel extends StatelessWidget {
     this.showCurrentChips = true,
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
+    this.emptyTapeTrailing,
   });
 
   final VoidCallback? onClose;
@@ -27,8 +28,10 @@ class _HistoryPanel extends StatelessWidget {
   final bool showCurrentChips;
   final ValueChanged<String>? onPreviousSessionTapped;
   final String? restoreSemanticsLabel;
+  final Widget? emptyTapeTrailing;
 
   static const double _closeBorderWidth = 1.5;
+  static const double _trailingRowMinHeight = CoreSpacing.space12;
 
   bool get _showCloseIcon =>
       stage == DisplayAreaStage.collapsed ||
@@ -138,6 +141,30 @@ class _HistoryPanel extends StatelessWidget {
   Widget _buildCloseIcon(
       {required AppColorsExtension colors,
       required AppTypographyExtension typography}) {
+    final trailing = chipsList.isEmpty ? emptyTapeTrailing : null;
+    final closeIcon = Container(
+      decoration: BoxDecoration(
+        color: colors.backgroundBlueMid,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: colors.outlineFocus,
+          width: _closeBorderWidth,
+        ),
+      ),
+      child: CoreIconWidget(
+        icon: CoreIcons.cross,
+        size: CoreIconSize.size24,
+        color: colors.iconDark,
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.all(CoreSpacing.space1),
+        onTap: onClose,
+        semanticLabel: closeSemanticLabel,
+      ),
+    );
+    final placeholder = Text(
+      historyPlaceholder,
+      style: typography.bodyMediumRegular.copyWith(color: colors.textHeadline),
+    );
     return AnimatedSize(
       duration: _kDisplayAreaAnimationDuration,
       curve: Curves.easeInOut,
@@ -145,38 +172,44 @@ class _HistoryPanel extends StatelessWidget {
       child: _showCloseIcon
           ? Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: trailing == null
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: colors.backgroundBlueMid,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: colors.outlineFocus,
-                      width: _closeBorderWidth,
-                    ),
-                  ),
-                  child: CoreIconWidget(
-                    icon: CoreIcons.cross,
-                    size: CoreIconSize.size24,
-                    color: colors.iconDark,
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.all(CoreSpacing.space1),
-                    onTap: onClose,
-                    semanticLabel: closeSemanticLabel,
-                  ),
-                ),
+                if (trailing == null)
+                  closeIcon
+                else
+                  _centredAtRowTop(closeIcon),
                 const SizedBox(width: CoreSpacing.space2),
-                if (chipsList.isEmpty)
-                  Flexible(
-                    child: Text(
-                      historyPlaceholder,
-                      style: typography.bodyMediumRegular
-                          .copyWith(color: colors.textHeadline),
+                if (chipsList.isEmpty && trailing == null)
+                  Flexible(child: placeholder),
+                if (trailing != null) ...[
+                  Expanded(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minHeight: _trailingRowMinHeight,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [placeholder],
+                      ),
                     ),
                   ),
+                  const SizedBox(width: CoreSpacing.space2),
+                  _centredAtRowTop(trailing),
+                ],
               ],
             )
           : const SizedBox.shrink(),
+    );
+  }
+
+  Widget _centredAtRowTop(Widget child) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: _trailingRowMinHeight),
+      child: Align(widthFactor: 1, heightFactor: 1, child: child),
     );
   }
 }
