@@ -11,7 +11,7 @@ const CoreKeyboardSemantics showcaseKeyboardSemantics = CoreKeyboardSemantics(
   resultLabel: _resultLabel,
   resultHint: 'Works out the result',
   dragHandle: 'Keyboard handle, drag to collapse or expand',
-  viewAllLabel: 'All function keys',
+  viewAllLabel: 'All keys, every function key group',
   viewAllHint: 'Opens the sheet with every function key group',
   unitSystemSwitch: 'Imperial or metric',
   groupHeader: _groupHeader,
@@ -50,6 +50,19 @@ String _controlHint(ControlAction action) => switch (action) {
 
 String _resultLabel(String face) => face == '=' ? 'Equals' : face;
 
-String _groupHeader(String groupLabel) => '$groupLabel group, selects it';
+String _groupHeader(String groupLabel) => '$groupLabel keys, selects the group';
 
 String _reorderHandle(String groupLabel) => 'Reorder $groupLabel group';
+
+/// The visible words the showcase hands to every keyboard it shows, the way
+/// an app passes its localised ones.
+const CoreKeyboardLabels showcaseKeyboardLabels = CoreKeyboardLabels(
+  viewAll: 'All keys',
+  functionKeys: 'Function keys',
+  groupHeader: _groupHeaderText,
+  measurementSystem: 'Units',
+  imperial: 'Imperial',
+  metric: 'Metric',
+);
+
+String _groupHeaderText(String groupLabel) => '$groupLabel keys';

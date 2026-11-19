@@ -193,6 +193,7 @@ class _GeometryAreaShowcaseScreenState
                                         unitGroupLabel: 'Unit',
                                         keyboardSemantics:
                                             showcaseKeyboardSemantics,
+                                        keyboardLabels: showcaseKeyboardLabels,
                                         dragHandleLabel: 'Reorder',
                                         editRowSemanticsLabelBuilder: (row) =>
                                             'Edit ${row.values.first}',
@@ -232,6 +233,7 @@ class _GeometryAreaShowcaseScreenState
                             alignment: Alignment.bottomCenter,
                             child: CoreKeyboard(
                               semantics: showcaseKeyboardSemantics,
+                              labels: showcaseKeyboardLabels,
                               currentGroup: _basicGeometryGroup,
                               allGroups: _groups,
                               onDigitPressed: (digit) =>
