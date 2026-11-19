@@ -1844,7 +1844,7 @@ void main() {
 
     testWidgets(
         'a label longer than the row wraps at phone width with large text, '
-        'and the typing dots stay beside it, inside the area',
+        'and the typing dots sit beside its last line, inside the area',
         (WidgetTester tester) async {
       addTearDown(() {
         tester.view.resetPhysicalSize();
@@ -1854,7 +1854,11 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
 
       await pumpArea(tester, 'Rise');
-      final oneLine = tester.getSize(find.text('Rise')).height;
+      final oneLineRect = tester.getRect(find.text('Rise'));
+      final oneLine = oneLineRect.height;
+      final dotsBelowLineCentre =
+          tester.getRect(find.byType(CoreWritingDots)).center.dy -
+              oneLineRect.center.dy;
 
       await pumpArea(tester, longLabel);
       await tester.pump();
@@ -1869,6 +1873,13 @@ void main() {
       expect(dotsRect.right,
           lessThanOrEqualTo(areaRect.right - CoreSpacing.space4));
       expect(dotsRect.left, greaterThanOrEqualTo(labelRect.right));
+      expect(dotsRect.right, lessThan(areaRect.right - CoreSpacing.space4),
+          reason: 'the label box is as wide as its longest line, so the dots '
+              'follow the text and are not pushed to the end of the row');
+      final lastLineCentre = labelRect.bottom - oneLine / 2;
+      expect(dotsRect.center.dy - lastLineCentre, dotsBelowLineCentre,
+          reason: 'the dots sit beside the last line, where they sit beside '
+              'a one-line label, and not between the two lines');
     });
 
     testWidgets('a label too long for two lines ends in an ellipsis',
