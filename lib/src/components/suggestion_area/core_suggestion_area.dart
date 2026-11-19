@@ -258,8 +258,7 @@ class CoreSuggestionArea extends StatefulWidget {
   /// app's length (about 52 characters, two lines at 300 px) fits inside the
   /// strip's minimum height, so the keys below do not move; at a larger text
   /// scale the strip grows to fit the whole note. Announced as a live region.
-  /// Pass a
-  /// localised string from the app layer:
+  /// Pass a localised string from the app layer:
   /// ```dart
   /// note: state.refusal == null
   ///     ? null

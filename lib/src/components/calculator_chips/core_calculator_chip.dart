@@ -355,6 +355,9 @@ class CoreCalculatorChip extends StatelessWidget {
                           label,
                           softWrap: wraps,
                           overflow: overflow,
+                          textWidthBasis: wraps
+                              ? TextWidthBasis.longestLine
+                              : TextWidthBasis.parent,
                           style: CoreCalculatorChipTheme.labelStyle(
                             type: type,
                             colors: colors,
@@ -372,6 +375,9 @@ class CoreCalculatorChip extends StatelessWidget {
                           value,
                           softWrap: wraps,
                           overflow: overflow,
+                          textWidthBasis: wraps
+                              ? TextWidthBasis.longestLine
+                              : TextWidthBasis.parent,
                           style: CoreCalculatorChipTheme.valueStyle(
                             type: type,
                             colors: colors,

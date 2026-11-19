@@ -1323,6 +1323,17 @@ void main() {
           expect(chip.height, greaterThan(oneLine.height));
           final textRect = tester.getRect(find.text(message));
           expect(textRect.bottom, lessThanOrEqualTo(chip.bottom));
+          final longestLine = TextPainter(
+            text: paragraph.text,
+            textDirection: TextDirection.ltr,
+            textScaler: paragraph.textScaler,
+            textWidthBasis: TextWidthBasis.longestLine,
+          )..layout(maxWidth: paragraph.constraints.maxWidth);
+          addTearDown(longestLine.dispose);
+          final inkRight = textRect.left + longestLine.width;
+          expect(chip.right - inkRight, closeTo(textRect.left - chip.left, 1),
+              reason: 'the chip ends as far after its longest line as it '
+                  'starts before the text, not at the width of the row');
         });
       }
 
