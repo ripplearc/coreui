@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 import 'package:ripplearc_coreui/src/components/calculator_chips/core_calculator_chip_theme.dart';
@@ -1256,7 +1256,7 @@ void main() {
       await pumpIn(
         tester,
         boundedRow(const CoreCalculatorChip(
-          type: CoreCalculatorChipType.error,
+          type: CoreCalculatorChipType.editable,
           value: longValue,
         )),
       );
@@ -1266,6 +1266,125 @@ void main() {
           lessThanOrEqualTo(CoreSpacing.space48));
       expect(tester.widget<Text>(find.text(longValue)).overflow,
           TextOverflow.ellipsis);
+    });
+
+    group('CA-1467: an error chip is never cut with "…"', () {
+      const message = 'Area and length cannot be added';
+
+      for (final scale in const [1.0, 1.3, 2.0]) {
+        testWidgets(
+            'at 390 px with text at ${(scale * 100).round()}% the message '
+            'wraps, every word shows, and the chip grows taller',
+            (WidgetTester tester) async {
+          addTearDown(() {
+            tester.view.resetPhysicalSize();
+            tester.view.resetDevicePixelRatio();
+          });
+          tester.view.physicalSize = const Size(390, 844);
+          tester.view.devicePixelRatio = 1.0;
+          Widget atScale(Widget child) => MediaQuery.withClampedTextScaling(
+                minScaleFactor: scale,
+                maxScaleFactor: scale,
+                child: child,
+              );
+
+          await pumpIn(
+            tester,
+            atScale(const CoreCalculatorChip(
+              type: CoreCalculatorChipType.error,
+              label: 'Error',
+            )),
+          );
+          final oneLine = tester.getSize(find.byType(CoreCalculatorChip));
+
+          await pumpIn(
+            tester,
+            atScale(boundedRow(const CoreCalculatorChip(
+              type: CoreCalculatorChipType.error,
+              label: message,
+            ))),
+          );
+
+          expect(tester.takeException(), isNull);
+          final text = tester.widget<Text>(find.text(message));
+          expect(text.softWrap, isTrue);
+          expect(text.overflow, isNot(TextOverflow.ellipsis));
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find
+                .descendant(
+                  of: find.text(message),
+                  matching: find.byType(RichText),
+                )
+                .first,
+          );
+          expect(paragraph.didExceedMaxLines, isFalse);
+          final chip = tester.getRect(find.byType(CoreCalculatorChip));
+          expect(chip.width, lessThanOrEqualTo(CoreSpacing.space48));
+          expect(chip.height, greaterThan(oneLine.height));
+          final textRect = tester.getRect(find.text(message));
+          expect(textRect.bottom, lessThanOrEqualTo(chip.bottom));
+          final longestLine = TextPainter(
+            text: paragraph.text,
+            textDirection: TextDirection.ltr,
+            textScaler: paragraph.textScaler,
+            textWidthBasis: TextWidthBasis.longestLine,
+          )..layout(maxWidth: paragraph.constraints.maxWidth);
+          addTearDown(longestLine.dispose);
+          final inkRight = textRect.left + longestLine.width;
+          expect(chip.right - inkRight, closeTo(textRect.left - chip.left, 1),
+              reason: 'the chip ends as far after its longest line as it '
+                  'starts before the text, not at the width of the row');
+        });
+      }
+
+      testWidgets(
+          'an error\'s corners are half a one-line chip, so a one-line error '
+          'is the pill it was and a wrapped one keeps round corners; every '
+          'other type keeps its corners', (WidgetTester tester) async {
+        await pumpIn(
+          tester,
+          const CoreCalculatorChip(
+            type: CoreCalculatorChipType.error,
+            label: 'Error',
+          ),
+        );
+        final decoration = tester
+            .widgetList<Container>(find.descendant(
+              of: find.byType(CoreCalculatorChip),
+              matching: find.byType(Container),
+            ))
+            .map((container) => container.decoration)
+            .whereType<BoxDecoration>()
+            .first;
+        final oneLine = tester.getSize(find.byType(CoreCalculatorChip)).height;
+        expect(decoration.borderRadius, BorderRadius.circular(oneLine / 2));
+
+        await pumpIn(
+          tester,
+          boundedRow(const CoreCalculatorChip(
+            type: CoreCalculatorChipType.error,
+            label: 'Area and length cannot be added',
+          )),
+        );
+        final wrapped = tester
+            .widgetList<Container>(find.descendant(
+              of: find.byType(CoreCalculatorChip),
+              matching: find.byType(Container),
+            ))
+            .map((container) => container.decoration)
+            .whereType<BoxDecoration>()
+            .first;
+        expect(tester.getSize(find.byType(CoreCalculatorChip)).height,
+            greaterThan(oneLine));
+        expect(wrapped.borderRadius, BorderRadius.circular(oneLine / 2),
+            reason: 'the corners stay those of a one-line chip');
+        for (final type in CoreCalculatorChipType.values) {
+          if (type == CoreCalculatorChipType.error) continue;
+          expect(CoreCalculatorChipTheme.borderRadiusFor(type, lineHeight: 20),
+              CoreCalculatorChipTheme.borderRadius,
+              reason: type.name);
+        }
+      });
     });
 
     testWidgets('a short name keeps its full width in a bounded row',

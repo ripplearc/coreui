@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../ripplearc_coreui.dart';
@@ -80,6 +82,12 @@ enum CoreCalculatorChipType {
 /// A chip without a label shortens its value instead. A screen reader still
 /// hears the whole text. In an unbounded width, such as a horizontal scroll
 /// view, nothing is shortened and the chip takes its full width.
+///
+/// [CoreCalculatorChipType.error] is never shortened: the message is what the
+/// user must read to fix the tape, so a long one wraps onto more lines and
+/// the chip grows taller, with corners of half a one-line chip
+/// ([CoreCalculatorChipTheme.borderRadiusFor]). A one-line error looks as it
+/// always has.
 ///
 /// ## Interaction
 /// Every variant except [CoreCalculatorChipType.disabled] responds to [onTap]
@@ -256,6 +264,29 @@ class CoreCalculatorChip extends StatelessWidget {
     final effectiveOnTap = _acceptsInput ? onTap : null;
     final effectiveOnLongPress = _acceptsInput ? onLongPress : null;
     final hasLeading = (factor != null && _isInteractive) || label != null;
+    final wraps = type == CoreCalculatorChipType.error;
+    final overflow = wraps ? TextOverflow.visible : TextOverflow.ellipsis;
+    final textScaler = MediaQuery.textScalerOf(context);
+    double lineHeightOf(TextStyle style) =>
+        textScaler.scale(style.fontSize ?? 0) * (style.height ?? 1);
+    final borderRadius = CoreCalculatorChipTheme.borderRadiusFor(
+      type,
+      lineHeight: [
+        if (label != null)
+          lineHeightOf(CoreCalculatorChipTheme.labelStyle(
+            type: type,
+            colors: colors,
+            typography: typography,
+          )),
+        if (value != null)
+          lineHeightOf(CoreCalculatorChipTheme.valueStyle(
+            type: type,
+            colors: colors,
+            typography: typography,
+          )),
+        0.0,
+      ].reduce(math.max),
+    );
 
     return Semantics(
       label: semanticsLabel,
@@ -276,7 +307,7 @@ class CoreCalculatorChip extends StatelessWidget {
             overlayColor: WidgetStateProperty.all(
               colors.transparent,
             ),
-            borderRadius: CoreCalculatorChipTheme.borderRadius,
+            borderRadius: borderRadius,
             child: Container(
               padding: CoreCalculatorChipTheme.padding,
               foregroundDecoration: CoreCalculatorChipTheme.dashedOutline(
@@ -288,7 +319,7 @@ class CoreCalculatorChip extends StatelessWidget {
                   type: type,
                   colors: colors,
                 ),
-                borderRadius: CoreCalculatorChipTheme.borderRadius,
+                borderRadius: borderRadius,
                 boxShadow: CoreCalculatorChipTheme.shadow(type),
                 border: Border.fromBorderSide(
                   BorderSide(
@@ -322,8 +353,11 @@ class CoreCalculatorChip extends StatelessWidget {
                       child: ExcludeSemantics(
                         child: Text(
                           label,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
+                          softWrap: wraps,
+                          overflow: overflow,
+                          textWidthBasis: wraps
+                              ? TextWidthBasis.longestLine
+                              : TextWidthBasis.parent,
                           style: CoreCalculatorChipTheme.labelStyle(
                             type: type,
                             colors: colors,
@@ -339,8 +373,11 @@ class CoreCalculatorChip extends StatelessWidget {
                       child: ExcludeSemantics(
                         child: Text(
                           value,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
+                          softWrap: wraps,
+                          overflow: overflow,
+                          textWidthBasis: wraps
+                              ? TextWidthBasis.longestLine
+                              : TextWidthBasis.parent,
                           style: CoreCalculatorChipTheme.valueStyle(
                             type: type,
                             colors: colors,

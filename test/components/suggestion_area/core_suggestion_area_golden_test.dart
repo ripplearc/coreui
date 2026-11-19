@@ -457,13 +457,15 @@ void main() {
     WidgetTester tester,
     ThemeData theme, {
     String note = '12ft was not added.',
+    double textScale = 1,
+    Size physicalSize = const Size(824, 128),
   }) async {
     final colors = theme.coreColors;
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
     // 824x128 @ 2.0 => 412x64 logical: the strip at its minimum height with
     // the note in its slot and nothing else; a two-line note fits inside it.
-    tester.view.physicalSize = const Size(824, 128);
+    tester.view.physicalSize = physicalSize;
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -478,7 +480,11 @@ void main() {
         ),
         home: Scaffold(
           backgroundColor: colors.pageBackground,
-          body: testCoreSuggestionArea(note: note),
+          body: MediaQuery.withClampedTextScaling(
+            minScaleFactor: textScale,
+            maxScaleFactor: textScale,
+            child: testCoreSuggestionArea(note: note),
+          ),
         ),
       ),
     );
@@ -510,7 +516,7 @@ void main() {
       'finish the area, or clear it, and type the length again after that, '
       'and the strip shows the suggestions again.';
 
-  testWidgets('SuggestionArea two-line note Golden Test - Light',
+  testWidgets('SuggestionArea long note, never cut, Golden Test - Light',
       (WidgetTester tester) async {
     await pumpNote(tester, CoreTheme.light(), note: twoLineNote);
 
@@ -520,13 +526,40 @@ void main() {
     );
   });
 
-  testWidgets('SuggestionArea two-line note Golden Test - Dark',
+  testWidgets('SuggestionArea long note, never cut, Golden Test - Dark',
       (WidgetTester tester) async {
     await pumpNote(tester, CoreTheme.dark(), note: twoLineNote);
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/suggestion_area_note_two_lines_dark.png'),
+    );
+  });
+
+  // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+  // 824x480 @ 2.0 => 412x240 logical: the strip grown to fit the whole long
+  // note at 200% text, measured in the amd64 image, so nothing is cut.
+  testWidgets(
+      'SuggestionArea long note at 200% text, strip grown, '
+      'Golden Test - Light', (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.light(),
+        note: twoLineNote, textScale: 2, physicalSize: const Size(824, 480));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_large_text_light.png'),
+    );
+  });
+
+  testWidgets(
+      'SuggestionArea long note at 200% text, strip grown, '
+      'Golden Test - Dark', (WidgetTester tester) async {
+    await pumpNote(tester, CoreTheme.dark(),
+        note: twoLineNote, textScale: 2, physicalSize: const Size(824, 480));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/suggestion_area_note_large_text_dark.png'),
     );
   });
 }
