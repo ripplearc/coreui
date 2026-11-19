@@ -9,7 +9,7 @@
 
 ### 📐 Design notes
 
-- `textWarningStrong` (orange 700 light, orange 200 dark), not the ticket's Text Color/Warning (`textWarning`): on the page background `textWarning` reaches 4.2:1 in the light theme, under the 4.5:1 WCAG 1.4.3 asks of 16 px regular text; `textWarningStrong` reaches 5.8:1 light and over 7:1 dark, and is the sprint drawing's `#b54708`
+- The note uses `textWarningStrong` (orange 700 `#B03C00` light, orange 200 dark). It is the library token for Figma Text Color/Warning, the colour the ticket asks for. `textWarning` (orange 600) reaches only 4.2:1 on the light page background, under the 4.5:1 WCAG 1.4.3 asks of 16 px regular text; `textWarningStrong` reaches 5.8:1 light and over 7:1 dark
 
 ### 🧪 Tests
 

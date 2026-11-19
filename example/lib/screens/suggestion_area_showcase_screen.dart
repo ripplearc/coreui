@@ -148,7 +148,9 @@ class _SuggestionAreaShowcaseViewState
               const SizedBox(width: CoreSpacing.space2),
               CoreSwitch(
                 value: _twoLineNote,
-                onChanged: (value) => setState(() => _twoLineNote = value),
+                onChanged: _showNote
+                    ? (value) => setState(() => _twoLineNote = value)
+                    : null,
               ),
             ],
           ),
