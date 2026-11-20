@@ -96,6 +96,8 @@ tests_for_test_file() {
   local dir found
   dir="$(dirname "$1")"
   dir="${dir%%/goldens*}"
+  # find exits 1 when the folder is gone (a deleted test); set -e would stop
+  # here, so fall through to running all tests below.
   found="$(cd "$REPO_ROOT" && find "$dir" -name '*_test.dart' 2>/dev/null || true)"
   [[ -n "$found" ]] || found="$(cd "$REPO_ROOT" && find test -name '*_test.dart')"
   echo "$found"
@@ -208,6 +210,7 @@ main() {
 
   local changed
   changed="$(changed_files "$base")"
+  # grep -c prints 0 but exits 1 when nothing changed; set -e would stop here.
   echo "Changed files against $base: $(grep -c . <<<"$changed" || true)"
 
   step "1/4 fvm flutter pub get"
