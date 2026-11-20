@@ -412,6 +412,7 @@ class _CoreButtonState extends State<CoreButton> {
       hint: widget.semanticsHint,
       button: true,
       enabled: isEnabled,
+      onTap: isEnabled ? widget.onPressed : null,
       // Exclude semantics from children to ensure the button is treated as a
       // single interactive unit with a clean label, preventing icons or
       // formatted text fragments from being read individually.

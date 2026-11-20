@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
@@ -69,11 +71,15 @@ class BottomNavTab {
 /// ### Layout & Responsiveness
 /// The bar scales its paddings, icon/label sizes, and pill dimensions from
 /// design ratios. Wrap in padding/margins that fit your app’s layout.
+/// An inactive tab is never narrower than 48 dp; on narrow screens the gaps
+/// and side padding shrink first, then the active pill.
 ///
 /// ### Accessibility
 /// - Labels are text and respect text scaling.
 /// - Use concise, descriptive [BottomNavTab.label]s.
 /// - Pass [actionButtonSemanticLabel] to announce the trailing action button to screen readers.
+/// - A screen reader double tap selects a tab, and presses the action button
+///   when it has an [actionButtonSemanticLabel].
 ///
 /// ### Debug note
 /// During the selection animation, you might briefly see a debug-only
@@ -259,13 +265,26 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
             (n - 1) * _BaseBottomNavBarDimensions.baseTabGap;
     final rowScale = tabRowBarWidth / baseTabRowWidth;
 
-    final barHorizontalPad =
-        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * rowScale;
-    final tabGap = _BaseBottomNavBarDimensions.baseTabGap * rowScale;
-    final inactiveTabWidth =
+    // An inactive tab never drops below the 48 dp tap target. On narrow
+    // screens the gaps and side padding give up the extra width first, so the
+    // active label keeps its room; the active pill shrinks only after that.
+    final scaledInactiveTabWidth =
         _BaseBottomNavBarDimensions.baseInactiveTabWidth * rowScale;
-    final activeTabWidth =
-        _BaseBottomNavBarDimensions.baseActiveTabWidth * rowScale;
+    final inactiveTabWidth =
+        math.max(kMinInteractiveDimension, scaledInactiveTabWidth);
+    final scaledPad =
+        _BaseBottomNavBarDimensions.baseTabRowBarHorizontalPad * rowScale;
+    final scaledGap = _BaseBottomNavBarDimensions.baseTabGap * rowScale;
+    final spacingScale = math.max(
+        0.0,
+        1 -
+            (n - 1) * (inactiveTabWidth - scaledInactiveTabWidth) /
+                (2 * scaledPad + (n - 1) * scaledGap));
+    final barHorizontalPad = scaledPad * spacingScale;
+    final tabGap = scaledGap * spacingScale;
+    final activeTabWidth = tabRowBarWidth -
+        2 * barHorizontalPad -
+        (n - 1) * (inactiveTabWidth + tabGap);
 
     final pillHeight = tabHeight * _BottomNavBarRatios.pillHeight;
     final pillRadius = tabHeight / 2;
@@ -354,6 +373,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
       label: widget.tabs[index].label,
       button: true,
       container: true,
+      onTap: () => widget.onTabSelected(index),
+      // One node per tab that carries the label and the tap, so the icon and
+      // the active label below are not read again.
       excludeSemantics: true,
       child: AnimatedContainer(
         duration: widget.animationDuration,
@@ -435,6 +457,9 @@ class _CoreBottomNavBarState extends State<CoreBottomNavBar> {
                 label: widget.actionButtonSemanticLabel,
                 button: true,
                 enabled: widget.onActionButtonPressed != null,
+                onTap: widget.onActionButtonPressed,
+                // This node carries the label and the tap; the icon is
+                // decoration.
                 excludeSemantics: true,
                 child: icon,
               )
