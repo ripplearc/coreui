@@ -238,7 +238,7 @@ void main() {
 
       final wrapFinder = find.descendant(
         of: scrollFinder,
-        matching: find.byType(Wrap),
+        matching: find.byWidgetPredicate((widget) => widget is Wrap),
       );
       expect(wrapFinder, findsOneWidget);
     });

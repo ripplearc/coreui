@@ -204,6 +204,13 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
                           restoreSemanticsLabel: 'Restore this calculation',
                           previousSessions: _previousSessions,
                           emptyTapeTrailing: _unitSystemPill(context),
+                          workedFirstBand: chips.length > 2
+                              ? const CoreWorkedFirstBand(
+                                  start: 0,
+                                  end: 1,
+                                  semanticsLabel: 'Worked first',
+                                )
+                              : null,
                         ),
                       ),
                     ),

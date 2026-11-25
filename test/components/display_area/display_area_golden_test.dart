@@ -543,6 +543,84 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }
 
+  Future<void> pumpWorkedFirstBand(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // 780x456 @ 2.0 => 390x228 logical: a phone-wide collapsed display area
+    // with 2, +3 and ×4 on the tape and the band behind 2 and +3, the part
+    // of the chain that is worked first (UX Design Doc rule 4.6).
+    tester.view.physicalSize = const Size(780, 456);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: const CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            label: 'Calc',
+            value: '5',
+            chipsList: [
+              CoreCalculatorChip(
+                value: '2',
+                type: CoreCalculatorChipType.editable,
+              ),
+              CoreCalculatorChip(
+                value: '+3',
+                type: CoreCalculatorChipType.editable,
+              ),
+              CoreCalculatorChip(
+                value: '×4',
+                type: CoreCalculatorChipType.active,
+              ),
+            ],
+            workedFirstBand: CoreWorkedFirstBand(
+              start: 0,
+              end: 1,
+              semanticsLabel: 'Worked first, 2 plus 3, equals 5',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 200));
+  }
+
+  testWidgets('DisplayArea worked-first band Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpWorkedFirstBand(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_worked_first_band_light.png'),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets('DisplayArea worked-first band Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpWorkedFirstBand(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/display_area_worked_first_band_dark.png'),
+    );
+    debugDisableShadows = true;
+  });
+
   testWidgets('DisplayArea long label Golden Test - Light',
       (WidgetTester tester) async {
     await pumpLongLabel(tester, CoreTheme.light());

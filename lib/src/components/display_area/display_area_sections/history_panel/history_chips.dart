@@ -6,12 +6,14 @@ class _HistoryChips extends StatelessWidget {
     required this.hasError,
     required this.errorMessage,
     required this.isCollapsed,
+    this.band,
   });
 
   final List<CoreCalculatorChip> chipsList;
   final bool hasError;
   final String errorMessage;
   final bool isCollapsed;
+  final CoreWorkedFirstBand? band;
 
   static const double _runSpacing = CoreSpacing.space2;
 
@@ -80,30 +82,69 @@ class _HistoryChips extends StatelessWidget {
         ),
     ];
 
-    final wrap = Wrap(
+    final band = this.band;
+    final lastChip = chipsList.length - 1;
+    final _BandPaint? bandPaint = band == null || band.start > lastChip
+        ? null
+        : (
+            start: band.start,
+            end: math.min(band.end, lastChip),
+            fill: colors.backgroundWorkedFirstBand,
+            edge: colors.lineWorkedFirstBand,
+          );
+    final wrap = _BandedWrap(
       spacing: CoreSpacing.space2,
       runSpacing: _runSpacing,
+      band: bandPaint,
       children: chipWidgets,
     );
 
     if (isCollapsed) {
-      return ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: _twoRowMaxHeight(context, typography) +
-              _collapsedVerticalPadding * 2,
-        ),
-        child: SingleChildScrollView(
-          reverse: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding:
-              const EdgeInsets.symmetric(vertical: _collapsedVerticalPadding),
-          child: wrap,
-        ),
+      return _collapsedTape(
+        context,
+        typography,
+        wrap,
+        roomForTheBandAtEachSide:
+            bandPaint == null ? 0 : _RenderBandedWrap.sideReach,
       );
     }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: _expandedVerticalPadding),
       child: wrap,
+    );
+  }
+
+  Widget _collapsedTape(
+    BuildContext context,
+    AppTypographyExtension typography,
+    Widget wrap, {
+    required double roomForTheBandAtEachSide,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final widthWithRoomForTheBand =
+            constraints.maxWidth + 2 * roomForTheBandAtEachSide;
+        return OverflowBox(
+          fit: OverflowBoxFit.deferToChild,
+          minWidth: widthWithRoomForTheBand,
+          maxWidth: widthWithRoomForTheBand,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: _twoRowMaxHeight(context, typography) +
+                  _collapsedVerticalPadding * 2,
+            ),
+            child: SingleChildScrollView(
+              reverse: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: roomForTheBandAtEachSide,
+                vertical: _collapsedVerticalPadding,
+              ),
+              child: wrap,
+            ),
+          ),
+        );
+      },
     );
   }
 }

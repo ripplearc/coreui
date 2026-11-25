@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'core_display_area.dart';
+
 /// The chips a grey band is drawn behind on the tape: the part of a chain
 /// that is worked first (UX Design Doc rule 4.6, "a light grey band appears
 /// behind the chips").
@@ -7,9 +9,9 @@ import 'package:flutter/foundation.dart';
 /// On the first switch from + or − to × or ÷, the band sits behind every
 /// chip before that × or ÷, so `2 + 3 × 4` bands `2` and `+3`. The consumer
 /// works the span out from the keys and hands it over as chip indexes into
-/// the tape's chip list. This class names the span and what a screen reader
-/// hears for it; it says nothing about the order itself, and the band is
-/// never saved.
+/// the tape's chip list; [CoreDisplayArea.workedFirstBand] draws it. This
+/// class names the span and what a screen reader hears for it; it says
+/// nothing about the order itself, and the band is never saved.
 ///
 /// [semanticsLabel] is what a screen reader hears once for the band —
 /// "Worked first, 2 plus 3, equals 5" — before each chip, which stays its

@@ -15,6 +15,7 @@ class _HistoryPanel extends StatelessWidget {
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
     this.emptyTapeTrailing,
+    this.workedFirstBand,
   });
 
   final VoidCallback? onClose;
@@ -29,6 +30,7 @@ class _HistoryPanel extends StatelessWidget {
   final ValueChanged<String>? onPreviousSessionTapped;
   final String? restoreSemanticsLabel;
   final Widget? emptyTapeTrailing;
+  final CoreWorkedFirstBand? workedFirstBand;
 
   static const double _closeBorderWidth = 1.5;
   static const double _trailingRowMinHeight = CoreSpacing.space12;
@@ -136,6 +138,7 @@ class _HistoryPanel extends StatelessWidget {
               hasError: hasError,
               errorMessage: errorMessage,
               isCollapsed: _isCollapsed,
+              band: workedFirstBand,
             ),
           )
       ],
