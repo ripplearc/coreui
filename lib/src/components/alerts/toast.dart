@@ -79,6 +79,13 @@ class Toast extends StatefulWidget {
   /// `null` keeps it until something else removes it, and so does a screen
   /// reader: a timed window a user cannot reach is worse than none.
   final Duration? duration;
+
+  /// Whether the receipt wraps its whole [description] onto as many lines as
+  /// it needs, where `false` holds it to two lines and ends it in an
+  /// ellipsis. Defaults to `null`: a receipt that stays until it is answered
+  /// wraps, which is one with a `null` [duration] or one a screen reader
+  /// holds open, and a timed one does not.
+  final bool? wrapsWholeMessage;
   final _ToastType _type;
 
   static const int _primaryActionFlex = 2;
@@ -88,6 +95,8 @@ class Toast extends StatefulWidget {
   static const double _largeRadius = CoreSpacing.space3;
 
   static const double _receiptActionMaxWidthFraction = 0.6;
+
+  static const int _timedReceiptMaxLines = 2;
 
   static const double _alertActionMaxWidth = 120;
 
@@ -128,6 +137,7 @@ class Toast extends StatefulWidget {
     this.secondaryLabel,
     this.onSecondary,
     this.duration,
+    this.wrapsWholeMessage,
   })  : assert(
           (actionLabel == null) == (onAction == null),
           'actionLabel and onAction travel together: an action with no label '
@@ -225,6 +235,17 @@ class Toast extends StatefulWidget {
   /// it there until something else removes it, and so does a screen reader —
   /// see [duration].
   ///
+  /// A timed receipt holds [description] to two lines and ends it in an
+  /// ellipsis, so its row stays short for a glance. A receipt that stays
+  /// until it is answered is read, so it wraps its whole message onto as
+  /// many lines as it needs: the calculator's "Editing this group. Press
+  /// ( ) to close it. If you type nothing, everything stays as it was."
+  /// shows in full at 360 dp. That is a receipt with a `null` [duration],
+  /// and a timed one while a screen reader holds it open;
+  /// [wrapsWholeMessage] sets it either way. The message has no line limit
+  /// then, so keep it short: at 200% text on a 360 dp screen that sentence
+  /// takes 12 lines beside its action.
+  ///
   /// [secondaryLabel] adds the quieter second action (`View`). It travels with
   /// [onSecondary]: an interactive control with no label is invisible to a
   /// screen reader.
@@ -248,6 +269,7 @@ class Toast extends StatefulWidget {
     String? secondaryLabel,
     VoidCallback? onSecondary,
     Duration? duration = const Duration(seconds: 5),
+    bool? wrapsWholeMessage,
   }) {
     assert(
       (secondaryLabel == null) == (onSecondary == null),
@@ -265,6 +287,7 @@ class Toast extends StatefulWidget {
       onSecondary: onSecondary,
       onClose: onClose,
       duration: duration,
+      wrapsWholeMessage: wrapsWholeMessage,
     );
   }
 
@@ -332,12 +355,17 @@ class _ToastState extends State<Toast> {
       other.actionLabel == widget.actionLabel &&
       other.onAction == widget.onAction;
 
+  bool get _staysUntilAnswered =>
+      widget.duration == null || (_assistiveTechHoldsTheToast ?? false);
+
+  bool get _showsTheWholeMessage =>
+      widget.wrapsWholeMessage ?? _staysUntilAnswered;
+
   void _restartDismissTimer() {
     _dismissTimer?.cancel();
     _dismissTimer = null;
     final duration = widget.duration;
-    final theUserNeedsTheWindowOpen = _assistiveTechHoldsTheToast ?? false;
-    if (_answered || duration == null || theUserNeedsTheWindowOpen) return;
+    if (_answered || duration == null || _staysUntilAnswered) return;
     _dismissTimer = Timer(duration, _dismissWithoutAnAction);
   }
 
@@ -464,9 +492,7 @@ class _ToastState extends State<Toast> {
         decoration: BoxDecoration(
           color: isSmallAlert ? null : _getBackgroundColor(colors),
           borderRadius: BorderRadius.circular(
-            isReceipt || isAcknowledgement
-                ? Toast._largeRadius
-                : Toast._radius,
+            isReceipt || isAcknowledgement ? Toast._largeRadius : Toast._radius,
           ),
           border: isReceipt
               ? Border.all(
@@ -667,14 +693,12 @@ class _ToastState extends State<Toast> {
     final widthTheMessageShares = rowWidth - Toast._receiptRowLeadingWidth;
     if (widthTheMessageShares <= 0) return actions;
 
-    final widthHeldForSecondAction = secondAction == null
-        ? 0.0
-        : CoreSpacing.space12 + CoreSpacing.space4;
+    final widthHeldForSecondAction =
+        secondAction == null ? 0.0 : CoreSpacing.space12 + CoreSpacing.space4;
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth:
-            widthTheMessageShares * Toast._receiptActionMaxWidthFraction +
-                widthHeldForSecondAction,
+        maxWidth: widthTheMessageShares * Toast._receiptActionMaxWidthFraction +
+            widthHeldForSecondAction,
       ),
       child: actions,
     );
@@ -705,8 +729,9 @@ class _ToastState extends State<Toast> {
             ),
         ],
       ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+      maxLines: _showsTheWholeMessage ? null : Toast._timedReceiptMaxLines,
+      overflow:
+          _showsTheWholeMessage ? TextOverflow.visible : TextOverflow.ellipsis,
     );
   }
 

@@ -103,7 +103,9 @@ class CoreToast {
   /// takes, so it is removed exactly once either way.
   ///
   /// A `null` [duration] — or an active screen reader, or [disableTimers] —
-  /// leaves the receipt up with no timer of its own. The caller holds no
+  /// leaves the receipt up with no timer of its own. [disableTimers] does not
+  /// change how the receipt looks: a receipt asked for with a [duration]
+  /// keeps its two-line message, as it has outside a test. The caller holds no
   /// handle to it, so three things remove it after that: the user takes the
   /// action, another toast replaces it, or [cleanup] runs.
   ///
@@ -132,6 +134,7 @@ class CoreToast {
         onSecondary: onSecondary,
         onClose: dismiss,
         duration: widgetDuration,
+        wrapsWholeMessage: _disableTimers ? duration == null : null,
       ),
       duration: null,
     );

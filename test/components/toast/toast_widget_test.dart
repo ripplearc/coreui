@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
+import '../../load_fonts.dart';
 import '../../utils/a11y_guidelines.dart';
 
 void main() {
@@ -206,7 +207,8 @@ void main() {
         ('Voir les détails du téléchargement', 1.0),
         ('Details anzeigen', 2.0),
       ]) {
-        testWidgets('a long View label at ${textScale}x text ends in an '
+        testWidgets(
+            'a long View label at ${textScale}x text ends in an '
             'ellipsis and keeps the message and the x in the alert',
             (WidgetTester tester) async {
           tester.view.physicalSize = const Size(360, 800);
@@ -214,9 +216,8 @@ void main() {
           addTearDown(tester.view.reset);
           await tester.pumpWidget(MaterialApp(
             home: MediaQuery(
-              data: MediaQueryData(
-                size: const Size(360, 800),
-                textScaler: TextScaler.linear(textScale),
+              data: const MediaQueryData(
+                size: Size(360, 800),
               ),
               child: Scaffold(
                 body: Padding(
@@ -255,7 +256,8 @@ void main() {
         });
       }
 
-      testWidgets('without onClose, View fires on every tap and the alert stays',
+      testWidgets(
+          'without onClose, View fires on every tap and the alert stays',
           (WidgetTester tester) async {
         var actions = 0;
         await tester.pumpWidget(buildAlert(
@@ -511,7 +513,8 @@ void main() {
         expect(actions, 1);
       });
 
-      testWidgets('the close x works and draws inside a coloured parent '
+      testWidgets(
+          'the close x works and draws inside a coloured parent '
           'with no Material', (WidgetTester tester) async {
         var closed = false;
         await tester.pumpWidget(MaterialApp(
@@ -540,8 +543,8 @@ void main() {
           buildAlert(actionLabel: 'View', onAction: _noop),
         );
 
-        expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
-            40);
+        expect(
+            tester.getSize(find.byKey(const Key('toast_surface'))).height, 40);
         expect(tester.getSize(find.byType(Toast)).height, 48);
         expect(tester.getSize(closeButtonFinder), const Size(48, 48));
         expect(tester.getSize(actionFinder).height, 48);
@@ -648,7 +651,8 @@ void main() {
     });
 
     group('semantics', () {
-      testWidgets('toast with title exposes title as label and description as hint',
+      testWidgets(
+          'toast with title exposes title as label and description as hint',
           (WidgetTester tester) async {
         await setupA11yTest(tester);
 
@@ -753,8 +757,7 @@ void main() {
         expect(actionFinder, findsOneWidget);
       });
 
-      testWidgets('fires the action at most once',
-          (WidgetTester tester) async {
+      testWidgets('fires the action at most once', (WidgetTester tester) async {
         var actionCount = 0;
         await tester.pumpWidget(buildReceipt(onAction: () => actionCount++));
 
@@ -907,6 +910,380 @@ void main() {
             greaterThanOrEqualTo(shared * 0.4));
       });
 
+      // CA-1464: the calculator's "Editing this group" message is drawn in
+      // the receipt look with a Close action and no timer, and at 360 dp the
+      // two-line cap ended it at "If you typ…".
+      const plainMessage = 'Editing this group. Press ( ) to close it. If you '
+          'type nothing, everything stays as it was.';
+
+      Widget buildPlainReceipt({
+        required Duration? duration,
+        VoidCallback onAction = _noop,
+        bool? wrapsWholeMessage,
+        bool screenReaderIsOn = false,
+        String message = plainMessage,
+        String? highlight,
+        bool withView = false,
+      }) {
+        return MaterialApp(
+          home: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                accessibleNavigation: screenReaderIsOn,
+              ),
+              child: Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    width: 360,
+                    child: Toast.receipt(
+                      description: message,
+                      highlight: highlight,
+                      actionLabel: 'Close',
+                      onAction: onAction,
+                      secondaryLabel: withView ? 'View' : null,
+                      onSecondary: withView ? _noop : null,
+                      onClose: _noop,
+                      duration: duration,
+                      wrapsWholeMessage: wrapsWholeMessage,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      void expectTheWholeMessageInsideTheToast(WidgetTester tester) {
+        final message = tester.widget<Text>(messageFinder);
+        expect(message.maxLines, isNull);
+        expect(message.overflow, TextOverflow.visible);
+        final paragraph = tester.renderObject<RenderParagraph>(messageFinder);
+        final lineHeight = paragraph.getFullHeightForCaret(
+          const TextPosition(offset: 0),
+        );
+        final messageRect = tester.getRect(messageFinder);
+        expect(messageRect.height, greaterThan(2 * lineHeight),
+            reason: 'the message must need more than two lines here, or the '
+                'test proves nothing');
+        final toastRect =
+            tester.getRect(find.byKey(const Key('toast_surface')));
+        expect(messageRect.top, greaterThanOrEqualTo(toastRect.top));
+        expect(messageRect.bottom, lessThanOrEqualTo(toastRect.bottom));
+        expect(messageRect.left, greaterThanOrEqualTo(toastRect.left));
+        expect(messageRect.right, lessThanOrEqualTo(toastRect.right));
+      }
+
+      void expectTwoLinesAndAnEllipsis(WidgetTester tester) {
+        final message = tester.widget<Text>(messageFinder);
+        expect(message.maxLines, 2);
+        expect(message.overflow, TextOverflow.ellipsis);
+        expect(
+          tester.renderObject<RenderParagraph>(messageFinder).didExceedMaxLines,
+          isTrue,
+          reason: 'the message must not fit two lines here, or the cap is '
+              'unproven',
+        );
+      }
+
+      testWidgets(
+          'a receipt with no timer draws its whole message at 360 dp, on '
+          'more than two lines, inside the toast', (WidgetTester tester) async {
+        var actionCount = 0;
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, onAction: () => actionCount++),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheWholeMessageInsideTheToast(tester);
+
+        await tester.tap(actionFinder);
+        await tester.pump();
+        expect(actionCount, 1);
+      });
+
+      testWidgets(
+          'a timed receipt a screen reader holds open draws its whole '
+          'message too', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(
+            duration: const Duration(seconds: 5),
+            screenReaderIsOn: true,
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheWholeMessageInsideTheToast(tester);
+      });
+
+      testWidgets('wrapsWholeMessage: true wraps a timed receipt',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(
+            duration: const Duration(seconds: 5),
+            wrapsWholeMessage: true,
+          ),
+        );
+
+        expectTheWholeMessageInsideTheToast(tester);
+      });
+
+      testWidgets(
+          'wrapsWholeMessage: false holds a receipt with no timer to two '
+          'lines', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, wrapsWholeMessage: false),
+        );
+
+        expectTwoLinesAndAnEllipsis(tester);
+      });
+
+      testWidgets(
+          'at twice the text size on a 360 dp phone the whole message still '
+          'shows inside the toast, which is shorter than the screen',
+          (WidgetTester tester) async {
+        await loadFonts();
+        tester.view.physicalSize = const Size(360, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light().copyWith(
+              textTheme:
+                  ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+            ),
+            home: Scaffold(
+              body: MediaQuery.withClampedTextScaling(
+                minScaleFactor: 2,
+                maxScaleFactor: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(CoreSpacing.space3),
+                  child: Toast.receipt(
+                    description: plainMessage,
+                    actionLabel: 'Close',
+                    onAction: _noop,
+                    onClose: _noop,
+                    duration: null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheWholeMessageInsideTheToast(tester);
+        expect(
+          tester.getSize(find.byKey(const Key('toast_surface'))).height,
+          lessThan(tester.getSize(find.byType(Scaffold)).height),
+        );
+      });
+
+      Rect toastRect(WidgetTester tester) =>
+          tester.getRect(find.byKey(const Key('toast_surface')));
+
+      void expectTheMessageInsideTheToast(WidgetTester tester) {
+        final messageRect = tester.getRect(messageFinder);
+        final toast = toastRect(tester);
+        expect(messageRect.top, greaterThanOrEqualTo(toast.top));
+        expect(messageRect.bottom, lessThanOrEqualTo(toast.bottom));
+        expect(messageRect.left, greaterThanOrEqualTo(toast.left));
+        expect(messageRect.right, lessThanOrEqualTo(toast.right));
+      }
+
+      testWidgets(
+          'a receipt with no timer and an empty message lays out as tall as '
+          'its action, with no error', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, message: ''),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(
+          toastRect(tester).height,
+          tester.getSize(actionFinder).height +
+              2 * CoreSpacing.space1 +
+              2 * CoreButton.hairlineBorderWidth,
+        );
+      });
+
+      testWidgets(
+          'a receipt with no timer breaks one 120-letter word onto more '
+          'lines and keeps it inside the toast', (WidgetTester tester) async {
+        final oneWord = 'W' * 120;
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, message: oneWord),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheMessageInsideTheToast(tester);
+        final paragraph = tester.renderObject<RenderParagraph>(messageFinder);
+        expect(
+          tester.getSize(messageFinder).height,
+          greaterThan(
+            2 * paragraph.getFullHeightForCaret(const TextPosition(offset: 0)),
+          ),
+        );
+      });
+
+      testWidgets(
+          'a receipt with no timer, a highlight and a View action still '
+          'draws the whole message inside the toast',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(
+            duration: null,
+            highlight: 'Calc 60ft²',
+            withView: true,
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(tester.widget<Text>(messageFinder).maxLines, isNull);
+        expectTheMessageInsideTheToast(tester);
+        expect(find.byKey(const Key('toast_secondary_button')), findsOneWidget);
+      });
+
+      testWidgets(
+          'a receipt with no timer and an empty message still answers its '
+          'Close action', (WidgetTester tester) async {
+        var actionCount = 0;
+        await tester.pumpWidget(
+          buildPlainReceipt(
+            duration: null,
+            message: '',
+            onAction: () => actionCount++,
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        await tester.tap(actionFinder);
+        await tester.pump();
+        expect(actionCount, 1);
+      });
+
+      testWidgets(
+          'a receipt with no timer keeps a one-word message on one line',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, message: 'Saved'),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheMessageInsideTheToast(tester);
+        final paragraph = tester.renderObject<RenderParagraph>(messageFinder);
+        expect(
+          tester.getSize(messageFinder).height,
+          paragraph.getFullHeightForCaret(const TextPosition(offset: 0)),
+        );
+      });
+
+      testWidgets(
+          'a receipt with no timer draws a message of 500 characters whole '
+          'on a 360 by 800 dp phone, with the action inside the screen',
+          (WidgetTester tester) async {
+        await loadFonts();
+        tester.view.physicalSize = const Size(360, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+        final longMessage = List.filled(6, plainMessage).join(' ');
+        expect(longMessage.length, greaterThanOrEqualTo(500));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoreTheme.light().copyWith(
+              textTheme:
+                  ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+            ),
+            home: Scaffold(
+              body: Toast.receipt(
+                description: longMessage,
+                actionLabel: 'Close',
+                onAction: _noop,
+                onClose: _noop,
+                duration: null,
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheWholeMessageInsideTheToast(tester);
+        expect(
+          tester.renderObject<RenderParagraph>(messageFinder).didExceedMaxLines,
+          isFalse,
+        );
+        final screen = tester.getRect(find.byType(Scaffold));
+        final action = tester.getRect(actionFinder);
+        expect(action.top, greaterThanOrEqualTo(screen.top));
+        expect(action.bottom, lessThanOrEqualTo(screen.bottom));
+        expect(action.right, lessThanOrEqualTo(screen.right));
+      });
+
+      testWidgets(
+          'a receipt with a duration of zero is timed, and holds its message '
+          'to two lines', (WidgetTester tester) async {
+        await tester.pumpWidget(buildPlainReceipt(duration: Duration.zero));
+
+        expect(tester.takeException(), isNull);
+        expectTwoLinesAndAnEllipsis(tester);
+      });
+
+      testWidgets(
+          'a receipt with no timer and a View action draws the 90-character '
+          'message whole, with both actions beside it inside the toast',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: null, withView: true),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTheWholeMessageInsideTheToast(tester);
+        final toast = toastRect(tester);
+        final message = tester.getRect(messageFinder);
+        for (final action in [actionFinder, secondaryFinder]) {
+          final rect = tester.getRect(action);
+          expect(rect.left, greaterThanOrEqualTo(message.right));
+          expect(rect.right, lessThanOrEqualTo(toast.right));
+          expect(rect.top, greaterThanOrEqualTo(toast.top));
+          expect(rect.bottom, lessThanOrEqualTo(toast.bottom));
+        }
+      });
+
+      testWidgets(
+          'a receipt that loses its timer while it shows wraps its message, '
+          'and holds it to two lines again when the timer comes back',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: const Duration(seconds: 5)),
+        );
+        expectTwoLinesAndAnEllipsis(tester);
+
+        await tester.pumpWidget(buildPlainReceipt(duration: null));
+        expectTheWholeMessageInsideTheToast(tester);
+
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: const Duration(seconds: 5)),
+        );
+        expectTwoLinesAndAnEllipsis(tester);
+      });
+
+      testWidgets(
+          'a timed receipt keeps the same message to two lines and '
+          'ends it in an ellipsis', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildPlainReceipt(duration: const Duration(seconds: 5)),
+        );
+
+        expect(tester.takeException(), isNull);
+        expectTwoLinesAndAnEllipsis(tester);
+      });
+
       // The width the message shares is the row less the icon column. In a
       // host narrower than that column it went negative, and a negative
       // maxWidth is a non-normalized BoxConstraints, which asserts.
@@ -947,7 +1324,8 @@ void main() {
         expect(tester.getSize(actionFinder).width, lessThan(120));
       });
 
-      testWidgets('fits a narrow screen at a large text scale with both '
+      testWidgets(
+          'fits a narrow screen at a large text scale with both '
           'actions', (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
@@ -1142,8 +1520,8 @@ void main() {
         final toast = tester.getSemantics(find.byType(Toast));
         expect(toast.label, '$description · $highlight');
         expect(toast.flagsCollection.isButton, isFalse);
-        expect(toast.getSemanticsData().hasAction(SemanticsAction.tap),
-            isFalse);
+        expect(
+            toast.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
         handle.dispose();
       });
 
@@ -1395,8 +1773,8 @@ void main() {
           MaterialApp(
             home: Builder(
               builder: (context) => MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(accessibleNavigation: true),
+                data:
+                    MediaQuery.of(context).copyWith(accessibleNavigation: true),
                 child: Scaffold(
                   body: Toast.receipt(
                     description: description,
@@ -1645,11 +2023,12 @@ void main() {
           ),
         ));
 
-        expect(tester.getSize(find.byKey(const Key('toast_surface'))).height,
-            48);
+        expect(
+            tester.getSize(find.byKey(const Key('toast_surface'))).height, 48);
       });
 
-      testWidgets('draws its 15.6 dp tick (a 21.3 dp icon) centred in the circle',
+      testWidgets(
+          'draws its 15.6 dp tick (a 21.3 dp icon) centred in the circle',
           (WidgetTester tester) async {
         await tester.pumpWidget(buildAcknowledgement());
 
