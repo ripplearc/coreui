@@ -256,7 +256,12 @@ class _ActiveDateChipState extends State<_ActiveDateChip> {
   bool _isClearFocused = false;
 
   BoxBorder? _pillBorder(AppColorsExtension colors) {
-    if (_isPressed) return Border.all(color: colors.lineDarkOutline);
+    if (_isPressed) {
+      return Border.all(
+        color: colors.lineDarkOutline,
+        width: CoreStrokes.hairline,
+      );
+    }
     if (!_isRangeFocused) return null;
     return _focusBorder(colors);
   }

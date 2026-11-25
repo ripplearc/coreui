@@ -53,7 +53,7 @@ class PreferenceValueView extends StatelessWidget {
           decoration: BoxDecoration(
             color: colors.pageBackground,
             borderRadius: BorderRadius.circular(CoreSpacing.space5),
-            border: Border.all(color: accent),
+            border: Border.all(color: accent, width: CoreStrokes.hairline),
           ),
           // A minimum, not a fixed height, so large text grows the pill.
           constraints: const BoxConstraints(minHeight: CoreSpacing.space6),

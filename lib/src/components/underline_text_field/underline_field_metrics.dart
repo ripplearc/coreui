@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../../theme/spacing.dart';
+import '../../theme/strokes.dart';
 import 'core_underline_text_field_size.dart';
 
 /// The measurements of a [CoreUnderlineTextField] at one size, in logical
@@ -54,7 +55,7 @@ class UnderlineFieldMetrics {
     labelGap: CoreSpacing.space1,
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
-    strokeWidth: 1,
+    strokeWidth: CoreStrokes.hairline,
     caretHeight: CoreSpacing.space4,
     unitGap: CoreSpacing.space1,
   );
@@ -64,7 +65,7 @@ class UnderlineFieldMetrics {
     labelGap: CoreSpacing.space1,
     valueRowHeight: CoreSpacing.space6,
     lineGap: CoreSpacing.space2,
-    strokeWidth: 1,
+    strokeWidth: CoreStrokes.hairline,
     caretHeight: CoreSpacing.space4,
     unitGap: CoreSpacing.space1,
   );

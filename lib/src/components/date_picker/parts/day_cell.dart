@@ -46,7 +46,7 @@ class _DayCell extends StatelessWidget {
       shape: BoxShape.circle,
       color: isSelected ? colors.outlineFocus : colors.transparent,
       border: !isSelected && isToday
-          ? Border.all(color: colors.lineHighlight)
+          ? Border.all(color: colors.lineHighlight, width: CoreStrokes.hairline)
           : null,
     );
 

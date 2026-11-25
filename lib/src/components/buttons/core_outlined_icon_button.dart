@@ -55,7 +55,10 @@ class CoreOutlinedIconButton extends StatelessWidget {
                 color: colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: radius,
-                  side: BorderSide(color: colors.lineMid),
+                  side: BorderSide(
+                    color: colors.lineMid,
+                    width: CoreStrokes.hairline,
+                  ),
                 ),
                 child: InkWell(
                   onTap: onTap,

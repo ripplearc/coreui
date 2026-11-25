@@ -124,7 +124,7 @@ class CoreStatusBadge extends StatelessWidget {
         );
 
   static const double _neutralHeight = 22;
-  static const double _borderWidth = 1;
+  static const double _borderWidth = CoreStrokes.hairline;
   static const double _paddingInsideBorder = CoreSpacing.space3 - _borderWidth;
 
   bool get _isCompact => size == CoreStatusBadgeSize.compact;

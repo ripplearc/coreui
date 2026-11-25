@@ -5,6 +5,7 @@ import '../../theme/icon_sizes.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/shadows.dart';
 import '../../theme/spacing.dart';
+import '../../theme/strokes.dart';
 import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
@@ -194,7 +195,7 @@ class _CoreSearchBoxState extends State<CoreSearchBox> {
     final clearEndInset = CoreSpacing.space4 - (_tapTargetSize - iconSize) / 2;
     OutlineInputBorder outline(Color color) => OutlineInputBorder(
           borderRadius: radius,
-          borderSide: BorderSide(color: color),
+          borderSide: BorderSide(color: color, width: CoreStrokes.hairline),
         );
 
     final field = DecoratedBox(

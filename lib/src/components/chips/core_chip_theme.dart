@@ -174,7 +174,7 @@ abstract final class CoreChipTheme {
   static const FontWeight unitFontWeight = FontWeight.w800;
 
   /// The default border width for all chip sizes.
-  static const double borderWidth = 1;
+  static const double borderWidth = CoreStrokes.hairline;
 
   /// Returns the border width for the current interaction state and
   /// [outline].

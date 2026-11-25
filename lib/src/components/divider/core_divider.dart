@@ -102,7 +102,7 @@ class CoreDivider extends StatelessWidget {
   /// One logical pixel — not Flutter's `thickness: 0` device-pixel hairline —
   /// so high-DPR screens paint it several device pixels tall, matching the
   /// migrated call sites.
-  static const double thickness = 1.0;
+  static const double thickness = CoreStrokes.hairline;
 
   const CoreDivider({
     super.key,

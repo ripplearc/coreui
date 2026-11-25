@@ -47,7 +47,7 @@ class PreferenceRowTile extends StatelessWidget {
   /// widget-test finders.
   static const Key inkLayerKey = Key('preference_row_tile_ink_layer');
 
-  static const double _bottomLineWidth = 1;
+  static const double _bottomLineWidth = CoreStrokes.hairline;
 
   @override
   Widget build(BuildContext context) {

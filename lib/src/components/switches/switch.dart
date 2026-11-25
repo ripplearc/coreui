@@ -328,8 +328,12 @@ class CoreSwitch extends StatelessWidget {
             width: switchWidth,
             decoration: BoxDecoration(
               color: backgroundColor,
-              border:
-                  showBorder ? Border.all(color: borderColor, width: 1) : null,
+              border: showBorder
+                  ? Border.all(
+                      color: borderColor,
+                      width: CoreStrokes.hairline,
+                    )
+                  : null,
               borderRadius: BorderRadius.circular(CoreSpacing.space6),
             ),
             child: Stack(
@@ -369,7 +373,7 @@ class CoreSwitch extends StatelessWidget {
                       ? switchWidth -
                           thumbSize -
                           thumbPadding -
-                          (showBorder ? 1 : 0)
+                          (showBorder ? CoreStrokes.hairline : 0)
                       : thumbPadding,
                   top: 0,
                   bottom: 0,

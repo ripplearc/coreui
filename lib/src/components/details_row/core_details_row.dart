@@ -128,7 +128,10 @@ class CoreDetailsRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.backgroundGrayLight,
         borderRadius: BorderRadius.circular(CoreSpacing.space3),
-        border: Border.all(color: colors.lineLight),
+        border: Border.all(
+          color: colors.lineLight,
+          width: CoreStrokes.hairline,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

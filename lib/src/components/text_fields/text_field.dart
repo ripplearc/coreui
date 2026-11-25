@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_typography_extension.dart';
 import '../../theme/icons/core_icons.dart';
 import '../../theme/spacing.dart';
+import '../../theme/strokes.dart';
 import '../../theme/theme_extensions.dart';
 import '../core_icon.dart';
 
@@ -99,7 +100,10 @@ class CoreTextField extends StatelessWidget {
     final colors = Theme.of(context).coreColors;
     final focusedBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide(color: colors.outlineHover),
+      borderSide: BorderSide(
+        color: colors.outlineHover,
+        width: CoreStrokes.hairline,
+      ),
     );
 
     return TextFormField(
@@ -122,12 +126,10 @@ class CoreTextField extends StatelessWidget {
               ? colors.textDisable
               : (hasError ? colors.textError : colors.textDark),
         ),
-        hoverColor: isDisabled
-            ? colors.backgroundGrayMid
-            : colors.pageBackground,
-        fillColor: isDisabled
-            ? colors.backgroundGrayMid
-            : colors.pageBackground,
+        hoverColor:
+            isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
+        fillColor:
+            isDisabled ? colors.backgroundGrayMid : colors.pageBackground,
         filled: true,
         labelText: label,
         floatingLabelBehavior:
@@ -144,15 +146,13 @@ class CoreTextField extends StatelessWidget {
         hintStyle: typography.bodyLargeRegular.copyWith(
           color: colors.textDisable,
         ),
-        suffixIcon: (obscureText
-            ? suffix ?? const Icon(Icons.visibility)
-            : suffix),
+        suffixIcon:
+            (obscureText ? suffix ?? const Icon(Icons.visibility) : suffix),
         error: !hasError
             ? null
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    _buildErrorWidgetList(
+                children: _buildErrorWidgetList(
                       context,
                       errorTextList,
                       errorWidgetList,
@@ -186,6 +186,7 @@ class CoreTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           borderSide: BorderSide(
             color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
+            width: CoreStrokes.hairline,
           ),
         ),
         enabledBorder: showsFocus
@@ -194,20 +195,30 @@ class CoreTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
                   color: isDisabled ? colors.lineMid : colors.lineDarkOutline,
+                  width: CoreStrokes.hairline,
                 ),
               ),
         focusedBorder: focusedBorder,
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colors.statusError),
+          borderSide: BorderSide(
+            color: colors.statusError,
+            width: CoreStrokes.hairline,
+          ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colors.statusError),
+          borderSide: BorderSide(
+            color: colors.statusError,
+            width: CoreStrokes.hairline,
+          ),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: colors.lineMid),
+          borderSide: BorderSide(
+            color: colors.lineMid,
+            width: CoreStrokes.hairline,
+          ),
         ),
       ),
     );
@@ -299,7 +310,11 @@ class CoreTextField extends StatelessWidget {
               ),
             ),
             const SizedBox(width: CoreSpacing.space3),
-            Container(height: 20, width: 1, color: colors.lineMid),
+            Container(
+              height: CoreSpacing.space5,
+              width: CoreStrokes.hairline,
+              color: colors.lineMid,
+            ),
           ],
         ),
       ),

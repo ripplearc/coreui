@@ -103,7 +103,12 @@ class CoreSheetHeader extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         border: showBottomLine
-            ? Border(bottom: BorderSide(color: colors.lineLight))
+            ? Border(
+                bottom: BorderSide(
+                  color: colors.lineLight,
+                  width: CoreStrokes.hairline,
+                ),
+              )
             : null,
       ),
       child: Row(
