@@ -62,7 +62,7 @@ class CoreButton extends StatefulWidget {
 
   /// A 1 px [borderWidth] — the hairline the chips and the display area's
   /// dependent-key pills draw (Figma Dependent Key Chip).
-  static const double hairlineBorderWidth = 1;
+  static const double hairlineBorderWidth = CoreStrokes.hairline;
 
   /// Width of the focus ring a focused [CoreButtonVariant.primary] or
   /// [CoreButtonVariant.secondary] button draws.
@@ -338,8 +338,7 @@ class _CoreButtonState extends State<CoreButton> {
         child: Container(
           width: widget.fullWidth ? double.infinity : null,
           constraints: BoxConstraints(
-            minHeight:
-                widget.variant == CoreButtonVariant.social ? 0 : _height,
+            minHeight: widget.variant == CoreButtonVariant.social ? 0 : _height,
           ),
           child: DecoratedBox(
             key: CoreButton.fillKey,

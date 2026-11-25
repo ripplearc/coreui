@@ -242,7 +242,7 @@ abstract final class CoreCalculatorChipTheme {
           : borderRadius;
 
   /// The default border width for all calculator chips.
-  static const double borderWidth = 1;
+  static const double borderWidth = CoreStrokes.hairline;
 
   /// Dash length of the [CoreCalculatorChipType.dashed] outline.
   static const double dashLength = CoreSpacing.space1;

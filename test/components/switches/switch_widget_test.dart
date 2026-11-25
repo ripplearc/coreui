@@ -917,7 +917,7 @@ void main() {
           final word = tester.getRect(find.text(value ? 'Show' : 'Hide'));
           expect(
             value ? word.left - track.left : track.right - word.right,
-            closeTo(8 + (hasBorder ? 1 : 0), 0.01),
+            closeTo(8 + (hasBorder ? CoreStrokes.hairline : 0), 0.01),
           );
         });
       }

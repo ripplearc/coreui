@@ -24,7 +24,12 @@ class _DatePickerHeader extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: colors.backgroundBlueLight,
-        border: Border(bottom: BorderSide(color: colors.lineLight)),
+        border: Border(
+          bottom: BorderSide(
+            color: colors.lineLight,
+            width: CoreStrokes.hairline,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

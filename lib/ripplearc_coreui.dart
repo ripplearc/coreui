@@ -69,6 +69,7 @@ export 'src/theme/icons/svg_icons.dart';
 export 'src/theme/radius.dart';
 export 'src/theme/shadows.dart';
 export 'src/theme/spacing.dart';
+export 'src/theme/strokes.dart';
 export 'src/theme/theme_data.dart';
 export 'src/theme/theme_extensions.dart';
 export 'src/theme/typography.dart';

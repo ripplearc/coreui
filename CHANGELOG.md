@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.110.0] - One token for the 1 px hairline
+
+### ✨ Features
+
+- **CoreStrokes.hairline** (`lib/src/theme/strokes.dart`, new): one token for the 1 px stroke that the components each drew as their own number, or left to Flutter's default border width. `CoreDivider.thickness`, `CoreButton.hairlineBorderWidth`, `CoreCalculatorChipTheme.borderWidth` and `CoreChipTheme.borderWidth` are that token. These read it: the switch's off-track border and the offset that keeps its knob inside that border; the regular and compact underline field's underline; the six outline borders of `CoreTextField` and the rule beside its phone prefix; the date picker header's bottom rule and the ring round today; `CoreStatusBadge`, `CoreDetailsRow`, `CoreOutlinedIconButton`, `CoreSearchBox`, the pressed `CoreDateFilterChip`, the sheet header's bottom line, and the preferences sheet's row line and value outline. The large underline field keeps its own 2 px stroke, and the wider strokes (focus rings, the 1.5 px close button, the 2 px keyboard keys) keep theirs. Nothing looks different: the token is `1.0`, the value each of them had (CA-1490)
+- The date picker header's rule stays a `BorderSide` inside its `BoxDecoration` rather than becoming a `CoreDivider`: both add the same 1 px to the header's height, so the swap would change the widget tree and nothing on screen, and this chore leaves the tree as it is; the rule's width now comes from the token (CA-1490)
+
+### 🧪 Tests
+
+- `strokes_test.dart` (new): the token is one logical pixel; `CoreDivider.thickness`, `CoreButton.hairlineBorderWidth` and `CoreCalculatorChipTheme.borderWidth` are the token; a chip draws the token at rest and twice the token when focused or highlighted; the regular and compact underline fields' stroke is the token and the large one's is 2 dp. The other parts pass the token inline or through a private constant at the value they drew before, so no test can tell the token from the old number there; their goldens, like every other golden, are byte-identical. `switch_widget_test.dart`: the knob's inset from an on track reads the token
+
 ## [0.109.0] - A receipt that stays wraps its whole message
 
 ### 🔧 Fixes
