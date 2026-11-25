@@ -66,7 +66,7 @@ class _HistoryPanel extends StatelessWidget {
                 const SizedBox(height: CoreSpacing.space3),
                 if (stage == DisplayAreaStage.expandedPrevious)
                   const _DragHandle(),
-                _buildChipsRow(colors, typography),
+                _buildChipsRow(context, colors, typography),
                 const SizedBox(height: CoreSpacing.space1),
               ],
             ),
@@ -112,8 +112,8 @@ class _HistoryPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildChipsRow(
-      AppColorsExtension colors, AppTypographyExtension typography) {
+  Widget _buildChipsRow(BuildContext context, AppColorsExtension colors,
+      AppTypographyExtension typography) {
     if (!showCurrentChips) return const SizedBox.shrink();
 
     return Row(
@@ -124,7 +124,11 @@ class _HistoryPanel extends StatelessWidget {
             child: _buildCloseIcon(colors: colors, typography: typography),
           )
         else
-          _buildCloseIcon(colors: colors, typography: typography),
+          _centredOnFirstChipRow(
+            context,
+            _buildCloseIcon(colors: colors, typography: typography),
+            typography,
+          ),
         if (chipsList.isNotEmpty)
           Expanded(
             child: _HistoryChips(
@@ -209,6 +213,20 @@ class _HistoryPanel extends StatelessWidget {
   Widget _centredAtRowTop(Widget child) {
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: _trailingRowMinHeight),
+      child: Align(widthFactor: 1, heightFactor: 1, child: child),
+    );
+  }
+
+  Widget _centredOnFirstChipRow(
+    BuildContext context,
+    Widget child,
+    AppTypographyExtension typography,
+  ) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: _HistoryChips.oneLineChipHeight(context, typography) +
+            2 * _HistoryChips._collapsedVerticalPadding,
+      ),
       child: Align(widthFactor: 1, heightFactor: 1, child: child),
     );
   }

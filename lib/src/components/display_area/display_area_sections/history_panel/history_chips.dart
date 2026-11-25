@@ -13,12 +13,42 @@ class _HistoryChips extends StatelessWidget {
   final String errorMessage;
   final bool isCollapsed;
 
-  /// 2 chip rows × ~30 dp chip height + 8 dp runSpacing gap between rows
-  static const double _twoRowMaxHeight = 68.0;
+  static const double _runSpacing = CoreSpacing.space2;
 
   static const double _collapsedVerticalPadding = CoreSpacing.space1;
 
   static const double _expandedVerticalPadding = CoreSpacing.space3;
+
+  static double largeTextFactor(
+    BuildContext context,
+    AppTypographyExtension typography,
+  ) {
+    final fontSize = typography.bodyMediumSemiBold.fontSize;
+    if (fontSize == null || fontSize <= 0) return 1;
+    return math.max(
+      1,
+      MediaQuery.textScalerOf(context).scale(fontSize) / fontSize,
+    );
+  }
+
+  static double oneLineChipHeight(
+    BuildContext context,
+    AppTypographyExtension typography,
+  ) {
+    final valueStyle = typography.bodyMediumSemiBold;
+    final lineHeight = (valueStyle.fontSize ?? 0) *
+        largeTextFactor(context, typography) *
+        (valueStyle.height ?? 1);
+    return lineHeight +
+        CoreCalculatorChipTheme.padding.vertical +
+        2 * CoreCalculatorChipTheme.borderWidth;
+  }
+
+  static double _twoRowMaxHeight(
+    BuildContext context,
+    AppTypographyExtension typography,
+  ) =>
+      2 * oneLineChipHeight(context, typography) + _runSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +82,15 @@ class _HistoryChips extends StatelessWidget {
 
     final wrap = Wrap(
       spacing: CoreSpacing.space2,
-      runSpacing: CoreSpacing.space2,
+      runSpacing: _runSpacing,
       children: chipWidgets,
     );
 
     if (isCollapsed) {
       return ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxHeight: _twoRowMaxHeight + _collapsedVerticalPadding * 2,
+        constraints: BoxConstraints(
+          maxHeight: _twoRowMaxHeight(context, typography) +
+              _collapsedVerticalPadding * 2,
         ),
         child: SingleChildScrollView(
           reverse: true,

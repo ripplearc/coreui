@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../ripplearc_coreui.dart';
+import '../calculator_chips/core_calculator_chip_theme.dart';
 import 'display_area_stage_controller.dart' as logic;
 
 part 'display_area_sections/history_panel/history_chips.dart';
@@ -55,6 +58,20 @@ const Duration _kDisplayAreaAnimationDuration = Duration(milliseconds: 300);
 /// [DisplayAreaStage.expandedPrevious] and [DisplayAreaStage.fullScreen].
 /// Use [onStageChanged] to react to stage transitions — for example to
 /// animate a keyboard component out of view.
+///
+/// ## Large text
+///
+/// The collapsed area is 228 dp tall at the default text size and at any
+/// smaller one. At a larger text size it grows with what it shows, up to
+/// 228 dp times the scale of the text, so the value stays visible: at 200%
+/// a chip, a two-line label and the value need about 260 dp, and the area
+/// is that tall. Past that limit the area still cuts what does not fit, as
+/// a placeholder that wraps onto many lines at 300% does.
+///
+/// From about 125% text up, the close icon of the collapsed area is centred
+/// on the first row of chips and stays beside that row when the chips wrap
+/// onto more rows. Below that the icon is taller than a chip row and sits
+/// where it always did, its centre 2.5 dp below the chip's at 100%.
 class CoreDisplayArea extends StatefulWidget {
   /// Chip-count threshold. More than this value activates the three-stage path.
   static const int _twoRowChipThreshold = 5;
@@ -308,6 +325,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
+    final typography = AppTypographyExtension.of(context);
     final mq = MediaQuery.of(context);
     final dependentKeys = widget.resolvedDependentKeys;
 
@@ -420,9 +438,10 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
               ? mq.size.height - mq.padding.vertical - mq.viewInsets.bottom
               : null,
           constraints: _stage == DisplayAreaStage.collapsed
-              ? const BoxConstraints(
+              ? BoxConstraints(
                   minHeight: CoreSpacing.space57,
-                  maxHeight: CoreSpacing.space57,
+                  maxHeight: CoreSpacing.space57 *
+                      _HistoryChips.largeTextFactor(context, typography),
                 )
               : null,
           decoration: BoxDecoration(

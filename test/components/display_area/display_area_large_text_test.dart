@@ -64,7 +64,11 @@ void main() {
         final iconRect = tester.getRect(find.byType(CoreIconWidget));
         final pillRect = tester.getRect(find.byKey(pillKey));
         final textRect = tester.getRect(find.text(testHistoryPlaceholder));
-        expect(areaRect.height, CoreSpacing.space57);
+        expect(areaRect.height, greaterThanOrEqualTo(CoreSpacing.space57));
+        expect(areaRect.height,
+            lessThanOrEqualTo(CoreSpacing.space57 * scale + 0.01),
+            reason: 'the collapsed area grows with the text scale up to '
+                '228 dp times the scale, and no further');
         expect(textRect.height, greaterThan(pillRect.height),
             reason: 'the placeholder must wrap past the widget, or the row '
                 'never grows and this proves nothing');
