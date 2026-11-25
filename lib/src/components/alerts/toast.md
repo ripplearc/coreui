@@ -76,7 +76,8 @@ Toast.acknowledgement(description: 'Added to Bedroom 2');
 | `secondaryLabel` | `String?`       | No       | The quieter second action — "View". Travels with `onSecondary` |
 | `onSecondary`    | `VoidCallback?` | No       | Fires when the second action is tapped. Answers the toast the same way `onAction` does — whichever is tapped first wins, and the other is locked out |
 | `onClose`        | `VoidCallback`  | Yes      | The single dismissal path: fires once, either when `duration` elapses or when an action answers the toast. Required, because it is the only way a receipt leaves the screen |
-| `duration`       | `Duration?`     | No       | Auto-dismiss delay, 5 s by default. `null` keeps the toast until something else removes it, and so does an active screen reader |
+| `duration`       | `Duration?`     | No       | Auto-dismiss delay, 5 s by default. `null` keeps the toast until something else removes it, and so does an active screen reader. A timed receipt holds its message to two lines and ends it in an ellipsis; a receipt that stays until it is answered, which is one with `null` here or a timed one a screen reader holds open, wraps its whole message onto as many lines as it needs |
+| `wrapsWholeMessage` | `bool?`      | No       | `true` wraps the whole message, `false` holds it to two lines and an ellipsis. `null`, the default, follows the rule in the `duration` row. `CoreToast.showReceipt` sets it under `disableTimers()`, so a test shows the receipt as it ships |
 
 ### Toast.acknowledgement Properties
 
@@ -279,7 +280,7 @@ overlay entry — so a receipt can leave before its own window is up.
 | `actionLabel` | `String` | Yes | The action's label — "Undo" |
 | `onAction` | `VoidCallback` | Yes | Fires at most once, before the toast is removed |
 | `highlight` | `String?` | No | The tail after a middot — "Calc 60ft²" |
-| `duration` | `Duration?` | No | 5 s by default, handed to the widget rather than the overlay. `null` leaves the receipt with no timer at all; so does an active screen reader, and so does `disableTimers()` |
+| `duration` | `Duration?` | No | 5 s by default, handed to the widget rather than the overlay. `null` leaves the receipt with no timer at all; so does an active screen reader, and so does `disableTimers()`. A receipt with no timer wraps its whole message; under `disableTimers()` a receipt asked for with a duration keeps its two lines, as it has in the app |
 
 With no timer, three things remove a receipt: the user takes the action,
 another toast replaces it, or `cleanup()` runs. The caller holds no handle of
@@ -342,8 +343,12 @@ their natural width on a phone. The order it gives ground in:
 2. `View` keeps its 48 dp target; the cluster's cap reserves it, and its own
    share does not fall below it above roughly 260 dp of row.
 3. The message keeps 40 % of the width it shares with the action, less that
-   reserved target when there is a second action, and ellipsises at two lines
-   beyond that.
+   reserved target when there is a second action. A timed receipt ellipsises
+   at two lines beyond that; a receipt that stays until it is answered keeps
+   wrapping, with no line limit. Known limit: at 200 % text on a 360 dp
+   screen the 91-character "Editing this group…" message takes 12 lines
+   beside `Close`, and the receipt is 586 dp tall. Keep the message of such
+   a receipt short.
 
 An alert's `View` is capped at a fixed 120 dp, whatever the screen width or text
 size. Known limit: on a 320 dp screen at 200 % text, a label as long as

@@ -197,6 +197,28 @@ void main() {
     ));
   }
 
+  Future<void> pumpPlainReceipt(WidgetTester tester, ThemeData theme) async {
+    await tester.binding.setSurfaceSize(const Size(360, 160));
+    await tester.pumpWidget(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme,
+      home: Scaffold(
+        backgroundColor: theme.coreColors.pageBackground,
+        body: Padding(
+          padding: const EdgeInsets.all(CoreSpacing.space4),
+          child: Toast.receipt(
+            description: 'Editing this group. Press ( ) to close it. If you '
+                'type nothing, everything stays as it was.',
+            actionLabel: 'Close',
+            onAction: () {},
+            onClose: () {},
+            duration: null,
+          ),
+        ),
+      ),
+    ));
+  }
+
   final receiptViewButton = find.byKey(const Key('toast_secondary_button'));
   final closeButton = find.byKey(const Key('toast_close_button'));
   final viewButton = find.byKey(const Key('toast_action_button'));
@@ -249,6 +271,16 @@ void main() {
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/toast_view_focused_$name.png'),
+      );
+    });
+
+    testWidgets('receipt with no timer wraps its message ($name)',
+        (WidgetTester tester) async {
+      await pumpPlainReceipt(tester, theme);
+
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/toast_receipt_plain_message_$name.png'),
       );
     });
 

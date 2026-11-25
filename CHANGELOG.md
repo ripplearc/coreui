@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.109.0] - A receipt that stays wraps its whole message
+
+### 🔧 Fixes
+
+- **Toast.receipt**: a receipt that stays until it is answered, which is one with a `null` `duration` or a timed one a screen reader holds open, wraps its whole `description` onto as many lines as it needs, where every receipt held its message to two lines and ended it in an ellipsis. The calculator draws "Editing this group. Press ( ) to close it. If you type nothing, everything stays as it was." in the receipt look with a Close action and no timer (UX Design Doc Sections 1.7 and 5.6), and at 360, 390 and 430 dp the drawn text ended at "If you typ…", so the promise that nothing is lost was not on the screen. A timed receipt is glanced at and keeps its two-line cap, so the receipts with `Undo` look as they did. A new `wrapsWholeMessage` parameter sets it either way, and `CoreToast.showReceipt` uses it so that `disableTimers()`, which hands the widget a `null` duration, does not change how a receipt asked for with a duration looks in a test. A message that wraps has no line limit: at 200% text on a 360 dp screen the sentence above takes 12 lines beside Close, in a receipt 586 dp tall, so such a message should stay short (CA-1464)
+
+### 🧪 Tests
+
+- `toast_widget_test.dart`, group `Receipt Toast`: at 360 dp the 91-character description with a Close action and no timer is drawn on more than two lines, inside the toast, and the Close action still answers it; a timed receipt a screen reader holds open draws it whole too; `wrapsWholeMessage: true` wraps a timed receipt and `false` holds one with no timer to two lines; at 200% text on a 360 dp phone the whole message is inside the toast and the toast is shorter than the screen; the same description with the default timer keeps the two-line cap and its ellipsis; with no timer an empty message lays out as tall as the action, one 120-letter word breaks onto more lines inside the toast, and a message with a highlight and a View action shows whole; a receipt that loses its timer while it shows wraps, and is held to two lines again when the timer comes back. `core_toast_test.dart`: with timers disabled, `showReceipt` with a duration keeps the two-line message and with no duration wraps it
+- Goldens: `toast_receipt_plain_message_{light,dark}.png` are new, the 91-character message at 360 dp with its Close action. Every other golden is unchanged
+
 ## [0.108.0] - The typing dots and the unit switch meet contrast in both themes
 
 ### 🔧 Fixes

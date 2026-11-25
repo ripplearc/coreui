@@ -521,6 +521,36 @@ void main() {
         expect(find.text('Undo'), findsOneWidget);
       });
 
+      testWidgets(
+          'with timers disabled a receipt asked for with a duration keeps '
+          'its two-line message, as it has outside a test', (tester) async {
+        await tester.pumpWidget(buildHost());
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        final message = tester.widget<Text>(
+          find.byKey(const Key('toast_receipt_message')),
+        );
+        expect(message.maxLines, 2);
+        expect(message.overflow, TextOverflow.ellipsis);
+      });
+
+      testWidgets(
+          'with timers disabled a receipt asked for with no duration wraps '
+          'its whole message', (tester) async {
+        await tester.pumpWidget(buildHost(duration: null));
+
+        await tester.tap(find.text('Show Toast'));
+        await tester.pumpAndSettle();
+
+        final message = tester.widget<Text>(
+          find.byKey(const Key('toast_receipt_message')),
+        );
+        expect(message.maxLines, isNull);
+        expect(message.overflow, TextOverflow.visible);
+      });
+
       testWidgets('honours disableTimers like every other toast',
           (tester) async {
         await tester.pumpWidget(buildHost());
