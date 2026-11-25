@@ -498,11 +498,12 @@ void main() {
     addTearDown(() => debugDisableShadows = true);
 
     // physicalSize is in physical pixels; logical size = physicalSize / DPR.
-    // 780x456 @ 2.0 => 390x228 logical: a phone-wide collapsed display area
-    // (CoreSpacing.space57 tall) with its text at twice the size, where the
-    // label wraps and the chip's name ends in an ellipsis; no value, which
-    // the fixed collapsed height would cut at this text size.
-    tester.view.physicalSize = const Size(780, 456);
+    // 780x600 @ 2.0 => 390x300 logical: a phone-wide collapsed display area
+    // with its text at twice the size, where the label wraps and the chip's
+    // name ends in an ellipsis. The area grows past CoreSpacing.space57 to
+    // show the value, with the close icon centred on the chip, and the page
+    // background shows under it.
+    tester.view.physicalSize = const Size(780, 600);
     tester.view.devicePixelRatio = 2.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -525,6 +526,7 @@ void main() {
               historyPlaceholder: testHistoryPlaceholder,
               label: 'Pitch-rise per 12in run',
               isTyping: true,
+              value: '6in/12in',
               chipsList: [
                 CoreCalculatorChip(
                   label: 'Pitch-rise per 12in run',

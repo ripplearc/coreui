@@ -90,6 +90,10 @@ The expansion logic uses a smart threshold logic (`chipsList.length > 5`) to det
 
 *Note: Swiping up with a negative velocity reverses the progression stage-by-stage back to `collapsed`.*
 
+### Large text
+
+The collapsed area is 228 dp tall at the default text size and at any smaller one. At a larger text size it grows with what it shows, up to 228 dp times the scale of the text, so the value stays visible: at 200% a chip, a two-line label and the value need about 260 dp, and the area is that tall. Past that limit the area still cuts what does not fit. From about 125% text up, the close icon of the collapsed area is centred on the first row of chips and stays beside that row when the chips wrap onto more rows; below that it sits where it always did, its centre 2.5 dp below the chip's at 100%. The two rows the collapsed tape shows grow with the chips, and are never less than the 68 dp they take at the default text size.
+
 ---
 
 ## Integration Guide: Keyboard Sync (Showcase Pattern)
