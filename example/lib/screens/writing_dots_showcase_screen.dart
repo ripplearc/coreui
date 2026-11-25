@@ -70,6 +70,36 @@ class WritingDotsShowcaseScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: CoreSpacing.space8),
+
+            Text(
+              'Custom colour (textSuccess, and the same at 40%)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: CoreSpacing.space2),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(CoreSpacing.space8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CoreWritingDots(
+                      size: CoreSpacing.space10,
+                      color: Theme.of(context).coreColors.textSuccess,
+                    ),
+                    const SizedBox(width: CoreSpacing.space8),
+                    CoreWritingDots(
+                      size: CoreSpacing.space10,
+                      color: Theme.of(context)
+                          .coreColors
+                          .textSuccess
+                          .withValues(alpha: 0.4),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             const SizedBox(height: CoreSpacing.space12),
 
             // Chat context

@@ -179,11 +179,9 @@ class CoreSwitch extends StatelessWidget {
 
   bool get _isShowHide => type == CoreSwitchType.showHide;
 
-  String? get _activeLabel =>
-      activeLabel ?? (_isShowHide ? 'Show' : null);
+  String? get _activeLabel => activeLabel ?? (_isShowHide ? 'Show' : null);
 
-  String? get _inactiveLabel =>
-      inactiveLabel ?? (_isShowHide ? 'Hide' : null);
+  String? get _inactiveLabel => inactiveLabel ?? (_isShowHide ? 'Hide' : null);
 
   /// Returns true if the switch has any labels (active or inactive).
   bool get _hasLabels =>
@@ -194,7 +192,7 @@ class CoreSwitch extends StatelessWidget {
     return inactiveColor ??
         (switch (type) {
           CoreSwitchType.lock => colors.statusError,
-          CoreSwitchType.imperial => colors.iconGreen,
+          CoreSwitchType.imperial => colors.textSuccess,
           CoreSwitchType.normal => colors.iconGrayMid,
           CoreSwitchType.showHide => colors.iconGrayMid,
         });
@@ -214,7 +212,7 @@ class CoreSwitch extends StatelessWidget {
     return inactiveColor ??
         (switch (type) {
           CoreSwitchType.lock => colors.iconRed,
-          CoreSwitchType.imperial => colors.iconGreen,
+          CoreSwitchType.imperial => colors.textSuccess,
           CoreSwitchType.normal => colors.iconGrayMid,
           CoreSwitchType.showHide => colors.lineMid,
         });
@@ -314,14 +312,11 @@ class CoreSwitch extends StatelessWidget {
       label: semanticLabel ?? (_hasLabels ? currentLabel : null),
       toggled: value,
       enabled: _isEnabled,
-      onTap: onChangedCallback == null
-          ? null
-          : () => onChangedCallback(!value),
+      onTap: onChangedCallback == null ? null : () => onChangedCallback(!value),
       excludeSemantics: true,
       child: GestureDetector(
-        onTap: onChangedCallback == null
-            ? null
-            : () => onChangedCallback(!value),
+        onTap:
+            onChangedCallback == null ? null : () => onChangedCallback(!value),
         behavior: HitTestBehavior.translucent,
         child: Container(
           width: effectiveWidth,
@@ -343,9 +338,8 @@ class CoreSwitch extends StatelessWidget {
                   Positioned(
                       right:
                           value ? thumbSize + thumbPadding * 1.4 : thumbPadding,
-                      left: value
-                          ? thumbPadding
-                          : thumbSize + thumbPadding * 1.4,
+                      left:
+                          value ? thumbPadding : thumbSize + thumbPadding * 1.4,
                       top: 0,
                       bottom: 0,
                       // A large label scales down; the track keeps its size.
@@ -372,7 +366,9 @@ class CoreSwitch extends StatelessWidget {
                   curve: Curves.easeInOut,
                   // The border takes 1 px from each side of the Stack.
                   left: value
-                      ? switchWidth - thumbSize - thumbPadding -
+                      ? switchWidth -
+                          thumbSize -
+                          thumbPadding -
                           (showBorder ? 1 : 0)
                       : thumbPadding,
                   top: 0,
@@ -397,9 +393,8 @@ class CoreSwitch extends StatelessWidget {
     return MergeSemantics(
       child: _SwitchFocus(
         trackSize: Size(switchWidth, switchHeight),
-        onActivate: onChangedCallback == null
-            ? null
-            : () => onChangedCallback(!value),
+        onActivate:
+            onChangedCallback == null ? null : () => onChangedCallback(!value),
         child: control,
       ),
     );

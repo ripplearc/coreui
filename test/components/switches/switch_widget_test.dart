@@ -195,12 +195,12 @@ void main() {
     // Each type's expected (knob, border) colours when off.
     final offColors = <CoreSwitchType,
         (
-          Color Function(AppColorsExtension),
-          Color Function(AppColorsExtension),
-        )>{
+      Color Function(AppColorsExtension),
+      Color Function(AppColorsExtension),
+    )>{
       CoreSwitchType.normal: ((c) => c.iconGrayMid, (c) => c.iconGrayMid),
       CoreSwitchType.lock: ((c) => c.statusError, (c) => c.iconRed),
-      CoreSwitchType.imperial: ((c) => c.iconGreen, (c) => c.iconGreen),
+      CoreSwitchType.imperial: ((c) => c.textSuccess, (c) => c.textSuccess),
     };
 
     offColors.forEach((type, expected) {
@@ -221,6 +221,76 @@ void main() {
         expect(offKnobColor(tester), knob(colors));
         expect(offBorderColor(tester), border(colors));
       });
+    });
+
+    // CA-1491: the text contrast guideline reads the whole switch, where the
+    // off knob and the border are more pixels than the 12 px face, so the
+    // green they wear must reach 4.5:1 on the page, as the face's green does.
+    double contrast(Color a, Color b) {
+      final la = a.computeLuminance();
+      final lb = b.computeLuminance();
+      final lighter = la > lb ? la : lb;
+      final darker = la > lb ? lb : la;
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    for (final (name, theme) in [
+      ('light', CoreTheme.light()),
+      ('dark', CoreTheme.dark()),
+    ]) {
+      testWidgets(
+          'imperial off knob and border reach 4.5:1 on the page in the '
+          '$name theme, the same green as the face', (tester) async {
+        final colors = theme.coreColors;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              body: CoreSwitch(
+                type: CoreSwitchType.imperial,
+                value: false,
+                onChanged: (_) {},
+                activeLabel: 'Metric',
+                inactiveLabel: 'Imperial',
+              ),
+            ),
+          ),
+        );
+
+        final face = tester.widget<Text>(find.text('Imperial'));
+        expect(offKnobColor(tester), face.style!.color);
+        expect(offBorderColor(tester), face.style!.color);
+        expect(contrast(offKnobColor(tester), colors.pageBackground),
+            greaterThanOrEqualTo(4.5));
+        expect(contrast(face.style!.color!, colors.backgroundGrayLight),
+            greaterThanOrEqualTo(4.5));
+      });
+    }
+
+    testWidgets(
+        'an inactiveColor passed in still wins over the face green on the '
+        'imperial off knob and border', (tester) async {
+      final custom = CoreTheme.light().coreColors.iconBlue;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoreTheme.light(),
+          home: Scaffold(
+            body: CoreSwitch(
+              type: CoreSwitchType.imperial,
+              value: false,
+              onChanged: (_) {},
+              activeLabel: 'Metric',
+              inactiveLabel: 'Imperial',
+              inactiveColor: custom,
+            ),
+          ),
+        ),
+      );
+
+      expect(offKnobColor(tester), custom);
+      expect(offBorderColor(tester), custom);
     });
 
     Future<void> pumpSwitch(
@@ -286,8 +356,8 @@ void main() {
         onChanged: (_) {},
       );
 
-      expect(tester.getSize(find.byType(AnimatedContainer)),
-          const Size(72, 32));
+      expect(
+          tester.getSize(find.byType(AnimatedContainer)), const Size(72, 32));
     });
 
     testWidgets('show hide uses the Figma colours when enabled',
@@ -302,8 +372,8 @@ void main() {
       );
       expect(offKnobColor(tester), colors.iconGrayMid);
       expect(offBorderColor(tester), colors.lineMid);
-      expect(tester.widget<Text>(find.text('Hide')).style!.color,
-          colors.textDark);
+      expect(
+          tester.widget<Text>(find.text('Hide')).style!.color, colors.textDark);
 
       await pumpSwitch(
         tester,
@@ -325,7 +395,8 @@ void main() {
 
     for (final dark in [false, true]) {
       for (final type in CoreSwitchType.values) {
-        testWidgets('${type.name} on knob is textInverse in '
+        testWidgets(
+            '${type.name} on knob is textInverse in '
             '${dark ? 'dark' : 'light'} mode', (WidgetTester tester) async {
           final colors =
               (dark ? CoreTheme.dark() : CoreTheme.light()).coreColors;
@@ -419,7 +490,8 @@ void main() {
 
     for (final type in CoreSwitchType.values) {
       for (final value in [false, true]) {
-        testWidgets('disabled ${type.name} ${value ? 'on' : 'off'} uses the '
+        testWidgets(
+            'disabled ${type.name} ${value ? 'on' : 'off'} uses the '
             'disabled colours', (WidgetTester tester) async {
           final colors = CoreTheme.light().coreColors;
           final labelled = type != CoreSwitchType.normal;
@@ -448,6 +520,41 @@ void main() {
           }
         });
       }
+    }
+
+    for (final value in [false, true]) {
+      testWidgets(
+          'disabled imperial ${value ? 'on' : 'off'} uses the disabled '
+          'colours in the dark theme too', (WidgetTester tester) async {
+        final colors = CoreTheme.dark().coreColors;
+
+        await pumpSwitch(
+          tester,
+          type: CoreSwitchType.imperial,
+          value: value,
+          activeLabel: 'Metric',
+          inactiveLabel: 'Imperial',
+          dark: true,
+        );
+        await tester.pumpAndSettle();
+
+        final track = tester.widget<AnimatedContainer>(
+          find.byType(AnimatedContainer),
+        );
+        final decoration = track.decoration! as BoxDecoration;
+        expect(decoration.color, colors.pageBackground);
+        expect(offBorderColor(tester), colors.lineMid);
+        expect(offKnobColor(tester), colors.iconGrayLight);
+        expect(offKnobColor(tester), isNot(colors.textSuccess),
+            reason: 'a disabled Imperial switch does not wear the green');
+        expect(
+          tester
+              .widget<Text>(find.text(value ? 'Metric' : 'Imperial'))
+              .style!
+              .color,
+          colors.textDisable,
+        );
+      });
     }
 
     testWidgets('disabled thumb keeps the side of its value',
@@ -525,9 +632,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('screen reader reads an enabled switch as enabled, on and '
-        'focusable',
-        (WidgetTester tester) async {
+    testWidgets(
+        'screen reader reads an enabled switch as enabled, on and '
+        'focusable', (WidgetTester tester) async {
       final handle = tester.ensureSemantics();
       await pumpSwitch(
         tester,
@@ -787,9 +894,8 @@ void main() {
           await tester.pumpWidget(
             MaterialApp(
               theme: CoreTheme.light().copyWith(
-                textTheme: ThemeData.light()
-                    .textTheme
-                    .apply(fontFamily: 'Roboto'),
+                textTheme:
+                    ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
               ),
               home: Scaffold(
                 body: CoreSwitch(

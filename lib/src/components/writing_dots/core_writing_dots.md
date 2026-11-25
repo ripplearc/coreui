@@ -15,6 +15,7 @@ CoreWritingDots(size: CoreSpacing.space12)
 | Property | Type     | Required | Default                     | Description                                         |
 |----------|----------|----------|-----------------------------|-----------------------------------------------------|
 | `size`   | `double` | No       | `CoreSpacing.space3` (12.0) | The width and height of the writing dots indicator. |
+| `color`  | `Color?` | No       | `null`                      | The colour of the dots. `null` draws them in the theme's `iconDark`: the animation file's own colour in the light theme, and a colour that meets 3:1 on the display area's `backgroundBlueLight` in the dark theme (WCAG 1.4.11). A colour that is partly see-through draws the dots that much see-through. |
 
 ## Examples
 
@@ -31,6 +32,12 @@ const CoreWritingDots();
 ```dart
 const CoreWritingDots(size: CoreSpacing.space5);  // chat bubble size (20px)
 const CoreWritingDots(size: CoreSpacing.space10); // large – placeholder size (40px)
+```
+
+### Custom Colour
+
+```dart
+CoreWritingDots(color: Theme.of(context).coreColors.textSuccess);
 ```
 
 ### Chat Bubble Context
