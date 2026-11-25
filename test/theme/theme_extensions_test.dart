@@ -42,6 +42,7 @@ Map<String, Color> fieldMap(AppColorsExtension colors) {
     'backgroundGrayMid': colors.backgroundGrayMid,
     'backgroundBlueLight': colors.backgroundBlueLight,
     'backgroundBlueMid': colors.backgroundBlueMid,
+    'backgroundWorkedFirstBand': colors.backgroundWorkedFirstBand,
     'backgroundGreenLight': colors.backgroundGreenLight,
     'backgroundGreenMid': colors.backgroundGreenMid,
     'backgroundRedLight': colors.backgroundRedLight,
@@ -56,6 +57,7 @@ Map<String, Color> fieldMap(AppColorsExtension colors) {
     'lineMid': colors.lineMid,
     'lineDarkOutline': colors.lineDarkOutline,
     'lineHighlight': colors.lineHighlight,
+    'lineWorkedFirstBand': colors.lineWorkedFirstBand,
     'lineBlue': colors.lineBlue,
     'outlineHover': colors.outlineHover,
     'outlineFocus': colors.outlineFocus,
@@ -228,6 +230,77 @@ void main() {
           greaterThanOrEqualTo(4.5),
         );
       }
+    });
+  });
+
+  group('worked-first band colour tokens', () {
+    final light = AppColorsExtension.create();
+    final dark = AppColorsExtension.createDark();
+
+    test('light theme resolves the fill to #E3E7EE and the edge to #C4CBD6',
+        () {
+      expect(light.backgroundWorkedFirstBand, const Color(0xFFE3E7EE));
+      expect(light.lineWorkedFirstBand, const Color(0xFFC4CBD6));
+    });
+
+    test('dark theme resolves the fill to #2B313A and the edge to #434C58', () {
+      expect(dark.backgroundWorkedFirstBand, const Color(0xFF2B313A));
+      expect(dark.lineWorkedFirstBand, const Color(0xFF434C58));
+    });
+
+    test('copyWith replaces the fill and the edge it is given', () {
+      final changed = light.copyWith(
+        backgroundWorkedFirstBand: const Color(0xFF000001),
+        lineWorkedFirstBand: const Color(0xFF000002),
+      ) as AppColorsExtension;
+
+      expect(changed.backgroundWorkedFirstBand, const Color(0xFF000001));
+      expect(changed.lineWorkedFirstBand, const Color(0xFF000002));
+      expect(changed.lineHighlight, light.lineHighlight);
+      expect(changed.backgroundBlueMid, light.backgroundBlueMid);
+    });
+
+    test('copyWith with no arguments keeps both tokens', () {
+      final same = light.copyWith() as AppColorsExtension;
+
+      expect(same.backgroundWorkedFirstBand, light.backgroundWorkedFirstBand);
+      expect(same.lineWorkedFirstBand, light.lineWorkedFirstBand);
+    });
+
+    test('copyWith with one of the two tokens keeps the other', () {
+      final fillOnly = light.copyWith(
+        backgroundWorkedFirstBand: const Color(0xFF000001),
+      ) as AppColorsExtension;
+      final edgeOnly = light.copyWith(
+        lineWorkedFirstBand: const Color(0xFF000002),
+      ) as AppColorsExtension;
+
+      expect(fillOnly.backgroundWorkedFirstBand, const Color(0xFF000001));
+      expect(fillOnly.lineWorkedFirstBand, light.lineWorkedFirstBand);
+      expect(edgeOnly.lineWorkedFirstBand, const Color(0xFF000002));
+      expect(
+          edgeOnly.backgroundWorkedFirstBand, light.backgroundWorkedFirstBand);
+    });
+
+    test('lerp blends the fill and the edge between the two themes', () {
+      final halfway = light.lerp(dark, 0.5) as AppColorsExtension;
+
+      expect(
+        halfway.backgroundWorkedFirstBand,
+        Color.lerp(
+          light.backgroundWorkedFirstBand,
+          dark.backgroundWorkedFirstBand,
+          0.5,
+        ),
+      );
+      expect(
+        halfway.lineWorkedFirstBand,
+        Color.lerp(light.lineWorkedFirstBand, dark.lineWorkedFirstBand, 0.5),
+      );
+      expect(
+        halfway.backgroundWorkedFirstBand,
+        isNot(halfway.lineWorkedFirstBand),
+      );
     });
   });
 

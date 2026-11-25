@@ -126,6 +126,10 @@ class CoreBackgroundColors {
   static const Color backgroundGrayMid = _CoreColorPalette.gray100;
   static const Color backgroundBlueLight = _CoreColorPalette.blue25;
   static const Color backgroundBlueMid = _CoreColorPalette.blue50;
+
+  /// The fill of the band behind the part of a chain that is worked first
+  /// (UX Design Doc rule 4.6). Not a palette step: the doc gives it.
+  static const Color backgroundWorkedFirstBand = Color(0xFFE3E7EE);
   static const Color backgroundGreenLight = _CoreColorPalette.green25;
   static const Color backgroundGreenMid = _CoreColorPalette.green50;
   static const Color backgroundRedLight = _CoreColorPalette.red25;
@@ -145,6 +149,10 @@ class CoreBorderColors {
   static const Color lineDarkOutline = _CoreColorPalette.gray400;
   static const Color lineHighlight = _CoreColorPalette.blue200;
   static const Color lineBlue = _CoreColorPalette.blueLine;
+
+  /// The 1 px edge of the band behind the part of a chain that is worked
+  /// first (UX Design Doc rule 4.6). Not a palette step: the doc gives it.
+  static const Color lineWorkedFirstBand = Color(0xFFC4CBD6);
   static const Color outlineHover = _CoreColorPalette.orient900;
   static const Color outlineFocus = _CoreColorPalette.orient800;
   static const Color tabsHighlight = _CoreColorPalette.orient500;
@@ -299,6 +307,11 @@ class CoreDarkBackgroundColors {
   static const Color backgroundGrayMid = _CoreColorPalette.gray700;
   static const Color backgroundBlueLight = _CoreColorPalette.blue900;
   static const Color backgroundBlueMid = _CoreColorPalette.blue800;
+
+  /// The dark-mode fill of the band behind the part of a chain that is
+  /// worked first (UX Design Doc rule 4.6). Not a palette step: the doc
+  /// gives it.
+  static const Color backgroundWorkedFirstBand = Color(0xFF2B313A);
   static const Color backgroundGreenLight = _CoreColorPalette.green900;
   static const Color backgroundGreenMid = _CoreColorPalette.green800;
   static const Color backgroundRedLight = _CoreColorPalette.red900;
@@ -319,6 +332,11 @@ class CoreDarkBorderColors {
   static const Color lineDarkOutline = _CoreColorPalette.gray500;
   static const Color lineHighlight = _CoreColorPalette.blue400;
   static const Color lineBlue = _CoreColorPalette.blue800;
+
+  /// The dark-mode edge of the band behind the part of a chain that is
+  /// worked first (UX Design Doc rule 4.6). Not a palette step: the doc
+  /// gives it.
+  static const Color lineWorkedFirstBand = Color(0xFF434C58);
   static const Color outlineHover = _CoreColorPalette.orient300;
   static const Color outlineFocus = _CoreColorPalette.orient200;
   static const Color tabsHighlight = _CoreColorPalette.orient300;
