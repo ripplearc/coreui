@@ -429,6 +429,96 @@ void main() {
       expect(focusNode.hasFocus, isTrue);
     });
 
+    for (final size in CoreUnderlineTextFieldSize.values) {
+      for (final maxLines in [1, 3]) {
+        testWidgets('with no label, a ${size.name} field with maxLines '
+            '$maxLines takes taps over 48 px and no further', (tester) async {
+          final focusNode = FocusNode();
+          addTearDown(focusNode.dispose);
+          // A form row: content above and below, so the parents have room
+          // for the touch area to reach into.
+          await tester.pumpWidget(
+            buildTestApp(
+              SizedBox(
+                width: 372,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: kMinInteractiveDimension),
+                    CoreUnderlineTextField(
+                      size: size,
+                      maxLines: maxLines,
+                      focusNode: focusNode,
+                    ),
+                    const SizedBox(height: kMinInteractiveDimension),
+                  ],
+                ),
+              ),
+              theme: CoreTheme.light(),
+            ),
+          );
+          final field = tester.getRect(find.byType(CoreUnderlineTextField));
+          expect(field.height, lessThan(kMinInteractiveDimension));
+
+          Future<bool> tapFocuses(double dy) async {
+            focusNode.unfocus();
+            await tester.pump();
+            await tester.tapAt(Offset(field.center.dx, dy));
+            await tester.pump();
+            return focusNode.hasFocus;
+          }
+
+          const reach = kMinInteractiveDimension / 2;
+          expect(await tapFocuses(field.center.dy - reach + 0.5), isTrue);
+          expect(await tapFocuses(field.center.dy + reach - 0.5), isTrue);
+          expect(await tapFocuses(field.center.dy - reach - 2), isFalse);
+          expect(await tapFocuses(field.center.dy + reach + 2), isFalse);
+        });
+      }
+    }
+
+    for (final gap in [0.0, 4.0, 8.0]) {
+      testWidgets('with no label and a ${gap}px gap between two fields, a tap '
+          'on either field focuses that field', (tester) async {
+        final upper = FocusNode();
+        final lower = FocusNode();
+        addTearDown(upper.dispose);
+        addTearDown(lower.dispose);
+        await tester.pumpWidget(
+          buildTestApp(
+            SizedBox(
+              width: 372,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CoreUnderlineTextField(
+                    key: const Key('upper'),
+                    focusNode: upper,
+                  ),
+                  SizedBox(height: gap),
+                  CoreUnderlineTextField(
+                    key: const Key('lower'),
+                    focusNode: lower,
+                  ),
+                ],
+              ),
+            ),
+            theme: CoreTheme.light(),
+          ),
+        );
+        final upperRect = tester.getRect(find.byKey(const Key('upper')));
+        final lowerRect = tester.getRect(find.byKey(const Key('lower')));
+
+        await tester.tapAt(Offset(upperRect.center.dx, upperRect.bottom - 1));
+        await tester.pump();
+        expect(upper.hasFocus, isTrue);
+
+        await tester.tapAt(Offset(lowerRect.center.dx, lowerRect.top + 1));
+        await tester.pump();
+        expect(lower.hasFocus, isTrue);
+      });
+    }
+
     testWidgets('hands over from its own focus node to a given one',
         (tester) async {
       final given = FocusNode();

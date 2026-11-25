@@ -199,6 +199,10 @@ value.
 - The text field announces the label, so the visible label is not read twice.
 - The text field's accessibility node is 48px tall, though the value row is
   drawn 24px or 32px tall.
+- A field drawn under 48px tall (a regular field with no label is 33px) takes
+  taps up to 48px, centred on it, in the space its parents leave around it.
+  In a ListView each item is its own box, so give such a row at least 48px
+  with its own vertical padding.
 - Prefix, suffix and unit text are read as separate items: prefix, then the
   field (label and value), then unit.
 - A screen reader's double tap on the field calls `onTap` and focuses the field.
