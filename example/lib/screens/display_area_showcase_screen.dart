@@ -55,6 +55,11 @@ class _DisplayAreaShowcaseScreenState extends State<DisplayAreaShowcaseScreen> {
       id: 'session-yesterday',
       dateLabel: 'Yesterday',
       value: '10.5',
+      workedFirstBand: CoreWorkedFirstBand(
+        start: 0,
+        end: 1,
+        semanticsLabel: 'Worked first',
+      ),
       chipsList: [
         CoreCalculatorChip(
           type: CoreCalculatorChipType.disabled,

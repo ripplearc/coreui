@@ -82,35 +82,32 @@ class _HistoryChips extends StatelessWidget {
         ),
     ];
 
-    final band = this.band;
-    final lastChip = chipsList.length - 1;
-    final _BandPaint? bandPaint = band == null || band.start > lastChip
-        ? null
-        : (
-            start: band.start,
-            end: math.min(band.end, lastChip),
-            fill: colors.backgroundWorkedFirstBand,
-            edge: colors.lineWorkedFirstBand,
+    return _FadingBand(
+      band: band,
+      chips: chipsList,
+      builder: (context, bandPaint) {
+        final wrap = _AnnouncedBandedWrap(
+          spacing: CoreSpacing.space2,
+          runSpacing: _runSpacing,
+          band: bandPaint,
+          label: _bandLabelToAnnounce(band, chipCount: chipsList.length),
+          children: chipWidgets,
+        );
+        if (isCollapsed) {
+          return _collapsedTape(
+            context,
+            typography,
+            wrap,
+            roomForTheBandAtEachSide:
+                bandPaint == null ? 0 : _RenderBandedWrap.sideReach,
           );
-    final wrap = _BandedWrap(
-      spacing: CoreSpacing.space2,
-      runSpacing: _runSpacing,
-      band: bandPaint,
-      children: chipWidgets,
-    );
-
-    if (isCollapsed) {
-      return _collapsedTape(
-        context,
-        typography,
-        wrap,
-        roomForTheBandAtEachSide:
-            bandPaint == null ? 0 : _RenderBandedWrap.sideReach,
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: _expandedVerticalPadding),
-      child: wrap,
+        }
+        return Padding(
+          padding:
+              const EdgeInsets.symmetric(vertical: _expandedVerticalPadding),
+          child: wrap,
+        );
+      },
     );
   }
 

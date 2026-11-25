@@ -621,6 +621,110 @@ void main() {
     debugDisableShadows = true;
   });
 
+  Future<void> pumpSessionBand(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+
+    // physicalSize is in physical pixels; logical size = physicalSize / DPR.
+    // 780x708 @ 2.0 => 390x354 logical: a phone-wide display area in
+    // expandedPrevious, as tall as the area is there, whose session card
+    // draws its own band behind 2 and +3 on the card's backgroundBlueMid.
+    tester.view.physicalSize = const Size(780, 708);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme.copyWith(
+          textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
+        ),
+        home: Scaffold(
+          backgroundColor: colors.pageBackground,
+          body: const CoreDisplayArea(
+            closeSemanticLabel: testCloseSemanticLabel,
+            historyPlaceholder: testHistoryPlaceholder,
+            label: 'Calc',
+            value: '7',
+            chipsList: [
+              CoreCalculatorChip(
+                value: '7',
+                type: CoreCalculatorChipType.active,
+              ),
+            ],
+            previousSessions: [
+              CoreHistorySessionData(
+                dateLabel: 'Today',
+                value: '20',
+                chipsList: [
+                  CoreCalculatorChip(
+                    value: '2',
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    value: '+3',
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                  CoreCalculatorChip(
+                    value: '×4',
+                    type: CoreCalculatorChipType.editable,
+                  ),
+                ],
+                workedFirstBand: CoreWorkedFirstBand(
+                  start: 0,
+                  end: 1,
+                  semanticsLabel: 'Worked first, 2 plus 3, equals 5',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await tester.fling(
+      find.byType(CoreDisplayArea),
+      const Offset(0, 300),
+      1000,
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+  }
+
+  testWidgets(
+      'DisplayArea worked-first band in a session card Golden Test - Light',
+      (WidgetTester tester) async {
+    await pumpSessionBand(tester, CoreTheme.light());
+
+    await expectLater(
+      find.byType(CoreDisplayArea),
+      matchesGoldenFile(
+        'goldens/display_area_worked_first_band_session_light.png',
+      ),
+    );
+    debugDisableShadows = true;
+  });
+
+  testWidgets(
+      'DisplayArea worked-first band in a session card Golden Test - Dark',
+      (WidgetTester tester) async {
+    await pumpSessionBand(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(CoreDisplayArea),
+      matchesGoldenFile(
+        'goldens/display_area_worked_first_band_session_dark.png',
+      ),
+    );
+    debugDisableShadows = true;
+  });
+
   testWidgets('DisplayArea long label Golden Test - Light',
       (WidgetTester tester) async {
     await pumpLongLabel(tester, CoreTheme.light());

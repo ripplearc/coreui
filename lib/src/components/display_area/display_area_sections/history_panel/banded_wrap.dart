@@ -1,6 +1,37 @@
 part of '../../core_display_area.dart';
 
-typedef _BandPaint = ({int start, int end, Color fill, Color edge});
+typedef _BandPaint = ({
+  int start,
+  int end,
+  Color fill,
+  Color edge,
+  double opacity,
+});
+
+_BandPaint? _bandPaintFor(
+  CoreWorkedFirstBand? band, {
+  required int chipCount,
+  required AppColorsExtension colors,
+  double opacity = 1,
+}) {
+  final lastChip = chipCount - 1;
+  if (band == null || band.start > lastChip || opacity <= 0) return null;
+  return (
+    start: band.start,
+    end: math.min(band.end, lastChip),
+    fill: colors.backgroundWorkedFirstBand,
+    edge: colors.lineWorkedFirstBand,
+    opacity: opacity,
+  );
+}
+
+String? _bandLabelToAnnounce(
+  CoreWorkedFirstBand? band, {
+  required int chipCount,
+}) {
+  if (band == null || band.start >= chipCount) return null;
+  return band.semanticsLabel.isEmpty ? null : band.semanticsLabel;
+}
 
 class _BandedWrap extends Wrap {
   const _BandedWrap({
@@ -90,9 +121,10 @@ class _RenderBandedWrap extends RenderWrap {
   void paint(PaintingContext context, Offset offset) {
     final band = _band;
     if (band != null) {
-      final fill = Paint()..color = band.fill;
+      final fill = Paint()
+        ..color = band.fill.withValues(alpha: band.fill.a * band.opacity);
       final edge = Paint()
-        ..color = band.edge
+        ..color = band.edge.withValues(alpha: band.edge.a * band.opacity)
         ..style = PaintingStyle.stroke
         ..strokeWidth = CoreStrokes.hairline;
       for (final rect in bandRects) {
@@ -105,5 +137,110 @@ class _RenderBandedWrap extends RenderWrap {
       }
     }
     super.paint(context, offset);
+  }
+}
+
+class _AnnouncedBandedWrap extends StatelessWidget {
+  const _AnnouncedBandedWrap({
+    required this.spacing,
+    required this.runSpacing,
+    required this.children,
+    required this.band,
+    required this.label,
+  });
+
+  final double spacing;
+  final double runSpacing;
+  final List<Widget> children;
+  final _BandPaint? band;
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) {
+    final isAnnounced = label != null;
+    return Semantics(
+      container: isAnnounced,
+      explicitChildNodes: isAnnounced,
+      label: label,
+      child: _BandedWrap(
+        spacing: spacing,
+        runSpacing: runSpacing,
+        band: band,
+        children: children,
+      ),
+    );
+  }
+}
+
+class _FadingBand extends StatefulWidget {
+  const _FadingBand({
+    required this.band,
+    required this.chips,
+    required this.builder,
+  });
+
+  final CoreWorkedFirstBand? band;
+  final List<CoreCalculatorChip> chips;
+  final Widget Function(BuildContext context, _BandPaint? band) builder;
+
+  static const Duration fadeDuration = Duration(milliseconds: 150);
+
+  @override
+  State<_FadingBand> createState() => _FadingBandState();
+}
+
+class _FadingBandState extends State<_FadingBand> {
+  CoreWorkedFirstBand? _shown;
+
+  @override
+  void initState() {
+    super.initState();
+    _shown = widget.band;
+  }
+
+  @override
+  void didUpdateWidget(_FadingBand oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final band = widget.band;
+    if (band != null) {
+      _shown = band;
+    } else if (!_theBandedChipsAreStillThere(oldWidget.chips)) {
+      _shown = null;
+    }
+  }
+
+  bool _theBandedChipsAreStillThere(List<CoreCalculatorChip> before) {
+    final shown = _shown;
+    final after = widget.chips;
+    if (shown == null || shown.start >= after.length) return false;
+    final end = math.min(shown.end, before.length - 1);
+    if (end >= after.length) return false;
+    for (var index = shown.start; index <= end; index++) {
+      final was = before[index];
+      final now = after[index];
+      final isTheSameChip = Widget.canUpdate(was, now) &&
+          was.label == now.label &&
+          was.value == now.value;
+      if (!isTheSameChip) return false;
+    }
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: widget.band == null ? 0 : 1),
+      duration: _FadingBand.fadeDuration,
+      builder: (context, opacity, _) => widget.builder(
+        context,
+        _bandPaintFor(
+          _shown,
+          chipCount: widget.chips.length,
+          colors: colors,
+          opacity: opacity,
+        ),
+      ),
+    );
   }
 }

@@ -194,8 +194,16 @@ class CoreDisplayArea extends StatefulWidget {
   /// 1 px edge; chips on one run share a box and a span that wraps gets a
   /// box per run. A span that runs past the last chip stops at the last
   /// chip, and one that starts past it draws nothing, so the band is never
-  /// behind the error chip. Defaults to `null`, no band. The consumer works
-  /// the span out from the keys; the area only shows it.
+  /// behind the error chip.
+  ///
+  /// The band fades in over 150 ms when the span arrives and out the same
+  /// way when it goes, while the chips it was behind are still on the tape;
+  /// when the tape is replaced in the same build it goes at once. A screen
+  /// reader hears [CoreWorkedFirstBand.semanticsLabel] once, then each chip
+  /// as its own stop, and hears nothing for a span that covers no chip. A
+  /// session card shows its own band, with no fade, through
+  /// [CoreHistorySessionData.workedFirstBand]. Defaults to `null`, no band.
+  /// The consumer works the span out from the keys; the area only shows it.
   /// ```dart
   /// workedFirstBand: CoreWorkedFirstBand(
   ///   start: 0,

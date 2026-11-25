@@ -305,9 +305,18 @@ class _PreviousChipsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CoreSpacing.space5),
-          Wrap(
+          _AnnouncedBandedWrap(
             spacing: CoreSpacing.space2,
             runSpacing: CoreSpacing.space2,
+            band: _bandPaintFor(
+              session.workedFirstBand,
+              chipCount: session.chipsList.length,
+              colors: colors,
+            ),
+            label: _bandLabelToAnnounce(
+              session.workedFirstBand,
+              chipCount: session.chipsList.length,
+            ),
             children: session.chipsList,
           ),
           const SizedBox(height: CoreSpacing.space5),

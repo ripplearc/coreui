@@ -64,6 +64,11 @@ CoreDisplayArea(
       dateLabel: 'Yesterday',
       value: '10.5',
       chipsList: [...], // past chips
+      workedFirstBand: CoreWorkedFirstBand(
+        start: 0,
+        end: 1,
+        semanticsLabel: 'Worked first, 2 plus 3, equals 5',
+      ),
     ),
   ],
   onPreviousSessionTapped: (id) => controller.restoreSession(id),
@@ -138,7 +143,7 @@ TweenAnimationBuilder<double>(
 | `value` | `String` | `''` | Main value text shown prominently in the value section.                                                                                                                       |
 | `historyPlaceholder` | `String` | **required** | Text displayed in the history panel when `chipsList` is empty. Has no default — pass a localized string from your app's localization layer. |
 | `emptyTapeTrailing` | `Widget?` | `null` | A widget at the end of the row that shows `historyPlaceholder` while `chipsList` is empty — the calculator's System of units pill. The placeholder takes the width that is left and wraps, so the two never overlap. Left out once the tape has a chip, and in `expandedPrevious` and `fullScreen`, where the close row is hidden. With a widget in the slot the row is at least 48 dp tall, 8 dp more than the 40 dp close icon alone. A small `CoreButton` already meets the 48 dp tap target (its 36 dp body sits in its own 48 dp hit area), so it needs no second one. The close icon and the widget stay at the top of the row, and a widget taller than 48 dp starts at the row top: a placeholder that wraps past them at a large text size grows the row downward and moves neither. |
-| `workedFirstBand` | `CoreWorkedFirstBand?` | `null` | The chips of `chipsList` a grey band is drawn behind: the part of the chain that is worked first, `2` and `+3` in `2 + 3 × 4` (UX Design Doc rule 4.6). `start` and `end` are chip indexes, inclusive. The band is drawn behind the chips, so no chip moves and the gaps do not change. It reaches 6 dp past the chips at each side and 4 dp above and below, with 12 dp corners and a 1 px edge; chips on one run share a box and a span that wraps gets a box per run. A span that runs past the last chip stops at the last chip, and one that starts past it draws nothing, so the band is never behind the error chip. |
+| `workedFirstBand` | `CoreWorkedFirstBand?` | `null` | The chips of `chipsList` a grey band is drawn behind: the part of the chain that is worked first, `2` and `+3` in `2 + 3 × 4` (UX Design Doc rule 4.6). `start` and `end` are chip indexes, inclusive. The band is drawn behind the chips, so no chip moves and the gaps do not change. It reaches 6 dp past the chips at each side and 4 dp above and below, with 12 dp corners and a 1 px edge; chips on one run share a box and a span that wraps gets a box per run. A span that runs past the last chip stops at the last chip, and one that starts past it draws nothing, so the band is never behind the error chip. It fades in over 150 ms when the span arrives and out the same way when it goes, while the chips it was behind are still on the tape; when the tape is replaced in the same build it goes at once. A screen reader hears `semanticsLabel` once, then each chip as its own stop. A session shows its own band through `CoreHistorySessionData.workedFirstBand`. |
 
 ### State Properties
 | Property | Type | Default | Description |
@@ -161,6 +166,7 @@ TweenAnimationBuilder<double>(
 | `chipsList` | `List<CoreCalculatorChip>` | The tokens that produced the calculation. |
 | `value` | `String` | The evaluated result. |
 | `id` | `String?` | Identifies the session to the consumer. Optional: a session with no `id` — or with an empty one, which the consumer could not look up either — renders as a plain card that reports nothing when tapped, so callers written before the field keep compiling. Ids must be unique across `previousSessions` — a repeated one cannot say which session was tapped, and is asserted against. |
+| `workedFirstBand` | `CoreWorkedFirstBand?` | The band behind the chips the chain worked first, worked out again from the keys when the session is shown. `null`, the default, draws none. It is drawn as on the tape, with no fade. In a card that can be restored the card is one stop for a screen reader, and `semanticsLabel` is read as part of it, before the chips. |
 
 ### Callbacks & Actions
 | Property | Type | Default | Description |
