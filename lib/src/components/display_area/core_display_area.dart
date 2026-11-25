@@ -1,12 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../../../ripplearc_coreui.dart';
 import '../calculator_chips/core_calculator_chip_theme.dart';
 import 'display_area_stage_controller.dart' as logic;
 
+part 'display_area_sections/history_panel/banded_wrap.dart';
 part 'display_area_sections/history_panel/history_chips.dart';
 part 'display_area_sections/history_panel/history_panel.dart';
 part 'display_area_sections/label_section.dart';
@@ -107,6 +109,7 @@ class CoreDisplayArea extends StatefulWidget {
     this.onPreviousSessionTapped,
     this.restoreSemanticsLabel,
     this.emptyTapeTrailing,
+    this.workedFirstBand,
   }) : assert(
           onPreviousSessionTapped == null || restoreSemanticsLabel != null,
           'A tappable session card needs restoreSemanticsLabel: a control a '
@@ -182,6 +185,25 @@ class CoreDisplayArea extends StatefulWidget {
   /// ),
   /// ```
   final Widget? emptyTapeTrailing;
+
+  /// The chips of [chipsList] a grey band is drawn behind: the part of the
+  /// chain that is worked first, `2` and `+3` in `2 + 3 × 4` (UX Design Doc
+  /// rule 4.6). The band is drawn behind the chips, so no chip moves and
+  /// the gaps do not change. It reaches 6 dp past the chips at each side
+  /// and 4 dp above and below, into the 8 dp gaps, with 12 dp corners and a
+  /// 1 px edge; chips on one run share a box and a span that wraps gets a
+  /// box per run. A span that runs past the last chip stops at the last
+  /// chip, and one that starts past it draws nothing, so the band is never
+  /// behind the error chip. Defaults to `null`, no band. The consumer works
+  /// the span out from the keys; the area only shows it.
+  /// ```dart
+  /// workedFirstBand: CoreWorkedFirstBand(
+  ///   start: 0,
+  ///   end: 1,
+  ///   semanticsLabel: l10n.workedFirst('2 plus 3', '5'),
+  /// ),
+  /// ```
+  final CoreWorkedFirstBand? workedFirstBand;
 
   /// Main label text shown in the label section. Defaults to `null`.
   final String? label;
@@ -346,6 +368,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
           onPreviousSessionTapped: widget.onPreviousSessionTapped,
           restoreSemanticsLabel: widget.restoreSemanticsLabel,
           emptyTapeTrailing: widget.emptyTapeTrailing,
+          workedFirstBand: widget.workedFirstBand,
         ),
       ),
       DecoratedBox(
@@ -371,6 +394,7 @@ class _CoreDisplayAreaState extends State<CoreDisplayArea> {
                   hasError: widget.hasError,
                   errorMessage: widget.errorMessage,
                   isCollapsed: false,
+                  band: widget.workedFirstBand,
                 ),
               ],
               if ((widget.label?.isNotEmpty ?? false) || widget.isTyping)

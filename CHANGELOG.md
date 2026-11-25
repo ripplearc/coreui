@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.112.0] - The worked-first band is drawn (2/3)
+
+### ✨ Features
+
+- **CoreDisplayArea.workedFirstBand**: the `CoreWorkedFirstBand` of 1/3 is drawn. The chips' own `Wrap` paints a light grey band behind the chips of the span before it paints the chips, so no chip moves, the gaps do not change and each chip keeps its own tap; chips on one run share a box, and a span that wraps onto more runs gets a box per run. Its look is the doc's (UX Design Doc rule 4.6): the `backgroundWorkedFirstBand` fill with a 1 px `lineWorkedFirstBand` edge, 12 dp corners, reaching 6 dp past the chips at the sides and 4 dp above and below, into the 8 dp gaps and, at the edge of the tape, into the tape's own side space. A collapsed tape of three or more runs, which scrolls to show the last two, keeps that side space for the band while the runs above stay hidden. A span that runs past the last chip stops at the last chip and one that starts past it draws nothing, so the band is never behind the error chip. `null`, the default, draws none and nothing changes. The display-area showcase bands the first two chips once the tape holds a third. The fade, the screen-reader label and a session card's band follow in 3/3 (CA-1479)
+
+### 🧪 Tests
+
+- `display_area_worked_first_band_test.dart`: with no band no box is painted; a band over the first two of three chips paints one box that covers both, reaches 6 dp past them at the sides and 4 dp above and below, stops short of the third chip and moves no chip; the pixel beside the first chip is the band's fill with a band and the area's colour without one; a span that wraps onto two runs at 320 dp paints one box per run; on a collapsed tape of three runs the band's fill shows beside each of the two runs on screen and the run above stays hidden; a span that runs past the chips stops at the last chip, short of the error chip, and one that starts past them paints no box; the one-box test also runs on a 360 dp phone and at 200% text; a span on one chip paints one box round that chip; an empty tape with a band lays out with no error and shows its placeholder; in `expandedCurrent` the band is painted too. `display_area_test.dart` finds the chips' wrap by `is Wrap`, since it is now a `Wrap` subclass
+- Goldens: `display_area_worked_first_band_{light,dark}.png` are new: the collapsed area with `2`, `+3`, `×4` and the band behind the first two. Every other golden is unchanged
+
 ## [0.111.0] - The worked-first band's colours and span (1/3)
 
 ### ✨ Features
