@@ -116,6 +116,8 @@ void main() {
                     CoreBackgroundColors.backgroundBlueLight),
                 const MapEntry('backgroundBlueMid',
                     CoreBackgroundColors.backgroundBlueMid),
+                const MapEntry('backgroundWorkedFirstBand',
+                    CoreBackgroundColors.backgroundWorkedFirstBand),
                 const MapEntry('backgroundGreenLight',
                     CoreBackgroundColors.backgroundGreenLight),
                 const MapEntry('backgroundGreenMid',
@@ -144,6 +146,8 @@ void main() {
                     'lineDarkOutline', CoreBorderColors.lineDarkOutline),
                 const MapEntry('lineHighlight', CoreBorderColors.lineHighlight),
                 const MapEntry('lineBlue', CoreBorderColors.lineBlue),
+                const MapEntry('lineWorkedFirstBand',
+                    CoreBorderColors.lineWorkedFirstBand),
                 const MapEntry('outlineHover', CoreBorderColors.outlineHover),
                 const MapEntry('outlineFocus', CoreBorderColors.outlineFocus),
                 const MapEntry('tabsHighlight', CoreBorderColors.tabsHighlight),
@@ -263,6 +267,8 @@ void main() {
                     CoreDarkBackgroundColors.backgroundBlueLight),
                 const MapEntry('backgroundBlueMid',
                     CoreDarkBackgroundColors.backgroundBlueMid),
+                const MapEntry('backgroundWorkedFirstBand',
+                    CoreDarkBackgroundColors.backgroundWorkedFirstBand),
                 const MapEntry('backgroundGreenLight',
                     CoreDarkBackgroundColors.backgroundGreenLight),
                 const MapEntry('backgroundGreenMid',
@@ -292,6 +298,8 @@ void main() {
                 const MapEntry(
                     'lineHighlight', CoreDarkBorderColors.lineHighlight),
                 const MapEntry('lineBlue', CoreDarkBorderColors.lineBlue),
+                const MapEntry('lineWorkedFirstBand',
+                    CoreDarkBorderColors.lineWorkedFirstBand),
                 const MapEntry(
                     'outlineHover', CoreDarkBorderColors.outlineHover),
                 const MapEntry(

@@ -23,6 +23,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color backgroundGrayMid;
   final Color backgroundBlueLight;
   final Color backgroundBlueMid;
+
+  /// The fill of the band behind the part of a chain that is worked first
+  /// (UX Design Doc rule 4.6).
+  final Color backgroundWorkedFirstBand;
   final Color backgroundGreenLight;
   final Color backgroundGreenMid;
   final Color backgroundRedLight;
@@ -39,6 +43,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color lineMid;
   final Color lineDarkOutline;
   final Color lineHighlight;
+
+  /// The 1 px edge of the band behind the part of a chain that is worked
+  /// first (UX Design Doc rule 4.6), on [backgroundWorkedFirstBand].
+  final Color lineWorkedFirstBand;
 
   /// The rule on a `backgroundBlueLight` panel, where `lineLight` reads as
   /// grey on blue.
@@ -144,6 +152,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.backgroundGrayMid,
     required this.backgroundBlueLight,
     required this.backgroundBlueMid,
+    required this.backgroundWorkedFirstBand,
     required this.backgroundGreenLight,
     required this.backgroundGreenMid,
     required this.backgroundRedLight,
@@ -158,6 +167,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.lineMid,
     required this.lineDarkOutline,
     required this.lineHighlight,
+    required this.lineWorkedFirstBand,
     required this.lineBlue,
     required this.outlineHover,
     required this.outlineFocus,
@@ -245,6 +255,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? backgroundGrayMid,
     Color? backgroundBlueLight,
     Color? backgroundBlueMid,
+    Color? backgroundWorkedFirstBand,
     Color? backgroundGreenLight,
     Color? backgroundGreenMid,
     Color? backgroundRedLight,
@@ -259,6 +270,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? lineMid,
     Color? lineDarkOutline,
     Color? lineHighlight,
+    Color? lineWorkedFirstBand,
     Color? lineBlue,
     Color? outlineHover,
     Color? outlineFocus,
@@ -331,6 +343,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       backgroundGrayMid: backgroundGrayMid ?? this.backgroundGrayMid,
       backgroundBlueLight: backgroundBlueLight ?? this.backgroundBlueLight,
       backgroundBlueMid: backgroundBlueMid ?? this.backgroundBlueMid,
+      backgroundWorkedFirstBand:
+          backgroundWorkedFirstBand ?? this.backgroundWorkedFirstBand,
       backgroundGreenLight: backgroundGreenLight ?? this.backgroundGreenLight,
       backgroundGreenMid: backgroundGreenMid ?? this.backgroundGreenMid,
       backgroundRedLight: backgroundRedLight ?? this.backgroundRedLight,
@@ -346,6 +360,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       lineMid: lineMid ?? this.lineMid,
       lineDarkOutline: lineDarkOutline ?? this.lineDarkOutline,
       lineHighlight: lineHighlight ?? this.lineHighlight,
+      lineWorkedFirstBand: lineWorkedFirstBand ?? this.lineWorkedFirstBand,
       lineBlue: lineBlue ?? this.lineBlue,
       outlineHover: outlineHover ?? this.outlineHover,
       outlineFocus: outlineFocus ?? this.outlineFocus,
@@ -441,6 +456,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       backgroundBlueMid:
           Color.lerp(backgroundBlueMid, other.backgroundBlueMid, t) ??
               backgroundBlueMid,
+      backgroundWorkedFirstBand: Color.lerp(
+            backgroundWorkedFirstBand,
+            other.backgroundWorkedFirstBand,
+            t,
+          ) ??
+          backgroundWorkedFirstBand,
       backgroundGreenLight:
           Color.lerp(backgroundGreenLight, other.backgroundGreenLight, t) ??
               backgroundGreenLight,
@@ -473,6 +494,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
           lineDarkOutline,
       lineHighlight:
           Color.lerp(lineHighlight, other.lineHighlight, t) ?? lineHighlight,
+      lineWorkedFirstBand:
+          Color.lerp(lineWorkedFirstBand, other.lineWorkedFirstBand, t) ??
+              lineWorkedFirstBand,
       lineBlue: Color.lerp(lineBlue, other.lineBlue, t) ?? lineBlue,
       outlineHover:
           Color.lerp(outlineHover, other.outlineHover, t) ?? outlineHover,

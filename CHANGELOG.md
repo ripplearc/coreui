@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.111.0] - The worked-first band's colours and span (1/3)
+
+### ✨ Features
+
+- **CoreWorkedFirstBand**: `CoreWorkedFirstBand(start, end, semanticsLabel)` names the chips, by index into a chip list, that a light grey band is drawn behind: the part of a chain that is worked first, `2` and `+3` in `2 + 3 × 4` (UX Design Doc rule 4.6, "a light grey band appears behind the chips"; CA-1479). The consumer works the span out from the keys; `semanticsLabel` is what a screen reader will hear for the band, once. `covers(index)` says whether a chip is under it. A debug build refuses a span that starts below 0 or ends before it starts, and an empty label; these are asserts, so in a release build a span that ends before it starts covers no chip. Nothing draws it yet: 2/3 paints it in `CoreDisplayArea`
+- **Colour tokens** `backgroundWorkedFirstBand` and `lineWorkedFirstBand` on `AppColorsExtension`, the band's fill and 1 px edge from the doc: `#E3E7EE` and `#C4CBD6` in the light theme, `#2B313A` and `#434C58` in the dark theme. They are not palette steps: the doc gives them. Both are required parameters of the `AppColorsExtension` constructor, so an app that builds its own extension, instead of `CoreTheme.light()` / `CoreTheme.dark()` or `copyWith`, adds the two
+
+### 🧪 Tests
+
+- `display_area_worked_first_band_test.dart` (new, grown in 2/3 and 3/3): `CoreWorkedFirstBand.covers` is inclusive of `start` and `end`, a span on one chip covers that chip alone, and no span covers an index below 0; two bands built apart with the same span and label are equal, and a different start, end or label makes a different band; a span that ends before it starts, one that starts below 0 and an empty label are each refused in a debug build. `theme_extensions_test.dart`, group `worked-first band colour tokens`: the four doc colours, `copyWith` with and without the two tokens, and `lerp` between the themes
+- Goldens: `core_color_tokens.png` and `core_dark_color_tokens.png` are re-rendered with a `backgroundWorkedFirstBand` and a `lineWorkedFirstBand` swatch. Every other golden is unchanged
+
 ## [0.110.0] - One token for the 1 px hairline
 
 ### ✨ Features
