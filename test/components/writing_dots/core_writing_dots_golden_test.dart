@@ -4,8 +4,8 @@ import 'package:ripplearc_coreui/ripplearc_coreui.dart';
 
 import '../../load_fonts.dart';
 
-ThemeData _createTestTheme() {
-  return CoreTheme.light().copyWith(
+ThemeData _createTestTheme(ThemeData theme) {
+  return theme.copyWith(
     textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
   );
 }
@@ -16,10 +16,9 @@ void main() {
     await loadFonts();
   });
 
-  testWidgets('CoreWritingDots Component Visual Regression Test',
-      (WidgetTester tester) async {
-    final colors = AppColorsExtension.create();
-    final typography = AppTypographyExtension.create();
+  Future<void> pumpDots(WidgetTester tester, ThemeData theme) async {
+    final colors = theme.coreColors;
+    final typography = theme.coreTypography;
     debugDisableShadows = false;
     addTearDown(() => debugDisableShadows = true);
     await tester.binding.setSurfaceSize(const Size(800, 400));
@@ -36,7 +35,7 @@ void main() {
         );
 
     final widget = MaterialApp(
-      theme: _createTestTheme(),
+      theme: _createTestTheme(theme),
       home: Scaffold(
         backgroundColor: colors.pageBackground,
         body: Center(
@@ -83,10 +82,55 @@ void main() {
 
     await tester.pumpWidget(widget);
     await tester.pump(const Duration(milliseconds: 500));
+  }
+
+  testWidgets('CoreWritingDots Component Visual Regression Test',
+      (WidgetTester tester) async {
+    await pumpDots(tester, CoreTheme.light());
 
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/core_writing_dots_component.png'),
+    );
+
+    debugDisableShadows = true;
+  });
+
+  testWidgets('CoreWritingDots Component Visual Regression Test - Dark',
+      (WidgetTester tester) async {
+    await pumpDots(tester, CoreTheme.dark());
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_writing_dots_component_dark.png'),
+    );
+
+    debugDisableShadows = true;
+  });
+
+  testWidgets('CoreWritingDots on the display area background - Dark',
+      (WidgetTester tester) async {
+    final theme = CoreTheme.dark();
+    final colors = theme.coreColors;
+    debugDisableShadows = false;
+    addTearDown(() => debugDisableShadows = true);
+    await tester.binding.setSurfaceSize(const Size(200, 100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: _createTestTheme(theme),
+        home: Scaffold(
+          backgroundColor: colors.backgroundBlueLight,
+          body: const Center(child: CoreWritingDots(size: CoreSpacing.space10)),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 500));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/core_writing_dots_display_area_dark.png'),
     );
 
     debugDisableShadows = true;

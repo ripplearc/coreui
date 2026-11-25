@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.108.0] - The typing dots and the unit switch meet contrast in both themes
+
+### 🔧 Fixes
+
+- **CoreWritingDots**: the dots take their colour from the theme, `iconDark`, through a Lottie `ValueDelegate` on the animation's three fills, instead of the colour fixed inside `assets/animations/writing_dots.json` (#015B7C). In the light theme `iconDark` is that same colour, so nothing changes there; in the dark theme it is `orient300`, 8.12:1 on the display area's `backgroundBlueLight` (#00344E), where the file's colour read 1.7:1 and the dots were almost invisible (WCAG 1.4.11 asks 3:1). A new `color` parameter overrides the token, and a colour that is partly see-through draws the dots that much see-through (the colour goes in through a second delegate on the fills' opacity, because Lottie drops a fill colour's alpha); under a theme without the CoreUI colours the dots take the `iconDark` of the CoreUI colours that match the theme's brightness. The three fills in the animation file are now named `Fill`, which the delegate's key path `['**', 'Fill']` needs. The Core Writing Dots showcase has a "Custom colour" card: the dots in `textSuccess`, and the same colour at 40% (CA-1488)
+- **CoreSwitch**: the Imperial / Metric switch's off knob and border are drawn in `textSuccess`, the green the "Imperial" face already uses (`green600` in the light theme, `green300` in the dark theme), instead of `iconGreen` (`green500`). The text contrast guideline reads the whole switch, where the knob and the border are more pixels than the 12 px face, and measured that `green500` at 3.30:1 on the light page (#F9FAFB), under the 4.5:1 it asks of the face; `green600` reads 4.88:1 there. The on state, the other switch types and the dark theme, where `textSuccess` and `iconGreen` are the same `green300`, are unchanged (CA-1491)
+
+### 🧪 Tests
+
+- `core_writing_dots_contrast_test.dart` (new) reads the pixels the dots paint: in both themes every solid pixel is `iconDark`, which reads at least 3:1 on `backgroundBlueLight`; in the light theme the token is the colour the animation file holds; a `color` passed in is what is painted; a colour that is 40% opaque paints dots that are 40% opaque, and a fully see-through one paints none; under a plain light or dark `ThemeData` the dots take the `iconDark` of the matching CoreUI colours; the three fills in the animation file are named `Fill`. `switch_widget_test.dart`: the imperial off knob and border wear the face's green and reach 4.5:1 on the page in both themes, and the face reaches 4.5:1 on its track; an `inactiveColor` passed in still wins on the imperial off knob and border. The construculator-app a11y test that carried the CA-1491 opt-out passes against this switch with the contrast check on
+- Goldens: `core_writing_dots_component_dark.png` (new, the four sizes on the dark page) and `core_writing_dots_display_area_dark.png` (new, 40 dp dots on the dark display area background); `core_writing_dots_component.png` is unchanged. `switch_component.png` and `core_function_key_bottomsheet.png`, the light goldens that show an Imperial switch in its off state, are re-rendered with the `green600` knob and border, and `display_area_long_label_dark.png` with the dark dots in their new colour
+
 ## [0.107.0] - The collapsed display area grows with the text size
 
 ### 🔧 Fixes

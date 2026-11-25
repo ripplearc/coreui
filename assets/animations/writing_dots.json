@@ -85,6 +85,7 @@
             },
             {
               "ty": "fl",
+              "nm": "Fill",
               "hd": false,
               "bm": 0,
               "c": {
@@ -500,6 +501,7 @@
             },
             {
               "ty": "fl",
+              "nm": "Fill",
               "hd": false,
               "bm": 0,
               "c": {
@@ -846,6 +848,7 @@
             },
             {
               "ty": "fl",
+              "nm": "Fill",
               "hd": false,
               "bm": 0,
               "c": {
