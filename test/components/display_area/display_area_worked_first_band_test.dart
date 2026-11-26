@@ -43,21 +43,14 @@ void main() {
           ),
       ];
 
-  Future<void> pumpArea(
-    WidgetTester tester, {
+  Widget areaApp({
     required List<CoreCalculatorChip> chipsList,
     CoreWorkedFirstBand? band,
-    double width = 390,
     double textScale = 1,
     String errorMessage = '',
-  }) async {
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-    tester.view.physicalSize = ui.Size(width, 844);
-    tester.view.devicePixelRatio = 1.0;
-    await tester.pumpWidget(
+    List<CoreHistorySessionData> previousSessions = const [],
+    ValueChanged<String>? onPreviousSessionTapped,
+  }) =>
       MaterialApp(
         theme: CoreTheme.light().copyWith(
           textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Roboto'),
@@ -75,25 +68,81 @@ void main() {
                 workedFirstBand: band,
                 hasError: errorMessage.isNotEmpty,
                 errorMessage: errorMessage,
+                previousSessions: previousSessions,
+                onPreviousSessionTapped: onPreviousSessionTapped,
+                restoreSemanticsLabel: onPreviousSessionTapped == null
+                    ? null
+                    : testRestoreSemanticsLabel,
               ),
             ),
           ),
         ),
+      );
+
+  Future<void> pumpArea(
+    WidgetTester tester, {
+    required List<CoreCalculatorChip> chipsList,
+    CoreWorkedFirstBand? band,
+    double width = 390,
+    double textScale = 1,
+    String errorMessage = '',
+    List<CoreHistorySessionData> previousSessions = const [],
+    ValueChanged<String>? onPreviousSessionTapped,
+  }) async {
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    tester.view.physicalSize = ui.Size(width, 844);
+    tester.view.devicePixelRatio = 1.0;
+    await tester.pumpWidget(
+      areaApp(
+        chipsList: chipsList,
+        band: band,
+        textScale: textScale,
+        errorMessage: errorMessage,
+        previousSessions: previousSessions,
+        onPreviousSessionTapped: onPreviousSessionTapped,
       ),
     );
     await tester.pump(const Duration(milliseconds: 200));
   }
 
-  List<Rect> bandRects(WidgetTester tester) {
-    final wrap = tester.renderObject<RenderWrap>(wrapFinder);
-    return (wrap as dynamic).bandRects as List<Rect>;
+  List<Rect> bandRectsOf(WidgetTester tester, Finder wrap) {
+    final renderWrap = tester.renderObject<RenderWrap>(wrap);
+    return (renderWrap as dynamic).bandRects as List<Rect>;
   }
 
-  Rect rectInWrap(WidgetTester tester, Finder finder) {
+  List<Rect> bandRects(WidgetTester tester) => bandRectsOf(tester, wrapFinder);
+
+  double bandOpacity(WidgetTester tester) {
     final wrap = tester.renderObject<RenderWrap>(wrapFinder);
-    final box = tester.renderObject<RenderBox>(finder);
-    return box.localToGlobal(Offset.zero, ancestor: wrap) & box.size;
+    final band = (wrap as dynamic).band;
+    return band == null ? 0 : band.opacity as double;
   }
+
+  final sessionWrapFinder = find.descendant(
+    of: find.byKey(const Key('display_area_previous_section')),
+    matching: wrapFinder,
+  );
+
+  Future<void> swipeToThePreviousSession(WidgetTester tester) async {
+    await tester.fling(
+      find.byType(CoreDisplayArea),
+      const Offset(0, 200),
+      1000,
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Rect rectIn(WidgetTester tester, Finder wrap, Finder finder) {
+    final renderWrap = tester.renderObject<RenderWrap>(wrap);
+    final box = tester.renderObject<RenderBox>(finder);
+    return box.localToGlobal(Offset.zero, ancestor: renderWrap) & box.size;
+  }
+
+  Rect rectInWrap(WidgetTester tester, Finder finder) =>
+      rectIn(tester, wrapFinder, finder);
 
   Rect chipRectInWrap(WidgetTester tester, int index) =>
       rectInWrap(tester, find.byKey(Key('chip_$index')));
@@ -537,6 +586,391 @@ void main() {
       );
 
       expect(bandRects(tester), isEmpty);
+    });
+    testWidgets('the band fades in over 150 ms', (tester) async {
+      await pumpArea(tester, chipsList: chips(['2', '+3', '×4']));
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(['2', '+3', '×4']), band: band()),
+      );
+
+      expect(bandOpacity(tester), 0);
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandOpacity(tester), greaterThan(0));
+      expect(bandOpacity(tester), lessThan(1));
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandOpacity(tester), 1);
+    });
+
+    testWidgets(
+        'when the span goes and its chips stay, the band fades out over '
+        '150 ms from where it was, and its label goes at once', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+      final shown = bandRects(tester).single;
+
+      await tester.pumpWidget(areaApp(chipsList: chips(['2', '+3'])));
+      await tester.pump(const Duration(milliseconds: 75));
+
+      expect(bandOpacity(tester), lessThan(1));
+      expect(bandOpacity(tester), greaterThan(0));
+      expect(bandRects(tester).single, shown);
+      expect(find.bySemanticsLabel(label), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandRects(tester), isEmpty);
+    });
+
+    testWidgets(
+        'when the tape is replaced as the span goes, no band is painted '
+        'behind the new chips, not even for a frame', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+
+      await tester.pumpWidget(areaApp(chipsList: chips(['10 ft', '× 12 ft'])));
+      expect(bandRects(tester), isEmpty);
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandRects(tester), isEmpty);
+    });
+
+    testWidgets(
+        'when the tape is cut shorter than the span as the span goes, no '
+        'band is painted', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+
+      await tester.pumpWidget(areaApp(chipsList: chips(['2'])));
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandRects(tester), isEmpty);
+    });
+
+    testWidgets('the band fades in, out and in again', (tester) async {
+      await pumpArea(tester, chipsList: chips(['2', '+3', '×4']));
+      for (var round = 0; round < 2; round++) {
+        await tester.pumpWidget(
+          areaApp(chipsList: chips(['2', '+3', '×4']), band: band()),
+        );
+        await tester.pump(const Duration(milliseconds: 200));
+        expect(bandOpacity(tester), 1, reason: 'round $round, in');
+
+        await tester.pumpWidget(areaApp(chipsList: chips(['2', '+3', '×4'])));
+        await tester.pump(const Duration(milliseconds: 200));
+        expect(bandRects(tester), isEmpty, reason: 'round $round, out');
+      }
+    });
+
+    testWidgets(
+        'a span that comes back half-way through the fade-out fades in from '
+        'where it was, not from nothing', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+      await tester.pumpWidget(areaApp(chipsList: chips(['2', '+3', '×4'])));
+      await tester.pump(const Duration(milliseconds: 75));
+      final halfWay = bandOpacity(tester);
+      expect(halfWay, greaterThan(0));
+      expect(halfWay, lessThan(1));
+
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(['2', '+3', '×4']), band: band()),
+      );
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(bandOpacity(tester), greaterThanOrEqualTo(halfWay));
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(bandOpacity(tester), 1);
+    });
+
+    testWidgets(
+        'a span that grows while the band shows widens the box at once, with '
+        'no second fade', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '×3', '+4', '×5']),
+        band: band(),
+      );
+      final narrow = bandRects(tester).single;
+
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(['2', '×3', '+4', '×5']), band: band(end: 2)),
+      );
+
+      expect(bandOpacity(tester), 1);
+      expect(bandRects(tester).single.right, greaterThan(narrow.right));
+    });
+
+    testWidgets('the same span given again does not start the fade again',
+        (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(['2', '+3', '×4']), band: band()),
+      );
+
+      expect(bandOpacity(tester), 1);
+    });
+
+    testWidgets(
+        'a span replaced by another half-way through the fade-in jumps to '
+        'the new chips and keeps the opacity it had reached', (tester) async {
+      final fourChips = ['2', '+3', '×4', '+5'];
+      await pumpArea(tester, chipsList: chips(fourChips));
+      await tester
+          .pumpWidget(areaApp(chipsList: chips(fourChips), band: band()));
+      await tester.pump(const Duration(milliseconds: 75));
+      final reached = bandOpacity(tester);
+      expect(reached, greaterThan(0));
+      expect(reached, lessThan(1));
+      final firstBox = bandRects(tester).single;
+
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(fourChips), band: band(start: 2, end: 3)),
+      );
+
+      final box = bandRects(tester).single;
+      expect(box, isNot(firstBox));
+      expect(box.left, chipRectInWrap(tester, 2).left - sideReach);
+      expect(box.right, chipRectInWrap(tester, 3).right + sideReach);
+      expect(bandOpacity(tester), greaterThanOrEqualTo(reached));
+      expect(bandOpacity(tester), lessThan(1));
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(bandOpacity(tester), 1);
+    });
+
+    testWidgets(
+        'a span that goes half-way through the fade-in fades out from the '
+        'opacity it had reached and ends with no box', (tester) async {
+      await pumpArea(tester, chipsList: chips(['2', '+3', '×4']));
+      await tester.pumpWidget(
+        areaApp(chipsList: chips(['2', '+3', '×4']), band: band()),
+      );
+      await tester.pump(const Duration(milliseconds: 75));
+      final reached = bandOpacity(tester);
+      expect(reached, greaterThan(0));
+      expect(reached, lessThan(1));
+
+      await tester.pumpWidget(areaApp(chipsList: chips(['2', '+3', '×4'])));
+      expect(bandOpacity(tester), moreOrLessEquals(reached));
+
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandOpacity(tester), lessThan(reached));
+      expect(bandOpacity(tester), greaterThan(0));
+
+      await tester.pump(const Duration(milliseconds: 75));
+      expect(bandRects(tester), isEmpty);
+    });
+
+    testWidgets(
+        'a session card with no band draws no box and reads no label while '
+        'the tape shows its band', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+        previousSessions: [
+          CoreHistorySessionData(
+            dateLabel: 'Today',
+            chipsList: chips(['7', '+8']),
+            value: '15',
+          ),
+        ],
+      );
+      await swipeToThePreviousSession(tester);
+
+      expect(sessionWrapFinder, findsOneWidget);
+      expect(bandRectsOf(tester, sessionWrapFinder), isEmpty);
+      final tapeWrap = find.ancestor(
+        of: find.byKey(const Key('chip_2')),
+        matching: wrapFinder,
+      );
+      expect(bandRectsOf(tester, tapeWrap), hasLength(1));
+      expect(find.bySemanticsLabel(label), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets(
+        'a screen reader hears the label once, before the chips, and each '
+        'chip as its own stop', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3', '×4']),
+        band: band(),
+      );
+
+      expect(find.bySemanticsLabel(label), findsOneWidget);
+      final bandNode = tester.getSemantics(find.bySemanticsLabel(label));
+      expect(bandNode.label, label);
+      for (var index = 0; index < 3; index++) {
+        final node = tester.getSemantics(find.byKey(Key('chip_$index')));
+        expect(node.flagsCollection.isButton, isTrue);
+        expect(node.parent, bandNode, reason: 'the chips come after the label');
+      }
+      handle.dispose();
+    });
+
+    testWidgets('a screen reader hears nothing for a span that covers no chip',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpArea(
+        tester,
+        chipsList: chips(['2', '+3']),
+        band: band(start: 5, end: 6),
+      );
+
+      expect(bandRects(tester), isEmpty);
+      expect(find.bySemanticsLabel(label), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets(
+        'a session card draws its own band at once, behind its first two '
+        'chips', (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['7']),
+        previousSessions: [
+          CoreHistorySessionData(
+            dateLabel: 'Today',
+            chipsList: chips(['2', '+3', '×4']),
+            value: '20',
+            workedFirstBand: band(),
+          ),
+        ],
+      );
+      await swipeToThePreviousSession(tester);
+
+      expect(sessionWrapFinder, findsOneWidget);
+      final sessionWrap = tester.renderObject<RenderWrap>(sessionWrapFinder);
+      expect((sessionWrap as dynamic).band.opacity, 1);
+      expect(bandRectsOf(tester, sessionWrapFinder), hasLength(1));
+    });
+
+    testWidgets(
+        'a session that takes the place of a banded one draws no band, not '
+        'even for a frame', (tester) async {
+      CoreHistorySessionData session(CoreWorkedFirstBand? band) =>
+          CoreHistorySessionData(
+            dateLabel: 'Today',
+            chipsList: chips(['2', '+3', '×4']),
+            value: '20',
+            workedFirstBand: band,
+          );
+      await pumpArea(
+        tester,
+        chipsList: chips(['7']),
+        previousSessions: [session(band())],
+      );
+      await swipeToThePreviousSession(tester);
+      expect(bandRectsOf(tester, sessionWrapFinder), hasLength(1));
+
+      await tester.pumpWidget(
+        areaApp(
+          chipsList: chips(['7']),
+          previousSessions: [session(band()), session(null)],
+        ),
+      );
+
+      expect(bandRectsOf(tester, sessionWrapFinder), isEmpty);
+    });
+
+    testWidgets(
+        'a session with a band and no chips draws no band, announces '
+        'nothing and lays out with no error', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpArea(
+        tester,
+        chipsList: chips(['7']),
+        previousSessions: [
+          CoreHistorySessionData(
+            dateLabel: 'Today',
+            chipsList: const [],
+            value: '20',
+            workedFirstBand: band(),
+          ),
+        ],
+      );
+      await swipeToThePreviousSession(tester);
+
+      expect(tester.takeException(), isNull);
+      expect(bandRectsOf(tester, sessionWrapFinder), isEmpty);
+      expect(find.bySemanticsLabel(label), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets(
+        'a session band that runs past its chips stops at the last chip',
+        (tester) async {
+      await pumpArea(
+        tester,
+        chipsList: chips(['7']),
+        previousSessions: [
+          CoreHistorySessionData(
+            dateLabel: 'Today',
+            chipsList: chips(['2', '+3']),
+            value: '5',
+            workedFirstBand: band(end: 9),
+          ),
+        ],
+      );
+      await swipeToThePreviousSession(tester);
+
+      final lastChip = rectIn(
+        tester,
+        sessionWrapFinder,
+        find.descendant(
+          of: sessionWrapFinder,
+          matching: find.byKey(const Key('chip_1')),
+        ),
+      );
+      final box = bandRectsOf(tester, sessionWrapFinder).single;
+      expect(box.right, lastChip.right + sideReach);
+    });
+
+    testWidgets(
+        'a card that can be restored is one stop, and reads the band label '
+        'once, before its chips', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpArea(
+        tester,
+        chipsList: chips(['7']),
+        previousSessions: [
+          CoreHistorySessionData(
+            id: 'session-1',
+            dateLabel: 'Today',
+            chipsList: chips(['2', '+3', '×4']),
+            value: '20',
+            workedFirstBand: band(),
+          ),
+        ],
+        onPreviousSessionTapped: (_) {},
+      );
+      await swipeToThePreviousSession(tester);
+
+      final card = tester.getSemantics(
+        find.byKey(const Key('display_area_previous_session_session-1')),
+      );
+      expect(card.mergeAllDescendantsIntoThisNode, isTrue);
+      expect(card.flagsCollection.isButton, isTrue);
+      final read = card.getSemanticsData().label;
+      expect(label.allMatches(read), hasLength(1));
+      expect(read, startsWith(testRestoreSemanticsLabel));
+      expect(read.indexOf(label), lessThan(read.indexOf('+3')));
+      handle.dispose();
     });
   });
 }

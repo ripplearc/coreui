@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.113.0] - The worked-first band fades, is read once, and shows in history (3/3)
+
+### ✨ Features
+
+- **CoreDisplayArea.workedFirstBand**: the band of 2/3 fades in over 150 ms when the span arrives and out the same way when it goes, from where it was: the last span is kept while it fades, as long as the chips it was behind are still on the tape. When the tape is replaced or cut short in the same build the band goes at once, so it never fades behind chips it was not worked out for. A screen reader hears `CoreWorkedFirstBand.semanticsLabel` once ("Worked first, 2 plus 3, equals 5"), then each chip as its own stop, and hears nothing for a span that covers no chip (UX Design Doc rule 4.6; CA-1479)
+- **CoreHistorySessionData.workedFirstBand**: a session card draws its own band behind its chips, since the band is never saved and history shows it as the tape did. A card's band does not fade: it is drawn at once, so a session that takes another's place in the list never shows the other's band. In a card that can be restored the card stays one stop for a screen reader and reads the band's label as part of it, before the chips. The display-area showcase gives its "Yesterday" session a band (CA-1479)
+
+### 🧪 Tests
+
+- `display_area_worked_first_band_test.dart`: the band fades in over 150 ms, read off the wrap's paint between frames; when the span goes and its chips stay it fades out over 150 ms keeping its last span, with the screen-reader label gone at once; when the tape is replaced, or cut shorter than the span, as the span goes, no band is painted; the band fades in, out and in again; a span that comes back half-way through the fade-out fades in from where it was; a span that grows widens the box at once with no second fade, and the same span given again does not restart the fade; a screen reader finds the label once, on the node that holds the three chips, each still its own button node, and finds nothing for a span that covers no chip; a session card draws its own band at full strength at once; a session that takes the place of a banded one draws no band; a session with a band and no chips draws none and announces nothing; a session band that runs past its chips stops at the last chip; a card that can be restored is one button that reads the label once, before its chips
+- Goldens: `display_area_worked_first_band_session_{light,dark}.png` are new: the area in `expandedPrevious` with a session card that bands `2` and `+3`. Every other golden is unchanged; the goldens of 2/3 are taken after the fade
+
 ## [0.112.0] - The worked-first band is drawn (2/3)
 
 ### ✨ Features
